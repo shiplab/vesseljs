@@ -1,0 +1,220 @@
+
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Ship As Object</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Three script -->
+    <script src="js/build/three.min.js"></script>
+    <script src='js/OrbitControls.js'></script>
+    
+    <!-- jQuery Version 1.11.1 -->
+    <script src="js/jquery.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="js/bootstrap.min.js"></script> 
+	
+		<!-- D3JavaScript -->
+		<script src="https://d3js.org/d3.v4.min.js"></script>
+	
+		
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-inverse" role="navigation">
+        <div class="container">
+            <!-- Add  the <div>[Something]</div> structure for each header in the navbar-->
+            <div class="navbar-header">               
+                <a class="navbar-brand" href="index.html">Ship as an object</a>
+            </div>
+            <div class="navbar-header">
+                <a class="navbar-brand" href="about.html">About</a>
+            </div>
+            <!-- This is for the right part of the navbar. Reserved for Shiplab logo-->
+            <div class="nav navbar-nav navbar-right">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="http://www.shiplab.hials.org/"><img src="barquinho.png" style="height:150%"> 
+                    </a>                    
+                </div>
+            </div>
+        </div>
+    </nav>
+
+
+    <!-- Page Content -->
+    
+    <!-- Container creates the space -->
+    <div class="container">
+        
+        <!-- Row creates horizontal groups of columns -->
+        <div class="row">
+            
+            <!-- choose horizontal layout in https://www.w3schools.com/bootstrap/bootstrap_grid_examples.asp-->
+            
+            <!-- No divisions in page. Only 1 column. -->
+             <div class="col-md-12 text-center">
+                <h2>Ship as an object</h2>
+
+            </div>  
+            
+            <div class="col-md-12 text-left">
+                <h2>Input</h2>
+                <textarea id="myTextArea" style="width:100%; height:300px"></textarea>
+                <button onclick="updateValues()">Update values</button>
+            </div>
+            <div id="pene" class="col-md-12 text-left">
+                <h2>Output</h2>
+                <pre id="json"></pre>
+                <h3>Operations</h3>
+                <button onclick="ShipA.CostFn()">Calculate Cost</button>
+                <p>Total Cost: <span id="TotalCost"></span></p>
+                <p>Elements with no Cost: <span id="NoCost"></span></p>
+                <button onclick="ShipA.LCGFn()">Calculate LCG</button>
+                <p>Position: [<span id="LCGx"></span>,<span id="LCGy"></span>,<span id="LCGz"></span>]</p>
+            </div>
+            <div id ="3d" class="col-md-12 text-left">
+                <button onclick="createscene()">Create Scene</button>
+                <button onclick="plotBl()">Update Blocks</button>
+                <style></style>
+                <br>
+                <br>
+            </div>
+        
+        </div>
+       
+            
+       
+        
+
+    </div>
+    
+   
+   <!-- Load ship configuration --> 
+    <script src="PX121_ship.js"></script>
+    
+    <script>
+		//"use strict";
+	
+		d3.csv("PX121_DBB.csv", function(data) {
+		ship.blocks = data;
+		
+		})
+            
+        // using JSON.stringify pretty print capability:
+        var str = JSON.stringify(ship, undefined, 4);
+
+        // display pretty printed object in text area:
+        document.getElementById('myTextArea').innerHTML = str;
+
+        // Function for updating values
+        function updateValues() 
+        {
+            
+            var ugly = document.getElementById('myTextArea').value;
+            ShipUp = JSON.parse(ugly);
+            var pretty = JSON.stringify(ShipUp, undefined, 4);
+            Object.assign(ship,ShipUp);
+            //ShipA.VesselData = ShipUp.VesselData
+            //ShipA.ObjectsData = ShipUp.ObjectsData
+            //ShipA.HullData = ShipUp.HullData
+            //console.log(ShipA)
+            document.getElementById('myTextArea').value = pretty;  
+            document.getElementById("json").innerHTML = JSON.stringify(ShipUp, undefined, 4);
+            
+        }
+
+        // Create scene+
+        function createscene(){
+        scene = new THREE.Scene()        
+
+        // Set renderer
+        renderer = new THREE.WebGLRenderer()
+        renderer.setPixelRatio(window.devicePixelRatio);
+        // get the div that will hold the renderer
+        var container = document.getElementById('3d');
+        w3d = container.offsetWidth
+        renderer.setSize(w3d, window.innerHeight / window.innerWidth * w3d)
+        // add the renderer to the div
+        container.appendChild(renderer.domElement);
+					
+		// Creating Hull
+		var geometryH = new THREE.BoxBufferGeometry(1, 1, 1);
+		geometryH.translate(0.5,0,0.5);			
+		
+		var materialH = new THREE.MeshBasicMaterial({color: 0x000000, wireframe: true})
+		cubeH = new THREE.Mesh(geometryH, materialH)
+		cubeH.scale.set(ship.LOA, ship.BOA, ship.D);
+		
+		scene.add(cubeH)
+		
+		//
+		let blocks = new THREE.Group();
+		let geom = new THREE.BoxBufferGeometry(1,1,1);
+		geom.translate(0.5,0,0.5);
+		//let mat = new THREE.MeshPhongMaterial({color: "blue", transparent: true, opacity: 0.3});
+		for (let i = 0; i < ship.blocks.length; i++) {
+			let e = ship.blocks[i];
+			let r = Math.round(Math.random()*255);
+			let g = Math.round(Math.random()*255);
+			let b = Math.round(Math.random()*255);
+			let mati = new THREE.MeshPhongMaterial({color: (r<<16)|(g<<8)||b, transparent: true, opacity: 0.3});
+
+			//mat.needsUpdate = true;
+			let m = new THREE.Mesh(geom, mati);
+			m.position.set(e.xAft, e.yCentre, e.zBase);
+			m.scale.set(e.xFwd-e.xAft, e.ySize, e.zHeight);
+			blocks.add(m);
+		}
+		scene.add(blocks);
+					 
+		// Set camera
+		camera = new THREE.PerspectiveCamera(75,window.innerWidth/window.innerHeight, 1,10000)
+		camera.position.set(50, 50, 50);
+		camera.up.set(0,0,1);
+		var controls = new THREE.OrbitControls(camera, renderer.domElement);
+		controls.target = new THREE.Vector3(ship.LOA/2,0,0);
+		
+		// Rendering function
+		function animate() {
+			requestAnimationFrame(animate)
+			renderer.render(scene, camera)
+			renderer.setClearColor(0xA9CCE3, 1)
+			
+		}
+		animate()
+		   
+	}
+        
+    </script>
+    <!-- /.container -->
+    
+    
+    
+    <!-- Insert own scripts here -->
+      
+
+</body>
+
+</html>

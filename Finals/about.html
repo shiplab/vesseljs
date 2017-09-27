@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <!-- Dont touch this!! -->
+    
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    
+     <title>Ship As Object</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Custom CSS -->
+
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+    
+    <!-- Dont touch this!! -->
+
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-inverse" role="navigation">
+        <div class="container">
+            <!-- Add  the <div>[Something]</div> structure for each header in the navbar-->
+            <div class="navbar-header">               
+                <a class="navbar-brand" href="index.html">Ship as Object</a>
+            </div>
+            <div class="navbar-header">
+                <a class="navbar-brand" href="about.html">About</a>
+            </div>
+            <!-- This is for the right part of the navbar. Reserved for Shiplab logo-->
+            <div class="nav navbar-nav navbar-right">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="http://www.shiplab.hials.org/"><img src="barquinho.png" style="height:150%"> 
+                    </a>                    
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Content -->
+    <div class="container">
+
+        <div class="row">
+            <div class="col-md-12 text-center">
+                
+                <!-- Link the GitHub page if you have one. Add a pdf of how the project works if necessary. Just put it inside the same folder and call it how_to.pdf -->
+                <h1>Ship as Object</h1>
+                <p>The app recibes a text with the form as: </p>
+                <pre>{"ShipA":{"VesselData":{"Length":100, "Breadth":30, "Depth":8, "Draft":5, "BlockCoefficient":0.75, "PrismaticCoefficient":0.8},"ObjectsData":{"Engine":{"General":{"Type": "Engine", "Length":2, "Width":4, "Height":2}, "Capabilities": {"RPM": 500}}}, "HullData":{"Offsets":{"Data":[1, 2, 3]}}}}</pre>
+                <p>and gives back the pretty form of the JSON element. </p> 
+                <p>It calculates the total cost of the objects inside Objects Data and states which ones have no cost. It calculates the LCG due to the position and weight of the objets and plots them in a 3D model.</p>
+                <p>Also, more about the project in <a href="">GitHub,</a>.</p>
+                                    
+                    Developed by: Vicente Alejandro Iváñez Encinas and Henrique M. Gaspar
+
+            </div>
+            
+        </div>
+        <!-- /.row -->
+
+    </div>
+    <!-- /.container -->
+    
+    <!-- Insert own scripts here -->
+
+    <!-- jQuery Version 1.11.1 -->
+    <script src="js/jquery.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="js/bootstrap.min.js"></script>
+
+</body>
+
+</html>
