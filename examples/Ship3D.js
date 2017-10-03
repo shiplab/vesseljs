@@ -1,0 +1,248 @@
+//@EliasHasle
+function Ship3D(vessel, stlPath) {
+	THREE.Group.call(this);
+	
+	this.vessel = vessel;
+
+	let LOA = vessel.structure.hull.attributes.LOA;
+	let BOA = vessel.structure.hull.attributes.BOA;
+	let Depth = vessel.structure.hull.attributes.Depth;
+
+	//console.log("LOA:%.1f, BOA:%.1f, Depth:%.1f",LOA,BOA,Depth);
+	
+	this.position.z = -vessel.designState.calculationParameters.Draft_design;
+	
+	//Hull
+	let stations = vessel.structure.hull.halfBreadths.stations;
+	let waterlines = vessel.structure.hull.halfBreadths.waterlines;
+	let table = vessel.structure.hull.halfBreadths.table;
+
+	console.log(stations);
+	console.log(waterlines);
+	console.log(table);
+	
+	let N = stations.length;
+	let M = waterlines.length;
+	let hGeom = new THREE.PlaneBufferGeometry(undefined, undefined, M-1,N-1);
+	let pos = hGeom.getAttribute("position");
+	let pa = pos.array;
+
+	//loop1:
+	for (let i = 0, c = 0; i < N; i++) {
+		//loop2:
+		for (let j = 0; j < M; j++) {
+			//if (isNaN(table[j][i])) continue;// loop1;
+			pa[c] = stations[i];
+			if(table[j]===undefined) console.error("table[%d] is undefined", j);
+			pa[c+1] = table[j][i];//isNaN(table[j][i]) ? 0 : table[j][i];
+			pa[c+2] = waterlines[j];
+			c += 3;
+		}
+	}
+	
+	let uv = hGeom.getAttribute("uv");
+	let uva = uv.array;
+	
+	//Get rid of NaNs by merging their points with the closest non-NaN point in the same station:
+	for (let i = 0; i < N; i++) {
+		let firstNumberJ;
+		let lastNumberJ;
+		let j;
+		for (j = 0; j < M; j++) {
+			let y = table[j][i];
+			if (!isNaN(y)) {
+				firstNumberJ = j;
+				lastNumberJ = j;
+				//copy vector for i,j to positions for all NaN cells above:
+				let c = i*M+firstNumberJ, d = c;
+				let x = pa[3*c];
+				let y = pa[3*c+1];					
+				let z = pa[3*c+2];
+				while (firstNumberJ > 0) {
+					firstNumberJ--;			
+					d -= 1;
+					table[firstNumberJ][i] = y;
+					pa[3*d] = x;
+					pa[3*d+1] = y;
+					pa[3*d+2] = z;
+					uva[2*d] = uva[2*c];
+					uva[2*d+1] = uva[2*c+1];
+				}
+				break;
+			}
+		}
+		for (; j < M; j++) {
+			let y = table[j][i];
+			if (isNaN(y)) break;
+			lastNumberJ = j;
+		}
+		//copy vector for i,j to positions for all NaN cells below:
+		let c = i*M+lastNumberJ, d = c;
+		let x = pa[3*c];
+		let y = pa[3*c+1];					
+		let z = pa[3*c+2];
+		while (lastNumberJ < M-1) {
+			lastNumberJ++;
+			d += 1;
+			table[lastNumberJ][i] = y;
+			pa[3*d] = x;
+			pa[3*d+1] = y;
+			pa[3*d+2] = z;
+			uva[2*d] = uva[2*c];
+			uva[2*d+1] = uva[2*c+1];
+
+		}
+		//////////
+	}
+	
+	//console.log(pa);
+	
+	pos.needsUpdate = true;
+	uv.needsUpdate = true;
+	hGeom.computeVertexNormals();
+
+	//orientate to the coordinate system I want:
+	hGeom.computeBoundingBox();
+	let b = hGeom.boundingBox;
+	hGeom.translate(-b.min.x,0,0);
+	
+	//Hull hMaterial
+	let hMat = new THREE.MeshPhongMaterial({color: "red", side:THREE.DoubleSide, transparent: true, opacity: 0.5});
+	
+	let hull = new THREE.Group();
+	let port = new THREE.Mesh(hGeom, hMat);
+	let starboard = new THREE.Mesh(hGeom, hMat);
+	starboard.scale.y = -1;
+	hull.add(port, starboard);
+	
+	hull.scale.set(LOA,0.5*BOA,Depth);
+	this.hull = hull;
+	this.add(hull);
+	
+	function randomColor() {
+		let r = Math.round(Math.random()*0xff);
+		let g = Math.round(Math.random()*0xff);
+		let b = Math.round(Math.random()*0xff);
+		return ((r<<16)|(g<<8)|b);
+	}
+	
+	//Decks:
+	var decks = new THREE.Group();
+	let deckGeom = new THREE.BoxBufferGeometry(1,1,1);
+	let deckMat = new THREE.MeshPhongMaterial({color: 0xcccccc/*randomColor()*/, transparent: true, opacity: 0.2, side: THREE.DoubleSide});
+	deckGeom.translate(0,0,-0.5);
+	let ds = vessel.structure.decks;
+	let dk = Object.keys(ds);
+	console.log(dk);
+	for (let i = 0; i < dk.length; i++) {
+		let deck = new THREE.Mesh(deckGeom, deckMat);
+		let d = ds[dk[i]];
+		deck.name = dk[i];
+		deck.scale.set(d.xFwd-d.xAft, d.breadth, d.thickness);
+		deck.position.set(0.5*(d.xFwd+d.xAft), 0, d.zFloor);
+		decks.add(deck);
+	}
+	this.decks = decks;
+	this.add(decks);
+	
+	//Bulkheads:
+	var bulkheads = new THREE.Group();
+	bulkheads.scale.set(1, BOA, Depth);
+	let bhGeom = new THREE.BoxBufferGeometry(1,1,1);
+	bhGeom.translate(0,0,0.5);
+	let bhMat = new THREE.MeshPhongMaterial({color: 0xcccccc/*randomColor()*/, transparent: true, opacity: 0.5, side: THREE.DoubleSide});
+	bhGeom.translate(0.5,0,0);
+	let bhs = vessel.structure.bulkheads;
+	let bhk = Object.keys(bhs);
+	for (let i = 0; i < bhk.length; i++) {
+		let bulkhead = new THREE.Mesh(bhGeom, bhMat);
+		let bh = bhs[bhk[i]];
+		bulkhead.name = bhk[i];
+		bulkhead.scale.set(bh.thickness, 1, 1);
+		bulkhead.position.set(bh.xAft, 0, 0);
+		bulkheads.add(bulkhead);
+	}
+	this.bulkheads = bulkheads;
+	this.add(bulkheads);
+	
+	//Objects
+	//this function is used as a temporary hack to group similar objects by color
+	function stripName(s) {
+		s=s.replace(/[0-9]/g, "");
+		s=s.trim();
+		return s;
+	}
+	let materials = {};
+	
+	let stlManager = new THREE.LoadingManager();
+	let stlLoader = new THREE.STLLoader(stlManager);
+	/*stlManager.onLoad = function() {
+		createGUI(materials, deckMat);
+	}*/
+
+	let blocks = new THREE.Group();
+	this.blocks = blocks;
+	this.add(blocks);
+
+	let boxGeom = new THREE.BoxBufferGeometry(1,1,1);
+	boxGeom.translate(0,0,0.5);
+	
+	let objects = Object.values(vessel.derivedObjects);	
+	for (let i = 0; i < objects.length; i++) {
+		let o = objects[i];
+		let mat;
+		let name = stripName(o.id);
+		if (materials[name] !== undefined) {
+			mat = materials[name];
+		} else {
+			mat = new THREE.MeshPhongMaterial({color: randomColor(), transparent: true, opacity: 0.5});
+			materials[name] = mat;
+		}
+		
+		let bo = o.baseObject;
+
+		//This function is redefined in every loop iteration.
+		//Maybe not the most elegant solution?
+		let addBlock = function (geom) {
+			let m = new THREE.Mesh(geom, mat);
+			s = vessel.designState.getObjectState(o);
+			let x = s.xCentre;
+			let y = s.yCentre;
+			let z = s.zBase;
+			m.position.set(x, y, z);
+			let d = bo.boxDimensions;
+			m.scale.set(d.length, d.breadth, d.height);
+			blocks.add(m);
+		}
+		
+		if (bo.file3D) {
+			stlLoader.load(
+				stlPath+"/"+bo.file3D,
+				function onLoad(geometry) {
+					//Normalize:
+					geometry.computeBoundingBox();
+					let b = geometry.boundingBox;
+					geometry.translate(-b.min.x, -b.min.y, -b.min.z);
+					geometry.scale(1/(b.max.x-b.min.x), 
+								1/(b.max.y-b.min.y),
+								1/(b.max.z-b.min.z));
+					//Align with the same coordinate system as placeholder blocks:
+					geometry.translate(-0.5,-0.5,0);
+					addBlock(geometry);
+				},
+				undefined,
+				function onError() {
+					console.warn("Specified file " + e.File + " not found. Falling back on placeholder.");
+					addBlock(boxGeom);
+				}
+			);
+		} else {
+			//Placeholder:
+			addBlock(boxGeom);
+		}
+	}
+	
+	//console.log("Reached end of Ship3D constructor.");
+}
+Ship3D.prototype = Object.create(THREE.Group.prototype);
+Ship3D.prototype.constructor = Ship3D;
