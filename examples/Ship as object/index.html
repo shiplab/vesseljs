@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -9,33 +11,35 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Ship visualization with specification</title>
+    <title>Ship As Object</title>
 
     <!-- Bootstrap Core CSS -->
-    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="../css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Three script -->
+    <script src="../libs/three.js"></script>
+	<script src="../libs/STLLoader.js"></script>
+    <script src="../libs/OrbitControls.js"></script>
     
     <!-- jQuery Version 1.11.1 -->
-    <script src="libs/jquery.js"></script>
+    <script src="../libs/jquery.js"></script>
 
     <!-- Bootstrap Core JavaScript -->
-    <script src="libs/bootstrap.min.js"></script> 
+    <script src="../libs/bootstrap.min.js"></script> 
 	
 	<!-- D3JavaScript -->
-	<script src="libs/d3_v4.9.1.js"></script>
+	<script src="../libs/d3_v4.9.1.js"></script>
 	
-	<!-- Three script -->
-    <script src="libs/three.js"></script>
-	<script src="libs/STLLoader.js"></script>
-    <script src='libs/OrbitControls.js'></script>
-
-	<!--Import library-->
-	<script src="../build/ShipDesign.js"></script>
-
 	<!-- Prettyprinting of JSON data -->
-	<script type="text/javascript" src="libs/renderjson.js"></script>
+	<script type="text/javascript" src="../libs/renderjson.js"></script>
+		
+    <!--Ship3D class for three.js-->
+	<script src="../js/Ship3D.js"></script>
+    
+    <!--Import library-->
+	<script src="../../build/ShipDesign.js"></script>
 	
-	<!--Ship3D class for three.js-->
-	<script src="js/Ship3D.js"></script>
+		
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -53,18 +57,24 @@
         <div class="container">
             <!-- Add  the <div>[Something]</div> structure for each header in the navbar-->
             <div class="navbar-header">               
-                <a class="navbar-brand" href="https://github.com/hmgaspar/vesseljs">Github project page</a>
+                <a class="navbar-brand" href="index.html">Ship as object</a>
+            </div>
+            <div class="navbar-header">
+                <a class="navbar-brand" href="about.html">About</a>
             </div>
             <!-- This is for the right part of the navbar. Reserved for Shiplab logo-->
             <div class="nav navbar-nav navbar-right">
                 <div class="navbar-header">
-                    <a class="navbar-brand" href="http://www.shiplab.hials.org/"><img src="images/barquinho.png" style="height:150%"> 
+                    <a class="navbar-brand" href="http://www.shiplab.hials.org/"><img src="../images/barquinho.png" style="height:150%"> 
                     </a>                    
                 </div>
             </div>
         </div>
     </nav>
-            
+
+
+    <!-- Page Content -->
+    
     <!-- Container creates the space -->
     <div class="container">
         
@@ -76,19 +86,9 @@
             <!-- No divisions in page. Only 1 column. -->
              <div class="col-md-12 text-center">
                 <h2>Ship as object</h2>
+
             </div>  
             
-			<div class="col-md-12 text-center">
-                
-                <!-- Link the GitHub page if you have one. Add a pdf of how the project works if necessary. Just put it inside the same folder and call it how_to.pdf -->
-                <!--<h1>Ship as Object</h1>-->
-                <p>This app asks for a JSON file 
-                and gives back the pretty form of the JSON element. It also plots a 3D image of the ship. Sample data is loaded at startup.</p>
-				                                    
-				<p>Developed by: Elias Hasle, Vicente Alejandro Iváñez Encinas and Henrique M. Gaspar. Visualization made using three.js.</p>
-
-            </div>
-			
             <div class="col-md-12 text-left">
                 <h2>Input</h2>
                 <input type="file" id="file-input" />
@@ -105,13 +105,43 @@
                 
         </div>
     </div>
-        
+
     <script>
 		"use strict";
-		
-	    // Create scene+
+        // read file
+        function readSingleFile(e){
+            var file = e.target.files[0];
+            if (!file) {
+                return;
+            }
+        // assign contents of json to object 
+        // variable is called ship (change if needed)
+            
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var contents = e.target.result;
+                useFileData(contents);
+            }
+            reader.readAsText(file);
+        }
+        
+        // display pretty JSON
+        function displayContents(jsonData) {
+			let fileCont = document.getElementById("file-content");
+			fileCont.innerHTML = "";
+			fileCont.appendChild(
+            renderjson(jsonData)
+            );
+        }
+        
+        // display name of file
+        document.getElementById('file-input')
+          .addEventListener('change', readSingleFile, false)
+        
+        // Create scene+
 		var renderer, scene, camera, controls, ship3D;
-		
+
+        
 		//Ready renderer and scene
         (function (){
 			renderer = new THREE.WebGLRenderer({antialias: true});
@@ -150,34 +180,17 @@
 			}());
 			
         })();
-				
-        // read file from user
-        function readSingleFile(e){
-            var file = e.target.files[0];
-            if (!file) {
-                return;
-            }
-			
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                var contents = e.target.result;
-				//call common function for user files and server files
-				useFileData(contents);
-            }
-            reader.readAsText(file);
-        }
-		
 		//Load sample file:
-		new THREE.FileLoader().load("data/vessel_specifications/PX121.json", useFileData);
+		new THREE.FileLoader().load("../data/vessel_specifications/PX121.json", useFileData);
 		
 		function useFileData(contents) {
 			var shipspec = JSON.parse(contents);
-			displayContents(shipspec);
+            displayContents(shipspec);
 			var ship = new ShipDesign.Vessel(shipspec);
 			if (ship3D !== undefined) {
 				scene.remove(ship3D);
 			}
-			ship3D = new Ship3D(ship, "data/STL files");
+			ship3D = new Ship3D(ship, "../data/STL files");
 			scene.add(ship3D);
 			
 			let LOA = ship.structure.hull.attributes.LOA;
@@ -192,19 +205,10 @@
 			renderer.render(scene, camera);
 		}
         
-        // display pretty JSON
-        function displayContents(jsonData) {
-			let fileCont = document.getElementById("file-content");
-			fileCont.innerHTML = "";
-			fileCont.appendChild(
-            renderjson(jsonData)
-            );
-        }
+
+
+    
         
-        // Catch file browse
-        document.getElementById('file-input')
-          .addEventListener('change', readSingleFile, false)
-         
     </script>
     <!-- /.container -->
     
