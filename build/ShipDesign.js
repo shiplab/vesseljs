@@ -1,4 +1,4 @@
-//ShipDesign library, built 2017-08-21 15:36:55.248761, Checksum: 054af1eb640bf9d119e6086b3fe355c2
+//ShipDesign library, built 2017-10-12 11:34:52.171505, Checksum: 66df2202694a4af10aa01aa225de1599
 /*
 Import like this in HTML:
 <script src="ShipDesign.js"></script>
@@ -10,6 +10,8 @@ let vessel = new ShipDesign.Vessel(someSpecification);
 
 var ShipDesign = {};
 (function() {
+//@EliasHasle
+
 //Some small helpers for operations on 3D vectors
 //A vector is simply defined as an object with properties x,y,z.
 //Written by Elias Hasle
@@ -57,15 +59,50 @@ function crossProduct(u,v) {
 		y: u.z*v.x-u.x*v.z,
 		z: u.x*v.y-u.y*v.x
 	};
-}//Some interpolation helpers. Only linear and bilinear for now.
-//(Written by Elias Hasle)
+}//@EliasHasle
+
+//Some interpolation helpers. Only linear and bilinear for now.
 
 //linear interpolation
 //Defaults are not finally decided
+//returns NaN if a and b are NaN or mu is NaN.
 function lerp(a, b, mu=0.5) {
-	if (a === undefined) return b;
-	else if (b === undefined) return a;
+	if (isNaN(a)) return b;
+	if (isNaN(b)) return a;
 	return (1-mu)*a+mu*b;
+}
+
+//Test. Not safe yet.
+function linearFromArrays(xx, yy, x) {
+	let {index, mu} = bisectionSearch(xx, x);
+	if (index === undefined || mu === undefined) return 0;
+	return lerp(yy[index], yy[index+1], mu);	
+}
+
+/*Function that takes a sorted array as input, and finds the last index that holds a numerical value less than, or equal to, a given value.
+Returns an object with the index and an interpolation parameter mu that gives the position of value between index and index+1.
+*/
+function bisectionSearch(array, value) {
+	if (value < array[0]) {
+		console.warn("bisectionSearch: requested value below lowest array element. Returning undefined.");
+		return {index: undefined, mu: undefined};
+	}
+	let index = 0, upper = array.length;
+	while (upper > index+1) {
+		let c = Math.floor(0.5*(index+upper));
+		if (array[c] === value) return {index: c, mu: 0};
+		else if (array[c] < value) index = c;
+		else upper = c;
+	}
+	/*if (index === array.length) {
+		console.error("bisectionSearch: index===array.length. This should never happen.");
+	}*/
+	let mu = (value-array[index])/(array[index+1]-array[index]);
+	if (index === array.length-1) {
+		console.warn("bisectionSearch: Reached end of array. Simple interpolation will result in NaN.");
+		mu = undefined;
+	}
+	return {index, mu};
 }
 
 function bilinearUnitSquareCoeffs(z00, z01, z10, z11) {
@@ -106,6 +143,9 @@ function bilinearCoeffs(x1, x2, y1, y2, z11, z12, z21, z22) {
 	return [b00,b10,b01,b11];
 }
 
+//Maybe I could do some simple linear interpolation in collapsed cases.
+//But then I have to be sure what the z values and coefficients mean.
+//I have apparently not documented this well.
 function bilinear(x1, x2, y1, y2, z11, z12, z21, z22, x, y) {
 	let [b00, b10, b01, b11] = 
 		bilinearCoeffs(x1, x2, y1, y2, z11, z12, z21, z22);
@@ -115,25 +155,9 @@ function bilinear(x1, x2, y1, y2, z11, z12, z21, z22, x, y) {
 	let muy = (y-y1)/(y2-y1);
 	return bilinearUnitSquare(z11, z12, z21, z22, mux, muy);*/
 }
-/*Function that takes a sorted array as input, and finds the last index that holds a numerical value less than, or equal to, a given value.
-Returns an object with the index and an interpolation parameter mu that gives the position of value between index and index+1.
-*/
-function bisectionSearch(array, value) {
-	if (value < array[0]) {
-		console.warn("bisectionSearch: requested value below lowest array element. Returning undefined.");
-		return undefined;
-	}
-	let index = 0, upper = array.length;
-	while (upper > index+1) {
-		let c = Math.floor(0.5*(index+upper));
-		if (array[c] === value) return {index: c, mu: 0};
-		else if (array[c] < value) index = c;
-		else upper = c;
-	}
-	let mu = (value-array[index])/(array[index+1]-array[index]);
-	if (index === array.length-1) console.warn("bisectionSearch: Hit at end of array. Simple interpolation will result in NaN.");
-	return {index: index, mu: mu};
-}//All inputs are numbers. The axes are given by a single coordinate.
+//@EliasHasle
+
+//All inputs are numbers. The axes are given by a single coordinate.
 function steiner(I, A, sourceAxis, targetAxis) {
 	return I + A*(sourceAxis-targetAxis)^2;
 }
@@ -180,7 +204,8 @@ function combineAreas(array) {
 	let xc = 0;
 	let yc = 0;
 	let maxX = 0, minX = 0, maxY = 0, minY = 0;
-	for (let i = 0; i < array.length; i++) {
+	let L = array.length;
+	for (let i = 0; i < L; i++) {
 		let e = array[i];
 		A += e.A;
 		xc += e.xc*e.A;
@@ -194,11 +219,18 @@ function combineAreas(array) {
 		if (!isNaN(e.minY) && e.minY<minY)
 			minY = e.minY;
 	}
-	xc /= A;
-	yc /= A;
-
 	let Ix = 0;
 	let Iy = 0;
+	
+	if (A!==0) {
+		xc /= A;
+		yc /= A;
+	} else {
+		console.warn("Zero area combination.");
+		xc /= L;
+		yc /= L;
+	}
+
 	for (let i = 0; i < array.length; i++) {
 		let e = array[i];
 		Ix += steiner(e.Ix, e.A, e.yc, yc);
@@ -227,13 +259,15 @@ function sectionCalculation({xs, ymins, ymaxs}) {
 		calculations.push(trapezoidCalculation(ybase0, ybase1, ytop0, ytop1, xbase, xtop));
 	}
 	
-	let C = combineAreas(calculations);
+	let C = combineAreas(calculations); //Might be zero areas!
 
 	let output = {A: C.A, maxX: C.maxY, minX: C.minY, maxY: C.maxX, minY: C.minY, xc: C.yc, yc: C.xc, Ix: C.Iy, Iy: C.Ix};
 	console.info("Output: ", output);
 	console.groupEnd();
 	return output;
-}function bilinearPatchColumnCalculation(x1, x2, y1, y2, z11, z12, z21, z22) {
+}//@EliasHasle
+
+function bilinearPatchColumnCalculation(x1, x2, y1, y2, z11, z12, z21, z22) {
 	let X = x2-x1;
 	let Y = y2-y1;
 	let [a00, a10, a01, a11] = bilinearUnitSquareCoeffs(z11, z12, z21, z22);
@@ -246,7 +280,7 @@ function sectionCalculation({xs, ymins, ymaxs}) {
 	*/
 	let Ab = X*Y;
 	let zAvg = (a00 + 0.5*a10 + 0.5*a01 + 0.25*a11);
-	let V = Ab*zAvg;
+	let V = Math.abs(Ab*zAvg); //new: absolute value
 	let zc = 0.5*zAvg;
 	/*
 	To find xc, I need to integrate x*z over the unit square, and scale and translate to world coordinates afterwards:
@@ -258,7 +292,8 @@ function sectionCalculation({xs, ymins, ymaxs}) {
 	//Similar for yc:
 	let yc = y1 + Y*(0.5*a00 + 0.25*a10 + a01/3 + a11/6)
 	
-	let As = bilinearArea(x1, x2, y1, y2, z11, z12, z21, z22);
+	//new: absolute value (OK?)
+	let As = Math.abs(bilinearArea(x1, x2, y1, y2, z11, z12, z21, z22));
 	
 	return {Ab: Ab, As: As, V: V, Cv: {x: xc, y: yc, z: zc}};
 }
@@ -269,7 +304,9 @@ function combineVolumes(array) {
 	let V = 0;
 	let As = 0;
 	let Cv = {x:0, y:0, z:0};
-	for (let i = 0; i < array.length; i++) {
+	let L = array.length;
+	if (L===0) return {V,As,Cv};
+	for (let i = 0; i < L; i++) {
 		let e = array[i];
 		V += e.V;
 		As += e.As; //typically wetted area
@@ -277,11 +314,19 @@ function combineVolumes(array) {
 		Cv.y += e.Cv.y*e.V;
 		Cv.z += e.Cv.z*e.V;
 	}
-	Cv.x /= V;
-	Cv.y /= V;
-	Cv.z /= V;
+	//Safe zero check?
+	if (V!==0) {
+		Cv.x /= V;
+		Cv.y /= V;
+		Cv.z /= V;
+	} else {
+		console.warn("Zero volume combination.");
+		Cv.x /= L;
+		Cv.y /= L;
+		Cv.z /= L;
+	}
 	
-	return {V: V, As: As, Cv: Cv};
+	return {V,As,Cv};//{V: V, As: As, Cv: Cv};
 }
 
 //For wetted area. I think this is right, but it is not tested.
@@ -336,7 +381,10 @@ function bilinearArea(x1, x2, y1, y2, z11, z12, z21, z22, segs=10) {
 	A *= X*Y/(N*M); //dx dy
 	
 	return A;
-}"use strict";
+}//@MrEranwe
+//@EliasHasle
+
+"use strict";
 //Elias notes:
 //LCB and LCG were obviously considered in another coordinate system than we are using. I have corrected this, assuming that the wrong coordinate system had the origin centered longitudinally.
 //The hull mass is off by several orders of magnitude. Checking the paper, it seems likely that the "typical" K parameters are aimed at producing units of tonnes, not kg.
@@ -494,14 +542,18 @@ function bilinearArea(x1, x2, y1, y2, z11, z12, z21, z22, segs=10) {
 	 // Returns the object
 	 
 	 return {mass: W, VCG: VCGOut};
-	 }//Very unoptimized for now.
+	 }//@EliasHasle
+
+//Very unoptimized for now.
 function combineWeights(array) {
 	let M = array.reduce((sum,e)=>sum+e.mass,0);
 	let cgms = array.map(e=>scaleVec(e.cg, e.mass));
 	let CG = scaleVec(sumVec(cgms), 1/M);
 	
 	return {mass: M, cg: CG};
-}/*Base class for objects that are constructed from 
+}//@EliasHasle
+
+/*Base class for objects that are constructed from 
 a literal object, (//or optionally from a JSON string).
 
 Constructors can take more parameters than the specification, but the specification must be the first parameter.
@@ -509,6 +561,8 @@ Constructors can take more parameters than the specification, but the specificat
 setFromSpecification will typically be overridden by derived classes. Overriding implementations will typically do some sanity checking.
 
 getSpecification will also typically be overridden. The default implementation here is just a sketch. Maybe not even correct for the simplest subclasses.
+
+Maybe this can be improved by implementing fromJSON and to toJSON methods.
 */
 
 function JSONSpecObject(specification) {
@@ -551,7 +605,9 @@ Object.assign(JSONSpecObject.prototype, {
 		//First test:
 		return JSON.stringify(this);
 	}
-});/*
+});//@EliasHasle
+
+/*
 Notes:
 For calculated values, I envision a lazy calculation pattern, where all properties involved in calculations are only accessed by specialized getters and setters, and calculated properties have some kind of needsUpdate flag or version number (that is set by any setters that will directly or indirectly affect the property). When, and only when, running the getter for the given property, the flag/version is checked, and if false (same version as in cache) the getter just returns the stored value. If true, the getter starts the calculation of the value, invoking other getters.
 
@@ -612,25 +668,31 @@ Object.assign(Vessel.prototype, {
 			components.push(o.getWeight(vesselState));
 		}
 
-		return combineWeights(components);
+		var W = combineWeights(components);
+		console.info("Calculated weight object: ", W);
+		return W;
 	},
 	calculateDraft(vesselState, epsilon=0.001) {
 		let w = this.getWeight(vesselState);
 		let M = w.mass;
-		let VT = M/1025; //Target submerged volume
+		let VT = M/1025; //Target submerged volume (1025=rho_seawater)
 		//Interpolation:
 		let a = 0;
 		let b = this.structure.hull.attributes.Depth;
-		let t = 0.5*epsilon;
+		let t = 0.5*b;
 		while (b-a>epsilon) {
 			t = 0.5*(a+b);
-			let V = this.structure.hull.calculateAttributesAtDraft(t)["V"];
+			let V = this.structure.hull.calculateAttributesAtDraft(t)["Vs"];
+			console.log(V); //DEBUG
 			if (V>VT) b = t;
 			else a = t;
 		}
+		console.info("Calculated draft: %.2f", t);
 		return t;
 	}
-});function Structure(spec, vessel) {
+});//@EliasHasle
+
+function Structure(spec, vessel) {
 	this.vessel = vessel;
 	JSONSpecObject.call(this, spec);
 }
@@ -725,11 +787,15 @@ Object.assign(Structure.prototype, {
 		console.info("Total structural weight: ", output);
 		return output;
 	}
-});/*When having a class for this, the specification can possibly be in one of several formats, and the handling will be contained in this class.
+});//@EliasHasle
+
+/*When having a class for this, the specification can possibly be in one of several formats, and the handling will be contained in this class.
 
 I have tried to remove the dependency on the vessel object here. This is in order to be able to optimize updates.
 
 This class needs more comments, for shure.
+
+And the geometric calculations are faulty.
 */
 
 function Hull(spec) {
@@ -741,6 +807,7 @@ Object.assign(Hull.prototype, {
 		this.halfBreadths = spec.halfBreadths;
 		//this.buttockHeights = spec.buttockHeights;
 		this.attributes = spec.attributes; //this could/should include LOA, BOA, Depth
+		this.levelsNeedUpdate = true;
 	},
 	getSpecification: function() {
 		return {
@@ -770,7 +837,12 @@ Object.assign(Hull.prototype, {
 		console.info("Hull weight:", output);
 		return output;
 	},
-	getWaterline: function(z) {
+	/*
+	Input:
+	z: level from bottom of ship (absolute value in meters)
+	nanCorrectionMode: 0 to set all NaNs to zero, 1 to output NaNs, set all NaNs to zero, 2 to replace NaNs with interpolated or extrapolated values.	
+	*/
+	getWaterline: function(z, nanCorrectionMode=1) {
 		let ha = this.attributes;
 		let zr = z/ha.Depth;
 		let wls = this.halfBreadths.waterlines;
@@ -779,21 +851,89 @@ Object.assign(Hull.prototype, {
 
 		let {index: a, mu: mu} = bisectionSearch(wls, zr);
 		let wl;
-		if (a<0) wl = new Array(sts.length).fill(null);
-		else if (a+1>=wls.length) wl = tab[wls.length-1].slice();
-		else {
-			//Linear interpolation between data waterlines
-			wl = [];
-			for (let j = 0; j < sts.length; j++) {
-				let lower = tab[a][j];
-				let upper = tab[a+1][j];
-				if (isNaN(lower) && isNaN(upper)) wl.push(null);
-				else wl.push(lerp(lower || 0, upper || 0, mu));
+		if (a<0) {
+			if (nanCorrectionMode===0) {
+				console.warn("getWaterLine: z below lowest defined waterline. Defaulting to zeros.");
+				return new Array(sts.length).fill(0);
+			}
+			if (nanCorrectionMode===1) {
+				console.warn("getWaterLine: z below lowest defined waterline. Outputting NaNs.");
+				return new Array(sts.length).fill(null);
+			}
+			else /*nanCorrectionMode===2*/ {
+				console.warn("getWaterLine: z below lowest defined waterline. Extrapolating lowest data entry.");
+				a=0;
+				mu=0;
+				//wl = tab[a].slice();
+			}			
+		} else if (a>/*=*/wls.length-1) {
+			if (nanCorrectionMode===0) {
+				console.warn("getWaterLine: z above highest defined waterline. Defaulting to zeros.");
+				return new Array(sts.length).fill(0);
+			}
+			if (nanCorrectionMode===1) {
+				console.warn("getWaterLine: z above highest defined waterline. Outputting NaNs.");
+				return new Array(sts.length).fill(null);
+			}
+			else /*nanCorrectionMode===2*/ {
+				console.warn("getWaterLine: z above highest defined waterline. Proceeding with highest data entry.");
+				a = wls.length-2; //if this level is defined...
+				mu=1;
+				//wl = tab[a].slice();
 			}
 		}
-		
-		//Scale numerical values
-		for (let j=0; j<wl.length; j++) {
+
+		//Linear interpolation between data waterlines
+		wl = new Array(sts.length);
+		for (let j = 0; j < wl.length; j++) {
+			if (nanCorrectionMode === 0) {
+				if (a+1 > wls.length-1) {
+					wl[j] = lerp(tab[a][j], 0, 0.5);
+				} else {
+					wl[j] = lerp(tab[a][j] || 0, tab[a+1][j] || 0, mu || 0.5);
+				}
+			} else if (nanCorrectionMode === 1) {
+				if (a+1 > wls.length-1) {
+					wl[j] = lerp(tab[a][j], null, mu);
+				} else {
+					wl[j] = lerp(tab[a][j], tab[a+1][j], mu);
+				}
+			} else {
+				//If necessary, sample from below
+				let b = a;
+				while (b>0 && isNaN(tab[b][j])) {
+					b--;
+				}
+				let lower;
+				if (b===0 && isNaN(tab[b][j])) {
+					lower = 0;
+				} else {
+					lower = tab[b][j];
+				}
+				//If necesary, sample from above
+				let c = a+1;
+				let upper;
+				if (c>wls.length-1) {
+					c = b;
+					upper = lower;
+				} else {
+					while (c<wls.length-1 && isNaN(tab[c][j])) {
+						c++;
+					}
+					//now c===wls.length-1 or !isNaN(tab[c][j])
+					//unless c>wls.length-1 before the loop.
+					if (c===wls.length-1 && isNaN(tab[c][j])) {
+						//Fall back all the way to b
+						c = b;
+						upper = lower;
+					} else {
+						upper = tab[c][j];
+					}
+				}
+				mu = c===b ? 0 : (a+(mu||0.5)-b)/(c-b);
+				wl[j] = lerp(lower, upper, mu);
+			}
+			//Scale numerical values
 			if (!isNaN(wl[j])) wl[j] *= 0.5*ha.BOA;
 		}
 
@@ -836,7 +976,7 @@ Object.assign(Hull.prototype, {
 		console.groupCollapsed("waterlineCalculation.");
 		console.info("Arguments: z=", z, " Boundaries: ", arguments[1]);
 		
-		let wl = this.getWaterline(z);
+		let wl = this.getWaterline(z, 0);
 		console.info("wl: ", wl); //DEBUG
 
 		let LOA = this.attributes.LOA;
@@ -890,6 +1030,7 @@ Object.assign(Hull.prototype, {
 			}
 		}
 
+		//This does not yet account for undefined minY, maxY. Or does it?
 		let port = [], star = [];
 		for (let i=0; i<wl.length; i++) {
 			if (isNaN(wl[i])) {
@@ -955,8 +1096,6 @@ Object.assign(Hull.prototype, {
 	//Unoptimized, some redundant repetitions of calculations.
 	//NOT DONE YET. Outputs lots of NaN values.
 	calculateAttributesAtDraft: function() {
-		let levels; //level calculations
-		
 		function levelCalculation(hull,
 			z,
 			prev={
@@ -997,10 +1136,10 @@ Object.assign(Hull.prototype, {
 			//Find bilinear patches in the slice, and combine them.
 			//Many possibilities for getting the coordinate systems wrong.
 			let calculations = [];
-			let wls = hull.halfBreadths.waterlines.map(wl=>wl*hull.attributes.Depth);
+			//let wls = hull.halfBreadths.waterlines.map(wl=>wl*hull.attributes.Depth);
 			let sts = hull.halfBreadths.stations.map(st=>st*hull.attributes.LOA);
-			let wl = hull.getWaterline(z);
-			let prwl = hull.getWaterline(prev.z);
+			let wl = hull.getWaterline(z,0);
+			let prwl = hull.getWaterline(prev.z,0);
 			for (let j = 0; j < sts.length-1; j++) {
 				let port = 
 					bilinearPatchColumnCalculation(sts[j], sts[j+1], prev.z, z, -prwl[j], -wl[j], -prwl[j+1], -wl[j+1]);
@@ -1023,32 +1162,37 @@ Object.assign(Hull.prototype, {
 		}
 		
 		return function(T) {
-			let wls = this.halfBreadths.waterlines;
+			let wls = this.halfBreadths.waterlines.map(wl=>this.attributes.Depth*wl);
 			//let sts = this.halfBreadths.stations;
 			//let hbs = this.halfBreadths.table;
 			
 			//This is the part that can be reused as long as the geometry remains unchanged:
-			levels = [];
-			for (let i = 0; i < wls.length; i++) {
-				let z = wls[i];
-				let lev = levelCalculation(this, z, levels[i-1]);
-				levels.push(lev);
+			if (this.levelsNeedUpdate) {
+				this.levels = [];
+				for (let i = 0; i < wls.length; i++) {
+					let z = wls[i];
+					let lev = levelCalculation(this, z, this.levels[i-1]);
+					this.levels.push(lev);
+				}
+				this.levelsNeedUpdate = false;
 			}
 			
 			//Find highest data waterline below water:
 			let {index: previ} = bisectionSearch(wls, T);
 			
-			let lc = levelCalculation(this, T, levels[previ]);
+			let lc = levelCalculation(this, T, this.levels[previ]);
 			
 			//It is a bit problematic that some parts of the output really refer to the water plane, not to the whole submerged volume, without that being apparent.
 			return lc;
 		};
-	}(),/*,
+	}()/*,
 	//Removed because of circular dependency. This kind of calculation should be in vessel instead, to facilitate caching.
 	calculateAttributes() {
 		this.calculateAttributesAtDraft(this.vessel.calculateDraft());
 	}*/
-});/*
+});//@EliasHasle
+
+/*
 Depends on JSONSpecObject.js
 */
 
@@ -1103,8 +1247,11 @@ Object.assign(BaseObject.prototype, {
 			let {index: i, mu: mu} = bisectionSearch(fs, fullness);
 			cg = [];
 			for (let j = 0; j < 3; j++) {
-				//Linear interpolation between closest entries:
-				let c = lerp(cgs[i][j], cgs[i+1][j], mu);
+				let c;
+				if (i<fullness.length-1)
+					//Linear interpolation between closest entries:
+					c = lerp(cgs[i][j], cgs[i+1][j], mu);
+				else c = cgs[i][j];
 				//if (isNaN(c)) console.error("BaseObject.getWeight: NaN value found after interpolation.");
 				cg.push(c);
 			}
@@ -1118,7 +1265,9 @@ Object.assign(BaseObject.prototype, {
 		let w = {mass: m, cg: {x: cg[0], y: cg[1], z: cg[2]}};
 		return w;
 	}
-});/*
+});//@EliasHasle
+
+/*
 Depends on JSONSpecObject.js
 */
 
@@ -1178,7 +1327,9 @@ Object.assign(DerivedObject.prototype, {
 
 		return {mass: m, cg: cg};
 	}
-});/*
+});//@EliasHasle
+
+/*
 The object state assignments could/should also have a baseByGroup. A group of baseObjects could for instance be a category including all tanks that carry a given compound, regardless of their size and shape. Maybe "group" is not a good name for something that can be set freely. Maybe "label" or "tag" or something else. The same goes for derivedByGroup.
 
 With this, there would be five types of assignments:
@@ -1364,7 +1515,9 @@ Object.assign(VesselState.prototype, {
 
 		this.version++;
 	}
-});//Depends on Vessel and the other core classes.
+});//@EliasHasle
+
+//Depends on Vessel and the other core classes.
 
 /*
 Handy function for letting the user load a ship design from a local file. (Based on Elias Hasles browseFile function.)
@@ -1401,7 +1554,9 @@ var browseVessel = function() {
 		});
 		browseButton.click();
 	};
-}();//Depends on Vessel and the other core classes.
+}();//@EliasHasle
+
+//Depends on Vessel and the other core classes.
 
 /*
 Handy function for loading a ship design from file.
@@ -1426,7 +1581,9 @@ function loadVessel(url, callback) {
 		callback(vessel);
 	});
 	request.send(null);
-}//Very simple download of the specification of a given ship design. Depends on a working getSpecification method.
+}//@EliasHasle
+
+//Very simple download of the specification of a given ship design. Depends on a working getSpecification method.
 
 function downloadVessel(vessel) {
 	let specification = vessel.getSpecification();
@@ -1447,6 +1604,9 @@ Object.assign(ShipDesign, {
 	VesselState: VesselState,
 	browseVessel: browseVessel,
 	loadVessel: loadVessel,
-	downloadVessel: downloadVessel
+	downloadVessel: downloadVessel,
+        f: {
+            linearFromArrays: linearFromArrays
+        }
 });
 })();

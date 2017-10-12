@@ -2,7 +2,7 @@ from datetime import datetime
 
 coreClasses = ["JSONSpecObject.js", "Vessel.js", "Structure.js", "Hull.js", "BaseObject.js", "DerivedObject.js", "VesselState.js"]
 importExport = ["browseVessel.js", "loadVessel.js", "downloadVessel.js"]
-functions = ["vectorOperations.js", "interpolation.js", "bisectionSearch.js", "areaCalculations.js", "volumeCalculations.js", "parametricWeightParsons.js", "combineWeights.js"]
+functions = ["vectorOperations.js", "interpolation.js", "areaCalculations.js", "volumeCalculations.js", "parametricWeightParsons.js", "combineWeights.js"]
 filepaths = list(map((lambda filename: "../source/functions/"+filename), functions)) \
             + list(map((lambda filename: "../source/CoreClasses/"+filename), coreClasses)) \
             + list(map((lambda filename: "../source/ImportExport/"+filename), importExport))
@@ -41,7 +41,10 @@ Object.assign(ShipDesign, {
 	VesselState: VesselState,
 	browseVessel: browseVessel,
 	loadVessel: loadVessel,
-	downloadVessel: downloadVessel
+	downloadVessel: downloadVessel,
+        f: {
+            linearFromArrays: linearFromArrays
+        }
 });
 })();
 """

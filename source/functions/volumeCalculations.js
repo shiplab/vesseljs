@@ -13,7 +13,7 @@ function bilinearPatchColumnCalculation(x1, x2, y1, y2, z11, z12, z21, z22) {
 	*/
 	let Ab = X*Y;
 	let zAvg = (a00 + 0.5*a10 + 0.5*a01 + 0.25*a11);
-	let V = Ab*zAvg;
+	let V = Math.abs(Ab*zAvg); //new: absolute value
 	let zc = 0.5*zAvg;
 	/*
 	To find xc, I need to integrate x*z over the unit square, and scale and translate to world coordinates afterwards:
@@ -25,7 +25,8 @@ function bilinearPatchColumnCalculation(x1, x2, y1, y2, z11, z12, z21, z22) {
 	//Similar for yc:
 	let yc = y1 + Y*(0.5*a00 + 0.25*a10 + a01/3 + a11/6)
 	
-	let As = bilinearArea(x1, x2, y1, y2, z11, z12, z21, z22);
+	//new: absolute value (OK?)
+	let As = Math.abs(bilinearArea(x1, x2, y1, y2, z11, z12, z21, z22));
 	
 	return {Ab: Ab, As: As, V: V, Cv: {x: xc, y: yc, z: zc}};
 }
@@ -36,7 +37,9 @@ function combineVolumes(array) {
 	let V = 0;
 	let As = 0;
 	let Cv = {x:0, y:0, z:0};
-	for (let i = 0; i < array.length; i++) {
+	let L = array.length;
+	if (L===0) return {V,As,Cv};
+	for (let i = 0; i < L; i++) {
 		let e = array[i];
 		V += e.V;
 		As += e.As; //typically wetted area
@@ -44,11 +47,19 @@ function combineVolumes(array) {
 		Cv.y += e.Cv.y*e.V;
 		Cv.z += e.Cv.z*e.V;
 	}
-	Cv.x /= V;
-	Cv.y /= V;
-	Cv.z /= V;
+	//Safe zero check?
+	if (V!==0) {
+		Cv.x /= V;
+		Cv.y /= V;
+		Cv.z /= V;
+	} else {
+		console.warn("Zero volume combination.");
+		Cv.x /= L;
+		Cv.y /= L;
+		Cv.z /= L;
+	}
 	
-	return {V: V, As: As, Cv: Cv};
+	return {V,As,Cv};//{V: V, As: As, Cv: Cv};
 }
 
 //For wetted area. I think this is right, but it is not tested.
