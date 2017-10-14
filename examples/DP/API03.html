@@ -1,0 +1,397 @@
+<html>
+
+<head>
+    <script src="https://d3js.org/d3.v3.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="stilization.css">
+</head>
+
+<body>
+<h1> 2D Plot of a Vessel</h1>
+<form>
+   <fieldset>
+       <legend>Parameters</legend>
+    <p>
+    <label class = "field" for "Fx">thruster in x(rpm):</label>      
+    <input id = "Fx" type = "number" value = "0" step = "0.01">
+    
+    <label class = "field" for "Fy">thruster in y(rpm):</label><input id = "Fy" type = "number" value = "0" step = "0.01">
+    <label class = "field" for "tau">thurster in yaw(rpm):</label><input id = "tau" type = "number" value = "0" step = "0.01">
+    </p>
+    <p>
+    <label class = "field" for "L">
+    Length:</label><input id = "L" type = "number" value = "1">
+    <label class = "field" for "W">Width:</label><input id = "W" type = "number" value = "1">
+    <label class = "field" for "H">
+    Draft:</label><input id = "H" type = "number" value = "1">
+    Cd:<input id = "Cd" type = "number" value = "1" step = "0.01" min = "0" max = "1">
+    </p>
+    <p>
+    mass(kg):<input id = "m" type = "number" value = "1" >
+    <input type ="button" onclick="stop()" value = "pause">
+    <input type ="button" onclick="conti()" value = "start">
+    </p>
+    <p>
+    postion x(DP):<input id = "refx" type = "number" value = "31" step = "0.01">
+    position y(DP):<input id = "refy" type = "number" value = "31" step = "0.01">
+    Dinamic Position: <input type ="checkbox" id = "dp" >
+    </p>
+   </fieldset>
+</form>
+<h2>Explanation</h2>
+<div>This Application simulate over time the behaviour of a box under the effect of proppelers and drag forces in x and y axis.<br>
+Drag force can be define as 1/2*rho*v^2*A*Cd. Where A is the cross section area, rho is the fluid density,v is the relative speed and Cd is a dimensionless coefficient<br>
+It is assumed that there is no loss in yaw and that the thruster are  centered based on the Center of Mass.
+</div>  
+    <script>
+      class Control{
+          constructor(k,setpoint){
+              this.u = [];
+              this.ku=[];
+              this.e = [];
+              this.ke=[];
+              this.K = k;
+              this.setpoint = setpoint;
+          }
+          Reset(){
+              this.u =[];
+              this.e = [];
+              for(var i =0;i < this.ku.length;i++){
+                  this.u.push(0);
+                  this.e.push(0);
+              }
+
+          }
+          changeRef(setpoint){
+                    this.setpoint=setpoint;
+
+                }
+          setPoles(u){
+              for(var i=0;i< u.length;i++){
+                  this.ku.push(u[i]);
+                  this.u.push(0);
+              }
+
+          }
+          setZeros(e){
+             for(var i=0;i< e.length;i++){
+                  this.ke.push(e[i]);
+                  this.e.push(0);
+              } 
+          }
+
+          DPaction(y){
+             this.e.unshift(this.setpoint-y);
+             var sumu=0,sume=0;
+             for(var i=0;i< this.u.length;i++){
+                 if(i != 0){
+                 sumu += (-this.ku[i]*this.u[i]);
+                 }
+                 sume += this.ke[i]*this.e[i]; 
+             }
+             
+             this.u.unshift((this.K*sume+sumu)/this.ku[0]);
+             this.u.pop();
+             this.e.pop();
+             
+             return this.u[0];
+
+
+          }
+      }  
+      class Thruster {
+                constructor(Ct,Diameter,maxkw, maxrpm){
+                    this.Ct = Ct;
+                    this.Diameter = Diameter;
+                    this.maxkw = maxkw;
+                    this.maxrpm = maxrpm;
+                    
+                }
+                
+                
+
+                setD(Diameter){
+                    this.Diameter = Diameter;
+                }
+
+                setrpm(maxrpm){
+                    this.maxrpm = maxrpm;
+                }
+
+                setkw(maxkw){
+                    this.maxkw = maxkw;
+                }
+
+                 kw2rpm(inputkw){
+                    if(inputkw >= this.maxkw){
+                        return this.maxkw;
+                    }else{
+                        return (inputkw*this.maxrpm)/(this.maxkw);
+                    }
+
+                }
+               rpm2kw(inputrpm){
+                    if(inputrpm > this.maxrpm){
+                        return this.maxrpm;
+                    }else{
+                        return (inputrpm*this.maxkw)/(this.maxkw);
+                    }   
+                }
+                rpmsat(inputrpm){
+                    if(Math.abs(inputrpm) > this.maxrpm){
+                        return this.maxrpm;
+                    }else return inputrpm;
+                }
+                CalTrust(inputrpm,rho){
+
+                    if(inputrpm < 0){
+                    return -(Math.pow(this.rpmsat(inputrpm),2)*Math.pow(this.Diameter,4)*(rho)*this.Ct);
+                    }
+                    return (Math.pow(this.rpmsat(inputrpm),2)*Math.pow(this.Diameter,4)*(rho)*this.Ct);
+
+
+                }
+
+                Trust2rpm(trust,rho){
+                    if(trust < 0){
+                         return -(Math.sqrt(-trust/(rho*this.Ct))/(Math.pow(this.Diameter,2)));
+
+                    }else
+                        return (Math.sqrt(trust/(rho*this.Ct))/(Math.pow(this.Diameter,2)));
+
+                }
+                    
+
+        }
+        var vessels,flag,dpflag,t;
+        var thuster1 = new Thruster(1,1.05,330,2100),
+            thuster2 = new Thruster(1,1.05,330,2100),
+            thuster3 = new Thruster(1,1.05,330,2100),
+             controlx = new Control(7.5407,31),
+             controlyaw = new Control(7.5407,0),
+             controly = new Control(7.5407,31);
+        var Fx,Fy,tau,rho = 1000,Cd,Ax,Ay,Lx,Ly, m ,I,deltat=0.001;
+        
+      
+        function init() {
+            dpflag = false;
+            vessels = [ {"t": 0, "px": 30, "py": 30, "vx": 0, "vy": 0,"yaw": 180, "vyaw": 0 , "color": "green" }];
+             controlx.setZeros([1,-1]);
+            controlx.setPoles([1,-0.7967]);
+
+             controlyaw.setZeros([1,-1]);
+            controlyaw.setPoles([1,-0.7967]);
+            
+            controly.setZeros([1,-1]);
+            controly.setPoles([1,-0.7967]);
+            t=0;
+           render();
+            
+        }
+        function conti(){
+            
+            flag = setInterval(function(){up()},1000);
+        }
+
+        function stop(){
+            
+            clearInterval(flag);
+        }
+
+        
+        function model(){
+            
+            var aux = JSON.parse(JSON.stringify( vessels[0] )); 
+            vessels.push(aux);
+                  
+            for(i=0;i<1000;i++){
+                
+            var accx,xdrag= (rho*Math.pow(vessels[0].vx,2)*Cd*Ax)/2;
+            var n=0;
+                
+            if(vessels[0].vx > 0){
+                 n  = thuster1.Trust2rpm((m*controlx.DPaction(vessels[0].px)+xdrag),rho);
+                 if(dpflag == true){       
+                
+                 }else{n=Fx;}           
+                 accx = (thuster1.CalTrust(n,rho)-xdrag)/m;
+                 
+            }else{
+                 n  = thuster1.Trust2rpm(m*controlx.DPaction(vessels[0].px)-xdrag,rho);
+                if(dpflag ==true){
+               
+                }else{n=Fx;}
+                accx = (thuster1.CalTrust(n,rho)+xdrag)/m;
+            }
+
+            var accy,ydrag = (rho*Math.pow(vessels[0].vy,2)*Cd*Ay)/2;
+            var ny =0;
+            if(vessels[0].vy > 0){
+              if(dpflag == true){  
+              ny  = thuster2.Trust2rpm((m*controly.DPaction(vessels[0].py)+ydrag),rho);
+              }else{ny=Fy;}   
+             accy = (thuster2.CalTrust(ny,rho)-ydrag)/m;
+            }else{
+                if(dpflag == true){
+                ny  = thuster1.Trust2rpm((m*controly.DPaction(vessels[0].py)-ydrag),rho);
+                }else{ny = Fy;}
+                accy = (ydrag+thuster2.CalTrust(ny,rho))/m;
+               
+                
+            }
+
+            var nyaw=0;
+            if(dpflag == true){
+                nyaw = thuster3.Trust2rpm((I*controlyaw.DPaction(vessels[0].yaw)),rho);
+            }else{nyaw = tau;}
+            var accw = thuster3.CalTrust(nyaw,rho)/I;
+            var wdrag = 0;
+
+            
+                
+                vessels[0].vx += (accx*deltat);
+                vessels[0].px += (vessels[0].vx*deltat);
+
+                vessels[0].vy += (accy*deltat);
+                vessels[0].py += (vessels[0].vy*deltat);
+
+                vessels[0].vyaw += (accw*deltat);
+                vessels[0].yaw += (vessels[0].vyaw*deltat);                
+                vessels[0].t += deltat;
+                console.log(vessels[0].vx.toString());
+             
+            }
+           
+            
+        }
+
+        function up(){
+            if(dpflag != document.getElementById('dp').checked ){
+                controlx.Reset();
+                controly.Reset();
+                controlyaw.Reset();
+                dpflag = document.getElementById('dp').checked;
+            }
+            controlx.changeRef(parseFloat(document.getElementById('refx').value));
+            controly.changeRef(parseFloat(document.getElementById('refy').value));
+            Fx = parseFloat(document.getElementById('Fx').value);
+            Fy = parseFloat(document.getElementById('Fy').value);
+            tau = parseFloat(document.getElementById('tau').value);
+            Cd = parseFloat(document.getElementById('Cd').value);
+            Lx = parseFloat(document.getElementById('L').value);
+            Ly = parseFloat(document.getElementById('W').value);
+            var H = parseFloat(document.getElementById('H').value);
+            Ax = Lx*H;
+            Ay = Ly*H;
+            m = parseFloat(document.getElementById('m').value);
+            I = Math.pow((0.28*Ly),2)*m;
+            model();
+        var svg = d3.select("body").select("svg").remove();
+        var tab = d3.select("body").select("table").remove();    
+            render();
+        }
+
+        
+  function tabulate(data, columns) {
+		var table = d3.select('body').append('table')
+		var thead = table.append('thead')
+		var	tbody = table.append('tbody');
+
+		// append the header row
+		thead.append('tr')
+		  .selectAll('th')
+		  .data(columns).enter()
+		  .append('th')
+		    .text(function (column) { return column; });
+
+		// create a row for each object in the data
+		var rows = tbody.selectAll('tr')
+		  .data(data)
+		  .enter()
+		  .append('tr');
+
+		// create a cell in each row for each column
+		var cells = rows.selectAll('td')
+		  .data(function (row) {
+		    return columns.map(function (column) {
+		      return {column: column, value: row[column]};
+		    });
+		  })
+		  .enter()
+		  .append('td')
+		    .text(function (d) { return d.value; });
+
+	  return table;
+	}
+
+        function render(){
+             var margin = {top: 20, right: 20, bottom: 30, left: 40},
+                width = 960 - margin.left - margin.right,
+                height = 500 - margin.top - margin.bottom;
+
+            var xValue = function(d) { return d.px;}, // data -> value
+                xScale = d3.scale.linear().range([0, width]), // value -> display
+                xMap = function(d) { return xScale(xValue(d));}, // data -> display
+                xAxis = d3.svg.axis().scale(xScale).orient("bottom");
+
+            var yValue = function(d) { return d.py;}, // data -> value
+                yScale = d3.scale.linear().range([height, 0]), // value -> display
+                yMap = function(d) { return yScale(yValue(d));}, // data -> display
+                yAxis = d3.svg.axis().scale(yScale).orient("left");
+
+            var svg = d3.select("body").append("svg")
+                        .attr("width", width + margin.left + margin.right)
+                        .attr("height", height + margin.top + margin.bottom)
+                        .append("g")
+                        .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+           
+          
+
+            xScale.domain([d3.min(vessels, xValue)-1, d3.max(vessels, xValue)+1]);
+            yScale.domain([d3.min(vessels, yValue)-1, d3.max(vessels, yValue)+1]);
+
+            // x-axis
+  svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis)
+    .append("text")
+      .attr("class", "label")
+      .attr("x", width)
+      .attr("y", -6)
+      .style("text-anchor", "end")
+      .text("x(m)");
+
+  // y-axis
+  svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
+    .append("text")
+      .attr("class", "label")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text("y(m)");
+
+  var GM = svg.selectAll("rect").data(vessels).enter().append("rect").attr("x",xMap)
+                           .attr("y",yMap)
+                           .attr("width",10)
+                           .attr("height",40)
+                           .attr("transform", (d,i) => `rotate(${d.yaw*180/Math.PI},${xMap(d)+5},${yMap(d)+20})`)
+                           .style("fill", function(d) {return d.color});
+
+         
+         tabulate(vessels,['t','px','py','yaw']);
+
+        }
+        init();
+        
+
+    </script>
+    
+    
+ 
+</body>
+
+</html>
