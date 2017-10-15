@@ -78,5 +78,22 @@ Object.assign(Vessel.prototype, {
 			else a = t;
 		}
 		return t;
-	}
+	},
+    calculateStability(vesselState){
+        let T = this.calculateDraft(vesselState);
+        let ha = this.structure.hull.calculateAttributesAtDraft(T);
+        let vol = ha.Vs
+        if (vol === 0){
+            let Lwl = this.designState.calculationParameters.LWL_design
+            let B = this.structure.hull.attributes.BOA
+            let cb = this.designState.calculationParameters.Cb_design
+            vol = Lwl * B * T * cb
+        }
+        let KG = this.getWeight(vesselState).cg.z;
+        let I = ha.Iy * 1000
+        let BM = 0.52 * T;
+        let KB = I / vol
+        let GM = KB + BM - KG;
+        return {GM, KB, BM, KG}
+}
 });
