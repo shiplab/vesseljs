@@ -104,7 +104,7 @@ function sectionCalculation({xs, ymins, ymaxs}) {
 	
 	let C = combineAreas(calculations); //Might be zero areas!
 
-	let output = {A: C.A, maxX: C.maxY, minX: C.minY, maxY: C.maxX, minY: C.minY, xc: C.yc, yc: C.xc, Ix: C.Iy, Iy: C.Ix};
+	let output = {A: C.A, maxX: C.maxY, minX: C.minY, maxY: C.maxX, minY: C.minX, xc: C.yc, yc: C.xc, Ix: C.Iy, Iy: C.Ix};
 	console.info("Output: ", output);
 	console.groupEnd();
 	return output;

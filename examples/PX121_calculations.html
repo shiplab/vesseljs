@@ -1,0 +1,81 @@
+<!--@EliasHasle-->
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Test of the new classes and browseDesign</title>
+	<meta charset="utf-8">
+	<script type="text/javascript" src="libs/renderjson.js"></script>
+	<script src="../build/ShipDesign.js"></script>
+</head>
+<body>
+<ul id="log"></ul>
+
+<script>
+
+function logToScreen(s, o) {
+	let log = document.getElementById("log");
+	let entry = document.createElement("li");
+	entry.innerHTML = s;
+	if (o !== undefined) {
+		let pre = document.createElement("pre");
+		pre.appendChild(renderjson(o));
+		entry.appendChild(pre);
+	}
+	log.appendChild(entry);
+}
+
+var v;
+var s;
+
+ShipDesign.loadVessel("data/vessel_specifications/PX121.json", useVessel);
+
+function useVessel(vessel) {
+	v = vessel; //just to have an entry point for debugging.
+
+	renderjson.set_show_to_level(1);
+	
+	logToScreen("Design state: ", vessel.designState);
+
+	let stateSpec = {
+		calculationParameters: {
+			a: 1,
+			b: 2
+		},
+		objectOverrides: {
+			common: {
+				fullness: 0.4
+			},
+	/*		baseByID: {
+				abc: {
+					asdf: 1234,
+					lkj: 5858
+				},
+				def: {
+					asdf: 3838
+				},
+				ghi: {}
+			},*/
+			derivedByGroup: {},
+			derivedByID: {}
+		}
+	};
+	
+	logToScreen("State specification: ", stateSpec);
+	
+	let state = new ShipDesign.VesselState(stateSpec);
+	s = state;
+	logToScreen("State: ", state);
+
+	let w = vessel.getWeight(state);
+	logToScreen("Weight at given state:", w);
+	
+	let T = vessel.calculateDraft(state);
+	logToScreen("Calculated draft: " + T);
+	
+	let ha = v.structure.hull.calculateAttributesAtDraft(T);
+	logToScreen("Calculated hull values at calculated draft: ", ha);
+}
+
+</script>
+</body>
+</html>

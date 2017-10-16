@@ -362,20 +362,22 @@ Object.assign(Hull.prototype, {
 			let C = combineVolumes(calculations);
 			lev.Vs = prev.Vs + C.V; //hull volume below z
 			lev.As = prev.As + C.As; //outside surface below z
+
 			//center of volume below z (some potential for accumulated rounding error):
-			let {x: xc, y: zc, z: yc} = scaleVec(
-				addVec(scaleVec(prev.Cv,prev.Vs),
-					scaleVec(C.Cv,C.V)),
-				1/(prev.Vs+C.V));
-			lev.Cv = {x: xc, y: yc, z: zc};
+			let Cv = addVec(scaleVec(prev.Cv,prev.Vs),
+					scaleVec(C.Cv,C.V));
+			let V = prev.Vs+C.V;
+			if (V!==0) {
+				Cv = scaleVec(Cv, 1/(prev.Vs+C.V));
+			}
+						//Note switching of yz
+			lev.Cv = {x: Cv.x, y: Cv.z, z: Cv.y};
 			
 			return lev;
 		}
 		
 		return function(T) {
 			let wls = this.halfBreadths.waterlines.map(wl=>this.attributes.Depth*wl);
-			//let sts = this.halfBreadths.stations;
-			//let hbs = this.halfBreadths.table;
 			
 			//This is the part that can be reused as long as the geometry remains unchanged:
 			if (this.levelsNeedUpdate) {
@@ -396,9 +398,5 @@ Object.assign(Hull.prototype, {
 			//It is a bit problematic that some parts of the output really refer to the water plane, not to the whole submerged volume, without that being apparent.
 			return lc;
 		};
-	}()/*,
-	//Removed because of circular dependency. This kind of calculation should be in vessel instead, to facilitate caching.
-	calculateAttributes() {
-		this.calculateAttributesAtDraft(this.vessel.calculateDraft());
-	}*/
+	}()
 });

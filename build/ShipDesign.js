@@ -1,4 +1,4 @@
-//ShipDesign library, built 2017-10-16 17:38:04.928685, Checksum: 3c5e0a14fef4d59231cac4cd96066404
+//ShipDesign library, built 2017-10-16 21:44:35.029437, Checksum: 969f86c3405f22c75166bfe40829f8f7
 /*
 Import like this in HTML:
 <script src="ShipDesign.js"></script>
@@ -261,7 +261,7 @@ function sectionCalculation({xs, ymins, ymaxs}) {
 	
 	let C = combineAreas(calculations); //Might be zero areas!
 
-	let output = {A: C.A, maxX: C.maxY, minX: C.minY, maxY: C.maxX, minY: C.minY, xc: C.yc, yc: C.xc, Ix: C.Iy, Iy: C.Ix};
+	let output = {A: C.A, maxX: C.maxY, minX: C.minY, maxY: C.maxX, minY: C.minX, xc: C.yc, yc: C.xc, Ix: C.Iy, Iy: C.Ix};
 	console.info("Output: ", output);
 	console.groupEnd();
 	return output;
@@ -1168,20 +1168,22 @@ Object.assign(Hull.prototype, {
 			let C = combineVolumes(calculations);
 			lev.Vs = prev.Vs + C.V; //hull volume below z
 			lev.As = prev.As + C.As; //outside surface below z
+
 			//center of volume below z (some potential for accumulated rounding error):
-			let {x: xc, y: zc, z: yc} = scaleVec(
-				addVec(scaleVec(prev.Cv,prev.Vs),
-					scaleVec(C.Cv,C.V)),
-				1/(prev.Vs+C.V));
-			lev.Cv = {x: xc, y: yc, z: zc};
+			let Cv = addVec(scaleVec(prev.Cv,prev.Vs),
+					scaleVec(C.Cv,C.V));
+			let V = prev.Vs+C.V;
+			if (V!==0) {
+				Cv = scaleVec(Cv, 1/(prev.Vs+C.V));
+			}
+						//Note switching of yz
+			lev.Cv = {x: Cv.x, y: Cv.z, z: Cv.y};
 			
 			return lev;
 		}
 		
 		return function(T) {
 			let wls = this.halfBreadths.waterlines.map(wl=>this.attributes.Depth*wl);
-			//let sts = this.halfBreadths.stations;
-			//let hbs = this.halfBreadths.table;
 			
 			//This is the part that can be reused as long as the geometry remains unchanged:
 			if (this.levelsNeedUpdate) {
@@ -1202,11 +1204,7 @@ Object.assign(Hull.prototype, {
 			//It is a bit problematic that some parts of the output really refer to the water plane, not to the whole submerged volume, without that being apparent.
 			return lc;
 		};
-	}()/*,
-	//Removed because of circular dependency. This kind of calculation should be in vessel instead, to facilitate caching.
-	calculateAttributes() {
-		this.calculateAttributesAtDraft(this.vessel.calculateDraft());
-	}*/
+	}()
 });//@EliasHasle
 
 /*
@@ -1273,7 +1271,7 @@ Object.assign(BaseObject.prototype, {
 				cg.push(c);
 			}
 		} else if (wi.cg !== undefined) {
-			console.log("BaseObject.getWeight: Using specifiec cg.");
+			console.log("BaseObject.getWeight: Using specified cg.");
 			cg = wi.cg;
 		} else {
 			console.warn("BaseObject.getWeight: No cg or fullnessCGMapping supplied. Defaults to center of bounding box.");
