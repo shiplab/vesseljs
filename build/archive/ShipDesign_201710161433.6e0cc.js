@@ -1,4 +1,4 @@
-//ShipDesign library, built 2017-10-16 14:42:47.409644, Checksum: 3c5e0a14fef4d59231cac4cd96066404
+//ShipDesign library, built 2017-10-16 14:33:51.956145, Checksum: 6e0ccd5310032f821d1cea93950a7288
 /*
 Import like this in HTML:
 <script src="ShipDesign.js"></script>
@@ -1265,7 +1265,7 @@ Object.assign(BaseObject.prototype, {
 			cg = [];
 			for (let j = 0; j < 3; j++) {
 				let c;
-				if (i<fs.length-1)
+				if (i<fullness.length-1)
 					//Linear interpolation between closest entries:
 					c = lerp(cgs[i][j], cgs[i+1][j], mu);
 				else c = cgs[i][j];

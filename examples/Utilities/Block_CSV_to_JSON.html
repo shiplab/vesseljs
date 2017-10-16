@@ -57,10 +57,10 @@ function onClick() {
 						contentDensity: e.FluidDensity || 1000,
 						//Sample values:
 						volumeCapacity: 0.25*Math.PI*(e.xFwd-e.xAft)*e.ySize*e.zHeight,
-						lightweight: 100*(e.xFwd-e.xAft)*e.ySize*e.zHeight,
+						lightweight: 10*(e.xFwd-e.xAft)*e.ySize*e.zHeight,
 						fullnessCGMapping: {
 							fullnesses: [0,0.25, 0.5, 0.75, 1],
-							cgs: [[0,0,0.5*e.zHeight], [0,0,0.15*e.zheight], [0,0,0.3*e.zHeight], [0,0,0.4*e.zHeight], [0,0,0.5*e.zHeight]]
+							cgs: [[0,0,0.5*e.zHeight], [0,0,0.15*e.zHeight], [0,0,0.3*e.zHeight], [0,0,0.4*e.zHeight], [0,0,0.5*e.zHeight]]
 						}
 					},
 					capabilities: {

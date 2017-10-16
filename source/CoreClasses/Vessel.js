@@ -61,22 +61,43 @@ Object.assign(Vessel.prototype, {
 			components.push(o.getWeight(vesselState));
 		}
 
-		return combineWeights(components);
+		var W = combineWeights(components);
+		console.info("Calculated weight object: ", W);
+		return W;
 	},
 	calculateDraft(vesselState, epsilon=0.001) {
 		let w = this.getWeight(vesselState);
 		let M = w.mass;
-		let VT = M/1025; //Target submerged volume
+		let VT = M/1025; //Target submerged volume (1025=rho_seawater)
 		//Interpolation:
 		let a = 0;
 		let b = this.structure.hull.attributes.Depth;
-		let t = 0.5*epsilon;
+		let t = 0.5*b;
 		while (b-a>epsilon) {
 			t = 0.5*(a+b);
-			let V = this.structure.hull.calculateAttributesAtDraft(t)["V"];
+			let V = this.structure.hull.calculateAttributesAtDraft(t)["Vs"];
+			console.log(V); //DEBUG
 			if (V>VT) b = t;
 			else a = t;
 		}
+		console.info("Calculated draft: %.2f", t);
 		return t;
+	},
+    calculateStability(vesselState){
+        let T = this.calculateDraft(vesselState);
+        let ha = this.structure.hull.calculateAttributesAtDraft(T);
+        let vol = ha.Vs;
+        if (vol === 0){
+            let Lwl = this.designState.calculationParameters.LWL_design;
+            let B = this.structure.hull.attributes.BOA;
+            let cb = this.designState.calculationParameters.Cb_design;
+            vol = Lwl * B * T * cb;
+        }
+        let KG = this.getWeight(vesselState).cg.z;
+        let I = ha.Iy * 1000;
+        let BM = 0.52 * T;
+        let KB = I / vol;
+        let GM = KB + BM - KG;
+        return {GM, KB, BM, KG};
 	}
 });
