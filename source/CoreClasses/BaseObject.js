@@ -56,7 +56,7 @@ Object.assign(BaseObject.prototype, {
 			cg = [];
 			for (let j = 0; j < 3; j++) {
 				let c;
-				if (i<fullness.length-1)
+				if (i<fs.length-1)
 					//Linear interpolation between closest entries:
 					c = lerp(cgs[i][j], cgs[i+1][j], mu);
 				else c = cgs[i][j];
