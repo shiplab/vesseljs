@@ -107,7 +107,7 @@ function Ship3D(vessel, stlPath) {
 	hGeom.computeVertexNormals();
 	
 	//Hull hMaterial
-	let hMat = new THREE.MeshPhongMaterial({color: "red", side:THREE.DoubleSide, transparent: true, opacity: /*1*/0.5});
+	let hMat = new THREE.MeshPhongMaterial({color: "red", side: THREE.DoubleSide, transparent: true, opacity: /*1*/0.5});
 	
 	let hull = new THREE.Group();
 	let port = new THREE.Mesh(hGeom, hMat);

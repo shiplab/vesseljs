@@ -175,7 +175,7 @@ var gui = new dat.GUI();
 		controls.update();
 		
 		//GUI control:
-		gui.add(ship.designState.objectOverrides.common, "fullness", 0, 1, 0.05).onFinishChange(function (value) {
+		gui.add(ship.designState.objectOverrides.common, "fullness", 0, 1, 0.05).onChange(function (value) {
 			ship.designState.version++;
 			displayContents(ship.designState.getSpecification());
 			ship3D.position.z = -ship.calculateDraft();

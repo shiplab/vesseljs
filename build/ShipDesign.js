@@ -1,4 +1,4 @@
-//ShipDesign library, built 2017-10-16 14:42:47.409644, Checksum: 3c5e0a14fef4d59231cac4cd96066404
+//ShipDesign library, built 2017-10-16 17:38:04.928685, Checksum: 3c5e0a14fef4d59231cac4cd96066404
 /*
 Import like this in HTML:
 <script src="ShipDesign.js"></script>
