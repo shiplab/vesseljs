@@ -1,4 +1,4 @@
-//ShipDesign library, built 2017-10-16 21:44:35.029437, Checksum: 969f86c3405f22c75166bfe40829f8f7
+//ShipDesign library, built 2017-10-16 22:29:08.354939, Checksum: b59b844afa813f2ce6130278ee0f63b6
 /*
 Import like this in HTML:
 <script src="ShipDesign.js"></script>
@@ -261,7 +261,7 @@ function sectionCalculation({xs, ymins, ymaxs}) {
 	
 	let C = combineAreas(calculations); //Might be zero areas!
 
-	let output = {A: C.A, maxX: C.maxY, minX: C.minY, maxY: C.maxX, minY: C.minX, xc: C.yc, yc: C.xc, Ix: C.Iy, Iy: C.Ix};
+	let output = {A: C.A, maxX: C.maxY, minX: C.minY, maxY: C.maxX, minY: C.minX, xc: C.yc, yc: C.xc, Ix: C.Iy, Iy: C.Ix, Abb: (C.maxY-C.minY)*(C.maxX-C.minX)};
 	console.info("Output: ", output);
 	console.groupEnd();
 	return output;
@@ -701,9 +701,9 @@ Object.assign(Vessel.prototype, {
             vol = Lwl * B * T * cb;
         }
         let KG = this.getWeight(vesselState).cg.z;
-        let I = ha.Iy * 1000;
-        let BM = 0.52 * T;
-        let KB = I / vol;
+        let I = ha.Iywp * 1000;
+        let KB = 0.52 * T;
+        let BM = I / vol;
         let GM = KB + BM - KG;
         return {GM, KB, BM, KG};
 	}
@@ -1179,6 +1179,8 @@ Object.assign(Hull.prototype, {
 						//Note switching of yz
 			lev.Cv = {x: Cv.x, y: Cv.z, z: Cv.y};
 			
+			lev.Cb = lev.Vs/lev.Vbb;
+			
 			return lev;
 		}
 		
@@ -1201,8 +1203,28 @@ Object.assign(Hull.prototype, {
 			
 			let lc = levelCalculation(this, T, this.levels[previ]);
 			
-			//It is a bit problematic that some parts of the output really refer to the water plane, not to the whole submerged volume, without that being apparent.
-			return lc;
+			//Filter and rename for output
+			return {
+				xcwp: lc.xc,
+				ycwp: lc.yc,
+				Awp: lc.Awp,
+				Ixwp: lc.Ix,
+				Iywp: lc.Iy,
+				/*maxXwp: lc.maxX,
+				minXwp: lc.minX,
+				maxYwp: lc.maxY,
+				minYwp: lc.minY,*/
+				Cwp: lc.Cwp,
+				LWL: lc.LWL,
+				LBP: lc.LBP,
+				BWL: lc.BWL,
+				Ap: lc.Ap,
+				//Vbb: lc.Vbb,
+				Vs: lc.Vs,
+				Cb: lc.Cb,
+				As: lc.As,
+				Cv: lc.Cv			
+			}
 		};
 	}()
 });//@EliasHasle

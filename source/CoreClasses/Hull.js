@@ -373,6 +373,8 @@ Object.assign(Hull.prototype, {
 						//Note switching of yz
 			lev.Cv = {x: Cv.x, y: Cv.z, z: Cv.y};
 			
+			lev.Cb = lev.Vs/lev.Vbb;
+			
 			return lev;
 		}
 		
@@ -395,8 +397,28 @@ Object.assign(Hull.prototype, {
 			
 			let lc = levelCalculation(this, T, this.levels[previ]);
 			
-			//It is a bit problematic that some parts of the output really refer to the water plane, not to the whole submerged volume, without that being apparent.
-			return lc;
+			//Filter and rename for output
+			return {
+				xcwp: lc.xc,
+				ycwp: lc.yc,
+				Awp: lc.Awp,
+				Ixwp: lc.Ix,
+				Iywp: lc.Iy,
+				maxXs: lc.maxX, //boundaries of the submerged part of the hull
+				minXs: lc.minX,
+				maxYs: lc.maxY,
+				minYs: lc.minY,
+				Cwp: lc.Cwp,
+				LWL: lc.LWL,
+				LBP: lc.LBP,
+				BWL: lc.BWL,
+				Ap: lc.Ap,
+				//Vbb: lc.Vbb,
+				Vs: lc.Vs,
+				Cb: lc.Cb,
+				As: lc.As,
+				Cv: lc.Cv			
+			}
 		};
 	}()
 });

@@ -94,9 +94,9 @@ Object.assign(Vessel.prototype, {
             vol = Lwl * B * T * cb;
         }
         let KG = this.getWeight(vesselState).cg.z;
-        let I = ha.Iy * 1000;
-        let BM = 0.52 * T;
-        let KB = I / vol;
+        let I = ha.Iywp * 1000;
+        let KB = 0.52 * T;
+        let BM = I / vol;
         let GM = KB + BM - KG;
         return {GM, KB, BM, KG};
 	}
