@@ -3,7 +3,11 @@
 /*
 THREE.js Object3D constructed from Vessel.js Ship object.
 
-Currently uses and modifies a copy of the offset table. It may be achievable to use only the offset table and do the necessary modifications on the geometry only.
+A known serious bug of this is that it wraps together the top of the hull, making the hull look lower than it is, and occluding top views a bit.
+
+There are some serious limitations too:
+1. NaN values encountered are assumed to be either at the top or bottom of the given station.
+2. It produces no default end caps or keel.
 */
 
 function Ship3D(vessel, stlPath) {
@@ -22,8 +26,8 @@ function Ship3D(vessel, stlPath) {
 	//Hull
 	let stations = vessel.structure.hull.halfBreadths.stations;
 	let waterlines = vessel.structure.hull.halfBreadths.waterlines;
-	//Use a copy of the offset table, to allow non-invasive corrections:
-	let table = vessel.structure.hull.halfBreadths.table.map(r=>r.slice());
+	let table = vessel.structure.hull.halfBreadths.table;
+	//None of these are changed during correction of the geometry.
 
 	console.log(stations);
 	console.log(waterlines);
@@ -52,7 +56,9 @@ function Ship3D(vessel, stlPath) {
 	/*I am joining some uvs too. Then an applied texture will be cropped, not distorted, where the hull is cropped.*/
 	let uv = hGeom.getAttribute("uv");
 	let uva = uv.array;
+	//Iterate over stations
 	for (let i = 0; i < N; i++) {
+		//Iterate over waterlines
 		let firstNumberJ;
 		let lastNumberJ;
 		let j;
@@ -63,15 +69,14 @@ function Ship3D(vessel, stlPath) {
 				lastNumberJ = j;
 				//copy vector for i,j to positions for all NaN cells below:
 				let c = i*M+firstNumberJ;
-				let d = c;
-				//let x = pa[3*c];
+				let x = pa[3*c];
 				let y = pa[3*c+1];					
 				let z = pa[3*c+2];
+				let d = c;
 				while (firstNumberJ > 0) {
 					firstNumberJ--;			
 					d -= 1;
-					table[firstNumberJ][i] = y; //This is the necessary modification of the table
-					//pa[3*d] = x;
+					pa[3*d] = x;
 					pa[3*d+1] = y;
 					pa[3*d+2] = z;
 					uva[2*d] = uva[2*c];
@@ -81,29 +86,28 @@ function Ship3D(vessel, stlPath) {
 			}
 		}
 		
-		//Continue up the hull (with same j counter), searching for upper NaN:
+		//Continue up the hull (with same j counter), searching for upper number. This does not account for numbers after the first NaN is encountered.
 		for (; j < M; j++) {
-			let y = table[j][i]; //This requires modified table
+			let y = table[j][i];
 			if (isNaN(y)) break;
+			//else not NaN:
 			lastNumberJ = j;
 		}
 		
 		//copy vector for i,j to positions for all NaN cells above:
 		let c = i*M+lastNumberJ;
-		let d = c;
-		//let x = pa[3*c];
+		let x = pa[3*c];
 		let y = pa[3*c+1];					
 		let z = pa[3*c+2];
+		let d = c;
 		while (lastNumberJ < M-1) {
 			lastNumberJ++;
 			d += 1;
-			//table[lastNumberJ][i] = y;
-			//pa[3*d] = x;
+			pa[3*d] = x;
 			pa[3*d+1] = y;
 			pa[3*d+2] = z;
 			uva[2*d] = uva[2*c];
 			uva[2*d+1] = uva[2*c+1];
-
 		}
 		//////////
 	}
