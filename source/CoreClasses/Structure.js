@@ -1,13 +1,13 @@
 //@EliasHasle
 
-function Structure(spec, vessel) {
-	this.vessel = vessel;
+function Structure(spec, ship) {
+	this.ship = ship;
 	JSONSpecObject.call(this, spec);
 }
 Structure.prototype = Object.create(JSONSpecObject.prototype);
 Object.assign(Structure.prototype, {
 	setFromSpecification: function(spec) {
-		this.hull = new Hull(spec.hull/*, this.vessel*/);
+		this.hull = new Hull(spec.hull/*, this.ship*/);
 		this.decks = spec.decks;/*{};
 		let dspecs = spec.decks;
 		let decks = this.decks;
@@ -15,7 +15,7 @@ Object.assign(Structure.prototype, {
 		for (let i = 0; i < dnames.length; i++) {
 			let name = dnames[i];
 			let dspec = dspecs[name];
-			decks[name] = new Deck(dspec,this.vessel);
+			decks[name] = new Deck(dspec,this.ship);
 		}*/
 		this.bulkheads = spec.bulkheads;/*{};
 		let bhspecs = spec.bulkheads;
@@ -24,7 +24,7 @@ Object.assign(Structure.prototype, {
 		for (let i = 0; i < bhnames.length; i++) {
 			let name = bhnames[i];
 			let bhspec = bhspecs[name];
-			bulkheads[name] = new Bulkhead(bhspec,this.vessel);
+			bulkheads[name] = new Bulkhead(bhspec,this.ship);
 		}*/	
 	},
 	getSpecification: function() {

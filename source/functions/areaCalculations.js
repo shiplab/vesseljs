@@ -47,7 +47,8 @@ function combineAreas(array) {
 	let xc = 0;
 	let yc = 0;
 	let maxX = 0, minX = 0, maxY = 0, minY = 0;
-	for (let i = 0; i < array.length; i++) {
+	let L = array.length;
+	for (let i = 0; i < L; i++) {
 		let e = array[i];
 		A += e.A;
 		xc += e.xc*e.A;
@@ -61,11 +62,18 @@ function combineAreas(array) {
 		if (!isNaN(e.minY) && e.minY<minY)
 			minY = e.minY;
 	}
-	xc /= A;
-	yc /= A;
-
 	let Ix = 0;
 	let Iy = 0;
+	
+	if (A!==0) {
+		xc /= A;
+		yc /= A;
+	} else {
+		console.warn("Zero area combination.");
+		xc /= L;
+		yc /= L;
+	}
+
 	for (let i = 0; i < array.length; i++) {
 		let e = array[i];
 		Ix += steiner(e.Ix, e.A, e.yc, yc);
@@ -94,9 +102,9 @@ function sectionCalculation({xs, ymins, ymaxs}) {
 		calculations.push(trapezoidCalculation(ybase0, ybase1, ytop0, ytop1, xbase, xtop));
 	}
 	
-	let C = combineAreas(calculations);
+	let C = combineAreas(calculations); //Might be zero areas!
 
-	let output = {A: C.A, maxX: C.maxY, minX: C.minY, maxY: C.maxX, minY: C.minY, xc: C.yc, yc: C.xc, Ix: C.Iy, Iy: C.Ix};
+	let output = {A: C.A, maxX: C.maxY, minX: C.minY, maxY: C.maxX, minY: C.minX, xc: C.yc, yc: C.xc, Ix: C.Iy, Iy: C.Ix, Abb: (C.maxY-C.minY)*(C.maxX-C.minX)};
 	console.info("Output: ", output);
 	console.groupEnd();
 	return output;

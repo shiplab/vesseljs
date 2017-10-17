@@ -55,13 +55,16 @@ Object.assign(BaseObject.prototype, {
 			let {index: i, mu: mu} = bisectionSearch(fs, fullness);
 			cg = [];
 			for (let j = 0; j < 3; j++) {
-				//Linear interpolation between closest entries:
-				let c = lerp(cgs[i][j], cgs[i+1][j], mu);
+				let c;
+				if (i<fs.length-1)
+					//Linear interpolation between closest entries:
+					c = lerp(cgs[i][j], cgs[i+1][j], mu);
+				else c = cgs[i][j];
 				//if (isNaN(c)) console.error("BaseObject.getWeight: NaN value found after interpolation.");
 				cg.push(c);
 			}
 		} else if (wi.cg !== undefined) {
-			console.log("BaseObject.getWeight: Using specifiec cg.");
+			console.log("BaseObject.getWeight: Using specified cg.");
 			cg = wi.cg;
 		} else {
 			console.warn("BaseObject.getWeight: No cg or fullnessCGMapping supplied. Defaults to center of bounding box.");

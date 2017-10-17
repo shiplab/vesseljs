@@ -53,16 +53,6 @@ function onClick() {
 						breadth: e.ySize,
 						height: e.zHeight
 					},
-					weightInformation: {
-						contentDensity: e.FluidDensity || 1000,
-						//Sample values:
-						volumeCapacity: 0.25*Math.PI*(e.xFwd-e.xAft)*e.ySize*e.zHeight,
-						lightweight: 100*(e.xFwd-e.xAft)*e.ySize*e.zHeight,
-						fullnessCGMapping: {
-							fullnesses: [0,0.25, 0.5, 0.75, 1],
-							cgs: [[0,0,0.5*e.zHeight], [0,0,0.15*e.zheight], [0,0,0.3*e.zHeight], [0,0,0.4*e.zHeight], [0,0,0.5*e.zHeight]]
-						}
-					},
 					capabilities: {
 						/*AreaRequired: parseFloat(e.AreaRequired),
 						VolRequired: parseFloat(e.VolRequired),*/
@@ -72,6 +62,25 @@ function onClick() {
 						fullness: 0.5 //dummy value
 					}
 				};
+				
+				if (e.Name.indexOf("Tank")!==-1) {
+					baseObject.weightInformation = {
+						contentDensity: e.FluidDensity || 1000,
+						//Sample values:
+						volumeCapacity: 0.25*Math.PI*(e.xFwd-e.xAft)*e.ySize*e.zHeight, //number below is a guessed average density
+						lightweight: 10*(e.xFwd-e.xAft)*e.ySize*e.zHeight,
+						fullnessCGMapping: {
+							fullnesses: [0,0.25, 0.5, 0.75, 1],
+							cgs: [[0,0,0.5*e.zHeight], [0,0,0.15*e.zHeight], [0,0,0.3*e.zHeight], [0,0,0.4*e.zHeight], [0,0,0.5*e.zHeight]]
+						}
+					};				
+				} else {
+					baseObject.weightInformation = {
+						lightweight: 100*(e.xFwd-e.xAft)*e.ySize*e.zHeight,
+						cg: [0,0,0.5*e.zHeight]
+					}
+				}
+				
 				
 				let h = hash(baseObject);
 				if (!baseObjects[h]) {

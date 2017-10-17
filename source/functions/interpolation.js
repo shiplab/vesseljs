@@ -4,10 +4,44 @@
 
 //linear interpolation
 //Defaults are not finally decided
+//returns NaN if a and b are NaN or mu is NaN.
 function lerp(a, b, mu=0.5) {
-	if (a === undefined) return b;
-	else if (b === undefined) return a;
+	if (isNaN(a)) return b;
+	if (isNaN(b)) return a;
 	return (1-mu)*a+mu*b;
+}
+
+//Test. Not safe yet.
+function linearFromArrays(xx, yy, x) {
+	let {index, mu} = bisectionSearch(xx, x);
+	if (index === undefined || mu === undefined) return 0;
+	return lerp(yy[index], yy[index+1], mu);	
+}
+
+/*Function that takes a sorted array as input, and finds the last index that holds a numerical value less than, or equal to, a given value.
+Returns an object with the index and an interpolation parameter mu that gives the position of value between index and index+1.
+*/
+function bisectionSearch(array, value) {
+	if (value < array[0]) {
+		console.warn("bisectionSearch: requested value below lowest array element. Returning undefined.");
+		return {index: undefined, mu: undefined};
+	}
+	let index = 0, upper = array.length;
+	while (upper > index+1) {
+		let c = Math.floor(0.5*(index+upper));
+		if (array[c] === value) return {index: c, mu: 0};
+		else if (array[c] < value) index = c;
+		else upper = c;
+	}
+	/*if (index === array.length) {
+		console.error("bisectionSearch: index===array.length. This should never happen.");
+	}*/
+	let mu = (value-array[index])/(array[index+1]-array[index]);
+	if (index === array.length-1) {
+		console.warn("bisectionSearch: Reached end of array. Simple interpolation will result in NaN.");
+		mu = undefined;
+	}
+	return {index, mu};
 }
 
 function bilinearUnitSquareCoeffs(z00, z01, z10, z11) {
@@ -48,6 +82,9 @@ function bilinearCoeffs(x1, x2, y1, y2, z11, z12, z21, z22) {
 	return [b00,b10,b01,b11];
 }
 
+//Maybe I could do some simple linear interpolation in collapsed cases.
+//But then I have to be sure what the z values and coefficients mean.
+//I have apparently not documented this well.
 function bilinear(x1, x2, y1, y2, z11, z12, z21, z22, x, y) {
 	let [b00, b10, b01, b11] = 
 		bilinearCoeffs(x1, x2, y1, y2, z11, z12, z21, z22);

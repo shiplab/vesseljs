@@ -1,21 +1,33 @@
 //@EliasHasle
-function Ship3D(vessel, stlPath) {
+
+/*
+THREE.js Object3D constructed from Vessel.js Ship object.
+
+A known serious bug of this is that it wraps together the top of the hull, making the hull look lower than it is, and occluding top views a bit.
+
+There are some serious limitations too:
+1. NaN values encountered are assumed to be either at the top or bottom of the given station.
+2. It produces no default end caps or keel.
+*/
+
+function Ship3D(ship, stlPath) {
 	THREE.Group.call(this);
 	
-	this.vessel = vessel;
+	this.ship = ship;
 
-	let LOA = vessel.structure.hull.attributes.LOA;
-	let BOA = vessel.structure.hull.attributes.BOA;
-	let Depth = vessel.structure.hull.attributes.Depth;
+	let LOA = ship.structure.hull.attributes.LOA;
+	let BOA = ship.structure.hull.attributes.BOA;
+	let Depth = ship.structure.hull.attributes.Depth;
 
 	//console.log("LOA:%.1f, BOA:%.1f, Depth:%.1f",LOA,BOA,Depth);
 	
-	this.position.z = -vessel.designState.calculationParameters.Draft_design;
+	this.position.z = -ship.designState.calculationParameters.Draft_design;
 	
 	//Hull
-	let stations = vessel.structure.hull.halfBreadths.stations;
-	let waterlines = vessel.structure.hull.halfBreadths.waterlines;
-	let table = vessel.structure.hull.halfBreadths.table;
+	let stations = ship.structure.hull.halfBreadths.stations;
+	let waterlines = ship.structure.hull.halfBreadths.waterlines;
+	let table = ship.structure.hull.halfBreadths.table;
+	//None of these are changed during correction of the geometry.
 
 	console.log(stations);
 	console.log(waterlines);
@@ -39,12 +51,14 @@ function Ship3D(vessel, stlPath) {
 			c += 3;
 		}
 	}
-	
+		
+	//Get rid of NaNs by merging their points with the closest non-NaN point in the same station:
+	/*I am joining some uvs too. Then an applied texture will be cropped, not distorted, where the hull is cropped.*/
 	let uv = hGeom.getAttribute("uv");
 	let uva = uv.array;
-	
-	//Get rid of NaNs by merging their points with the closest non-NaN point in the same station:
+	//Iterate over stations
 	for (let i = 0; i < N; i++) {
+		//Iterate over waterlines
 		let firstNumberJ;
 		let lastNumberJ;
 		let j;
@@ -53,15 +67,15 @@ function Ship3D(vessel, stlPath) {
 			if (!isNaN(y)) {
 				firstNumberJ = j;
 				lastNumberJ = j;
-				//copy vector for i,j to positions for all NaN cells above:
-				let c = i*M+firstNumberJ, d = c;
+				//copy vector for i,j to positions for all NaN cells below:
+				let c = i*M+firstNumberJ;
 				let x = pa[3*c];
 				let y = pa[3*c+1];					
 				let z = pa[3*c+2];
+				let d = c;
 				while (firstNumberJ > 0) {
 					firstNumberJ--;			
 					d -= 1;
-					table[firstNumberJ][i] = y;
 					pa[3*d] = x;
 					pa[3*d+1] = y;
 					pa[3*d+2] = z;
@@ -71,26 +85,29 @@ function Ship3D(vessel, stlPath) {
 				break;
 			}
 		}
+		
+		//Continue up the hull (with same j counter), searching for upper number. This does not account for numbers after the first NaN is encountered.
 		for (; j < M; j++) {
 			let y = table[j][i];
 			if (isNaN(y)) break;
+			//else not NaN:
 			lastNumberJ = j;
 		}
-		//copy vector for i,j to positions for all NaN cells below:
-		let c = i*M+lastNumberJ, d = c;
+		
+		//copy vector for i,j to positions for all NaN cells above:
+		let c = i*M+lastNumberJ;
 		let x = pa[3*c];
 		let y = pa[3*c+1];					
 		let z = pa[3*c+2];
+		let d = c;
 		while (lastNumberJ < M-1) {
 			lastNumberJ++;
 			d += 1;
-			table[lastNumberJ][i] = y;
 			pa[3*d] = x;
 			pa[3*d+1] = y;
 			pa[3*d+2] = z;
 			uva[2*d] = uva[2*c];
 			uva[2*d+1] = uva[2*c+1];
-
 		}
 		//////////
 	}
@@ -100,14 +117,9 @@ function Ship3D(vessel, stlPath) {
 	pos.needsUpdate = true;
 	uv.needsUpdate = true;
 	hGeom.computeVertexNormals();
-
-	//orientate to the coordinate system I want:
-	hGeom.computeBoundingBox();
-	let b = hGeom.boundingBox;
-	hGeom.translate(-b.min.x,0,0);
 	
 	//Hull hMaterial
-	let hMat = new THREE.MeshPhongMaterial({color: "red", side:THREE.DoubleSide, transparent: true, opacity: 0.5});
+	let hMat = new THREE.MeshPhongMaterial({color: "red", side: THREE.DoubleSide, transparent: true, opacity: /*1*/0.5});
 	
 	let hull = new THREE.Group();
 	let port = new THREE.Mesh(hGeom, hMat);
@@ -128,18 +140,45 @@ function Ship3D(vessel, stlPath) {
 	
 	//Decks:
 	var decks = new THREE.Group();
-	let deckGeom = new THREE.BoxBufferGeometry(1,1,1);
 	let deckMat = new THREE.MeshPhongMaterial({color: 0xcccccc/*randomColor()*/, transparent: true, opacity: 0.2, side: THREE.DoubleSide});
-	deckGeom.translate(0,0,-0.5);
-	let ds = vessel.structure.decks;
+	//deckGeom.translate(0,0,-0.5);
+	let ds = ship.structure.decks;
 	let dk = Object.keys(ds);
+	let stss = stations.map(st=>LOA*st); //use scaled stations for now
 	console.log(dk);
 	for (let i = 0; i < dk.length; i++) {
+		let d = ds[dk[i]]; //deck in ship structure
+		
+		//Will eventually use BoxBufferGeometry, but that is harder, because vertices are duplicated in the face planes.
+		let deckGeom = new THREE.PlaneBufferGeometry(1, 1, stss.length, 1);//new THREE.BoxBufferGeometry(1,1,1,sts.length,1,1);
+		console.log("d.zFloor=%.1f", d.zFloor); //DEBUG
+		let zHigh = d.zFloor;
+		let zLow = d.zFloor-d.thickness;
+		let wlHigh = ship.structure.hull.getWaterline(zHigh, 2);
+		let wlLow = ship.structure.hull.getWaterline(zLow, 2);
+		let pos = deckGeom.getAttribute("position");
+		let pa = pos.array;
+		for (let j = 0; j < stss.length+1; j++) {
+			let x = d.xAft+(j/stss.length)*(d.xFwd-d.xAft);
+			let y1 = Vessel.f.linearFromArrays(stss,wlHigh,x);
+			let y2 = Vessel.f.linearFromArrays(stss,wlLow,x);
+			let y = Math.min(0.5*d.breadth, y1, y2);
+			pa[3*j] = x;
+			pa[3*j+1] = y;
+			pa[3*(stss.length+1)+3*j] = x;
+			pa[3*(stss.length+1)+3*j+1] = -y; //test
+		}
+		pos.needsUpdate = true;
+		
+		//DEBUG
+		console.log("d.xFwd=%.1f, d.xAft=%.1f, 0.5*d.breadth=%.1f", d.xFwd, d.xAft, 0.5*d.breadth);
+		console.log(pa);
+
 		let deck = new THREE.Mesh(deckGeom, deckMat);
-		let d = ds[dk[i]];
 		deck.name = dk[i];
-		deck.scale.set(d.xFwd-d.xAft, d.breadth, d.thickness);
-		deck.position.set(0.5*(d.xFwd+d.xAft), 0, d.zFloor);
+		deck.position.z = d.zFloor;
+		//deck.scale.set(d.xFwd-d.xAft, d.breadth, d.thickness);
+		//deck.position.set(0.5*(d.xFwd+d.xAft), 0, d.zFloor);
 		decks.add(deck);
 	}
 	this.decks = decks;
@@ -152,7 +191,7 @@ function Ship3D(vessel, stlPath) {
 	bhGeom.translate(0,0,0.5);
 	let bhMat = new THREE.MeshPhongMaterial({color: 0xcccccc/*randomColor()*/, transparent: true, opacity: 0.5, side: THREE.DoubleSide});
 	bhGeom.translate(0.5,0,0);
-	let bhs = vessel.structure.bulkheads;
+	let bhs = ship.structure.bulkheads;
 	let bhk = Object.keys(bhs);
 	for (let i = 0; i < bhk.length; i++) {
 		let bulkhead = new THREE.Mesh(bhGeom, bhMat);
@@ -187,7 +226,7 @@ function Ship3D(vessel, stlPath) {
 	let boxGeom = new THREE.BoxBufferGeometry(1,1,1);
 	boxGeom.translate(0,0,0.5);
 	
-	let objects = Object.values(vessel.derivedObjects);	
+	let objects = Object.values(ship.derivedObjects);	
 	for (let i = 0; i < objects.length; i++) {
 		let o = objects[i];
 		let mat;
@@ -205,7 +244,7 @@ function Ship3D(vessel, stlPath) {
 		//Maybe not the most elegant solution?
 		let addBlock = function (geom) {
 			let m = new THREE.Mesh(geom, mat);
-			s = vessel.designState.getObjectState(o);
+			s = ship.designState.getObjectState(o);
 			let x = s.xCentre;
 			let y = s.yCentre;
 			let z = s.zBase;

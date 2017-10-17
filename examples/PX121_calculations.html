@@ -4,26 +4,38 @@
 <head>
 	<title>Test of the new classes and browseDesign</title>
 	<meta charset="utf-8">
+	<script type="text/javascript" src="js/libs/renderjson.js"></script>
 	<script src="../build/Vessel.js"></script>
 </head>
 <body>
-<a href="#" onclick="Vessel.browseShip(useShip)">Click here!</a>
 <ul id="log"></ul>
 
 <script>
 
-function logToScreen(s) {
+function logToScreen(s, o) {
 	let log = document.getElementById("log");
 	let entry = document.createElement("li");
 	entry.innerHTML = s;
+	if (o !== undefined) {
+		let pre = document.createElement("pre");
+		pre.appendChild(renderjson(o));
+		entry.appendChild(pre);
+	}
 	log.appendChild(entry);
 }
 
 var v;
 var s;
 
+Vessel.loadShip("data/ship_specifications/PX121.json", useShip);
+
 function useShip(ship) {
 	v = ship; //just to have an entry point for debugging.
+
+	renderjson.set_show_to_level(1);
+	
+	logToScreen("Ship: ", ship);
+	//logToScreen("Design state: ", ship.designState);
 
 	let stateSpec = {
 		calculationParameters: {
@@ -48,16 +60,24 @@ function useShip(ship) {
 			derivedByID: {}
 		}
 	};
+	
+	logToScreen("State specification: ", stateSpec);
+	
 	let state = new Vessel.ShipState(stateSpec);
 	s = state;
-	logToScreen("State: " + JSON.stringify(state.getSpecification()));
+	logToScreen("State: ", state);
 
 	let w = ship.getWeight(state);
-	logToScreen("Calculated total mass: " + w.mass.toFixed(0) + ", cg: {x: " + w.cg.x.toFixed(2) + ", y: " + w.cg.y.toFixed(2) + ", z: " + w.cg.z.toFixed(2) + "}.");
+	logToScreen("Weight at given state:", w);
 	
-	let T = ship.calculateDraft();
+	let T = ship.calculateDraft(state);
 	logToScreen("Calculated draft: " + T);
-	console.log(v.structure.hull.calculateAttributesAtDraft(T));
+	
+	let ha = v.structure.hull.calculateAttributesAtDraft(T);
+	logToScreen("Calculated hull values at calculated draft: ", ha);
+	
+	let wl = v.structure.hull.getWaterline(T);
+	logToScreen("Waterline at calculated draft: ", wl);
 }
 
 </script>

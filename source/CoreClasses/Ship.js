@@ -9,16 +9,16 @@ Suggested calculations to do:
 - Inertia matrix (will need more detailed properties of parts).
 */
 
-function Vessel(specification) {
+function Ship(specification) {
 	JSONSpecObject.call(this,specification);
 }
-Vessel.prototype = Object.create(JSONSpecObject.prototype);
-Object.assign(Vessel.prototype, {
-	constructor: Vessel,
+Ship.prototype = Object.create(JSONSpecObject.prototype);
+Object.assign(Ship.prototype, {
+	constructor: Ship,
 	setFromSpecification: function(specification) {
 		this.attributes = specification.attributes || {};
 		this.structure = new Structure(specification.structure,this);
-		//baseObjects and derivedObjects are arrays in the specification, but are objects (hashmaps) in the constructed vessel object:
+		//baseObjects and derivedObjects are arrays in the specification, but are objects (hashmaps) in the constructed ship object:
 		this.baseObjects = {};
 		for (let i = 0; i < specification.baseObjects.length; i++) {
 			let os = specification.baseObjects[i];
@@ -31,7 +31,7 @@ Object.assign(Vessel.prototype, {
 			this.derivedObjects[os.id] = new DerivedObject(os, this.baseObjects);
 		}
 		
-		this.designState = new VesselState(specification.designState);
+		this.designState = new ShipState(specification.designState);
 	},
 	getSpecification: function() {
 		let specification = {};
@@ -45,8 +45,8 @@ Object.assign(Vessel.prototype, {
 
 		return specification;
 	},
-	getWeight: function(vesselState) {
-		vesselState = vesselState || this.designState;
+	getWeight: function(shipState) {
+		shipState = shipState || this.designState;
 
 		let components = [];
 		
@@ -58,25 +58,46 @@ Object.assign(Vessel.prototype, {
 		console.log(components);
 
 		for (let o of Object.values(this.derivedObjects)) {
-			components.push(o.getWeight(vesselState));
+			components.push(o.getWeight(shipState));
 		}
 
-		return combineWeights(components);
+		var W = combineWeights(components);
+		console.info("Calculated weight object: ", W);
+		return W;
 	},
-	calculateDraft(vesselState, epsilon=0.001) {
-		let w = this.getWeight(vesselState);
+	calculateDraft(shipState, epsilon=0.001) {
+		let w = this.getWeight(shipState);
 		let M = w.mass;
-		let VT = M/1025; //Target submerged volume
+		let VT = M/1025; //Target submerged volume (1025=rho_seawater)
 		//Interpolation:
 		let a = 0;
 		let b = this.structure.hull.attributes.Depth;
-		let t = 0.5*epsilon;
+		let t = 0.5*b;
 		while (b-a>epsilon) {
 			t = 0.5*(a+b);
-			let V = this.structure.hull.calculateAttributesAtDraft(t)["V"];
+			let V = this.structure.hull.calculateAttributesAtDraft(t)["Vs"];
+			console.log(V); //DEBUG
 			if (V>VT) b = t;
 			else a = t;
 		}
+		console.info("Calculated draft: %.2f", t);
 		return t;
+	},
+    calculateStability(shipState){
+        let T = this.calculateDraft(shipState);
+        let ha = this.structure.hull.calculateAttributesAtDraft(T);
+        let vol = ha.Vs;
+        if (vol === 0){
+            let Lwl = this.designState.calculationParameters.LWL_design;
+            let B = this.structure.hull.attributes.BOA;
+            let cb = this.designState.calculationParameters.Cb_design;
+            vol = Lwl * B * T * cb;
+        }
+        let KG = this.getWeight(shipState).cg.z;
+        let I = ha.Iywp * 1000;
+        let KB = 0.52 * T;
+        let BM = I / vol;
+        let GM = KB + BM - KG;
+        return {GM, KB, BM, KG};
 	}
 });
