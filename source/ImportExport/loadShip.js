@@ -1,28 +1,28 @@
 //@EliasHasle
 
-//Depends on Vessel and the other core classes.
+//Depends on Ship and the other core classes.
 
 /*
 Handy function for loading a ship design from file.
 
 Typical usage:
-var myVessel;
-var filePath = "vessels/myVessel.json";
-loadVessel(filePath, function(vessel) {
-	myVessel = vessel;
+var myShip;
+var filePath = "ships/myShip.json";
+loadShip(filePath, function(ship) {
+	myShip = ship;
 	doSomething();
 });
 
 */
 
-function loadVessel(url, callback) {
+function loadShip(url, callback) {
 	var request = new XMLHttpRequest();
 	request.open( 'GET', url, true );
 	request.addEventListener("load", function(event) {
 		var response = event.target.response;
 		var specification = JSON.parse(response);
-		var vessel = new Vessel(specification);
-		callback(vessel);
+		var ship = new Ship(specification);
+		callback(ship);
 	});
 	request.send(null);
 }

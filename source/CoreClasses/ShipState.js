@@ -18,17 +18,17 @@ The caching and version control is clumsy (and incomplete). I (Elias) have done 
 */
 
 /*
-VesselState now mainly accounts for load state, by which I mean the states of objects in the ship. We need to find out how to best handle other state properties, like global position, heading etc., not to mention properties that change fast, and that depend on time and current state (motion fluctuations etc.).
+ShipState now mainly accounts for load state, by which I mean the states of objects in the ship. We need to find out how to best handle other state properties, like global position, heading etc., not to mention properties that change fast, and that depend on time and current state (motion fluctuations etc.).
 */
 
-function VesselState(specification) {
+function ShipState(specification) {
 	this.version = 0;
 	this.objectCache = {};
 	JSONSpecObject.call(this, specification);
 }
-VesselState.prototype = Object.create(JSONSpecObject.prototype);
-Object.assign(VesselState.prototype, {
-	constructor: VesselState,
+ShipState.prototype = Object.create(JSONSpecObject.prototype);
+Object.assign(ShipState.prototype, {
+	constructor: ShipState,
 	getSpecification: function() {
 		if (this.cachedVersion !== this.version) {
 			var spec = {
@@ -50,11 +50,11 @@ Object.assign(VesselState.prototype, {
 			if (c.thisStateVer === this.version
 				/*&& c.baseStateVer === o.baseObject.baseStateVersion
 				&& c.refStateVer === o.referenceStateVersion*/) {
-				console.log("VesselState.getObjectState: Using cache.");
+				console.log("ShipState.getObjectState: Using cache.");
 				return c.state;	
 			}				
 		}
-		console.log("VesselState.getObjectState: Not using cache.");
+		console.log("ShipState.getObjectState: Not using cache.");
 		
 		let state = {};
 		Object.assign(state, o.baseObject.baseState);

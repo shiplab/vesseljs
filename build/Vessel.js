@@ -1,14 +1,14 @@
-//ShipDesign library, built 2017-10-16 14:33:51.956145, Checksum: 6e0ccd5310032f821d1cea93950a7288
+//Vessel.js library, built 2017-10-17 12:23:09.339097, Checksum: 5b20e5739dc8e9c7a5c69904053ad53c
 /*
 Import like this in HTML:
-<script src="ShipDesign.js"></script>
+<script src="Vessel.js"></script>
 Then in javascript use classes and functions with a ShipDesign prefix. Example:
-let vessel = new ShipDesign.Vessel(someSpecification);
+let ship = new Vessel.Ship(someSpecification);
 */
 
 "use strict";
 
-var ShipDesign = {};
+var Vessel = {};
 (function() {
 //@EliasHasle
 
@@ -261,7 +261,7 @@ function sectionCalculation({xs, ymins, ymaxs}) {
 	
 	let C = combineAreas(calculations); //Might be zero areas!
 
-	let output = {A: C.A, maxX: C.maxY, minX: C.minY, maxY: C.maxX, minY: C.minY, xc: C.yc, yc: C.xc, Ix: C.Iy, Iy: C.Ix};
+	let output = {A: C.A, maxX: C.maxY, minX: C.minY, maxY: C.maxX, minY: C.minX, xc: C.yc, yc: C.xc, Ix: C.Iy, Iy: C.Ix, Abb: (C.maxY-C.minY)*(C.maxX-C.minX)};
 	console.info("Output: ", output);
 	console.groupEnd();
 	return output;
@@ -616,16 +616,16 @@ Suggested calculations to do:
 - Inertia matrix (will need more detailed properties of parts).
 */
 
-function Vessel(specification) {
+function Ship(specification) {
 	JSONSpecObject.call(this,specification);
 }
-Vessel.prototype = Object.create(JSONSpecObject.prototype);
-Object.assign(Vessel.prototype, {
-	constructor: Vessel,
+Ship.prototype = Object.create(JSONSpecObject.prototype);
+Object.assign(Ship.prototype, {
+	constructor: Ship,
 	setFromSpecification: function(specification) {
 		this.attributes = specification.attributes || {};
 		this.structure = new Structure(specification.structure,this);
-		//baseObjects and derivedObjects are arrays in the specification, but are objects (hashmaps) in the constructed vessel object:
+		//baseObjects and derivedObjects are arrays in the specification, but are objects (hashmaps) in the constructed ship object:
 		this.baseObjects = {};
 		for (let i = 0; i < specification.baseObjects.length; i++) {
 			let os = specification.baseObjects[i];
@@ -638,7 +638,7 @@ Object.assign(Vessel.prototype, {
 			this.derivedObjects[os.id] = new DerivedObject(os, this.baseObjects);
 		}
 		
-		this.designState = new VesselState(specification.designState);
+		this.designState = new ShipState(specification.designState);
 	},
 	getSpecification: function() {
 		let specification = {};
@@ -652,8 +652,8 @@ Object.assign(Vessel.prototype, {
 
 		return specification;
 	},
-	getWeight: function(vesselState) {
-		vesselState = vesselState || this.designState;
+	getWeight: function(shipState) {
+		shipState = shipState || this.designState;
 
 		let components = [];
 		
@@ -665,15 +665,15 @@ Object.assign(Vessel.prototype, {
 		console.log(components);
 
 		for (let o of Object.values(this.derivedObjects)) {
-			components.push(o.getWeight(vesselState));
+			components.push(o.getWeight(shipState));
 		}
 
 		var W = combineWeights(components);
 		console.info("Calculated weight object: ", W);
 		return W;
 	},
-	calculateDraft(vesselState, epsilon=0.001) {
-		let w = this.getWeight(vesselState);
+	calculateDraft(shipState, epsilon=0.001) {
+		let w = this.getWeight(shipState);
 		let M = w.mass;
 		let VT = M/1025; //Target submerged volume (1025=rho_seawater)
 		//Interpolation:
@@ -690,8 +690,8 @@ Object.assign(Vessel.prototype, {
 		console.info("Calculated draft: %.2f", t);
 		return t;
 	},
-    calculateStability(vesselState){
-        let T = this.calculateDraft(vesselState);
+    calculateStability(shipState){
+        let T = this.calculateDraft(shipState);
         let ha = this.structure.hull.calculateAttributesAtDraft(T);
         let vol = ha.Vs;
         if (vol === 0){
@@ -700,23 +700,23 @@ Object.assign(Vessel.prototype, {
             let cb = this.designState.calculationParameters.Cb_design;
             vol = Lwl * B * T * cb;
         }
-        let KG = this.getWeight(vesselState).cg.z;
-        let I = ha.Iy * 1000;
-        let BM = 0.52 * T;
-        let KB = I / vol;
+        let KG = this.getWeight(shipState).cg.z;
+        let I = ha.Iywp * 1000;
+        let KB = 0.52 * T;
+        let BM = I / vol;
         let GM = KB + BM - KG;
         return {GM, KB, BM, KG};
 	}
 });//@EliasHasle
 
-function Structure(spec, vessel) {
-	this.vessel = vessel;
+function Structure(spec, ship) {
+	this.ship = ship;
 	JSONSpecObject.call(this, spec);
 }
 Structure.prototype = Object.create(JSONSpecObject.prototype);
 Object.assign(Structure.prototype, {
 	setFromSpecification: function(spec) {
-		this.hull = new Hull(spec.hull/*, this.vessel*/);
+		this.hull = new Hull(spec.hull/*, this.ship*/);
 		this.decks = spec.decks;/*{};
 		let dspecs = spec.decks;
 		let decks = this.decks;
@@ -724,7 +724,7 @@ Object.assign(Structure.prototype, {
 		for (let i = 0; i < dnames.length; i++) {
 			let name = dnames[i];
 			let dspec = dspecs[name];
-			decks[name] = new Deck(dspec,this.vessel);
+			decks[name] = new Deck(dspec,this.ship);
 		}*/
 		this.bulkheads = spec.bulkheads;/*{};
 		let bhspecs = spec.bulkheads;
@@ -733,7 +733,7 @@ Object.assign(Structure.prototype, {
 		for (let i = 0; i < bhnames.length; i++) {
 			let name = bhnames[i];
 			let bhspec = bhspecs[name];
-			bulkheads[name] = new Bulkhead(bhspec,this.vessel);
+			bulkheads[name] = new Bulkhead(bhspec,this.ship);
 		}*/	
 	},
 	getSpecification: function() {
@@ -808,7 +808,7 @@ Object.assign(Structure.prototype, {
 
 /*When having a class for this, the specification can possibly be in one of several formats, and the handling will be contained in this class.
 
-I have tried to remove the dependency on the vessel object here. This is in order to be able to optimize updates.
+I have tried to remove the dependency on the ship object here. This is in order to be able to optimize updates.
 
 This class needs more comments, for shure.
 
@@ -950,6 +950,7 @@ Object.assign(Hull.prototype, {
 				mu = c===b ? 0 : (a+(mu||0.5)-b)/(c-b);
 				wl[j] = lerp(lower, upper, mu);
 			}
+			
 			//Scale numerical values
 			if (!isNaN(wl[j])) wl[j] *= 0.5*ha.BOA;
 		}
@@ -986,6 +987,9 @@ Object.assign(Hull.prototype, {
 		}
 		return st;
 	},
+	
+	//THIS is a candidate for causing wrong Ix, Iy values.
+	//Much logic that can go wrong.
 										//typically deck bounds
 	waterlineCalculation: function(z, bounds) {
 		let {minX, maxX, minY, maxY} = bounds || {};
@@ -997,7 +1001,6 @@ Object.assign(Hull.prototype, {
 		console.info("wl: ", wl); //DEBUG
 
 		let LOA = this.attributes.LOA;
-		//let BOA = this.attributes.BOA;
 		
 		let sts = this.halfBreadths.stations.slice();
 		for (let i=0; i < sts.length; i++) {
@@ -1060,7 +1063,7 @@ Object.assign(Hull.prototype, {
 		}
 		
 		//DEBUG
-		console.info("Arguments to sectionCalculation:",sts, star, port);
+		console.info("Arguments to sectionCalculation:", sts, star, port);
 		
 		//sectionCalculation can potentially be served some NaNs.
 		let sc = sectionCalculation({xs: sts, ymins: star, ymaxs: port});
@@ -1168,20 +1171,24 @@ Object.assign(Hull.prototype, {
 			let C = combineVolumes(calculations);
 			lev.Vs = prev.Vs + C.V; //hull volume below z
 			lev.As = prev.As + C.As; //outside surface below z
+
 			//center of volume below z (some potential for accumulated rounding error):
-			let {x: xc, y: zc, z: yc} = scaleVec(
-				addVec(scaleVec(prev.Cv,prev.Vs),
-					scaleVec(C.Cv,C.V)),
-				1/(prev.Vs+C.V));
-			lev.Cv = {x: xc, y: yc, z: zc};
+			let Cv = addVec(scaleVec(prev.Cv,prev.Vs),
+					scaleVec(C.Cv,C.V));
+			let V = prev.Vs+C.V;
+			if (V!==0) {
+				Cv = scaleVec(Cv, 1/(prev.Vs+C.V));
+			}
+						//Note switching of yz
+			lev.Cv = {x: Cv.x, y: Cv.z, z: Cv.y};
+			
+			lev.Cb = lev.Vs/lev.Vbb;
 			
 			return lev;
 		}
 		
 		return function(T) {
 			let wls = this.halfBreadths.waterlines.map(wl=>this.attributes.Depth*wl);
-			//let sts = this.halfBreadths.stations;
-			//let hbs = this.halfBreadths.table;
 			
 			//This is the part that can be reused as long as the geometry remains unchanged:
 			if (this.levelsNeedUpdate) {
@@ -1199,14 +1206,30 @@ Object.assign(Hull.prototype, {
 			
 			let lc = levelCalculation(this, T, this.levels[previ]);
 			
-			//It is a bit problematic that some parts of the output really refer to the water plane, not to the whole submerged volume, without that being apparent.
-			return lc;
+			//Filter and rename for output
+			return {
+				xcwp: lc.xc,
+				ycwp: lc.yc,
+				Awp: lc.Awp,
+				Ixwp: lc.Ix,
+				Iywp: lc.Iy,
+				maxXs: lc.maxX, //boundaries of the submerged part of the hull
+				minXs: lc.minX,
+				maxYs: lc.maxY,
+				minYs: lc.minY,
+				Cwp: lc.Cwp,
+				LWL: lc.LWL,
+				LBP: lc.LBP,
+				BWL: lc.BWL,
+				Ap: lc.Ap,
+				//Vbb: lc.Vbb,
+				Vs: lc.Vs,
+				Cb: lc.Cb,
+				As: lc.As,
+				Cv: lc.Cv			
+			}
 		};
-	}()/*,
-	//Removed because of circular dependency. This kind of calculation should be in vessel instead, to facilitate caching.
-	calculateAttributes() {
-		this.calculateAttributesAtDraft(this.vessel.calculateDraft());
-	}*/
+	}()
 });//@EliasHasle
 
 /*
@@ -1265,7 +1288,7 @@ Object.assign(BaseObject.prototype, {
 			cg = [];
 			for (let j = 0; j < 3; j++) {
 				let c;
-				if (i<fullness.length-1)
+				if (i<fs.length-1)
 					//Linear interpolation between closest entries:
 					c = lerp(cgs[i][j], cgs[i+1][j], mu);
 				else c = cgs[i][j];
@@ -1273,7 +1296,7 @@ Object.assign(BaseObject.prototype, {
 				cg.push(c);
 			}
 		} else if (wi.cg !== undefined) {
-			console.log("BaseObject.getWeight: Using specifiec cg.");
+			console.log("BaseObject.getWeight: Using specified cg.");
 			cg = wi.cg;
 		} else {
 			console.warn("BaseObject.getWeight: No cg or fullnessCGMapping supplied. Defaults to center of bounding box.");
@@ -1364,17 +1387,17 @@ The caching and version control is clumsy (and incomplete). I (Elias) have done 
 */
 
 /*
-VesselState now mainly accounts for load state, by which I mean the states of objects in the ship. We need to find out how to best handle other state properties, like global position, heading etc., not to mention properties that change fast, and that depend on time and current state (motion fluctuations etc.).
+ShipState now mainly accounts for load state, by which I mean the states of objects in the ship. We need to find out how to best handle other state properties, like global position, heading etc., not to mention properties that change fast, and that depend on time and current state (motion fluctuations etc.).
 */
 
-function VesselState(specification) {
+function ShipState(specification) {
 	this.version = 0;
 	this.objectCache = {};
 	JSONSpecObject.call(this, specification);
 }
-VesselState.prototype = Object.create(JSONSpecObject.prototype);
-Object.assign(VesselState.prototype, {
-	constructor: VesselState,
+ShipState.prototype = Object.create(JSONSpecObject.prototype);
+Object.assign(ShipState.prototype, {
+	constructor: ShipState,
 	getSpecification: function() {
 		if (this.cachedVersion !== this.version) {
 			var spec = {
@@ -1396,11 +1419,11 @@ Object.assign(VesselState.prototype, {
 			if (c.thisStateVer === this.version
 				/*&& c.baseStateVer === o.baseObject.baseStateVersion
 				&& c.refStateVer === o.referenceStateVersion*/) {
-				console.log("VesselState.getObjectState: Using cache.");
+				console.log("ShipState.getObjectState: Using cache.");
 				return c.state;	
 			}				
 		}
-		console.log("VesselState.getObjectState: Not using cache.");
+		console.log("ShipState.getObjectState: Not using cache.");
 		
 		let state = {};
 		Object.assign(state, o.baseObject.baseState);
@@ -1534,20 +1557,20 @@ Object.assign(VesselState.prototype, {
 	}
 });//@EliasHasle
 
-//Depends on Vessel and the other core classes.
+//Depends on Ship and the other core classes.
 
 /*
 Handy function for letting the user load a ship design from a local file. (Based on Elias Hasles browseFile function.)
 
 Typical usage:
-<a onclick="browseVessel(useVessel)">Click here</a>
-where useVessel takes the loaded ship design as a parameter adn does something with it.
+<a onclick="browseShip(useShip)">Click here</a>
+where useShip takes the loaded ship design as a parameter adn does something with it.
 
 According to the ECMAScript standard, it is required that the file browsing is initiated by the user. Google Chrome seems to handle indirect initiation very well, such as having this function in a click handler.
 */
 
 "use strict";
-var browseVessel = function() {
+var browseShip = function() {
 	var browseButton;
 	return function (callback) {
 		browseButton = document.createElement("input");
@@ -1563,8 +1586,8 @@ var browseVessel = function() {
 				reader.onload = function(event) {
 					let result = event.target.result;
 					let specification = JSON.parse(result);
-					let vessel = new Vessel(specification);
-					callback(vessel);
+					let ship = new Ship(specification);
+					callback(ship);
 				}
 				reader.readAsText(file);
 			}
@@ -1573,37 +1596,37 @@ var browseVessel = function() {
 	};
 }();//@EliasHasle
 
-//Depends on Vessel and the other core classes.
+//Depends on Ship and the other core classes.
 
 /*
 Handy function for loading a ship design from file.
 
 Typical usage:
-var myVessel;
-var filePath = "vessels/myVessel.json";
-loadVessel(filePath, function(vessel) {
-	myVessel = vessel;
+var myShip;
+var filePath = "ships/myShip.json";
+loadShip(filePath, function(ship) {
+	myShip = ship;
 	doSomething();
 });
 
 */
 
-function loadVessel(url, callback) {
+function loadShip(url, callback) {
 	var request = new XMLHttpRequest();
 	request.open( 'GET', url, true );
 	request.addEventListener("load", function(event) {
 		var response = event.target.response;
 		var specification = JSON.parse(response);
-		var vessel = new Vessel(specification);
-		callback(vessel);
+		var ship = new Ship(specification);
+		callback(ship);
 	});
 	request.send(null);
 }//@EliasHasle
 
 //Very simple download of the specification of a given ship design. Depends on a working getSpecification method.
 
-function downloadVessel(vessel) {
-	let specification = vessel.getSpecification();
+function downloadShip(ship) {
+	let specification = ship.getSpecification();
 	let output = JSON.stringify(specification);
 	let link = document.createElement("a");
 	link.href = "data:application/json," + encodeURI(output);
@@ -1611,17 +1634,17 @@ function downloadVessel(vessel) {
 	link.target = "_blank";
 	link.click();
 }
-Object.assign(ShipDesign, {
+Object.assign(Vessel, {
 	/*JSONSpecObject: JSONSpecObject,*/
-	Vessel: Vessel,
+	Ship: Ship,
 	Structure: Structure,
 	Hull: Hull,
 	BaseObject: BaseObject,
 	DerivedObject: DerivedObject,
-	VesselState: VesselState,
-	browseVessel: browseVessel,
-	loadVessel: loadVessel,
-	downloadVessel: downloadVessel,
+	ShipState: ShipState,
+	browseShip: browseShip,
+	loadShip: loadShip,
+	downloadShip: downloadShip,
         f: {
             linearFromArrays: linearFromArrays
         }

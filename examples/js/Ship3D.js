@@ -10,23 +10,23 @@ There are some serious limitations too:
 2. It produces no default end caps or keel.
 */
 
-function Ship3D(vessel, stlPath) {
+function Ship3D(ship, stlPath) {
 	THREE.Group.call(this);
 	
-	this.vessel = vessel;
+	this.ship = ship;
 
-	let LOA = vessel.structure.hull.attributes.LOA;
-	let BOA = vessel.structure.hull.attributes.BOA;
-	let Depth = vessel.structure.hull.attributes.Depth;
+	let LOA = ship.structure.hull.attributes.LOA;
+	let BOA = ship.structure.hull.attributes.BOA;
+	let Depth = ship.structure.hull.attributes.Depth;
 
 	//console.log("LOA:%.1f, BOA:%.1f, Depth:%.1f",LOA,BOA,Depth);
 	
-	this.position.z = -vessel.designState.calculationParameters.Draft_design;
+	this.position.z = -ship.designState.calculationParameters.Draft_design;
 	
 	//Hull
-	let stations = vessel.structure.hull.halfBreadths.stations;
-	let waterlines = vessel.structure.hull.halfBreadths.waterlines;
-	let table = vessel.structure.hull.halfBreadths.table;
+	let stations = ship.structure.hull.halfBreadths.stations;
+	let waterlines = ship.structure.hull.halfBreadths.waterlines;
+	let table = ship.structure.hull.halfBreadths.table;
 	//None of these are changed during correction of the geometry.
 
 	console.log(stations);
@@ -142,26 +142,26 @@ function Ship3D(vessel, stlPath) {
 	var decks = new THREE.Group();
 	let deckMat = new THREE.MeshPhongMaterial({color: 0xcccccc/*randomColor()*/, transparent: true, opacity: 0.2, side: THREE.DoubleSide});
 	//deckGeom.translate(0,0,-0.5);
-	let ds = vessel.structure.decks;
+	let ds = ship.structure.decks;
 	let dk = Object.keys(ds);
 	let stss = stations.map(st=>LOA*st); //use scaled stations for now
 	console.log(dk);
 	for (let i = 0; i < dk.length; i++) {
-		let d = ds[dk[i]]; //deck in vessel structure
+		let d = ds[dk[i]]; //deck in ship structure
 		
 		//Will eventually use BoxBufferGeometry, but that is harder, because vertices are duplicated in the face planes.
 		let deckGeom = new THREE.PlaneBufferGeometry(1, 1, stss.length, 1);//new THREE.BoxBufferGeometry(1,1,1,sts.length,1,1);
 		console.log("d.zFloor=%.1f", d.zFloor); //DEBUG
 		let zHigh = d.zFloor;
 		let zLow = d.zFloor-d.thickness;
-		let wlHigh = vessel.structure.hull.getWaterline(zHigh, 2);
-		let wlLow = vessel.structure.hull.getWaterline(zLow, 2);
+		let wlHigh = ship.structure.hull.getWaterline(zHigh, 2);
+		let wlLow = ship.structure.hull.getWaterline(zLow, 2);
 		let pos = deckGeom.getAttribute("position");
 		let pa = pos.array;
 		for (let j = 0; j < stss.length+1; j++) {
 			let x = d.xAft+(j/stss.length)*(d.xFwd-d.xAft);
-			let y1 = ShipDesign.f.linearFromArrays(stss,wlHigh,x);
-			let y2 = ShipDesign.f.linearFromArrays(stss,wlLow,x);
+			let y1 = Vessel.f.linearFromArrays(stss,wlHigh,x);
+			let y2 = Vessel.f.linearFromArrays(stss,wlLow,x);
 			let y = Math.min(0.5*d.breadth, y1, y2);
 			pa[3*j] = x;
 			pa[3*j+1] = y;
@@ -191,7 +191,7 @@ function Ship3D(vessel, stlPath) {
 	bhGeom.translate(0,0,0.5);
 	let bhMat = new THREE.MeshPhongMaterial({color: 0xcccccc/*randomColor()*/, transparent: true, opacity: 0.5, side: THREE.DoubleSide});
 	bhGeom.translate(0.5,0,0);
-	let bhs = vessel.structure.bulkheads;
+	let bhs = ship.structure.bulkheads;
 	let bhk = Object.keys(bhs);
 	for (let i = 0; i < bhk.length; i++) {
 		let bulkhead = new THREE.Mesh(bhGeom, bhMat);
@@ -226,7 +226,7 @@ function Ship3D(vessel, stlPath) {
 	let boxGeom = new THREE.BoxBufferGeometry(1,1,1);
 	boxGeom.translate(0,0,0.5);
 	
-	let objects = Object.values(vessel.derivedObjects);	
+	let objects = Object.values(ship.derivedObjects);	
 	for (let i = 0; i < objects.length; i++) {
 		let o = objects[i];
 		let mat;
@@ -244,7 +244,7 @@ function Ship3D(vessel, stlPath) {
 		//Maybe not the most elegant solution?
 		let addBlock = function (geom) {
 			let m = new THREE.Mesh(geom, mat);
-			s = vessel.designState.getObjectState(o);
+			s = ship.designState.getObjectState(o);
 			let x = s.xCentre;
 			let y = s.yCentre;
 			let z = s.zBase;

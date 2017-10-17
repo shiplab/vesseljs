@@ -1,4 +1,4 @@
-
+<!-- This was not the preferred template for the demo, but we keep it here(?) as an example on how we could do certain multi-page examples in the future.-->
 
 <!DOCTYPE html>
 <html lang="en">
@@ -17,35 +17,35 @@
     <link href="../css/bootstrap.min.css" rel="stylesheet">
     
     <!-- Three script -->
-    <script src="../libs/three.js"></script>
-	<script src="../libs/STLLoader.js"></script>
-    <script src="../libs/OrbitControls.js"></script>
+    <script src="../js/libs/three.js"></script>
+	<script src="../js/libs/STLLoader.js"></script>
+    <script src="../js/libs/OrbitControls.js"></script>
     
     <!-- jQuery Version 1.11.1 -->
-    <script src="../libs/jquery.js"></script>
+    <script src="../js/libs/jquery.js"></script>
 
     <!-- Bootstrap Core JavaScript -->
-    <script src="../libs/bootstrap.min.js"></script> 
+    <script src="../js/libs/bootstrap.min.js"></script> 
 	
 	<!-- D3JavaScript -->
-	<script src="../libs/d3_v4.9.1.js"></script>
+	<script src="../js/libs/d3_v4.9.1.js"></script>
 	
 	<!-- Prettyprinting of JSON data -->
-	<script type="text/javascript" src="../libs/renderjson.js"></script>
+	<script type="text/javascript" src="../js/libs/renderjson.js"></script>
 		
     <!--Ship3D class for three.js-->
 	<script src="../js/Ship3D.js"></script>
     
     <!--Import library-->
-	<script src="../../build/ShipDesign.js"></script>
+	<script src="../../build/Vessel.js"></script>
 	
 		
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
     <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <script src="https://oss.maxcdn.com/js/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/js/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
 
 </head>
@@ -181,12 +181,12 @@
 			
         })();
 		//Load sample file:
-		new THREE.FileLoader().load("../data/vessel_specifications/PX121.json", useFileData);
+		new THREE.FileLoader().load("../data/ship_specifications/PX121.json", useFileData);
 		
 		function useFileData(contents) {
 			var shipspec = JSON.parse(contents);
             displayContents(shipspec);
-			var ship = new ShipDesign.Vessel(shipspec);
+			var ship = new Vessel.Ship(shipspec);
 			if (ship3D !== undefined) {
 				scene.remove(ship3D);
 			}

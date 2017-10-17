@@ -4,10 +4,10 @@
 <head>
 	<title>Test of the new classes and browseDesign</title>
 	<meta charset="utf-8">
-	<script src="../build/ShipDesign.js"></script>
+	<script src="../build/Vessel.js"></script>
 </head>
 <body>
-<a href="#" onclick="ShipDesign.browseVessel(useVessel)">Click here!</a>
+<a href="#" onclick="Vessel.browseShip(useShip)">Click here!</a>
 <ul id="log"></ul>
 
 <script>
@@ -22,8 +22,8 @@ function logToScreen(s) {
 var v;
 var s;
 
-function useVessel(vessel) {
-	v = vessel; //just to have an entry point for debugging.
+function useShip(ship) {
+	v = ship; //just to have an entry point for debugging.
 
 	let stateSpec = {
 		calculationParameters: {
@@ -48,14 +48,14 @@ function useVessel(vessel) {
 			derivedByID: {}
 		}
 	};
-	let state = new ShipDesign.VesselState(stateSpec);
+	let state = new Vessel.ShipState(stateSpec);
 	s = state;
 	logToScreen("State: " + JSON.stringify(state.getSpecification()));
 
-	let w = vessel.getWeight(state);
+	let w = ship.getWeight(state);
 	logToScreen("Calculated total mass: " + w.mass.toFixed(0) + ", cg: {x: " + w.cg.x.toFixed(2) + ", y: " + w.cg.y.toFixed(2) + ", z: " + w.cg.z.toFixed(2) + "}.");
 	
-	let T = vessel.calculateDraft();
+	let T = ship.calculateDraft();
 	logToScreen("Calculated draft: " + T);
 	console.log(v.structure.hull.calculateAttributesAtDraft(T));
 }

@@ -2,7 +2,7 @@
 
 /*When having a class for this, the specification can possibly be in one of several formats, and the handling will be contained in this class.
 
-I have tried to remove the dependency on the vessel object here. This is in order to be able to optimize updates.
+I have tried to remove the dependency on the ship object here. This is in order to be able to optimize updates.
 
 This class needs more comments, for shure.
 

@@ -4,8 +4,8 @@
 <head>
 	<title>Test of the new classes and browseDesign</title>
 	<meta charset="utf-8">
-	<script type="text/javascript" src="libs/renderjson.js"></script>
-	<script src="../build/ShipDesign.js"></script>
+	<script type="text/javascript" src="js/libs/renderjson.js"></script>
+	<script src="../build/Vessel.js"></script>
 </head>
 <body>
 <ul id="log"></ul>
@@ -27,15 +27,15 @@ function logToScreen(s, o) {
 var v;
 var s;
 
-ShipDesign.loadVessel("data/vessel_specifications/PX121.json", useVessel);
+Vessel.loadShip("data/ship_specifications/PX121.json", useShip);
 
-function useVessel(vessel) {
-	v = vessel; //just to have an entry point for debugging.
+function useShip(ship) {
+	v = ship; //just to have an entry point for debugging.
 
 	renderjson.set_show_to_level(1);
 	
-	logToScreen("Ship: ", vessel);
-	//logToScreen("Design state: ", vessel.designState);
+	logToScreen("Ship: ", ship);
+	//logToScreen("Design state: ", ship.designState);
 
 	let stateSpec = {
 		calculationParameters: {
@@ -63,14 +63,14 @@ function useVessel(vessel) {
 	
 	logToScreen("State specification: ", stateSpec);
 	
-	let state = new ShipDesign.VesselState(stateSpec);
+	let state = new Vessel.ShipState(stateSpec);
 	s = state;
 	logToScreen("State: ", state);
 
-	let w = vessel.getWeight(state);
+	let w = ship.getWeight(state);
 	logToScreen("Weight at given state:", w);
 	
-	let T = vessel.calculateDraft(state);
+	let T = ship.calculateDraft(state);
 	logToScreen("Calculated draft: " + T);
 	
 	let ha = v.structure.hull.calculateAttributesAtDraft(T);
