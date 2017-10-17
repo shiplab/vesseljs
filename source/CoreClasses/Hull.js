@@ -144,6 +144,7 @@ Object.assign(Hull.prototype, {
 				mu = c===b ? 0 : (a+(mu||0.5)-b)/(c-b);
 				wl[j] = lerp(lower, upper, mu);
 			}
+			
 			//Scale numerical values
 			if (!isNaN(wl[j])) wl[j] *= 0.5*ha.BOA;
 		}
@@ -180,6 +181,9 @@ Object.assign(Hull.prototype, {
 		}
 		return st;
 	},
+	
+	//THIS is a candidate for causing wrong Ix, Iy values.
+	//Much logic that can go wrong.
 										//typically deck bounds
 	waterlineCalculation: function(z, bounds) {
 		let {minX, maxX, minY, maxY} = bounds || {};
@@ -191,7 +195,6 @@ Object.assign(Hull.prototype, {
 		console.info("wl: ", wl); //DEBUG
 
 		let LOA = this.attributes.LOA;
-		//let BOA = this.attributes.BOA;
 		
 		let sts = this.halfBreadths.stations.slice();
 		for (let i=0; i < sts.length; i++) {
@@ -254,7 +257,7 @@ Object.assign(Hull.prototype, {
 		}
 		
 		//DEBUG
-		console.info("Arguments to sectionCalculation:",sts, star, port);
+		console.info("Arguments to sectionCalculation:", sts, star, port);
 		
 		//sectionCalculation can potentially be served some NaNs.
 		let sc = sectionCalculation({xs: sts, ymins: star, ymaxs: port});

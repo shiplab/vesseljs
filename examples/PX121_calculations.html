@@ -34,7 +34,8 @@ function useVessel(vessel) {
 
 	renderjson.set_show_to_level(1);
 	
-	logToScreen("Design state: ", vessel.designState);
+	logToScreen("Ship: ", vessel);
+	//logToScreen("Design state: ", vessel.designState);
 
 	let stateSpec = {
 		calculationParameters: {
@@ -74,6 +75,9 @@ function useVessel(vessel) {
 	
 	let ha = v.structure.hull.calculateAttributesAtDraft(T);
 	logToScreen("Calculated hull values at calculated draft: ", ha);
+	
+	let wl = v.structure.hull.getWaterline(T);
+	logToScreen("Waterline at calculated draft: ", wl);
 }
 
 </script>

@@ -1,4 +1,11 @@
 //@EliasHasle
+
+/*
+THREE.js Object3D constructed from Vessel.js Ship object.
+
+Currently uses and modifies a copy of the offset table. It may be achievable to use only the offset table and do the necessary modifications on the geometry only.
+*/
+
 function Ship3D(vessel, stlPath) {
 	THREE.Group.call(this);
 	
@@ -15,7 +22,8 @@ function Ship3D(vessel, stlPath) {
 	//Hull
 	let stations = vessel.structure.hull.halfBreadths.stations;
 	let waterlines = vessel.structure.hull.halfBreadths.waterlines;
-	let table = vessel.structure.hull.halfBreadths.table;
+	//Use a copy of the offset table, to allow non-invasive corrections:
+	let table = vessel.structure.hull.halfBreadths.table.map(r=>r.slice());
 
 	console.log(stations);
 	console.log(waterlines);
@@ -62,7 +70,7 @@ function Ship3D(vessel, stlPath) {
 				while (firstNumberJ > 0) {
 					firstNumberJ--;			
 					d -= 1;
-					//table[firstNumberJ][i] = y;
+					table[firstNumberJ][i] = y; //This is the necessary modification of the table
 					//pa[3*d] = x;
 					pa[3*d+1] = y;
 					pa[3*d+2] = z;
@@ -75,7 +83,7 @@ function Ship3D(vessel, stlPath) {
 		
 		//Continue up the hull (with same j counter), searching for upper NaN:
 		for (; j < M; j++) {
-			let y = table[j][i];
+			let y = table[j][i]; //This requires modified table
 			if (isNaN(y)) break;
 			lastNumberJ = j;
 		}
