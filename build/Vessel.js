@@ -1,4 +1,4 @@
-//Vessel.js library, built 2017-10-17 12:23:09.339097, Checksum: 5b20e5739dc8e9c7a5c69904053ad53c
+//Vessel.js library, built 2017-10-18 09:07:47.781961, Checksum: 98f5cf6e023f4efb329738cead04ff77
 /*
 Import like this in HTML:
 <script src="Vessel.js"></script>
@@ -690,6 +690,7 @@ Object.assign(Ship.prototype, {
 		console.info("Calculated draft: %.2f", t);
 		return t;
 	},
+	//Should separate between longitudinal and transverse GM too
     calculateStability(shipState){
         let T = this.calculateDraft(shipState);
         let ha = this.structure.hull.calculateAttributesAtDraft(T);
@@ -701,7 +702,7 @@ Object.assign(Ship.prototype, {
             vol = Lwl * B * T * cb;
         }
         let KG = this.getWeight(shipState).cg.z;
-        let I = ha.Iywp * 1000;
+        let I = ha.Iywp;
         let KB = 0.52 * T;
         let BM = I / vol;
         let GM = KB + BM - KG;
