@@ -123,6 +123,24 @@
                     </thead>
                     <body>
                         <tr>
+                           <td>Draft Amidships (m)</td> 
+                           <td><span id = "draftms"></span></td> 
+                           <td><span id = "draftc"></span></td> 
+                           <td><span id = "draftd"></span></td> 
+                        </tr>
+                        <tr>
+                           <td>Draft at FP (m)</td> 
+                           <td><span id = "draftfp"></span></td> 
+                           <td></td> 
+                           <td></td> 
+                        </tr>
+                        <tr>
+                           <td>Draft AP (m)</td> 
+                           <td><span id = "draftap"></span></td> 
+                           <td></td> 
+                           <td></td> 
+                        </tr>
+                        <tr>
                            <td>Displacement (t)</td> 
                            <td><span id = "disp"></span></td> 
                            <td></td> 
@@ -131,14 +149,14 @@
                         <tr>
                            <td>Waterline Lenght (m)</td> 
                            <td><span id = "lwl"></span></td> 
-                           <td></td> 
-                           <td></td> 
+                           <td><span id = "lwlc"></span></td> 
+                           <td><span id = "lwld"></span></td> 
                         </tr>
                         <tr>
                            <td>Maximum Waterline Breath (m)</td> 
                            <td><span id = "bwl"></span></td> 
-                           <td></td> 
-                           <td></td> 
+                           <td><span id = "bwlc"></span></td> 
+                           <td><span id = "bwld"></span></td> 
                         </tr>
                         <tr>
                            <td>Wetted area (m2)</td> 
@@ -149,8 +167,8 @@
                         <tr>
                            <td>Waterplane Area (m2)</td> 
                            <td><span id = "Awp"></span></td> 
-                           <td></td> 
-                           <td></td> 
+                           <td><span id = "Awpc"></span></td> 
+                           <td><span id = "awpd"></span></td> 
                         </tr>
                         <tr>
                            <td>Cb</td> 
@@ -289,50 +307,77 @@
             document.getElementById("GM2").innerHTML = GMc;
             
             //hand values
-            let disp = 111;
+            let disp = 102.4;
+            let draftms = 1.989;
+            let draftap = 1.98;
+            let draftfp = 1.999;
             let lwl = 20;
-            let bwl = 5.292;
-            let Awet = 144.091;
-            let Awp = 104.059;
-            let Cb = 0.975;
-            let LCBx = 9.885;
-            let LCFx = 9.943;
-            let KB = 1.388;
-            let KG = 3.473;
-            let BM = 2.168;
-            let GM = 0.083;
+            let bwl = 5.046;
+            let Awet = 137.989;
+            let Awp = 99.95;
+            let Cb = disp / (draftms * lwl * bwl * 1.025);
+            let LCBx = 10.065;
+            let LCFx = 10.032;
+            let KB = 1.333;
+            let KG = 3.513;
+            let BM = 2.082;
+            let GM = KB + BM - KG;
+            let trim = -0.019;
             
-            document.getElementById("disp").innerHTML = disp;
-            document.getElementById("lwl").innerHTML = lwl;
-            document.getElementById("bwl").innerHTML = bwl;
-            document.getElementById("Awet").innerHTML = Awet;
+            document.getElementById("disp").innerHTML = disp.toFixed(3);
+            document.getElementById("draftms").innerHTML = draftms.toFixed(3);
+            document.getElementById("draftfp").innerHTML = draftfp.toFixed(3);
+            document.getElementById("draftap").innerHTML = draftap.toFixed(3);
+            document.getElementById("lwl").innerHTML = lwl.toFixed(3);
+            document.getElementById("bwl").innerHTML = bwl.toFixed(3);
+            document.getElementById("Awet").innerHTML = Awet.toFixed(3);
             document.getElementById("Awp").innerHTML = Awp;
-            document.getElementById("Cb").innerHTML = Cb;
-            document.getElementById("LCBx").innerHTML = LCBx;
-            document.getElementById("LCFx").innerHTML = LCFx;
-            document.getElementById("KB").innerHTML = KB;
-            document.getElementById("KG").innerHTML = KG;
-            document.getElementById("BM").innerHTML = BM;
-            document.getElementById("GM").innerHTML = GM;
+            document.getElementById("Cb").innerHTML = Cb.toFixed(3);
+            document.getElementById("LCBx").innerHTML = LCBx.toFixed(3);
+            document.getElementById("LCFx").innerHTML = LCFx.toFixed(3);
+            document.getElementById("KB").innerHTML = KB.toFixed(3);
+            document.getElementById("KG").innerHTML = KG.toFixed(3);
+            document.getElementById("BM").innerHTML = BM.toFixed(3);
+            document.getElementById("GM").innerHTML = GM.toFixed(3);
             
             //calculated values
             let KBc = a.KB.toFixed(3);
             let KGc = a.KG.toFixed(3);
             let BMc = a.BM.toFixed(3);
+            let draftc = ship.calculateDraft().toFixed(3);
+            let lwlc = ship.structure.hull.calculateAttributesAtDraft().LWL;
+            let bwlc = ship.structure.hull.calculateAttributesAtDraft().BWL;
+            let Awpc = ship.structure.hull.calculateAttributesAtDraft().Awp;
+            
             document.getElementById("KBc").innerHTML = KBc;
             document.getElementById("KGc").innerHTML = KGc;
             document.getElementById("BMc").innerHTML = BMc;
+            document.getElementById("draftc").innerHTML = draftc;
+            document.getElementById("lwlc").innerHTML = lwlc.toFixed(3);
+            document.getElementById("bwlc").innerHTML = bwlc.toFixed(3);
+            document.getElementById("Awpc").innerHTML = Awpc.toFixed(3);
             
             //% diff
             let KBd = (1-KB/KBc)*100;
             let KGd = (1-KG/KGc)*100;
             let BMd = (1-BM/BMc)*100;
             let GMd = (1-GM/GMc)*100;
+            let draftd = (1-draftms/draftc)*100;
+            let lwld = (1-lwl/lwlc)*100;
+            let bwld = (1-bwl/bwlc)*100;
+            let awpd = (1-Awp/Awpc)*100;
+            
             document.getElementById("KBd").innerHTML = KBd.toFixed(3);
             document.getElementById("KGd").innerHTML = KGd.toFixed(3);
             document.getElementById("BMd").innerHTML = BMd.toFixed(3);
             document.getElementById("GMd").innerHTML = GMd.toFixed(3);
-
+            document.getElementById("draftd").innerHTML = draftd.toFixed(3);
+            document.getElementById("lwld").innerHTML = lwld.toFixed(3);
+            document.getElementById("bwld").innerHTML = bwld.toFixed(3);
+            document.getElementById("awpd").innerHTML = awpd.toFixed(3);
+            
+            
+            console.log(ship.structure.hull.calculateAttributesAtDraft())
 		}
 		
 		function animate() {
