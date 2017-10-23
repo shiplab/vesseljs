@@ -173,7 +173,7 @@
                         <tr>
                            <td>Cb</td> 
                            <td><span id = "Cb"></span></td> 
-                           <td></td> 
+                           <td><span id = "cbc"></span></td> 
                            <td></td> 
                         </tr>
                         <tr>
@@ -348,6 +348,7 @@
             let lwlc = ship.structure.hull.calculateAttributesAtDraft().LWL;
             let bwlc = ship.structure.hull.calculateAttributesAtDraft().BWL;
             let Awpc = ship.structure.hull.calculateAttributesAtDraft().Awp;
+            let cbc = ship.structure.hull.calculateAttributesAtDraft().Cb;
             
             document.getElementById("KBc").innerHTML = KBc;
             document.getElementById("KGc").innerHTML = KGc;
@@ -356,6 +357,7 @@
             document.getElementById("lwlc").innerHTML = lwlc.toFixed(3);
             document.getElementById("bwlc").innerHTML = bwlc.toFixed(3);
             document.getElementById("Awpc").innerHTML = Awpc.toFixed(3);
+            document.getElementById("cbc").innerHTML = cbc.toFixed(3);
             
             //% diff
             let KBd = (1-KB/KBc)*100;
