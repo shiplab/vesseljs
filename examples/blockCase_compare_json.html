@@ -1,0 +1,86 @@
+<!--@EliasHasle-->
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Comparison of manually calculations and library calculations</title>
+	<meta charset="utf-8">
+	<script type="text/javascript" src="js/libs/renderjson.js"></script>
+	<script src="../build/Vessel.js"></script>
+</head>
+<body>
+<ul id="log"></ul>
+
+<script>
+
+function logToScreen(s, o) {
+	let log = document.getElementById("log");
+	let entry = document.createElement("li");
+	entry.innerHTML = s;
+	if (o !== undefined) {
+		let pre = document.createElement("pre");
+		pre.appendChild(renderjson(o));
+		entry.appendChild(pre);
+	}
+	log.appendChild(entry);
+}
+
+function compToScreen(s, man, machine) {
+	let log = document.getElementById("log");
+	let entry = document.createElement("li");
+	entry.innerHTML = s;
+
+	let left = document.createElement("div");
+	left.style.display = "inline-block";
+	let preLeft = document.createElement("pre");
+	preLeft.appendChild(renderjson(man));
+	left.appendChild(preLeft);
+	entry.appendChild(left);
+	
+	let right = document.createElement("div");
+	right.style.display = "inline-block";
+	let preRight = document.createElement("pre");
+	preRight.appendChild(renderjson(machine));
+	right.appendChild(preRight);
+	entry.appendChild(right);
+
+	log.appendChild(entry);
+}
+
+var v;
+var s;
+
+Vessel.loadShip("data/ship_specifications/blockCase.json", useShip);
+
+function useShip(ship) {
+	v = ship; //just to have an entry point for debugging.
+
+	renderjson.set_show_to_level(1);
+	
+	logToScreen("Ship: ", ship);
+	//logToScreen("Design state: ", ship.designState);
+
+	//Hand-calculated values from @MrEranwe
+	
+	let w = ship.getWeight();
+	compToScreen("Weight at design state:", {}, w);
+	
+	let T = ship.calculateDraft();
+	logToScreen("Calculated draft: Man: 1.989, Machine: " + T);
+	
+	let ha = v.structure.hull.calculateAttributesAtDraft(T);
+	compToScreen("Calculated hull values at calculated draft: ", {
+		LWL: 20,
+		BWL: 5.046,
+		As: 137.989,
+		Awp: 99.95,
+		Cb: 0.498
+		//more
+	}, ha);
+	
+	//let wl = v.structure.hull.getWaterline(T);
+	//logToScreen("Waterline at calculated draft: ", wl);
+}
+
+</script>
+</body>
+</html>
