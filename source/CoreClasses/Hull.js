@@ -309,6 +309,7 @@ Object.assign(Hull.prototype, {
 	},
 	//Unoptimized, some redundant repetitions of calculations.
 	//NOT DONE YET. Outputs lots of NaN values.
+	//Important: calculateAttributesAtDraft takes one mandatory parameter T. (The function defined here is immediately called during construction of the prototype, and returns the proper function.)
 	calculateAttributesAtDraft: function() {
 		function levelCalculation(hull,
 			z,
@@ -381,7 +382,13 @@ Object.assign(Hull.prototype, {
 			return lev;
 		}
 		
+		//Here is the returned function calculateAttributesAtDraft(T):
 		return function(T) {
+			if (T === undefined) {
+				console.error("Hull.prototype.calculateAttributesAtDraft(T): No draft specified. Returning undefined.");
+				return;
+			}
+			
 			let wls = this.halfBreadths.waterlines.map(wl=>this.attributes.Depth*wl);
 			
 			//This is the part that can be reused as long as the geometry remains unchanged:

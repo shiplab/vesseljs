@@ -1,4 +1,4 @@
-//Vessel.js library, built 2017-10-18 09:13:35.951607, Checksum: 98f5cf6e023f4efb329738cead04ff77
+//Vessel.js library, built 2017-10-24 22:53:41.412445, Checksum: c9f7fffc8d35ee190cfc25d553418214
 /*
 Import like this in HTML:
 <script src="Vessel.js"></script>
@@ -1116,6 +1116,7 @@ Object.assign(Hull.prototype, {
 	},
 	//Unoptimized, some redundant repetitions of calculations.
 	//NOT DONE YET. Outputs lots of NaN values.
+	//Important: calculateAttributesAtDraft takes one mandatory parameter T. (The function defined here is immediately called during construction of the prototype, and returns the proper function.)
 	calculateAttributesAtDraft: function() {
 		function levelCalculation(hull,
 			z,
@@ -1188,7 +1189,13 @@ Object.assign(Hull.prototype, {
 			return lev;
 		}
 		
+		//Here is the returned function calculateAttributesAtDraft(T):
 		return function(T) {
+			if (T === undefined) {
+				console.error("Hull.prototype.calculateAttributesAtDraft(T): No draft specified. Returning undefined.");
+				return;
+			}
+			
 			let wls = this.halfBreadths.waterlines.map(wl=>this.attributes.Depth*wl);
 			
 			//This is the part that can be reused as long as the geometry remains unchanged:
