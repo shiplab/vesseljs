@@ -27,10 +27,12 @@ function logToScreen(s, o) {
 function compToScreen(s, man, machine) {
 	let log = document.getElementById("log");
 	let entry = document.createElement("li");
-	entry.innerHTML = s;
+	entry.innerHTML = s+" ";
 
 	let left = document.createElement("div");
 	left.style.display = "inline-block";
+	left.style.verticalAlign = "top";
+	left.appendChild(document.createTextNode("Man"));
 	let preLeft = document.createElement("pre");
 	preLeft.appendChild(renderjson(man));
 	left.appendChild(preLeft);
@@ -38,6 +40,8 @@ function compToScreen(s, man, machine) {
 	
 	let right = document.createElement("div");
 	right.style.display = "inline-block";
+	right.style.verticalAlign = "top";
+	right.appendChild(document.createTextNode("Machine"));
 	let preRight = document.createElement("pre");
 	preRight.appendChild(renderjson(machine));
 	right.appendChild(preRight);
@@ -54,26 +58,58 @@ Vessel.loadShip("data/ship_specifications/blockCase.json", useShip);
 function useShip(ship) {
 	v = ship; //just to have an entry point for debugging.
 
-	renderjson.set_show_to_level(1);
+	renderjson.set_show_to_level(2);
+	renderjson.set_sort_objects(true);
 	
 	logToScreen("Ship: ", ship);
 	//logToScreen("Design state: ", ship.designState);
 
 	//Hand-calculated values from @MrEranwe
+	//Some of these values are not calculated by the library yet.
+	//And the library does not account for trim when calculating Cb etc.
+	let disp = 102.4;
+	let draftms = 1.989;
+	//let draftap = 1.98;
+	//let draftfp = 1.999;
+	let lwl = 20;
+	let bwl = 5.046;
+	let Awet = 137.989;
+	let Awp = 99.95;
+	let Cb = disp / (draftms * lwl * bwl * 1.025);
+	let LCBx = 10.065;
+	let LCFx = 10.032;
+	let KB = 1.333;
+	let KG = 3.513;
+	let BM = 2.082;
+	let GM = KB + BM - KG;
+	//let trim = -0.019;
 	
 	let w = ship.getWeight();
-	compToScreen("Weight at design state:", {}, w);
+	compToScreen("Weight at design state:", {
+		mass: 1000*disp,
+		cg: {
+			x: undefined,
+			y: undefined,
+			z: KG
+		}
+	}, w);
 	
 	let T = ship.calculateDraft();
-	logToScreen("Calculated draft: Man: 1.989, Machine: " + T);
-	
-	let ha = v.structure.hull.calculateAttributesAtDraft(T);
+	logToScreen("Calculated draft: Man: "+ draftms+ ", Machine: "+ T);
+	logToScreen("Assuming draft = " + draftms + ":");
+	let ha = v.structure.hull.calculateAttributesAtDraft(draftms);
 	compToScreen("Calculated hull values at calculated draft: ", {
-		LWL: 20,
-		BWL: 5.046,
-		As: 137.989,
-		Awp: 99.95,
-		Cb: 0.498
+		LWL: lwl,
+		BWL: bwl,
+		As: Awet,
+		Awp: Awp,
+		Cb: Cb,
+		Cv: {
+			x: LCBx,
+			y: undefined,
+			z: KB
+		},
+		xcwp: LCFx
 		//more
 	}, ha);
 	
