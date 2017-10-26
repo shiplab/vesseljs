@@ -58,16 +58,17 @@ Vessel.loadShip("data/ship_specifications/blockCase.json", useShip);
 function useShip(ship) {
 	v = ship; //just to have an entry point for debugging.
 
-	renderjson.set_show_to_level(2);
 	renderjson.set_sort_objects(true);
-	
+		
 	logToScreen("Ship: ", ship);
 	//logToScreen("Design state: ", ship.designState);
 
+	renderjson.set_show_to_level("all");
+		
 	//Hand-calculated values from @MrEranwe
 	//Some of these values are not calculated by the library yet.
 	//And the library does not account for trim when calculating Cb etc.
-	let disp = 102.4;
+	/*let disp = 102.4;
 	let draftms = 1.989;
 	//let draftap = 1.98;
 	//let draftfp = 1.999;
@@ -82,36 +83,84 @@ function useShip(ship) {
 	let KG = 3.513;
 	let BM = 2.082;
 	let GM = KB + BM - KG;
-	//let trim = -0.019;
+	//let trim = -0.019;*/
 	
 	let w = ship.getWeight();
-	compToScreen("Weight at design state:", {
+	logToScreen("Assuming weight from library calculation: ", w);
+	//Weight cannot be compared until the method for calculating it has been specified. Right now the library method is faulty anyway.
+	/*compToScreen("Weight at design state: ", {
 		mass: 1000*disp,
 		cg: {
 			x: undefined,
 			y: undefined,
 			z: KG
 		}
-	}, w);
+	}, w);*/
+
 	
-	let T = ship.calculateDraft();
-	logToScreen("Calculated draft: Man: "+ draftms+ ", Machine: "+ T);
-	logToScreen("Assuming draft = " + draftms + ":");
-	let ha = v.structure.hull.calculateAttributesAtDraft(draftms);
+	//Simplified calculations for triangular prism case, without trim:
+	//Assuming that T<Depth
+	let ha = ship.structure.hull.attributes;
+	let LOA = ha.LOA;
+	let BOA = ha.BOA;
+	let Depth = ha.Depth;
+	let displacement = w.mass;
+	let rho = 1025; //kg/m^3
+	//Using: displacement = Vs*rho = 0.5*rho*LOA*(BOA/Depth)*T^2
+	let T = Math.sqrt(2*displacement*Depth/(rho*LOA*BOA));
+	if (T>=Depth) {
+		logToScreen("Invalid calculations, because T>=Depth. T=" + T);
+	}
+	let BWL = (BOA/Depth)*T;
+	let LWL = LOA;
+	let Vs = 0.5*LWL*BWL*T;
+	//let Vbb = BWL*LWL*T;// = LOA*(BOA/Depth)*T^2
+	let Cb = 0.5;// = Vs/Vbb
+	let Ap = 0.5*BWL*T;
+	let As = 2*Ap + 2*LWL*Math.sqrt(T**2 + (0.5*BWL)**2);
+	let Awp = LWL*BWL;
+	let Cwp = 1;
+	let Cv = {x:0.5*LOA, y:0, z:(2/3.)*T}
+	let Ixwp = LWL*BWL**3/12.;
+	let Iywp = BWL*LWL**3/12.;
+	let xcwp = 0.5*LWL;
+	let ycwp = 0;
+	let minXs = 0;
+	let maxXs = LWL;
+	let minYs = -0.5*BWL;
+	let maxYs = 0.5*BWL;
+	let LBP = LWL-ha.APP;
+	
+	let Tc = ship.calculateDraft();
+	logToScreen("Calculated draft: Man: "+ T + ", Machine: "+ Tc);
+	logToScreen("Assuming draft = " + T + ":");
+	let hca = v.structure.hull.calculateAttributesAtDraft(T);
 	compToScreen("Calculated hull values at calculated draft: ", {
-		LWL: lwl,
-		BWL: bwl,
-		As: Awet,
+		LWL: LWL,
+		BWL: BWL,
+		Ap: Ap,
+		As: As,
 		Awp: Awp,
+		Cwp: Cwp,
 		Cb: Cb,
-		Cv: {
+		Cv: Cv,/*{
 			x: LCBx,
 			y: undefined,
 			z: KB
-		},
-		xcwp: LCFx
+		},*/
+		xcwp: xcwp,//LCFx
+		ycwp: ycwp,
+		Ixwp: Ixwp,
+		Iywp: Iywp,
+		Vs: Vs,
+		//Vbb: Vbb,
+		minXs: minXs,
+		maxXs: maxXs,
+		minYs: minYs,
+		maxYs: maxYs,
+		LBP: LBP
 		//more
-	}, ha);
+	}, hca);
 	
 	//let wl = v.structure.hull.getWaterline(T);
 	//logToScreen("Waterline at calculated draft: ", wl);
