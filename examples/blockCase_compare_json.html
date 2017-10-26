@@ -99,7 +99,6 @@ function useShip(ship) {
 
 	
 	//Simplified calculations for triangular prism case, without trim:
-	//Assuming that T<Depth
 	let ha = ship.structure.hull.attributes;
 	let LOA = ha.LOA;
 	let BOA = ha.BOA;
@@ -162,7 +161,7 @@ function useShip(ship) {
 		//more
 	}, hca);
 	
-	//let wl = v.structure.hull.getWaterline(T);
+	//let wl = v.structure.hull.getWaterline(T,3);
 	//logToScreen("Waterline at calculated draft: ", wl);
 }
 

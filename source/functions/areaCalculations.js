@@ -2,7 +2,7 @@
 
 //All inputs are numbers. The axes are given by a single coordinate.
 function steiner(I, A, sourceAxis, targetAxis) {
-	return I + A*(sourceAxis-targetAxis)^2;
+	return I + A*(sourceAxis-targetAxis)**2;
 }
 
 //Calculate area, center, Ix, Iy.
@@ -17,18 +17,18 @@ function trapezoidCalculation(xbase0, xbase1, xtop0, xtop1, ybase, ytop) {
 	let yc = (a==0 && b==0) ? ybase+0.5*h : ybase + h*(2*a+b)/(3*(a+b));
 	let d = xbase0+0.5*a; //shorthand
 	let xc = h===0 ? 0.25*(xbase0+xbase1+xtop0+xtop1) : d + (xtop0+0.5*b-d)*(yc-ybase)/h;
-	let Ix = (a==0 && b== 0) ? 0 : h^3*(a^2+4*a*b+b^2)/(36*(a+b));
+	let Ix = (a==0 && b== 0) ? 0 : h**3*(a**2+4*a*b+b**2)/(36*(a+b));
 
 	//For Iy I must decompose (I think negative results will work fine):
 	let Art1 = 0.5*(xtop0-xbase0)*h;
 	let xcrt1 = xbase0 + (xtop0-xbase0)/3;
-	let Iyrt1 = (xtop0-xbase0)^3*h/36;
+	let Iyrt1 = (xtop0-xbase0)**3*h/36;
 	let Arec = (xbase1-xtop0)*h;
 	let xcrec = 0.5*(xtop0+xbase1);
-	let Iyrec = (xbase1-xtop0)^3*h/12;
+	let Iyrec = (xbase1-xtop0)**3*h/12;
 	let Art2 = 0.5*(xbase1-xtop1)*h;
 	let xcrt2 = (xtop1 + (xbase1-xtop1)/3);
-	let Iyrt2 = (xbase1-xtop1)^3*h/36;
+	let Iyrt2 = (xbase1-xtop1)**3*h/36;
 
 	let Iy = steiner(Iyrt1, Art1, xcrt1, xc)
 		+ steiner(Iyrec, Arec, xcrec, xc)
@@ -85,10 +85,8 @@ function combineAreas(array) {
 
 //x and y here refers to coordinates in the plane that is being calculated on.
 function sectionCalculation({xs, ymins, ymaxs}) {
-	console.groupCollapsed("sectionCalculation");
+	console.group/*Collapsed*/("sectionCalculation");
 	console.info("Arguments (xs, ymins, ymaxs): ", arguments[0]);
-	
-	//Needed for Cwp (not a very efficient calculation, maybe):
 
 	let calculations = [];
 	for (let i = 0; i < xs.length-1; i++) {

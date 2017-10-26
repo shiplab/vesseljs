@@ -17,7 +17,7 @@ Object.assign(Ship.prototype, {
 	constructor: Ship,
 	setFromSpecification: function(specification) {
 		this.attributes = specification.attributes || {};
-		this.structure = new Structure(specification.structure,this);
+		this.structure = new Structure(specification.structure/*,this*/);
 		//baseObjects and derivedObjects are arrays in the specification, but are objects (hashmaps) in the constructed ship object:
 		this.baseObjects = {};
 		for (let i = 0; i < specification.baseObjects.length; i++) {

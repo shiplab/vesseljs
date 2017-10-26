@@ -2,22 +2,6 @@
 
 //Some interpolation helpers. Only linear and bilinear for now.
 
-//linear interpolation
-//Defaults are not finally decided
-//returns NaN if a and b are NaN or mu is NaN.
-function lerp(a, b, mu=0.5) {
-	if (isNaN(a)) return b;
-	if (isNaN(b)) return a;
-	return (1-mu)*a+mu*b;
-}
-
-//Test. Not safe yet.
-function linearFromArrays(xx, yy, x) {
-	let {index, mu} = bisectionSearch(xx, x);
-	if (index === undefined || mu === undefined) return 0;
-	return lerp(yy[index], yy[index+1], mu);	
-}
-
 /*Function that takes a sorted array as input, and finds the last index that holds a numerical value less than, or equal to, a given value.
 Returns an object with the index and an interpolation parameter mu that gives the position of value between index and index+1.
 */
@@ -42,6 +26,22 @@ function bisectionSearch(array, value) {
 		mu = undefined;
 	}
 	return {index, mu};
+}
+
+//linear interpolation
+//Defaults are not finally decided
+//returns NaN if a and b are NaN or mu is NaN.
+function lerp(a, b, mu=0.5) {
+	if (isNaN(a)) return b;
+	if (isNaN(b)) return a;
+	return (1-mu)*a+mu*b;
+}
+
+//Test. Not safe yet.
+function linearFromArrays(xx, yy, x) {
+	let {index, mu} = bisectionSearch(xx, x);
+	if (index === undefined || mu === undefined) return 0;
+	return lerp(yy[index], yy[index+1], mu);	
 }
 
 function bilinearUnitSquareCoeffs(z00, z01, z10, z11) {

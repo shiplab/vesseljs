@@ -49,9 +49,11 @@ Object.assign(Hull.prototype, {
 		return output;
 	},
 	/*
+	This method is a mess, and introducing three different NaN correction has made it even worse in some ways. None of the correction modes fit for the usual cases. Maybe we should have a default mode that extrapolates to top NaNs and sets all other NaNs to zero. UPDATE: Now this is implemented as mode 3. Maybe we can skip the other ones.
+	
 	Input:
 	z: level from bottom of ship (absolute value in meters)
-	nanCorrectionMode: 0 to set all NaNs to zero, 1 to output NaNs, set all NaNs to zero, 2 to replace NaNs with interpolated or extrapolated values.	
+	nanCorrectionMode: 0 to set all NaNs to zero, 1 to output NaNs, 2 to replace NaNs with interpolated or extrapolated values, 3 to extrapolate to top NaNs and set all other NaNs to zero.
 	*/
 	getWaterline: function(z, nanCorrectionMode=1) {
 		let ha = this.attributes;
@@ -63,7 +65,7 @@ Object.assign(Hull.prototype, {
 		let {index: a, mu: mu} = bisectionSearch(wls, zr);
 		let wl;
 		if (a<0) {
-			if (nanCorrectionMode===0) {
+			if (nanCorrectionMode===0 || nanCorrectionMode===3) {
 				console.warn("getWaterLine: z below lowest defined waterline. Defaulting to zeros.");
 				return new Array(sts.length).fill(0);
 			}
@@ -77,7 +79,7 @@ Object.assign(Hull.prototype, {
 				mu=0;
 				//wl = tab[a].slice();
 			}			
-		} else if (a>/*=*/wls.length-1) {
+		} else if (a >= wls.length-1) {
 			if (nanCorrectionMode===0) {
 				console.warn("getWaterLine: z above highest defined waterline. Defaulting to zeros.");
 				return new Array(sts.length).fill(0);
@@ -86,7 +88,7 @@ Object.assign(Hull.prototype, {
 				console.warn("getWaterLine: z above highest defined waterline. Outputting NaNs.");
 				return new Array(sts.length).fill(null);
 			}
-			else /*nanCorrectionMode===2*/ {
+			else /*nanCorrectionMode===2 || nanCorrectionMode===3*/ {
 				console.warn("getWaterLine: z above highest defined waterline. Proceeding with highest data entry.");
 				a = wls.length-2; //if this level is defined...
 				mu=1;
@@ -99,7 +101,7 @@ Object.assign(Hull.prototype, {
 		for (let j = 0; j < wl.length; j++) {
 			if (nanCorrectionMode === 0) {
 				if (a+1 > wls.length-1) {
-					wl[j] = lerp(tab[a][j], 0, 0.5);
+					wl[j] = lerp(tab[a][j], 0, 0.5); //Suspicious!
 				} else {
 					wl[j] = lerp(tab[a][j] || 0, tab[a+1][j] || 0, mu || 0.5);
 				}
@@ -109,7 +111,7 @@ Object.assign(Hull.prototype, {
 				} else {
 					wl[j] = lerp(tab[a][j], tab[a+1][j], mu);
 				}
-			} else {
+			} else if (nanCorrectionMode === 2) {
 				//If necessary, sample from below
 				let b = a;
 				while (b>0 && isNaN(tab[b][j])) {
@@ -141,14 +143,62 @@ Object.assign(Hull.prototype, {
 						upper = tab[c][j];
 					}
 				}
-				mu = c===b ? 0 : (a+(mu||0.5)-b)/(c-b);
+				mu = c===b ? 0 : (a+(mu||0.5)-b)/(c-b); //what is this? Some kind of self-explanatory code, perhaps?
 				wl[j] = lerp(lower, upper, mu);
+			} else /*nanCorrectionMode === 3*/ {
+				let lower, upper;
+				let b;
+				if (!isNaN(tab[a][j])) {
+					lower = tab[a][j];					
+				} else {
+					b = a+1;
+					while(b < wls.length && isNaN(tab[b][j])) {
+						b++;
+					}
+					if (b !== wls.length) {
+						//Inner NaN
+						lower = 0;
+					} else {
+						//Upper NaN, search below:
+						b = a-1;
+						while (b >= 0 && isNaN(tab[b][j])) {
+							b--;
+						}
+						if (b===-1) {
+							//No number found:
+							lower = 0;
+							upper = 0;
+						} else {
+							lower = tab[b][j];
+							upper = lower;
+						}
+					}
+				}
+				if (upper !== undefined) {}
+				else if (!isNaN(tab[a+1][j])) {
+					upper = tab[a+1][j];
+				} else {
+					//The cell value is NaN.
+					//Upper is not defined.
+					//That means either tab[a][j] is a number
+					//or tab[a][j] is an inner NaN and
+					//there exists at least one number above it.
+					//In both cases I have to check above a+1.
+					b = a+2;
+					while (b < wls.length && isNaN(tab[b][j])) {
+						b++;
+					}
+					if (b === wls.length) upper = lower;
+					else {
+						upper = tab[b][j];
+					}
+				}
+				wl[j] = lerp(lower, upper, mu || 0.5);
 			}
 			
 			//Scale numerical values
 			if (!isNaN(wl[j])) wl[j] *= 0.5*ha.BOA;
 		}
-
 		return wl;
 	},
 	getStation: function(x) {
@@ -184,14 +234,14 @@ Object.assign(Hull.prototype, {
 	
 	//THIS is a candidate for causing wrong Ix, Iy values.
 	//Much logic that can go wrong.
-										//typically deck bounds
-	waterlineCalculation: function(z, bounds) {
+									//typically deck bounds
+	waterlineCalculation: function(z, bounds, nanCorrectionMode=3) {
 		let {minX, maxX, minY, maxY} = bounds || {};
 
-		console.groupCollapsed("waterlineCalculation.");
-		console.info("Arguments: z=", z, " Boundaries: ", arguments[1]);
+		console.group/*Collapsed*/("waterlineCalculation.");
+		console.info("Arguments: z=", z, " Boundaries: ", arguments[1], " NaN correction mode: ", nanCorrectionMode);
 		
-		let wl = this.getWaterline(z, 0);
+		let wl = this.getWaterline(z, nanCorrectionMode);
 		console.info("wl: ", wl); //DEBUG
 
 		let LOA = this.attributes.LOA;
@@ -201,8 +251,8 @@ Object.assign(Hull.prototype, {
 			sts[i] *= LOA;
 		}
 		
-		let hasMinX = (minX !== undefined);
-		let hasMaxX = (maxX !== undefined);
+		let hasMinX = (minX !== undefined) && minX!==sts[0];
+		let hasMaxX = (maxX !== undefined) && maxX!==sts[sts.length-1];
 		if (hasMinX || hasMaxX) {
 			let first=0;
 			let wlpre;
@@ -328,12 +378,12 @@ Object.assign(Hull.prototype, {
 				Cv: {x:0, y:0, z:0}
 			}) {
 			
-			let wlc = hull.waterlineCalculation(z);
+			let wlc = hull.waterlineCalculation(z,{},3);
 			let lev = {};
 			Object.assign(lev, wlc);
 			//Projected area calculation (approximate):
 			lev.prMinY = wlc.minY || 0;
-			lev.prMaxY = wlc.maxY || 0; //|| 0 right?
+			lev.prMaxY = wlc.maxY || 0;
 			lev.Ap = prev.Ap
 				+ trapezoidCalculation(prev.prMinY, prev.prMaxY, lev.prMinY, lev.prMaxY, prev.z, lev.z)["A"];
 			
@@ -351,10 +401,9 @@ Object.assign(Hull.prototype, {
 			//Find bilinear patches in the slice, and combine them.
 			//Many possibilities for getting the coordinate systems wrong.
 			let calculations = [];
-			//let wls = hull.halfBreadths.waterlines.map(wl=>wl*hull.attributes.Depth);
 			let sts = hull.halfBreadths.stations.map(st=>st*hull.attributes.LOA);
-			let wl = hull.getWaterline(z,0);
-			let prwl = hull.getWaterline(prev.z,0);
+			let wl = hull.getWaterline(z,3);
+			let prwl = hull.getWaterline(prev.z,3);
 			for (let j = 0; j < sts.length-1; j++) {
 				let port = 
 					bilinearPatchColumnCalculation(sts[j], sts[j+1], prev.z, z, -prwl[j], -wl[j], -prwl[j+1], -wl[j+1]);
@@ -384,9 +433,11 @@ Object.assign(Hull.prototype, {
 		
 		//Here is the returned function calculateAttributesAtDraft(T):
 		return function(T) {
-			if (T === undefined) {
+			if (isNaN(T)) {
 				console.error("Hull.prototype.calculateAttributesAtDraft(T): No draft specified. Returning undefined.");
 				return;
+			} else if (T<0 || T>this.attributes.Depth) {
+				console.error("Hull.prototype.calculateAttributesAtDraft(T): Draft parameter " + T + "outside valid range of [0,Depth]. Returning undefined.");
 			}
 			
 			let wls = this.halfBreadths.waterlines.map(wl=>this.attributes.Depth*wl);

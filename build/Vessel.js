@@ -1,4 +1,4 @@
-//Vessel.js library, built 2017-10-24 22:53:41.412445, Checksum: c9f7fffc8d35ee190cfc25d553418214
+//Vessel.js library, built 2017-10-26 22:24:21.268970, Checksum: 69efcb4dadd22b34bfc962e870f528a7
 /*
 Import like this in HTML:
 <script src="Vessel.js"></script>
@@ -63,22 +63,6 @@ function crossProduct(u,v) {
 
 //Some interpolation helpers. Only linear and bilinear for now.
 
-//linear interpolation
-//Defaults are not finally decided
-//returns NaN if a and b are NaN or mu is NaN.
-function lerp(a, b, mu=0.5) {
-	if (isNaN(a)) return b;
-	if (isNaN(b)) return a;
-	return (1-mu)*a+mu*b;
-}
-
-//Test. Not safe yet.
-function linearFromArrays(xx, yy, x) {
-	let {index, mu} = bisectionSearch(xx, x);
-	if (index === undefined || mu === undefined) return 0;
-	return lerp(yy[index], yy[index+1], mu);	
-}
-
 /*Function that takes a sorted array as input, and finds the last index that holds a numerical value less than, or equal to, a given value.
 Returns an object with the index and an interpolation parameter mu that gives the position of value between index and index+1.
 */
@@ -103,6 +87,22 @@ function bisectionSearch(array, value) {
 		mu = undefined;
 	}
 	return {index, mu};
+}
+
+//linear interpolation
+//Defaults are not finally decided
+//returns NaN if a and b are NaN or mu is NaN.
+function lerp(a, b, mu=0.5) {
+	if (isNaN(a)) return b;
+	if (isNaN(b)) return a;
+	return (1-mu)*a+mu*b;
+}
+
+//Test. Not safe yet.
+function linearFromArrays(xx, yy, x) {
+	let {index, mu} = bisectionSearch(xx, x);
+	if (index === undefined || mu === undefined) return 0;
+	return lerp(yy[index], yy[index+1], mu);	
 }
 
 function bilinearUnitSquareCoeffs(z00, z01, z10, z11) {
@@ -159,7 +159,7 @@ function bilinear(x1, x2, y1, y2, z11, z12, z21, z22, x, y) {
 
 //All inputs are numbers. The axes are given by a single coordinate.
 function steiner(I, A, sourceAxis, targetAxis) {
-	return I + A*(sourceAxis-targetAxis)^2;
+	return I + A*(sourceAxis-targetAxis)**2;
 }
 
 //Calculate area, center, Ix, Iy.
@@ -174,18 +174,18 @@ function trapezoidCalculation(xbase0, xbase1, xtop0, xtop1, ybase, ytop) {
 	let yc = (a==0 && b==0) ? ybase+0.5*h : ybase + h*(2*a+b)/(3*(a+b));
 	let d = xbase0+0.5*a; //shorthand
 	let xc = h===0 ? 0.25*(xbase0+xbase1+xtop0+xtop1) : d + (xtop0+0.5*b-d)*(yc-ybase)/h;
-	let Ix = (a==0 && b== 0) ? 0 : h^3*(a^2+4*a*b+b^2)/(36*(a+b));
+	let Ix = (a==0 && b== 0) ? 0 : h**3*(a**2+4*a*b+b**2)/(36*(a+b));
 
 	//For Iy I must decompose (I think negative results will work fine):
 	let Art1 = 0.5*(xtop0-xbase0)*h;
 	let xcrt1 = xbase0 + (xtop0-xbase0)/3;
-	let Iyrt1 = (xtop0-xbase0)^3*h/36;
+	let Iyrt1 = (xtop0-xbase0)**3*h/36;
 	let Arec = (xbase1-xtop0)*h;
 	let xcrec = 0.5*(xtop0+xbase1);
-	let Iyrec = (xbase1-xtop0)^3*h/12;
+	let Iyrec = (xbase1-xtop0)**3*h/12;
 	let Art2 = 0.5*(xbase1-xtop1)*h;
 	let xcrt2 = (xtop1 + (xbase1-xtop1)/3);
-	let Iyrt2 = (xbase1-xtop1)^3*h/36;
+	let Iyrt2 = (xbase1-xtop1)**3*h/36;
 
 	let Iy = steiner(Iyrt1, Art1, xcrt1, xc)
 		+ steiner(Iyrec, Arec, xcrec, xc)
@@ -242,10 +242,8 @@ function combineAreas(array) {
 
 //x and y here refers to coordinates in the plane that is being calculated on.
 function sectionCalculation({xs, ymins, ymaxs}) {
-	console.groupCollapsed("sectionCalculation");
+	console.group/*Collapsed*/("sectionCalculation");
 	console.info("Arguments (xs, ymins, ymaxs): ", arguments[0]);
-	
-	//Needed for Cwp (not a very efficient calculation, maybe):
 
 	let calculations = [];
 	for (let i = 0; i < xs.length-1; i++) {
@@ -278,19 +276,19 @@ function bilinearPatchColumnCalculation(x1, x2, y1, y2, z11, z12, z21, z22) {
 	= INT[x from 0 to 1, (a00+a10*x+0.5*a01+0.5*a11*x) dx]
 	= a00 + 0.5*a10 + 0.5*a01 + 0.25*a11
 	*/
-	let Ab = X*Y;
+	let Ab = X*Y; //area of base of patch column
 	let zAvg = (a00 + 0.5*a10 + 0.5*a01 + 0.25*a11);
 	let V = Math.abs(Ab*zAvg); //new: absolute value
 	let zc = 0.5*zAvg;
 	/*
-	To find xc, I need to integrate x*z over the unit square, and scale and translate to world coordinates afterwards:
+	To find xc, I need to integrate x*z over the unit square, and scale and translate to ship coordinates afterwards:
 	INT[x from 0 to 1, (a00+a10*x+0.5*a01+0.5*a11*x)*x dx]
 	= 0.5*a00 + a10/3 + 0.25*a01 + a11/6
 	Scale and translate:*/
-	let xc = y1 + X*(0.5*a00 + a10/3 + 0.25*a01 + a11/6)
+	let xc = x1 + X*(0.5*a00 + a10/3 + 0.25*a01 + a11/6);
 	
 	//Similar for yc:
-	let yc = y1 + Y*(0.5*a00 + 0.25*a10 + a01/3 + a11/6)
+	let yc = y1 + Y*(0.5*a00 + 0.25*a10 + a01/3 + a11/6);
 	
 	//new: absolute value (OK?)
 	let As = Math.abs(bilinearArea(x1, x2, y1, y2, z11, z12, z21, z22));
@@ -330,6 +328,8 @@ function combineVolumes(array) {
 }
 
 //For wetted area. I think this is right, but it is not tested.
+//The numerical integral will not scale well with larger geometries.
+//Then the full analytical solution is needed.
 function bilinearArea(x1, x2, y1, y2, z11, z12, z21, z22, segs=10) {
 	let [b00,b10,b01,b11] = bilinearCoeffs(x1, x2, y1, y2, z11, z12, z21, z22);
 	/*
@@ -342,6 +342,8 @@ function bilinearArea(x1, x2, y1, y2, z11, z12, z21, z22, segs=10) {
 	Then:
 	Tx X Ty = (-(b10+b11*y), -(b01+b11*x), 1)
 	|Tx X Ty| = sqrt((b10+b11*y)^2 + (b01+b11*x)^2 + 1)
+	
+	Now, to get the area I need to integrate |Tx X Ty| over X,Y.
 	
 	Wolfram Alpha gave me this for the inner integral using x (indefinite):
 	integral sqrt((b01 + b11 x)^2 + 1 + (b10+b11*y)^2) dx = ((b01 + b11*x) sqrt((b01 + b11*x)^2 + 1 + (b10+b11*y)^2) + (1 + (b10+b11*y)^2)*ln(sqrt((b01 + b11*x)^2 + 1 + (b10+b11*y)^2) + b01 + b11*x))/(2*b11) + constant
@@ -624,7 +626,7 @@ Object.assign(Ship.prototype, {
 	constructor: Ship,
 	setFromSpecification: function(specification) {
 		this.attributes = specification.attributes || {};
-		this.structure = new Structure(specification.structure,this);
+		this.structure = new Structure(specification.structure/*,this*/);
 		//baseObjects and derivedObjects are arrays in the specification, but are objects (hashmaps) in the constructed ship object:
 		this.baseObjects = {};
 		for (let i = 0; i < specification.baseObjects.length; i++) {
@@ -710,8 +712,8 @@ Object.assign(Ship.prototype, {
 	}
 });//@EliasHasle
 
-function Structure(spec, ship) {
-	this.ship = ship;
+function Structure(spec/*, ship*/) {
+	//this.ship = ship;
 	JSONSpecObject.call(this, spec);
 }
 Structure.prototype = Object.create(JSONSpecObject.prototype);
@@ -773,7 +775,7 @@ Object.assign(Structure.prototype, {
 			let zc = d.zFloor+0.5*d.thickness;
 			let yc = d.yCentre;
 			let b = d.breadth;
-			let wlc = this.hull.waterlineCalculation(zc, {minX: d.xAft, maxX: d.xFwd, minY: yc-0.5*b, maxY: yc+0.5*b});
+			let wlc = this.hull.waterlineCalculation(zc, {minX: d.xAft, maxX: d.xFwd, minY: yc-0.5*b, maxY: yc+0.5*b}, 3);
 			components.push({
 				//approximation
 				mass: wlc.Awp*d.thickness*d.density,
@@ -856,9 +858,11 @@ Object.assign(Hull.prototype, {
 		return output;
 	},
 	/*
+	This method is a mess, and introducing three different NaN correction has made it even worse in some ways. None of the correction modes fit for the usual cases. Maybe we should have a default mode that extrapolates to top NaNs and sets all other NaNs to zero. UPDATE: Now this is implemented as mode 3. Maybe we can skip the other ones.
+	
 	Input:
 	z: level from bottom of ship (absolute value in meters)
-	nanCorrectionMode: 0 to set all NaNs to zero, 1 to output NaNs, set all NaNs to zero, 2 to replace NaNs with interpolated or extrapolated values.	
+	nanCorrectionMode: 0 to set all NaNs to zero, 1 to output NaNs, 2 to replace NaNs with interpolated or extrapolated values, 3 to extrapolate to top NaNs and set all other NaNs to zero.
 	*/
 	getWaterline: function(z, nanCorrectionMode=1) {
 		let ha = this.attributes;
@@ -870,7 +874,7 @@ Object.assign(Hull.prototype, {
 		let {index: a, mu: mu} = bisectionSearch(wls, zr);
 		let wl;
 		if (a<0) {
-			if (nanCorrectionMode===0) {
+			if (nanCorrectionMode===0 || nanCorrectionMode===3) {
 				console.warn("getWaterLine: z below lowest defined waterline. Defaulting to zeros.");
 				return new Array(sts.length).fill(0);
 			}
@@ -884,7 +888,7 @@ Object.assign(Hull.prototype, {
 				mu=0;
 				//wl = tab[a].slice();
 			}			
-		} else if (a>/*=*/wls.length-1) {
+		} else if (a >= wls.length-1) {
 			if (nanCorrectionMode===0) {
 				console.warn("getWaterLine: z above highest defined waterline. Defaulting to zeros.");
 				return new Array(sts.length).fill(0);
@@ -893,7 +897,7 @@ Object.assign(Hull.prototype, {
 				console.warn("getWaterLine: z above highest defined waterline. Outputting NaNs.");
 				return new Array(sts.length).fill(null);
 			}
-			else /*nanCorrectionMode===2*/ {
+			else /*nanCorrectionMode===2 || nanCorrectionMode===3*/ {
 				console.warn("getWaterLine: z above highest defined waterline. Proceeding with highest data entry.");
 				a = wls.length-2; //if this level is defined...
 				mu=1;
@@ -906,7 +910,7 @@ Object.assign(Hull.prototype, {
 		for (let j = 0; j < wl.length; j++) {
 			if (nanCorrectionMode === 0) {
 				if (a+1 > wls.length-1) {
-					wl[j] = lerp(tab[a][j], 0, 0.5);
+					wl[j] = lerp(tab[a][j], 0, 0.5); //Suspicious!
 				} else {
 					wl[j] = lerp(tab[a][j] || 0, tab[a+1][j] || 0, mu || 0.5);
 				}
@@ -916,7 +920,7 @@ Object.assign(Hull.prototype, {
 				} else {
 					wl[j] = lerp(tab[a][j], tab[a+1][j], mu);
 				}
-			} else {
+			} else if (nanCorrectionMode === 2) {
 				//If necessary, sample from below
 				let b = a;
 				while (b>0 && isNaN(tab[b][j])) {
@@ -948,14 +952,62 @@ Object.assign(Hull.prototype, {
 						upper = tab[c][j];
 					}
 				}
-				mu = c===b ? 0 : (a+(mu||0.5)-b)/(c-b);
+				mu = c===b ? 0 : (a+(mu||0.5)-b)/(c-b); //what is this? Some kind of self-explanatory code, perhaps?
 				wl[j] = lerp(lower, upper, mu);
+			} else /*nanCorrectionMode === 3*/ {
+				let lower, upper;
+				let b;
+				if (!isNaN(tab[a][j])) {
+					lower = tab[a][j];					
+				} else {
+					b = a+1;
+					while(b < wls.length && isNaN(tab[b][j])) {
+						b++;
+					}
+					if (b !== wls.length) {
+						//Inner NaN
+						lower = 0;
+					} else {
+						//Upper NaN, search below:
+						b = a-1;
+						while (b >= 0 && isNaN(tab[b][j])) {
+							b--;
+						}
+						if (b===-1) {
+							//No number found:
+							lower = 0;
+							upper = 0;
+						} else {
+							lower = tab[b][j];
+							upper = lower;
+						}
+					}
+				}
+				if (upper !== undefined) {}
+				else if (!isNaN(tab[a+1][j])) {
+					upper = tab[a+1][j];
+				} else {
+					//The cell value is NaN.
+					//Upper is not defined.
+					//That means either tab[a][j] is a number
+					//or tab[a][j] is an inner NaN and
+					//there exists at least one number above it.
+					//In both cases I have to check above a+1.
+					b = a+2;
+					while (b < wls.length && isNaN(tab[b][j])) {
+						b++;
+					}
+					if (b === wls.length) upper = lower;
+					else {
+						upper = tab[b][j];
+					}
+				}
+				wl[j] = lerp(lower, upper, mu || 0.5);
 			}
 			
 			//Scale numerical values
 			if (!isNaN(wl[j])) wl[j] *= 0.5*ha.BOA;
 		}
-
 		return wl;
 	},
 	getStation: function(x) {
@@ -991,14 +1043,14 @@ Object.assign(Hull.prototype, {
 	
 	//THIS is a candidate for causing wrong Ix, Iy values.
 	//Much logic that can go wrong.
-										//typically deck bounds
-	waterlineCalculation: function(z, bounds) {
+									//typically deck bounds
+	waterlineCalculation: function(z, bounds, nanCorrectionMode=3) {
 		let {minX, maxX, minY, maxY} = bounds || {};
 
-		console.groupCollapsed("waterlineCalculation.");
-		console.info("Arguments: z=", z, " Boundaries: ", arguments[1]);
+		console.group/*Collapsed*/("waterlineCalculation.");
+		console.info("Arguments: z=", z, " Boundaries: ", arguments[1], " NaN correction mode: ", nanCorrectionMode);
 		
-		let wl = this.getWaterline(z, 0);
+		let wl = this.getWaterline(z, nanCorrectionMode);
 		console.info("wl: ", wl); //DEBUG
 
 		let LOA = this.attributes.LOA;
@@ -1008,8 +1060,8 @@ Object.assign(Hull.prototype, {
 			sts[i] *= LOA;
 		}
 		
-		let hasMinX = (minX !== undefined);
-		let hasMaxX = (maxX !== undefined);
+		let hasMinX = (minX !== undefined) && minX!==sts[0];
+		let hasMaxX = (maxX !== undefined) && maxX!==sts[sts.length-1];
 		if (hasMinX || hasMaxX) {
 			let first=0;
 			let wlpre;
@@ -1135,12 +1187,12 @@ Object.assign(Hull.prototype, {
 				Cv: {x:0, y:0, z:0}
 			}) {
 			
-			let wlc = hull.waterlineCalculation(z);
+			let wlc = hull.waterlineCalculation(z,{},3);
 			let lev = {};
 			Object.assign(lev, wlc);
 			//Projected area calculation (approximate):
 			lev.prMinY = wlc.minY || 0;
-			lev.prMaxY = wlc.maxY || 0; //|| 0 right?
+			lev.prMaxY = wlc.maxY || 0;
 			lev.Ap = prev.Ap
 				+ trapezoidCalculation(prev.prMinY, prev.prMaxY, lev.prMinY, lev.prMaxY, prev.z, lev.z)["A"];
 			
@@ -1158,10 +1210,9 @@ Object.assign(Hull.prototype, {
 			//Find bilinear patches in the slice, and combine them.
 			//Many possibilities for getting the coordinate systems wrong.
 			let calculations = [];
-			//let wls = hull.halfBreadths.waterlines.map(wl=>wl*hull.attributes.Depth);
 			let sts = hull.halfBreadths.stations.map(st=>st*hull.attributes.LOA);
-			let wl = hull.getWaterline(z,0);
-			let prwl = hull.getWaterline(prev.z,0);
+			let wl = hull.getWaterline(z,3);
+			let prwl = hull.getWaterline(prev.z,3);
 			for (let j = 0; j < sts.length-1; j++) {
 				let port = 
 					bilinearPatchColumnCalculation(sts[j], sts[j+1], prev.z, z, -prwl[j], -wl[j], -prwl[j+1], -wl[j+1]);
@@ -1191,9 +1242,11 @@ Object.assign(Hull.prototype, {
 		
 		//Here is the returned function calculateAttributesAtDraft(T):
 		return function(T) {
-			if (T === undefined) {
+			if (isNaN(T)) {
 				console.error("Hull.prototype.calculateAttributesAtDraft(T): No draft specified. Returning undefined.");
 				return;
+			} else if (T<0 || T>this.attributes.Depth) {
+				console.error("Hull.prototype.calculateAttributesAtDraft(T): Draft parameter " + T + "outside valid range of [0,Depth]. Returning undefined.");
 			}
 			
 			let wls = this.halfBreadths.waterlines.map(wl=>this.attributes.Depth*wl);

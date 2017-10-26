@@ -11,19 +11,19 @@ function bilinearPatchColumnCalculation(x1, x2, y1, y2, z11, z12, z21, z22) {
 	= INT[x from 0 to 1, (a00+a10*x+0.5*a01+0.5*a11*x) dx]
 	= a00 + 0.5*a10 + 0.5*a01 + 0.25*a11
 	*/
-	let Ab = X*Y;
+	let Ab = X*Y; //area of base of patch column
 	let zAvg = (a00 + 0.5*a10 + 0.5*a01 + 0.25*a11);
 	let V = Math.abs(Ab*zAvg); //new: absolute value
 	let zc = 0.5*zAvg;
 	/*
-	To find xc, I need to integrate x*z over the unit square, and scale and translate to world coordinates afterwards:
+	To find xc, I need to integrate x*z over the unit square, and scale and translate to ship coordinates afterwards:
 	INT[x from 0 to 1, (a00+a10*x+0.5*a01+0.5*a11*x)*x dx]
 	= 0.5*a00 + a10/3 + 0.25*a01 + a11/6
 	Scale and translate:*/
-	let xc = y1 + X*(0.5*a00 + a10/3 + 0.25*a01 + a11/6)
+	let xc = x1 + X*(0.5*a00 + a10/3 + 0.25*a01 + a11/6);
 	
 	//Similar for yc:
-	let yc = y1 + Y*(0.5*a00 + 0.25*a10 + a01/3 + a11/6)
+	let yc = y1 + Y*(0.5*a00 + 0.25*a10 + a01/3 + a11/6);
 	
 	//new: absolute value (OK?)
 	let As = Math.abs(bilinearArea(x1, x2, y1, y2, z11, z12, z21, z22));
@@ -63,6 +63,8 @@ function combineVolumes(array) {
 }
 
 //For wetted area. I think this is right, but it is not tested.
+//The numerical integral will not scale well with larger geometries.
+//Then the full analytical solution is needed.
 function bilinearArea(x1, x2, y1, y2, z11, z12, z21, z22, segs=10) {
 	let [b00,b10,b01,b11] = bilinearCoeffs(x1, x2, y1, y2, z11, z12, z21, z22);
 	/*
@@ -75,6 +77,8 @@ function bilinearArea(x1, x2, y1, y2, z11, z12, z21, z22, segs=10) {
 	Then:
 	Tx X Ty = (-(b10+b11*y), -(b01+b11*x), 1)
 	|Tx X Ty| = sqrt((b10+b11*y)^2 + (b01+b11*x)^2 + 1)
+	
+	Now, to get the area I need to integrate |Tx X Ty| over X,Y.
 	
 	Wolfram Alpha gave me this for the inner integral using x (indefinite):
 	integral sqrt((b01 + b11 x)^2 + 1 + (b10+b11*y)^2) dx = ((b01 + b11*x) sqrt((b01 + b11*x)^2 + 1 + (b10+b11*y)^2) + (1 + (b10+b11*y)^2)*ln(sqrt((b01 + b11*x)^2 + 1 + (b10+b11*y)^2) + b01 + b11*x))/(2*b11) + constant
