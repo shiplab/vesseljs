@@ -1,4 +1,4 @@
-//Vessel.js library, built 2017-10-26 22:24:21.268970, Checksum: 69efcb4dadd22b34bfc962e870f528a7
+//Vessel.js library, built 2017-10-27 15:17:23.678874, Checksum: d15ff7f6a612a6565c1b1e1ff341031a
 /*
 Import like this in HTML:
 <script src="Vessel.js"></script>
@@ -263,68 +263,6 @@ function sectionCalculation({xs, ymins, ymaxs}) {
 	console.info("Output: ", output);
 	console.groupEnd();
 	return output;
-}//@EliasHasle
-
-function bilinearPatchColumnCalculation(x1, x2, y1, y2, z11, z12, z21, z22) {
-	let X = x2-x1;
-	let Y = y2-y1;
-	let [a00, a10, a01, a11] = bilinearUnitSquareCoeffs(z11, z12, z21, z22);
-	/*
-	From here I call mux for x, and muy for y.
-	Integral over unit square:
-	INT[x from 0 to 1, INT[y from 0 to 1, (a00 + a10*x + a01*y + a11*x*y) dy] dx]
-	= INT[x from 0 to 1, (a00+a10*x+0.5*a01+0.5*a11*x) dx]
-	= a00 + 0.5*a10 + 0.5*a01 + 0.25*a11
-	*/
-	let Ab = X*Y; //area of base of patch column
-	let zAvg = (a00 + 0.5*a10 + 0.5*a01 + 0.25*a11);
-	let V = Math.abs(Ab*zAvg); //new: absolute value
-	let zc = 0.5*zAvg;
-	/*
-	To find xc, I need to integrate x*z over the unit square, and scale and translate to ship coordinates afterwards:
-	INT[x from 0 to 1, (a00+a10*x+0.5*a01+0.5*a11*x)*x dx]
-	= 0.5*a00 + a10/3 + 0.25*a01 + a11/6
-	Scale and translate:*/
-	let xc = x1 + X*(0.5*a00 + a10/3 + 0.25*a01 + a11/6);
-	
-	//Similar for yc:
-	let yc = y1 + Y*(0.5*a00 + 0.25*a10 + a01/3 + a11/6);
-	
-	//new: absolute value (OK?)
-	let As = Math.abs(bilinearArea(x1, x2, y1, y2, z11, z12, z21, z22));
-	
-	return {Ab: Ab, As: As, V: V, Cv: {x: xc, y: yc, z: zc}};
-}
-
-//Input: array of objects with calculation results for elements.
-//Output: the combined results.
-function combineVolumes(array) {
-	let V = 0;
-	let As = 0;
-	let Cv = {x:0, y:0, z:0};
-	let L = array.length;
-	if (L===0) return {V,As,Cv};
-	for (let i = 0; i < L; i++) {
-		let e = array[i];
-		V += e.V;
-		As += e.As; //typically wetted area
-		Cv.x += e.Cv.x*e.V;
-		Cv.y += e.Cv.y*e.V;
-		Cv.z += e.Cv.z*e.V;
-	}
-	//Safe zero check?
-	if (V!==0) {
-		Cv.x /= V;
-		Cv.y /= V;
-		Cv.z /= V;
-	} else {
-		console.warn("Zero volume combination.");
-		Cv.x /= L;
-		Cv.y /= L;
-		Cv.z /= L;
-	}
-	
-	return {V,As,Cv};//{V: V, As: As, Cv: Cv};
 }
 
 //For wetted area. I think this is right, but it is not tested.
@@ -383,7 +321,106 @@ function bilinearArea(x1, x2, y1, y2, z11, z12, z21, z22, segs=10) {
 	A *= X*Y/(N*M); //dx dy
 	
 	return A;
-}//@MrEranwe
+}
+
+//Calculates the (arithmetic) average of the area of the two possible triangulations of the quad element (using two triangles).
+function elementArea(v1,v2,v3,v4) {
+	let A = 0.5*(Math.abs(signedTriangleArea(v1,v2,v3)) + Math.abs(signedTriangleArea(v2,v3,v4)) + Math.abs(signedTriangleArea(v3,v4,v1)) + Math.abs(signedTriangleArea(v4,v1,v2)));
+	return A;
+}
+
+function signedTriangleArea(v1,v2,v3) {
+	let u = addVec(v2,scaleVec(v1,-1));
+	let v = addVec(v3,scaleVec(v1,-1));
+	let c = crossProduct(u,v);
+	let A = 0.5*vecNorm(c);
+	return A;
+}//@EliasHasle
+
+//This one is broken, apparently.
+//It returns negative xc and yc when the z values are negative, 
+//even though all x and y values are positive.
+//I am currently doing some tests here of an (over-)simplified calculation
+//The results so far indicate that, for the prism hull, the results are almost identical, except that with the simple calculation the center of volume is almost right (but wrong enough to disqualify such a simple calculation). The bug causing very wrong (too big) submerged volume is likely to be found elsewhere.
+											  // xy
+function patchColumnCalculation(x1, x2, y1, y2, z11, z12, z21, z22) {
+	//DEBUG START:
+	//Simpler approximate calculation of volume:
+	let z = 0.25*(z11+z12+z21+z22);
+	let V = Math.abs((x2-x1)*(y2-y1)*z);
+
+	//Very approximate center of volume
+	//(does not account for different signs on z values,
+	//but that should be OK for hull offsets)
+	let xc = (x1*(z11+z12)+x2*(z21+z22))/(z11+z12+z21+z22);
+	let yc = (y1*(z11+z21)+y2*(z12+z22))/(z11+z12+z21+z22);
+	let zc = 0.5*z;
+	
+	//Simple triangle average approximation for area
+	let As = elementArea(
+		{x: x1, y: y1, z: z11},
+		{x: x1, y: y2, z: z12},
+		{x: x2, y: y1, z: z21},
+		{x: x2, y: y2, z: z22});
+	
+	return {As: As, V: V, Cv: {x: xc, y: yc, z: zc}};
+	
+	//DEBUG END
+	
+	//Calculation based on a bilinear patch:
+
+	// let X = x2-x1;
+	// let Y = y2-y1;
+	// let [a00, a10, a01, a11] = bilinearUnitSquareCoeffs(z11, z12, z21, z22);
+	// /*
+	// From here I call mux for x, and muy for y.
+	// Integral over unit square:
+	// INT[x from 0 to 1, INT[y from 0 to 1, (a00 + a10*x + a01*y + a11*x*y) dy] dx]
+	// = INT[x from 0 to 1, (a00+a10*x+0.5*a01+0.5*a11*x) dx]
+	// = a00 + 0.5*a10 + 0.5*a01 + 0.25*a11
+	// */
+	// let Ab = X*Y; //area of base of patch column
+	// let zAvg = (a00 + 0.5*a10 + 0.5*a01 + 0.25*a11);
+	// let V = Math.abs(Ab*zAvg); //new: absolute value
+	// let zc = 0.5*zAvg;
+	// /*
+	// To find xc, I need to integrate x*z over the unit square, and scale and translate to ship coordinates afterwards:
+	// INT[x from 0 to 1, (a00+a10*x+0.5*a01+0.5*a11*x)*x dx]
+	// = 0.5*a00 + a10/3 + 0.25*a01 + a11/6
+	// Scale and translate:*/
+	// let xc = x1 + X*(0.5*a00 + a10/3 + 0.25*a01 + a11/6);
+	
+	// //Similar for yc:
+	// let yc = y1 + Y*(0.5*a00 + 0.25*a10 + a01/3 + a11/6);
+	
+	//new: absolute value (OK?)
+	//let As = Math.abs(bilinearArea(x1, x2, y1, y2, z11, z12, z21, z22));
+	
+	// return {Ab: Ab, As: As, V: V, Cv: {x: xc, y: yc, z: zc}};
+}
+
+//Input: array of objects with calculation results for elements.
+//Output: the combined results.
+function combineVolumes(array) {
+	let V = 0;
+	let As = 0;
+	let Cv = {x:0, y:0, z:0};
+	let L = array.length;
+	//if (L===0) return {V,As,Cv};
+	for (let i = 0; i < L; i++) {
+		let e = array[i];
+		V += e.V;
+		As += e.As; //typically wetted area
+		//console.log(e.Cv);
+		Cv = addVec(Cv, scaleVec(e.Cv, e.V));
+	}
+	Cv = scaleVec(Cv, 1/(V || L || 1));
+	
+	//console.info("combineVolumes: Combined Cv is (" + Cv.x + ", " + Cv.y + ", " + Cv.z + ").");
+	
+	return {V,As,Cv};//{V: V, As: As, Cv: Cv};
+}
+//@MrEranwe
 //@EliasHasle
 
 "use strict";
@@ -1215,25 +1252,28 @@ Object.assign(Hull.prototype, {
 			let prwl = hull.getWaterline(prev.z,3);
 			for (let j = 0; j < sts.length-1; j++) {
 				let port = 
-					bilinearPatchColumnCalculation(sts[j], sts[j+1], prev.z, z, -prwl[j], -wl[j], -prwl[j+1], -wl[j+1]);
+					patchColumnCalculation(sts[j], sts[j+1], prev.z, z, -prwl[j], -wl[j], -prwl[j+1], -wl[j+1]);
 				calculations.push(port);
 				let star =
-					bilinearPatchColumnCalculation(sts[j], sts[j+1], prev.z, z, prwl[j], wl[j], prwl[j+1], wl[j+1]);
+					patchColumnCalculation(sts[j], sts[j+1], prev.z, z, prwl[j], wl[j], prwl[j+1], wl[j+1]);
 				calculations.push(star);
 			}
 			let C = combineVolumes(calculations);
+			//Cv of slice. Note that switching of yz must
+			//be done before combining with previous level
+			let Cv = {x: C.Cv.x, y: C.Cv.z, z: C.Cv.y};
+			
 			lev.Vs = prev.Vs + C.V; //hull volume below z
 			lev.As = prev.As + C.As; //outside surface below z
 
-			//center of volume below z (some potential for accumulated rounding error):
-			let Cv = addVec(scaleVec(prev.Cv,prev.Vs),
-					scaleVec(C.Cv,C.V));
-			let V = prev.Vs+C.V;
-			if (V!==0) {
-				Cv = scaleVec(Cv, 1/(prev.Vs+C.V));
-			}
-						//Note switching of yz
-			lev.Cv = {x: Cv.x, y: Cv.z, z: Cv.y};
+			//Simple approximation (wrong) for end caps:
+			lev.As += 2*lev.Ap;
+			
+			//center of volume below z (some potential for accumulated rounding error when calculating an accumulated average like this):
+			lev.Cv = scaleVec(addVec(
+						scaleVec(prev.Cv,prev.Vs),
+						scaleVec(Cv,C.V)
+					), 1/(lev.Vs || 2));
 			
 			lev.Cb = lev.Vs/lev.Vbb;
 			
@@ -1265,7 +1305,9 @@ Object.assign(Hull.prototype, {
 			//Find highest data waterline below water:
 			let {index: previ} = bisectionSearch(wls, T);
 			
-			let lc = levelCalculation(this, T, this.levels[previ]);
+			//console.info("Highest data waterline below water: " + previ);
+			
+			let lc = levelCalculation(this, T, this.levels[previ] || undefined);
 			
 			//Filter and rename for output
 			return {

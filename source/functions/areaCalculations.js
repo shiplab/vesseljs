@@ -107,3 +107,75 @@ function sectionCalculation({xs, ymins, ymaxs}) {
 	console.groupEnd();
 	return output;
 }
+
+//For wetted area. I think this is right, but it is not tested.
+//The numerical integral will not scale well with larger geometries.
+//Then the full analytical solution is needed.
+function bilinearArea(x1, x2, y1, y2, z11, z12, z21, z22, segs=10) {
+	let [b00,b10,b01,b11] = bilinearCoeffs(x1, x2, y1, y2, z11, z12, z21, z22);
+	/*
+	z(x,y) = b00 + b10*x + b01*y + b11*xy
+	Partial derivative in x: b10 + b11*y
+	Partial derivative in y: b01 + b11*x
+	I think this will be right:
+	Tx(y) = (1, 0, b10+b11*y)
+	Ty(x) = (0, 1, b01+b11*x)
+	Then:
+	Tx X Ty = (-(b10+b11*y), -(b01+b11*x), 1)
+	|Tx X Ty| = sqrt((b10+b11*y)^2 + (b01+b11*x)^2 + 1)
+	
+	Now, to get the area I need to integrate |Tx X Ty| over X,Y.
+	
+	Wolfram Alpha gave me this for the inner integral using x (indefinite):
+	integral sqrt((b01 + b11 x)^2 + 1 + (b10+b11*y)^2) dx = ((b01 + b11*x) sqrt((b01 + b11*x)^2 + 1 + (b10+b11*y)^2) + (1 + (b10+b11*y)^2)*ln(sqrt((b01 + b11*x)^2 + 1 + (b10+b11*y)^2) + b01 + b11*x))/(2*b11) + constant
+	That means this for the definite integral:
+	((b01 + b11*x2)*sqrt((b01 + b11*x2)^2 + 1 + (b10+b11*y)^2) + 1 + (b10+b11*y)^2*ln(sqrt((b01 + b11*x2)^2 + 1 + (b10+b11*y)^2) + b01 + b11*x2))/(2*b11) - ((b01 + b11*x1)*sqrt((b01 + b11*x1)^2 + 1 + (b10+b11*y)^2) + (1 + (b10+b11*y)^2)*ln(sqrt((b01 + b11*x1)^2 + 1 + (b10+b11*y)^2) + b01 + b11*x1))/(2*b11)
+	=
+	(b01 + b11*x2)*sqrt((b01 + b11*x2)^2 + 1 + (b10+b11*y)^2)/(2*b11)
+	+(1 + (b10+b11*y)^2)*ln(sqrt((b01 + b11*x2)^2 + 1 + (b10+b11*y)^2) + b01 + b11*x2)/(2*b11))
+	- (b01 + b11*x1)*sqrt((b01 + b11*x1)^2 + 1 + (b10+b11*y)^2)/(2*b11)
+	- (1 + (b10+b11*y)^2)*ln(sqrt((b01 + b11*x1)^2 + 1 + (b10+b11*y)^2) + b01 + b11*x1)/(2*b11)
+	=
+	(b01 + b11*x2)*sqrt((b01 + b11*x2)^2 + 1 + (b10+b11*y)^2)/(2*b11)
+	- (b01 + b11*x1)*sqrt((b01 + b11*x1)^2 + 1 + (b10+b11*y)^2)/(2*b11)
+	+(1 + (b10+b11*y)^2)*ln(sqrt((b01 + b11*x2)^2 + 1 + (b10+b11*y)^2) + b01 + b11*x2)/(2*b11))
+	- (1 + (b10+b11*y)^2)*ln(sqrt((b01 + b11*x1)^2 + 1 + (b10+b11*y)^2) + b01 + b11*x1)/(2*b11)
+	
+	The two first integrals are similar, and the two last are also similar. With A=+-(b01 + b11*xi)/(2*b11), B=(b01 + b11*xi)^2+1, C=b10 and D=b11 (where xi represents either x1 or x2, and +- represents + for x2 and - for x1), I can calculate the integral of sqrt(B+(C+D*y)^2) and multiply by A. That integral is on the same form as the first one.
+	
+	The two last integrals can be represented by setting A=+-1/(2*b11), B=(b01 + b11*xi)^2+1, C=b01+b11*xi, D=b10, E=b11, and calculating the integral of (1+(D+E*y)^2)*ln(sqrt(B+(D+E*y)^2)+C), and multiplying by A.
+	Here is the integration result from Wolfram Alpha:
+	integral(1 + (D + E y)^2) log(sqrt(B + (D + E y)^2) + C) dy = (-(6 (B^2 - 2 B C^2 - 3 B + C^4 + 3 C^2) tan^(-1)((D + E y)/sqrt(B - C^2)))/sqrt(B - C^2) + (6 (B^2 - 2 B C^2 - 3 B + C^4 + 3 C^2) tan^(-1)((C (D + E y))/(sqrt(B - C^2) sqrt(B + (D + E y)^2))))/sqrt(B - C^2) + 6 (B - C^2 - 3) (D + E y) + 3 C (-3 B + 2 C^2 + 6) log(sqrt(B + (D + E y)^2) + D + E y) + 3 C (D + E y) sqrt(B + (D + E y)^2) + 6 ((D + E y)^2 + 3) (D + E y) log(sqrt(B + (D + E y)^2) + C) - 2 (D + E y)^3)/(18 E) + constant
+
+	I am glad I did not try to do this by hand. But combining these formulae, we can get an exact integral of the area of a bilinear patch. Later. Bilinear patches are not an exact representation anyway. We may opt for something else.
+	*/
+	
+	//Simple numerical calculation of double integral:
+	let A = 0;
+	let X = x2-x1, Y = y2-y1;
+	let N = segs, M = segs;
+	for (let i = 0; i < N; i++) {
+		let x = x1 + ((i+0.5)/N)*X;
+		for (let j = 0; j < M; j++) {
+			let y = y1 + ((j+0.5)/M)*Y;
+			A += Math.sqrt((b10+b11*y)**2 + (b01+b11*x)**2 + 1);
+		}
+	}
+	A *= X*Y/(N*M); //dx dy
+	
+	return A;
+}
+
+//Calculates the (arithmetic) average of the area of the two possible triangulations of the quad element (using two triangles).
+function elementArea(v1,v2,v3,v4) {
+	let A = 0.5*(Math.abs(signedTriangleArea(v1,v2,v3)) + Math.abs(signedTriangleArea(v2,v3,v4)) + Math.abs(signedTriangleArea(v3,v4,v1)) + Math.abs(signedTriangleArea(v4,v1,v2)));
+	return A;
+}
+
+function signedTriangleArea(v1,v2,v3) {
+	let u = addVec(v2,scaleVec(v1,-1));
+	let v = addVec(v3,scaleVec(v1,-1));
+	let c = crossProduct(u,v);
+	let A = 0.5*vecNorm(c);
+	return A;
+}

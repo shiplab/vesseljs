@@ -406,25 +406,28 @@ Object.assign(Hull.prototype, {
 			let prwl = hull.getWaterline(prev.z,3);
 			for (let j = 0; j < sts.length-1; j++) {
 				let port = 
-					bilinearPatchColumnCalculation(sts[j], sts[j+1], prev.z, z, -prwl[j], -wl[j], -prwl[j+1], -wl[j+1]);
+					patchColumnCalculation(sts[j], sts[j+1], prev.z, z, -prwl[j], -wl[j], -prwl[j+1], -wl[j+1]);
 				calculations.push(port);
 				let star =
-					bilinearPatchColumnCalculation(sts[j], sts[j+1], prev.z, z, prwl[j], wl[j], prwl[j+1], wl[j+1]);
+					patchColumnCalculation(sts[j], sts[j+1], prev.z, z, prwl[j], wl[j], prwl[j+1], wl[j+1]);
 				calculations.push(star);
 			}
 			let C = combineVolumes(calculations);
+			//Cv of slice. Note that switching of yz must
+			//be done before combining with previous level
+			let Cv = {x: C.Cv.x, y: C.Cv.z, z: C.Cv.y};
+			
 			lev.Vs = prev.Vs + C.V; //hull volume below z
 			lev.As = prev.As + C.As; //outside surface below z
 
-			//center of volume below z (some potential for accumulated rounding error):
-			let Cv = addVec(scaleVec(prev.Cv,prev.Vs),
-					scaleVec(C.Cv,C.V));
-			let V = prev.Vs+C.V;
-			if (V!==0) {
-				Cv = scaleVec(Cv, 1/(prev.Vs+C.V));
-			}
-						//Note switching of yz
-			lev.Cv = {x: Cv.x, y: Cv.z, z: Cv.y};
+			//Simple (and wrong) approximation for end caps:
+			lev.As += 2*lev.Ap; //(will work for prism case)
+			
+			//center of volume below z (some potential for accumulated rounding error when calculating an accumulated average like this):
+			lev.Cv = scaleVec(addVec(
+						scaleVec(prev.Cv,prev.Vs),
+						scaleVec(Cv,C.V)
+					), 1/(lev.Vs || 2));
 			
 			lev.Cb = lev.Vs/lev.Vbb;
 			
@@ -456,7 +459,9 @@ Object.assign(Hull.prototype, {
 			//Find highest data waterline below water:
 			let {index: previ} = bisectionSearch(wls, T);
 			
-			let lc = levelCalculation(this, T, this.levels[previ]);
+			//console.info("Highest data waterline below water: " + previ);
+			
+			let lc = levelCalculation(this, T, this.levels[previ] || undefined);
 			
 			//Filter and rename for output
 			return {
