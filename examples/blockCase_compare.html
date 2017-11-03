@@ -143,7 +143,7 @@
                         <tr>
                            <td>Displacement (t)</td> 
                            <td><span id = "disp"></span></td> 
-                           <td></td> 
+                            <td><span id = "dispc"></span></td> 
                            <td></td> 
                         </tr>
                         <tr>
@@ -215,12 +215,42 @@
                          <tr>
                            <td>Lightweigth (kg)</td> 
                            <td><span id = "lightweight"></span></td> 
-                           <td><span></span><td>
+                           <td><span id = "lightweightc"></span><td>
                            <td><span></span></td> 
                         </tr>
                         <tr>
                            <td>Deadweight (kg)</td> 
                            <td><span id = "deadweight"></span></td> 
+                           <td><span id = "deadweightc"></span><td>
+                           <td><span></span></td> 
+                        </tr>
+                        <tr>
+                           <td>Trim (m)</td> 
+                           <td><span id = "trimd"></span></td> 
+                           <td><span></span><td>
+                           <td><span></span></td> 
+                        </tr>
+                        <tr>
+                           <td>Trim (º)</td> 
+                           <td><span id = "trima"></span></td> 
+                           <td><span></span><td>
+                           <td><span></span></td> 
+                        </tr>
+                        <tr>
+                           <td>Heel (m)</td> 
+                           <td><span id = "heel"></span></td> 
+                           <td><span></span><td>
+                           <td><span></span></td> 
+                        </tr>
+                        <tr>
+                           <td>Maximum moment (ton m)</td> 
+                           <td><span id = "maxmom"></span></td> 
+                           <td><span></span><td>
+                           <td><span></span></td> 
+                        </tr>
+                        <tr>
+                           <td>Shear  (t)</td> 
+                           <td><span id = "shear"></span></td> 
                            <td><span></span><td>
                            <td><span></span></td> 
                         </tr>
@@ -319,22 +349,28 @@
             document.getElementById("GM2").innerHTML = GMc;
             
             //hand values
-            let disp = 102.4;
-            let draftms = 1.989;
-            let draftap = 1.98;
-            let draftfp = 1.999;
+            let disp = 100;
+            let draftms = 2.028;
+            let draftap = 2.082;
+            let draftfp = 1.974;
             let lwl = 20;
-            let bwl = 5.046;
-            let Awet = 137.989;
-            let Awp = 99.95;
+            let bwl = 5.206;
+            let Awet = 136.989;
+            let Awp = 98.95;
             let Cb = disp / (draftms * lwl * bwl * 1.025);
-            let LCBx = 10.065;
-            let LCFx = 10.032;
-            let KB = 1.333;
-            let KG = 3.513;
-            let BM = 2.082;
+            let LCBx = 9.636;
+            let LCFx = 9.818;
+            let KB = 1.319;
+            let KG = 3.525;
+            let BM = 2.061;
             let GM = KB + BM - KG;
-            let trim = -0.019;
+            let trimd = 0.108;
+            let trima = 0.618;
+            let heel = 0;
+            let maxmom = 40.072;
+            let shear = 13.327;
+            let lightweight = 30000;
+            let deadweight = 70000;
             
             document.getElementById("disp").innerHTML = disp.toFixed(3);
             document.getElementById("draftms").innerHTML = draftms.toFixed(3);
@@ -343,7 +379,7 @@
             document.getElementById("lwl").innerHTML = lwl.toFixed(3);
             document.getElementById("bwl").innerHTML = bwl.toFixed(3);
             document.getElementById("Awet").innerHTML = Awet.toFixed(3);
-            document.getElementById("Awp").innerHTML = Awp;
+            document.getElementById("Awp").innerHTML = Awp.toFixed(3);
             document.getElementById("Cb").innerHTML = Cb.toFixed(3);
             document.getElementById("LCBx").innerHTML = LCBx.toFixed(3);
             document.getElementById("LCFx").innerHTML = LCFx.toFixed(3);
@@ -351,6 +387,13 @@
             document.getElementById("KG").innerHTML = KG.toFixed(3);
             document.getElementById("BM").innerHTML = BM.toFixed(3);
             document.getElementById("GM").innerHTML = GM.toFixed(3);
+            document.getElementById("trimd").innerHTML = trimd.toFixed(3);
+            document.getElementById("trima").innerHTML = trima.toFixed(3);
+            document.getElementById("heel").innerHTML = heel.toFixed(3);
+            document.getElementById("maxmom").innerHTML = maxmom.toFixed(3);
+            document.getElementById("shear").innerHTML = shear.toFixed(3);
+            document.getElementById("lightweight").innerHTML = lightweight.toFixed(3);
+            document.getElementById("deadweight").innerHTML = deadweight.toFixed(3);
             
             //calculated values
             let KBc = a.KB.toFixed(3);
@@ -359,13 +402,15 @@
             let draftc = ship.designState.calculationParameters.Draft_design;
             
             //baseObjects not sure why is not working
-            let lightweight = ship.structure.hull.attributes.lightweight + 15000;
-            let deadweight = 14000 + 56000;
+            let lightweightc = ship.structure.hull.attributes.lightweight + 15000;
+            let deadweightc = 14000 + 56000;
+            
             
             let lwlc = ship.structure.hull.calculateAttributesAtDraft(draftc).LWL;
             let bwlc = ship.structure.hull.calculateAttributesAtDraft(draftc).BWL;
             let Awpc = ship.structure.hull.calculateAttributesAtDraft(draftc).Awp;
             let cbc = ship.structure.hull.calculateAttributesAtDraft(draftc).Cb;
+            let dispc = lwlc * bwlc * cbc * draftc;
             
             document.getElementById("KBc").innerHTML = KBc;
             document.getElementById("KGc").innerHTML = KGc;
@@ -375,8 +420,9 @@
             document.getElementById("bwlc").innerHTML = bwlc.toFixed(3);
             document.getElementById("Awpc").innerHTML = Awpc.toFixed(3);
             document.getElementById("cbc").innerHTML = cbc.toFixed(3);
-            document.getElementById("lightweight").innerHTML = lightweight;
-            document.getElementById("deadweight").innerHTML = deadweight;
+            document.getElementById("lightweightc").innerHTML = lightweightc.toFixed(3);
+            document.getElementById("deadweightc").innerHTML = deadweightc.toFixed(3);
+            document.getElementById("dispc").innerHTML = dispc.toFixed(3);
             
             //% diff
             let KBd = (1-KB/KBc)*100;
