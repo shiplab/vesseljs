@@ -1,4 +1,4 @@
-//Vessel.js library, built 2017-10-27 15:17:23.678874, Checksum: d15ff7f6a612a6565c1b1e1ff341031a
+//Vessel.js library, built 2017-11-03 21:58:34.624540, Checksum: 66754104a0f843a0cff421b5aa24f15e
 /*
 Import like this in HTML:
 <script src="Vessel.js"></script>
@@ -33,11 +33,16 @@ function vecNormSquared(v) {
 	return v.x**2+v.y**2+v.z**2;
 }
 
+/*Adds two or more vectors given as individual parameters,
+and returns a new vector that is the component-wise 
+sum of the input vectors.*/
 function addVec(u,v, ...rest) {
 	if (rest.length > 0) return sumVec([u,v]+rest);
 	return {x: u.x+v.x, y: u.y+v.y, z: u.z+v.z};
 }
 
+//Takes an array of vectors as input, and returns a new vector
+//that is the component-wise sum of the input vectors.
 function sumVec(vectors) {
 	let S = {x:0, y:0, z:0};
 	for (let i = 0; i < vectors.length; i++) {
@@ -47,6 +52,12 @@ function sumVec(vectors) {
 		S.z += v.z;
 	}
 	return S;
+}
+
+//Takes two vector parameters u,v, and returns the vector u-v.
+function subVec(u,v) {
+	//return addVec(u, scaleVec(v, -1)); //equivalent
+	return {x: u.x-v.x, y: u.y-v.y, z: u.z-v.z};
 }
 
 function dotProduct(u,v) {
@@ -227,6 +238,7 @@ function combineAreas(array) {
 		yc /= A;
 	} else {
 		console.warn("Zero area combination.");
+		console.trace();
 		xc /= L;
 		yc /= L;
 	}
@@ -323,15 +335,20 @@ function bilinearArea(x1, x2, y1, y2, z11, z12, z21, z22, segs=10) {
 	return A;
 }
 
-//Calculates the (arithmetic) average of the area of the two possible triangulations of the quad element (using two triangles).
+/*Calculates the (arithmetic) average of the area of the two possible triangulations of the quad element (using two triangles).
+This requires the base of the quad to be convex. If the base is arrowhead shaped,
+The calculation will fail in undefined ways.
+*/
 function elementArea(v1,v2,v3,v4) {
-	let A = 0.5*(Math.abs(signedTriangleArea(v1,v2,v3)) + Math.abs(signedTriangleArea(v2,v3,v4)) + Math.abs(signedTriangleArea(v3,v4,v1)) + Math.abs(signedTriangleArea(v4,v1,v2)));
+	let A1 = Math.abs(signedTriangleArea(v1,v2,v3)) + Math.abs(signedTriangleArea(v3,v4,v1));
+	let A2 = Math.abs(signedTriangleArea(v2,v3,v4)) + Math.abs(signedTriangleArea(v4,v1,v2));
+	let A = 0.5*(A1+A2);
 	return A;
 }
 
 function signedTriangleArea(v1,v2,v3) {
-	let u = addVec(v2,scaleVec(v1,-1));
-	let v = addVec(v3,scaleVec(v1,-1));
+	let u = subVec(v2,v1);
+	let v = subVec(v3,v1);
 	let c = crossProduct(u,v);
 	let A = 0.5*vecNorm(c);
 	return A;
@@ -342,18 +359,19 @@ function signedTriangleArea(v1,v2,v3) {
 //even though all x and y values are positive.
 //I am currently doing some tests here of an (over-)simplified calculation
 //The results so far indicate that, for the prism hull, the results are almost identical, except that with the simple calculation the center of volume is almost right (but wrong enough to disqualify such a simple calculation). The bug causing very wrong (too big) submerged volume is likely to be found elsewhere.
+/*Note that the coordinate system used here has xy as a grid, with z as heights on the grid, but in the intended application, which is calculations on transverse hull offsets, z corresponds to the vessel y axis, and y corresponds to the vessel z axis. In the application, the conversion between coordinate systems must be taken care of appropriately.*/
 											  // xy
 function patchColumnCalculation(x1, x2, y1, y2, z11, z12, z21, z22) {
 	//DEBUG START:
 	//Simpler approximate calculation of volume:
-	let z = 0.25*(z11+z12+z21+z22);
-	let V = Math.abs((x2-x1)*(y2-y1)*z);
+	let z = 0.25*(z11+z12+z21+z22); //"average height"
+	let V = Math.abs((x2-x1)*(y2-y1)*z); //base area times "average height"
 
 	//Very approximate center of volume
 	//(does not account for different signs on z values,
 	//but that should be OK for hull offsets)
-	let xc = (x1*(z11+z12)+x2*(z21+z22))/(z11+z12+z21+z22);
-	let yc = (y1*(z11+z21)+y2*(z12+z22))/(z11+z12+z21+z22);
+	let xc = (x1*(z11+z12)+x2*(z21+z22))/((z11+z12+z21+z22) || 1);
+	let yc = (y1*(z11+z21)+y2*(z12+z22))/((z11+z12+z21+z22) || 1);
 	let zc = 0.5*z;
 	
 	//Simple triangle average approximation for area
@@ -895,107 +913,49 @@ Object.assign(Hull.prototype, {
 		return output;
 	},
 	/*
-	This method is a mess, and introducing three different NaN correction has made it even worse in some ways. None of the correction modes fit for the usual cases. Maybe we should have a default mode that extrapolates to top NaNs and sets all other NaNs to zero. UPDATE: Now this is implemented as mode 3. Maybe we can skip the other ones.
+	Testing new version without nanCorrectionMode parameter, that defaults to setting lower NaNs to 0 and extrapolating highest data entry for upper NaNs (if existant, else set to 0). Inner NaNs will also be set to zero.
+	
+	This does not exactly work perfectly yet. getwaterline(0,3) gives interpolated values, even though the keel level is defined.
 	
 	Input:
 	z: level from bottom of ship (absolute value in meters)
-	nanCorrectionMode: 0 to set all NaNs to zero, 1 to output NaNs, 2 to replace NaNs with interpolated or extrapolated values, 3 to extrapolate to top NaNs and set all other NaNs to zero.
+	
+	Output:
+	Array representing waterline offsets for a given height from the keel (typically a draft).
 	*/
-	getWaterline: function(z, nanCorrectionMode=1) {
+	getWaterline: function(z) {
 		let ha = this.attributes;
-		let zr = z/ha.Depth;
-		let wls = this.halfBreadths.waterlines;
+		let zr = z/ha.Depth; //using zr requires fewer operations and less memory than a scaled copy of wls.
+		let wls = this.halfBreadths.waterlines;//.map(wl=>wl*ha.Depth);
 		let sts = this.halfBreadths.stations;
 		let tab = this.halfBreadths.table;
 
-		let {index: a, mu: mu} = bisectionSearch(wls, zr);
-		let wl;
-		if (a<0) {
-			if (nanCorrectionMode===0 || nanCorrectionMode===3) {
-				console.warn("getWaterLine: z below lowest defined waterline. Defaulting to zeros.");
+		if (zr<wls[0]) {
+				console.warn("getWaterLine: z below lowest defined waterline. Defaulting to all zero offsets.");
 				return new Array(sts.length).fill(0);
-			}
-			if (nanCorrectionMode===1) {
-				console.warn("getWaterLine: z below lowest defined waterline. Outputting NaNs.");
-				return new Array(sts.length).fill(null);
-			}
-			else /*nanCorrectionMode===2*/ {
-				console.warn("getWaterLine: z below lowest defined waterline. Extrapolating lowest data entry.");
-				a=0;
-				mu=0;
-				//wl = tab[a].slice();
-			}			
-		} else if (a >= wls.length-1) {
-			if (nanCorrectionMode===0) {
-				console.warn("getWaterLine: z above highest defined waterline. Defaulting to zeros.");
-				return new Array(sts.length).fill(0);
-			}
-			if (nanCorrectionMode===1) {
-				console.warn("getWaterLine: z above highest defined waterline. Outputting NaNs.");
-				return new Array(sts.length).fill(null);
-			}
-			else /*nanCorrectionMode===2 || nanCorrectionMode===3*/ {
-				console.warn("getWaterLine: z above highest defined waterline. Proceeding with highest data entry.");
+		} else {
+			let a, mu;
+			if (zr>wls[wls.length-1]) {
+				console.warn("getWaterLine: z above highest defined waterline. Proceeding with highest data entries.");
 				a = wls.length-2; //if this level is defined...
 				mu=1;
 				//wl = tab[a].slice();
+			} else {
+				({index: a, mu: mu} = bisectionSearch(wls, zr));
+				if (a === wls.length-1) {
+					a = wls.length-2;
+					mu = 1;
+				}
 			}
-		}
-
-		//Linear interpolation between data waterlines
-		wl = new Array(sts.length);
-		for (let j = 0; j < wl.length; j++) {
-			if (nanCorrectionMode === 0) {
-				if (a+1 > wls.length-1) {
-					wl[j] = lerp(tab[a][j], 0, 0.5); //Suspicious!
-				} else {
-					wl[j] = lerp(tab[a][j] || 0, tab[a+1][j] || 0, mu || 0.5);
-				}
-			} else if (nanCorrectionMode === 1) {
-				if (a+1 > wls.length-1) {
-					wl[j] = lerp(tab[a][j], null, mu);
-				} else {
-					wl[j] = lerp(tab[a][j], tab[a+1][j], mu);
-				}
-			} else if (nanCorrectionMode === 2) {
-				//If necessary, sample from below
-				let b = a;
-				while (b>0 && isNaN(tab[b][j])) {
-					b--;
-				}
-				let lower;
-				if (b===0 && isNaN(tab[b][j])) {
-					lower = 0;
-				} else {
-					lower = tab[b][j];
-				}
-				//If necesary, sample from above
-				let c = a+1;
-				let upper;
-				if (c>wls.length-1) {
-					c = b;
-					upper = lower;
-				} else {
-					while (c<wls.length-1 && isNaN(tab[c][j])) {
-						c++;
-					}
-					//now c===wls.length-1 or !isNaN(tab[c][j])
-					//unless c>wls.length-1 before the loop.
-					if (c===wls.length-1 && isNaN(tab[c][j])) {
-						//Fall back all the way to b
-						c = b;
-						upper = lower;
-					} else {
-						upper = tab[c][j];
-					}
-				}
-				mu = c===b ? 0 : (a+(mu||0.5)-b)/(c-b); //what is this? Some kind of self-explanatory code, perhaps?
-				wl[j] = lerp(lower, upper, mu);
-			} else /*nanCorrectionMode === 3*/ {
+			
+			//Try to do linear interpolation between closest data waterlines, but handle null values well:
+			let wl = new Array(sts.length);
+			for (let j = 0; j < wl.length; j++) {
 				let lower, upper;
-				let b;
-				if (!isNaN(tab[a][j])) {
-					lower = tab[a][j];					
+				let b = a;
+				//Find lower value for interpolation
+				if (!isNaN(tab[b][j])) {
+					lower = tab[b][j];					
 				} else {
 					b = a+1;
 					while(b < wls.length && isNaN(tab[b][j])) {
@@ -1020,9 +980,11 @@ Object.assign(Hull.prototype, {
 						}
 					}
 				}
-				if (upper !== undefined) {}
-				else if (!isNaN(tab[a+1][j])) {
-					upper = tab[a+1][j];
+				//Find upper value for interpolation
+				let c = a+1;
+				if (upper !== undefined) {/*upper found above*/}
+				else if (!isNaN(tab[c][j])) {
+					upper = tab[c][j];
 				} else {
 					//The cell value is NaN.
 					//Upper is not defined.
@@ -1030,22 +992,22 @@ Object.assign(Hull.prototype, {
 					//or tab[a][j] is an inner NaN and
 					//there exists at least one number above it.
 					//In both cases I have to check above a+1.
-					b = a+2;
-					while (b < wls.length && isNaN(tab[b][j])) {
-						b++;
+					c = a+2;
+					while (c < wls.length && isNaN(tab[c][j])) {
+						c++;
 					}
-					if (b === wls.length) upper = lower;
+					if (c === wls.length) upper = lower;
 					else {
-						upper = tab[b][j];
+						upper = tab[c][j];
 					}
 				}
-				wl[j] = lerp(lower, upper, mu || 0.5);
+				//Linear interpolation
+				wl[j] = lerp(lower, upper, mu);
+						//Scale numerical values
+				if (!isNaN(wl[j])) wl[j] *= 0.5*ha.BOA;
 			}
-			
-			//Scale numerical values
-			if (!isNaN(wl[j])) wl[j] *= 0.5*ha.BOA;
-		}
 		return wl;
+		}
 	},
 	getStation: function(x) {
 		let ha = this.attributes;
@@ -1140,7 +1102,7 @@ Object.assign(Hull.prototype, {
 			}
 		}
 
-		//This does not yet account for undefined minY, maxY. Or does it?
+		//This does not yet account properly for undefined minY, maxY.
 		let port = [], star = [];
 		for (let i=0; i<wl.length; i++) {
 			if (isNaN(wl[i])) {
@@ -1185,10 +1147,21 @@ Object.assign(Hull.prototype, {
 		return output;
 	},
 	//Not done, and not tested
-	stationCalculation: function(x/*, {minZ, maxZ, minY, maxY}*/) {
+	//The optional maxZ parameter is introduced for enabling below-water calculations. More bounds will add more complexity, although then some common logic may perhaps be moved from this method and waterlineCalculation to sectionCalculation.
+	stationCalculation: function(x, maxZ) {
 		let wls = this.halfBreadths.waterlines.map(wl=>this.attributes.Depth*wl);
 		let port = this.getStation(x);
+		if (!isNaN(maxZ)) {
+			let {index, mu} = bisectionSearch(wls, maxZ);
+			if (index < wls.length-1) {
+				wls[index+1] = lerp(wls[index], wls[index+1], mu);
+				port[index+1] = lerp(port[index], port[index+1], mu);
+				wls = wls.slice(0,index+2);
+				port = port.slice(0,index+2);
+			}
+		}
 		let star = port.map(hb=>-hb);
+
 		let sc = sectionCalculation({xs: wls, ymins: star, ymaxs: port});
 		return {
 			x: x, //or xc? or cg.. Hm.
@@ -1197,14 +1170,14 @@ Object.assign(Hull.prototype, {
 			A: sc.A,
 			Iz: sc.Ix,
 			Iy: sc.Iy,
-			maxX: sc.maxX,
-			minX: sc.minX,
+			maxZ: sc.maxX,
+			minZ: sc.minX,
 			maxY: sc.maxY,
 			minY: sc.minY
 		};
 	},
-	//Unoptimized, some redundant repetitions of calculations.
-	//NOT DONE YET. Outputs lots of NaN values.
+
+	//NOT DONE YET. Calculates too big Ap, Vs, Cb, and too small As for the test case. For the test, the Ap is exactly BWL*1m larger than it should be (why?). Too high Cb is clearly caused by too big Vs, and big Ap and Vs may have a common cause. The bilinear volume and area calculations have been temporarily replaced with simpler calculations, but this does not seem to help. I expect to find the bug(s) elsewhere.
 	//Important: calculateAttributesAtDraft takes one mandatory parameter T. (The function defined here is immediately called during construction of the prototype, and returns the proper function.)
 	calculateAttributesAtDraft: function() {
 		function levelCalculation(hull,
@@ -1228,21 +1201,42 @@ Object.assign(Hull.prototype, {
 			let lev = {};
 			Object.assign(lev, wlc);
 			//Projected area calculation (approximate):
-			lev.prMinY = wlc.minY || 0;
-			lev.prMaxY = wlc.maxY || 0;
-			lev.Ap = prev.Ap
-				+ trapezoidCalculation(prev.prMinY, prev.prMaxY, lev.prMinY, lev.prMaxY, prev.z, lev.z)["A"];
+			lev.prMinY = wlc.minY;
+			lev.prMaxY = wlc.maxY;
+			//DEBUG:
+			//console.info("prev.Ap = ", prev.Ap);
+			//console.info("Parameters to trapezoidCalculation: (%.2f, %.2f, %.2f, %.2f, %.2f, %.2f)", prev.prMinY, prev.prMaxY, lev.prMinY, lev.prMaxY, prev.z, z);
+			let AT = trapezoidCalculation(prev.prMinY, prev.prMaxY, lev.prMinY, lev.prMaxY, prev.z, z)["A"];
+			//console.log("Calculated area of trapezoid: ", AT);
+			lev.Ap = prev.Ap + AT;
+			//lev.Ap = prev.Ap
+			//	+ trapezoidCalculation(prev.prMinY, prev.prMaxY, lev.prMinY, lev.prMaxY, prev.z, z)["A"];
+			//DEBUG END
+
 			
 			//level bounds are for the bounding box of the submerged part of the hull
-			if (!isNaN(prev.minX) && prev.minX<=wlc.minX) 
+			if (!isNaN(wlc.minX) && wlc.minX<=prev.minX) 
+				lev.minX = wlc.minX;
+			else
 				lev.minX = prev.minX;
-			if (!isNaN(prev.maxX) && prev.maxX>=wlc.maxX) 
+			if (!isNaN(wlc.maxX) && wlc.maxX>=prev.maxX) 
+				lev.maxX = wlc.maxX;
+			else
 				lev.maxX = prev.maxX;
-			if (!isNaN(prev.minY) && prev.minY<=wlc.minY) 
+			if (!isNaN(wlc.minY) && wlc.minY<=prev.minY) 
+				lev.minY = wlc.minY;
+			else
 				lev.minY = prev.minY;
-			if (!isNaN(prev.maxY) && prev.maxY>=wlc.maxY) 
+			if (!isNaN(wlc.maxY) && wlc.maxY>=prev.maxY) 
+				lev.maxY = wlc.maxY;
+			else
 				lev.maxY = prev.maxY;
+			
 			lev.Vbb = (lev.maxX-lev.minX)*(lev.maxY-lev.minY)*z;
+			
+			//Keep level maxX and minX for finding end cap areas:
+			lev.maxXwp = wlc.maxX;
+			lev.minXwp = wlc.minX;
 			
 			//Find bilinear patches in the slice, and combine them.
 			//Many possibilities for getting the coordinate systems wrong.
@@ -1258,6 +1252,7 @@ Object.assign(Hull.prototype, {
 					patchColumnCalculation(sts[j], sts[j+1], prev.z, z, prwl[j], wl[j], prwl[j+1], wl[j+1]);
 				calculations.push(star);
 			}
+			console.log(calculations); //DEBUG
 			let C = combineVolumes(calculations);
 			//Cv of slice. Note that switching of yz must
 			//be done before combining with previous level
@@ -1266,8 +1261,11 @@ Object.assign(Hull.prototype, {
 			lev.Vs = prev.Vs + C.V; //hull volume below z
 			lev.As = prev.As + C.As; //outside surface below z
 
-			//Simple approximation (wrong) for end caps:
-			lev.As += 2*lev.Ap;
+			//End caps:
+			if (lev.minXwp <= sts[0])
+				lev.As += hull.stationCalculation(lev.minXwp, z)["A"];
+			if (lev.maxXwp >= sts[sts.length-1])
+				lev.As += hull.stationCalculation(lev.maxXwp, z)["A"];
 			
 			//center of volume below z (some potential for accumulated rounding error when calculating an accumulated average like this):
 			lev.Cv = scaleVec(addVec(
@@ -1302,12 +1300,14 @@ Object.assign(Hull.prototype, {
 				this.levelsNeedUpdate = false;
 			}
 			
-			//Find highest data waterline below water:
-			let {index: previ} = bisectionSearch(wls, T);
+			//Find highest data waterline below or at water level:
+			let {index, mu} = bisectionSearch(wls, T);
 			
-			//console.info("Highest data waterline below water: " + previ);
-			
-			let lc = levelCalculation(this, T, this.levels[previ] || undefined);
+			console.info("Highest data waterline below or at water level: " + index);
+			console.log(this.levels);
+			let lc;
+			if (mu===0) lc = this.levels[index];
+			else lc = levelCalculation(this, T, this.levels[index]);
 			
 			//Filter and rename for output
 			return {

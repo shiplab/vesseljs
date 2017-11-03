@@ -63,7 +63,7 @@ Object.assign(Structure.prototype, {
 			let zc = d.zFloor+0.5*d.thickness;
 			let yc = d.yCentre;
 			let b = d.breadth;
-			let wlc = this.hull.waterlineCalculation(zc, {minX: d.xAft, maxX: d.xFwd, minY: yc-0.5*b, maxY: yc+0.5*b}, 3);
+			let wlc = this.hull.waterlineCalculation(zc, {minX: d.xAft, maxX: d.xFwd, minY: yc-0.5*b, maxY: yc+0.5*b});
 			components.push({
 				//approximation
 				mass: wlc.Awp*d.thickness*d.density,

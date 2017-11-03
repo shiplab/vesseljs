@@ -70,6 +70,7 @@ function combineAreas(array) {
 		yc /= A;
 	} else {
 		console.warn("Zero area combination.");
+		console.trace();
 		xc /= L;
 		yc /= L;
 	}
@@ -166,15 +167,20 @@ function bilinearArea(x1, x2, y1, y2, z11, z12, z21, z22, segs=10) {
 	return A;
 }
 
-//Calculates the (arithmetic) average of the area of the two possible triangulations of the quad element (using two triangles).
+/*Calculates the (arithmetic) average of the area of the two possible triangulations of the quad element (using two triangles).
+This requires the base of the quad to be convex. If the base is arrowhead shaped,
+The calculation will fail in undefined ways.
+*/
 function elementArea(v1,v2,v3,v4) {
-	let A = 0.5*(Math.abs(signedTriangleArea(v1,v2,v3)) + Math.abs(signedTriangleArea(v2,v3,v4)) + Math.abs(signedTriangleArea(v3,v4,v1)) + Math.abs(signedTriangleArea(v4,v1,v2)));
+	let A1 = Math.abs(signedTriangleArea(v1,v2,v3)) + Math.abs(signedTriangleArea(v3,v4,v1));
+	let A2 = Math.abs(signedTriangleArea(v2,v3,v4)) + Math.abs(signedTriangleArea(v4,v1,v2));
+	let A = 0.5*(A1+A2);
 	return A;
 }
 
 function signedTriangleArea(v1,v2,v3) {
-	let u = addVec(v2,scaleVec(v1,-1));
-	let v = addVec(v3,scaleVec(v1,-1));
+	let u = subVec(v2,v1);
+	let v = subVec(v3,v1);
 	let c = crossProduct(u,v);
 	let A = 0.5*vecNorm(c);
 	return A;

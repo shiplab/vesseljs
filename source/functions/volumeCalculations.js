@@ -5,18 +5,19 @@
 //even though all x and y values are positive.
 //I am currently doing some tests here of an (over-)simplified calculation
 //The results so far indicate that, for the prism hull, the results are almost identical, except that with the simple calculation the center of volume is almost right (but wrong enough to disqualify such a simple calculation). The bug causing very wrong (too big) submerged volume is likely to be found elsewhere.
+/*Note that the coordinate system used here has xy as a grid, with z as heights on the grid, but in the intended application, which is calculations on transverse hull offsets, z corresponds to the vessel y axis, and y corresponds to the vessel z axis. In the application, the conversion between coordinate systems must be taken care of appropriately.*/
 											  // xy
 function patchColumnCalculation(x1, x2, y1, y2, z11, z12, z21, z22) {
 	//DEBUG START:
 	//Simpler approximate calculation of volume:
-	let z = 0.25*(z11+z12+z21+z22);
-	let V = Math.abs((x2-x1)*(y2-y1)*z);
+	let z = 0.25*(z11+z12+z21+z22); //"average height"
+	let V = Math.abs((x2-x1)*(y2-y1)*z); //base area times "average height"
 
 	//Very approximate center of volume
 	//(does not account for different signs on z values,
 	//but that should be OK for hull offsets)
-	let xc = (x1*(z11+z12)+x2*(z21+z22))/(z11+z12+z21+z22);
-	let yc = (y1*(z11+z21)+y2*(z12+z22))/(z11+z12+z21+z22);
+	let xc = (x1*(z11+z12)+x2*(z21+z22))/((z11+z12+z21+z22) || 1);
+	let yc = (y1*(z11+z21)+y2*(z12+z22))/((z11+z12+z21+z22) || 1);
 	let zc = 0.5*z;
 	
 	//Simple triangle average approximation for area

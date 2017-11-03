@@ -64,26 +64,6 @@ function useShip(ship) {
 	//logToScreen("Design state: ", ship.designState);
 
 	renderjson.set_show_to_level("all");
-		
-	//Hand-calculated values from @MrEranwe
-	//Some of these values are not calculated by the library yet.
-	//And the library does not account for trim when calculating Cb etc.
-	/*let disp = 102.4;
-	let draftms = 1.989;
-	//let draftap = 1.98;
-	//let draftfp = 1.999;
-	let lwl = 20;
-	let bwl = 5.046;
-	let Awet = 137.989;
-	let Awp = 99.95;
-	let Cb = disp / (draftms * lwl * bwl * 1.025);
-	let LCBx = 10.065;
-	let LCFx = 10.032;
-	let KB = 1.333;
-	let KG = 3.513;
-	let BM = 2.082;
-	let GM = KB + BM - KG;
-	//let trim = -0.019;*/
 	
 	let w = ship.getWeight();
 	logToScreen("Assuming weight from library calculation: ", w);
@@ -97,6 +77,11 @@ function useShip(ship) {
 		}
 	}, w);*/
 
+	
+	//Some of the hand-calculated values from @MrEranwe 
+	//are not calculated by the library yet.
+	//And the library does not account for trim when calculating Cb etc.
+	//Therefore I have made new, simpler, calculations that map to the ones made by the library.
 	
 	//Simplified calculations for triangular prism case, without trim:
 	let ha = ship.structure.hull.attributes;
@@ -130,8 +115,8 @@ function useShip(ship) {
 	let maxYs = 0.5*BWL;
 	let LBP = LWL-ha.APP;
 	
-	let Tc = ship.calculateDraft();
-	logToScreen("Calculated draft: Man: "+ T + ", Machine: "+ Tc);
+	/*let Tc = ship.calculateDraft();
+	logToScreen("Calculated draft: Man: "+ T + ", Machine: "+ Tc);*/
 	logToScreen("Assuming draft = " + T + ":");
 	let hca = v.structure.hull.calculateAttributesAtDraft(T);
 	compToScreen("Calculated hull values at calculated draft: ", {
