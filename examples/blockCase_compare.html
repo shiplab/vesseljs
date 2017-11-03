@@ -212,6 +212,18 @@
                            <td><span id = "GM2"></span><td>
                            <td><span id = "GMd"></span></td> 
                         </tr>
+                         <tr>
+                           <td>Lightweigth (kg)</td> 
+                           <td><span id = "lightweight"></span></td> 
+                           <td><span></span><td>
+                           <td><span></span></td> 
+                        </tr>
+                        <tr>
+                           <td>Deadweight (kg)</td> 
+                           <td><span id = "deadweight"></span></td> 
+                           <td><span></span><td>
+                           <td><span></span></td> 
+                        </tr>
                         
                     </body>
                 
@@ -344,11 +356,16 @@
             let KBc = a.KB.toFixed(3);
             let KGc = a.KG.toFixed(3);
             let BMc = a.BM.toFixed(3);
-            let draftc = ship.calculateDraft().toFixed(3);
-            let lwlc = ship.structure.hull.calculateAttributesAtDraft().LWL;
-            let bwlc = ship.structure.hull.calculateAttributesAtDraft().BWL;
-            let Awpc = ship.structure.hull.calculateAttributesAtDraft().Awp;
-            let cbc = ship.structure.hull.calculateAttributesAtDraft().Cb;
+            let draftc = ship.designState.calculationParameters.Draft_design;
+            
+            //baseObjects not sure why is not working
+            let lightweight = ship.structure.hull.attributes.lightweight + 15000;
+            let deadweight = 14000 + 56000;
+            
+            let lwlc = ship.structure.hull.calculateAttributesAtDraft(draftc).LWL;
+            let bwlc = ship.structure.hull.calculateAttributesAtDraft(draftc).BWL;
+            let Awpc = ship.structure.hull.calculateAttributesAtDraft(draftc).Awp;
+            let cbc = ship.structure.hull.calculateAttributesAtDraft(draftc).Cb;
             
             document.getElementById("KBc").innerHTML = KBc;
             document.getElementById("KGc").innerHTML = KGc;
@@ -358,6 +375,8 @@
             document.getElementById("bwlc").innerHTML = bwlc.toFixed(3);
             document.getElementById("Awpc").innerHTML = Awpc.toFixed(3);
             document.getElementById("cbc").innerHTML = cbc.toFixed(3);
+            document.getElementById("lightweight").innerHTML = lightweight;
+            document.getElementById("deadweight").innerHTML = deadweight;
             
             //% diff
             let KBd = (1-KB/KBc)*100;
@@ -379,7 +398,7 @@
             document.getElementById("awpd").innerHTML = awpd.toFixed(3);
             
             
-            console.log(ship.structure.hull.calculateAttributesAtDraft())
+            //console.log(ship.structure.hull.calculateAttributesAtDraft(draftc))
 		}
 		
 		function animate() {
