@@ -254,7 +254,7 @@
 			document.getElementById("cbc").innerHTML = cbc.toFixed(3);
 			document.getElementById("dispc").innerHTML = dispc.toFixed(3);
 
-			gui.add(ship.designState.calculationParameters, "Draft_design", 0, 4, 0.01).onLoad(function (value) {
+			gui.add(ship.designState.calculationParameters, "Draft_design", 0, 4, 0.01).onChange(function (value) {
 				let {KB: KBc, BM: BMc} = ship.calculateStability();
 				let {LWL: lwlc, Cb: cbc, BWL: bwlc, Awp: Awpc} = ship.structure.hull.calculateAttributesAtDraft(ship.designState.calculationParameters.Draft_design);
 				let dispc = lwlc * bwlc * cbc * ship.designState.calculationParameters.Draft_design;
