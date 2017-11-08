@@ -1,4 +1,5 @@
 <!-- @MrEranwe @EliasHasle -->
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -23,6 +24,9 @@
 	
 	<!-- D3JavaScript -->
 	<script src="js/libs/d3_v4.9.1.js"></script>
+
+	<!-- Graphical user interface -->
+	<script src="js/libs/dat.gui.min.js"></script>
 	
 	<!-- Three script -->
     <script src="js/libs/three.js"></script>
@@ -161,6 +165,7 @@
 		
 	    // Create scene+
 		var renderer, scene, camera, controls, ship3D;
+		var gui = new dat.GUI();
 		
 		//Ready renderer and scene
         (function (){
@@ -234,23 +239,39 @@
 			camera.position.set(0.7*LOA, 0.7*LOA, 0.7*LOA);
 			controls.target = new THREE.Vector3(LOA/2,0,0);
 			controls.update();
-			animate();
-            
+
             //calculate hydrostatics
 			let {KB: KBc, BM: BMc} = ship.calculateStability();
-            let draftc = ship.designState.calculationParameters.Draft_design;
-            draftc = 1;
-			let {LWL: lwlc, Cb: cbc, BWL: bwlc, Awp: Awpc} = ship.structure.hull.calculateAttributesAtDraft(draftc);
-            let dispc = lwlc * bwlc * cbc * draftc;
-			
-            document.getElementById("KBc").innerHTML = KBc.toFixed(3);
-            document.getElementById("BMc").innerHTML = BMc.toFixed(3);
-            document.getElementById("draftc").innerHTML = draftc;
-            document.getElementById("lwlc").innerHTML = lwlc.toFixed(3);
-            document.getElementById("bwlc").innerHTML = bwlc.toFixed(3);
-            document.getElementById("Awpc").innerHTML = Awpc.toFixed(3);
-            document.getElementById("cbc").innerHTML = cbc.toFixed(3);
-            document.getElementById("dispc").innerHTML = dispc.toFixed(3);
+			let {LWL: lwlc, Cb: cbc, BWL: bwlc, Awp: Awpc} = ship.structure.hull.calculateAttributesAtDraft(ship.designState.calculationParameters.Draft_design);
+			let dispc = lwlc * bwlc * cbc * ship.designState.calculationParameters.Draft_design;
+
+			document.getElementById("KBc").innerHTML = KBc.toFixed(3);
+			document.getElementById("BMc").innerHTML = BMc.toFixed(3);
+			document.getElementById("draftc").innerHTML = ship.designState.calculationParameters.Draft_design.toFixed(3);
+			document.getElementById("lwlc").innerHTML = lwlc.toFixed(3);
+			document.getElementById("bwlc").innerHTML = bwlc.toFixed(3);
+			document.getElementById("Awpc").innerHTML = Awpc.toFixed(3);
+			document.getElementById("cbc").innerHTML = cbc.toFixed(3);
+			document.getElementById("dispc").innerHTML = dispc.toFixed(3);
+
+			gui.add(ship.designState.calculationParameters, "Draft_design", 0, 4, 0.01).onLoad(function (value) {
+				let {KB: KBc, BM: BMc} = ship.calculateStability();
+				let {LWL: lwlc, Cb: cbc, BWL: bwlc, Awp: Awpc} = ship.structure.hull.calculateAttributesAtDraft(ship.designState.calculationParameters.Draft_design);
+				let dispc = lwlc * bwlc * cbc * ship.designState.calculationParameters.Draft_design;
+
+				document.getElementById("KBc").innerHTML = KBc.toFixed(3);
+				document.getElementById("BMc").innerHTML = BMc.toFixed(3);
+				document.getElementById("draftc").innerHTML = ship.designState.calculationParameters.Draft_design.toFixed(3);
+				document.getElementById("lwlc").innerHTML = lwlc.toFixed(3);
+				document.getElementById("bwlc").innerHTML = bwlc.toFixed(3);
+				document.getElementById("Awpc").innerHTML = Awpc.toFixed(3);
+				document.getElementById("cbc").innerHTML = cbc.toFixed(3);
+				document.getElementById("dispc").innerHTML = dispc.toFixed(3);
+				ship3D.position.z = -ship.designState.calculationParameters.Draft_design;
+
+			});
+
+			animate();
 			
 		}
 		
