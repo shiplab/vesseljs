@@ -144,11 +144,11 @@
 						   <td id="cbc"></span></td> 
                         </tr>
                         <tr>
-                           <td>KB (m)</td>
+                           <td>KB (m) <b>WRONG VALUE</b></td>
 						   <td id="KBc"></span></td> 
                         </tr>
                         <tr>
-                           <td>BM (m)</td>
+                           <td>BM (m) <b>WRONG VALUE</b></td>
 						   <td id="BMc"></span></td> 
                         </tr>
                         <tr>
@@ -164,7 +164,7 @@
 		"use strict";
 		
 	    // Create scene+
-		var renderer, scene, camera, controls, ship3D;
+		var renderer, scene, camera, controls, ship3D, ocean;
 		var gui = new dat.GUI();
 		
 		//Ready renderer and scene
@@ -203,9 +203,17 @@
 				sun.position.set(1,1,1);
 				return sun;
 			}());
+
+			//Add rudimentary ocean, to see effect of draft changes:
+			ocean = new THREE.Mesh(new THREE.PlaneBufferGeometry(1000,1000), new THREE.MeshPhongMaterial({color: 0x2222bb}));
+			scene.add(ocean);
+			var grid = new THREE.GridHelper(1000, 100);
+			grid.rotation.x = 0.5*Math.PI;
+			grid.position.z = 0.01;
+			scene.add(grid);
 			
         })();
-				
+		
         // read file from user
         function readSingleFile(e){
             var file = e.target.files[0];
