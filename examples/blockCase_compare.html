@@ -105,12 +105,46 @@
             </div>
             
             <div class="col-md-12 text-left">
-                <h2>Calculations</h2>
-                <h3>GM : <span id="GMc"></span>m.</h3>
+                <h2>Whole ship</h2>
+                <h3>Ship specifications</h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Variable</th>
+                            <th>Value</th>
+                        </tr>
+                    </thead>
+                    <body>
+                        <tr>
+                            <td>Lenght Overall</td>
+                            <td><span id="LOA"></span><span> m</span></td>
+                        </tr>
+                        <tr>
+                            <td>Breadth Overall</td>
+                            <td><span id="BOA"></span><span> m</span></td>
+                        </tr>
+                        <tr>
+                            <td>Depth</td>
+                            <td><span id="depth"></span><span> m</span></td>
+                        </tr>
+                        <tr>
+                            <td>Design Draft</td>
+                            <td><span id="draftdesign"></span><span> m</span></td>
+                        </tr>
+                        <tr>
+                            <td>Design speed</td>
+                            <td><span id="speeddesign"></span><span> knots</span></td>
+                        </tr>
+                        <tr>
+                            <td>Lightweight</td>
+                            <td><span id="lightweight"></span><span> kg</span></td>
+                        </tr>
+                        
+                    </body>
                 
-			</div>
-            <div class="col-md-12 text-left">
-                <h2>Comparation</h2>
+
+                </table>
+                <h3>Calculations</h3>
                 <table class="table">
                     <thead>
                         <tr>
@@ -144,7 +178,7 @@
                            <td>Displacement (t)</td> 
                            <td><span id = "disp"></span></td> 
                             <td><span id = "dispc"></span></td> 
-                           <td></td> 
+                           <td><span id = "dispd"></span></td> 
                         </tr>
                         <tr>
                            <td>Waterline Lenght (m)</td> 
@@ -174,7 +208,7 @@
                            <td>Cb</td> 
                            <td><span id = "Cb"></span></td> 
                            <td><span id = "cbc"></span></td> 
-                           <td></td> 
+                           <td><span id = "cbd"></span></td> 
                         </tr>
                         <tr>
                            <td>LCBx (m)</td> 
@@ -212,18 +246,6 @@
                            <td><span id = "GM2"></span><td>
                            <td><span id = "GMd"></span></td> 
                         </tr>
-                         <tr>
-                           <td>Lightweigth (kg)</td> 
-                           <td><span id = "lightweight"></span></td> 
-                           <td><span id = "lightweightc"></span><td>
-                           <td><span></span></td> 
-                        </tr>
-                        <tr>
-                           <td>Deadweight (kg)</td> 
-                           <td><span id = "deadweight"></span></td> 
-                           <td><span id = "deadweightc"></span><td>
-                           <td><span></span></td> 
-                        </tr>
                         <tr>
                            <td>Trim (m)</td> 
                            <td><span id = "trimd"></span></td> 
@@ -258,6 +280,74 @@
                     </body>
                 
                 </table>
+                <h2>General arrangement</h2>
+                <h3>Specification</h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Lenght</th>
+                            <th>Breadth</th>
+                            <th>Height</th>
+                            <th>Deadweight</th>
+                        </tr>
+                    </thead>
+                    <body>
+                        <tr>
+                            <td><span>Block0</span></td>
+                            <td><span id="bl0"></span><span> m</span></td>                            
+                            <td><span id="bb0"></span><span> m</span></td>                            
+                            <td><span id="bh0"></span><span> m</span></td>                            
+                            <td><span id="bwe0"></span><span> kg</span></td>                            
+                        </tr>
+                        <tr>
+                            <td><span>Block0</span></td>
+                            <td><span id="bl1"></span><span> m</span></td>                            
+                            <td><span id="bb1"></span><span> m</span></td>                            
+                            <td><span id="bh1"></span><span> m</span></td>                            
+                            <td><span id="bwe1"></span><span> kg</span></td>                            
+                        </tr>
+                        <tr>
+                            <td><span>Block2</span></td>
+                            <td><span id="bl2"></span><span> m</span></td>                            
+                            <td><span id="bb2"></span><span> m</span></td>                            
+                            <td><span id="bh2"></span><span> m</span></td>                            
+                            <td><span id="bwe2"></span><span> kg</span></td>                            
+                        </tr>
+                        
+                    </body>
+                
+                </table>
+                <h3>Calculations</h3>
+                <table class="table">
+                    <thead>
+                        <th>Variable</th>
+                        <th>Hand value</th>
+                        <th>Calculated value</th>
+                    </thead>
+                    <body>
+                        <tr>
+                            <td>Deadweight (kg)</td> 
+                            <td><span id = "deadweight"></span></td> 
+                            <td><span id = "deadweightc"></span><td>
+                            <td><span></span></td> 
+                        </tr>
+                        <tr>
+                            <td>Total area (m2)</td> 
+                            <td><span id = "bareac"></span></td> 
+                            <td><span id = "barea"></span><td>
+                            <td><span></span></td> 
+                        </tr>
+                        <tr>
+                            <td>Total Volume (m3)</td> 
+                            <td><span id = "bvolc"></span></td> 
+                            <td><span id = "bvol"></span><td>
+                            <td><span></span></td> 
+                        </tr>
+                    </body>
+                
+                </table>
+
 			</div>
         </div>
     </div>
@@ -342,11 +432,23 @@
 			controls.update();
 			animate();
             
+            //Ship specification
+            
+            let BOA = ship.structure.hull.attributes.BOA
+            let depth = ship.structure.hull.attributes.Depth
+            let draftdesign = ship.designState.calculationParameters.Draft_design
+            let speeddesign = ship.designState.calculationParameters.speed
+            
+            document.getElementById("LOA").innerHTML = LOA;
+            document.getElementById("BOA").innerHTML = BOA;
+            document.getElementById("depth").innerHTML = depth;
+            document.getElementById("draftdesign").innerHTML = draftdesign;
+            document.getElementById("speeddesign").innerHTML = speeddesign;
+            
             //calculate stability
             let a = ship.calculateStability();
-            let GMc = a.GM.toFixed(3);
-            document.getElementById("GMc").innerHTML = GMc;
-            document.getElementById("GM2").innerHTML = GMc;
+            let GM2 = a.GM.toFixed(3);
+            document.getElementById("GM2").innerHTML = GM2;    
             
             //hand values
             let disp = 100;
@@ -369,8 +471,7 @@
             let heel = 0;
             let maxmom = 40.072;
             let shear = 13.327;
-            let lightweight = 30000;
-            let deadweight = 70000;
+            let deadweight = 85000;
             
             document.getElementById("disp").innerHTML = disp.toFixed(3);
             document.getElementById("draftms").innerHTML = draftms.toFixed(3);
@@ -392,26 +493,71 @@
             document.getElementById("heel").innerHTML = heel.toFixed(3);
             document.getElementById("maxmom").innerHTML = maxmom.toFixed(3);
             document.getElementById("shear").innerHTML = shear.toFixed(3);
-            document.getElementById("lightweight").innerHTML = lightweight.toFixed(3);
             document.getElementById("deadweight").innerHTML = deadweight.toFixed(3);
             
+            //baseObjects
+            let lightweight = ship.structure.hull.attributes.lightweight;
+            
+            let block0 = ship.baseObjects[Object.keys(ship.baseObjects)[0]];
+            let block1 = ship.baseObjects[Object.keys(ship.baseObjects)[1]];
+            let block2 = ship.baseObjects[Object.keys(ship.baseObjects)[2]];
+            
+            let bl0 = block0.boxDimensions.length;
+            let bb0 = block0.boxDimensions.breadth;
+            let bh0 = block0.boxDimensions.height;
+            let bwe0 = block0.weightInformation.lightweight;
+            
+            let bl1 = block1.boxDimensions.length;
+            let bb1 = block1.boxDimensions.breadth;
+            let bh1 = block1.boxDimensions.height;
+            let bwe1 = block1.weightInformation.lightweight;
+            
+            let bl2 = block2.boxDimensions.length;
+            let bb2 = block2.boxDimensions.breadth;
+            let bh2 = block2.boxDimensions.height;
+            let bwe2 = block2.weightInformation.lightweight;
+                        
+            let deadweightc = bwe0 + bwe1 + bwe2;
+            
+            let barea = bl0 * bb0 + bl1 * bb1 + bl2 * bb2;
+            let bvol = bl0 * bb0 * bh0 + bl1 * bb1 * bh1 + bl2 * bb2 * bh2;
+                        
+            document.getElementById("bl0").innerHTML = bl0;
+            document.getElementById("bb0").innerHTML = bb0;
+            document.getElementById("bh0").innerHTML = bh0;
+            document.getElementById("bwe0").innerHTML = bwe0;
+            
+            document.getElementById("bl1").innerHTML = bl1;
+            document.getElementById("bb1").innerHTML = bb1;
+            document.getElementById("bh1").innerHTML = bh1;
+            document.getElementById("bwe1").innerHTML = bwe1;
+            
+            document.getElementById("bl2").innerHTML = bl2;
+            document.getElementById("bb2").innerHTML = bb2;
+            document.getElementById("bh2").innerHTML = bh2;
+            document.getElementById("bwe2").innerHTML = bwe2;
+            
+            document.getElementById("barea").innerHTML = barea;
+            document.getElementById("bvol").innerHTML = bvol;
+            
+            //baseObjects calculated values
+            
+            let bareac = 84;
+            let bvolc = 240;
+            document.getElementById("bareac").innerHTML = bareac;
+            document.getElementById("bvolc").innerHTML = bvolc;
+                    
             //calculated values
             let KBc = a.KB.toFixed(3);
             let KGc = a.KG.toFixed(3);
             let BMc = a.BM.toFixed(3);
             let draftc = ship.designState.calculationParameters.Draft_design;
-            
-            //baseObjects not sure why is not working
-            let lightweightc = ship.structure.hull.attributes.lightweight + 15000;
-            let deadweightc = 14000 + 56000;
-            
-            
             let lwlc = ship.structure.hull.calculateAttributesAtDraft(draftc).LWL;
             let bwlc = ship.structure.hull.calculateAttributesAtDraft(draftc).BWL;
             let Awpc = ship.structure.hull.calculateAttributesAtDraft(draftc).Awp;
             let cbc = ship.structure.hull.calculateAttributesAtDraft(draftc).Cb;
             let dispc = lwlc * bwlc * cbc * draftc;
-            
+
             document.getElementById("KBc").innerHTML = KBc;
             document.getElementById("KGc").innerHTML = KGc;
             document.getElementById("BMc").innerHTML = BMc;
@@ -420,7 +566,7 @@
             document.getElementById("bwlc").innerHTML = bwlc.toFixed(3);
             document.getElementById("Awpc").innerHTML = Awpc.toFixed(3);
             document.getElementById("cbc").innerHTML = cbc.toFixed(3);
-            document.getElementById("lightweightc").innerHTML = lightweightc.toFixed(3);
+            document.getElementById("lightweight").innerHTML = lightweight.toFixed(3);
             document.getElementById("deadweightc").innerHTML = deadweightc.toFixed(3);
             document.getElementById("dispc").innerHTML = dispc.toFixed(3);
             
@@ -428,11 +574,13 @@
             let KBd = (1-KB/KBc)*100;
             let KGd = (1-KG/KGc)*100;
             let BMd = (1-BM/BMc)*100;
-            let GMd = (1-GM/GMc)*100;
+            let GMd = (1-GM/GM2)*100;
             let draftd = (1-draftms/draftc)*100;
             let lwld = (1-lwl/lwlc)*100;
             let bwld = (1-bwl/bwlc)*100;
             let awpd = (1-Awp/Awpc)*100;
+            let cbd = (1-Cb/cbc)*100;
+            let dispd = (1-disp/dispc)*100;
             
             document.getElementById("KBd").innerHTML = KBd.toFixed(3);
             document.getElementById("KGd").innerHTML = KGd.toFixed(3);
@@ -442,6 +590,8 @@
             document.getElementById("lwld").innerHTML = lwld.toFixed(3);
             document.getElementById("bwld").innerHTML = bwld.toFixed(3);
             document.getElementById("awpd").innerHTML = awpd.toFixed(3);
+            document.getElementById("cbd").innerHTML = cbd.toFixed(3);
+            document.getElementById("dispd").innerHTML = dispd.toFixed(3);
             
             
             //console.log(ship.structure.hull.calculateAttributesAtDraft(draftc))
