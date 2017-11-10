@@ -1,7 +1,7 @@
 //@EliasHasle
 
-function Structure(spec, ship) {
-	this.ship = ship;
+function Structure(spec/*, ship*/) {
+	//this.ship = ship;
 	JSONSpecObject.call(this, spec);
 }
 Structure.prototype = Object.create(JSONSpecObject.prototype);

@@ -21,11 +21,16 @@ function vecNormSquared(v) {
 	return v.x**2+v.y**2+v.z**2;
 }
 
+/*Adds two or more vectors given as individual parameters,
+and returns a new vector that is the component-wise 
+sum of the input vectors.*/
 function addVec(u,v, ...rest) {
 	if (rest.length > 0) return sumVec([u,v]+rest);
 	return {x: u.x+v.x, y: u.y+v.y, z: u.z+v.z};
 }
 
+//Takes an array of vectors as input, and returns a new vector
+//that is the component-wise sum of the input vectors.
 function sumVec(vectors) {
 	let S = {x:0, y:0, z:0};
 	for (let i = 0; i < vectors.length; i++) {
@@ -35,6 +40,12 @@ function sumVec(vectors) {
 		S.z += v.z;
 	}
 	return S;
+}
+
+//Takes two vector parameters u,v, and returns the vector u-v.
+function subVec(u,v) {
+	//return addVec(u, scaleVec(v, -1)); //equivalent
+	return {x: u.x-v.x, y: u.y-v.y, z: u.z-v.z};
 }
 
 function dotProduct(u,v) {

@@ -49,107 +49,99 @@ Object.assign(Hull.prototype, {
 		return output;
 	},
 	/*
+	Testing new version without nanCorrectionMode parameter, that defaults to setting lower NaNs to 0 and extrapolating highest data entry for upper NaNs (if existant, else set to 0). Inner NaNs will also be set to zero.
+	
 	Input:
 	z: level from bottom of ship (absolute value in meters)
-	nanCorrectionMode: 0 to set all NaNs to zero, 1 to output NaNs, set all NaNs to zero, 2 to replace NaNs with interpolated or extrapolated values.	
+	
+	Output:
+	Array representing waterline offsets for a given height from the keel (typically a draft).
 	*/
-	getWaterline: function(z, nanCorrectionMode=1) {
+	getWaterline: function(z) {
 		let ha = this.attributes;
-		let zr = z/ha.Depth;
-		let wls = this.halfBreadths.waterlines;
+		let zr = z/ha.Depth; //using zr requires fewer operations and less memory than a scaled copy of wls.
+		let wls = this.halfBreadths.waterlines;//.map(wl=>wl*ha.Depth);
 		let sts = this.halfBreadths.stations;
 		let tab = this.halfBreadths.table;
 
-		let {index: a, mu: mu} = bisectionSearch(wls, zr);
-		let wl;
-		if (a<0) {
-			if (nanCorrectionMode===0) {
-				console.warn("getWaterLine: z below lowest defined waterline. Defaulting to zeros.");
+		if (zr<wls[0]) {
+				console.warn("getWaterLine: z below lowest defined waterline. Defaulting to all zero offsets.");
 				return new Array(sts.length).fill(0);
-			}
-			if (nanCorrectionMode===1) {
-				console.warn("getWaterLine: z below lowest defined waterline. Outputting NaNs.");
-				return new Array(sts.length).fill(null);
-			}
-			else /*nanCorrectionMode===2*/ {
-				console.warn("getWaterLine: z below lowest defined waterline. Extrapolating lowest data entry.");
-				a=0;
-				mu=0;
-				//wl = tab[a].slice();
-			}			
-		} else if (a>/*=*/wls.length-1) {
-			if (nanCorrectionMode===0) {
-				console.warn("getWaterLine: z above highest defined waterline. Defaulting to zeros.");
-				return new Array(sts.length).fill(0);
-			}
-			if (nanCorrectionMode===1) {
-				console.warn("getWaterLine: z above highest defined waterline. Outputting NaNs.");
-				return new Array(sts.length).fill(null);
-			}
-			else /*nanCorrectionMode===2*/ {
-				console.warn("getWaterLine: z above highest defined waterline. Proceeding with highest data entry.");
+		} else {
+			let a, mu;
+			if (zr>wls[wls.length-1]) {
+				console.warn("getWaterLine: z above highest defined waterline. Proceeding with highest data entries.");
 				a = wls.length-2; //if this level is defined...
 				mu=1;
 				//wl = tab[a].slice();
-			}
-		}
-
-		//Linear interpolation between data waterlines
-		wl = new Array(sts.length);
-		for (let j = 0; j < wl.length; j++) {
-			if (nanCorrectionMode === 0) {
-				if (a+1 > wls.length-1) {
-					wl[j] = lerp(tab[a][j], 0, 0.5);
-				} else {
-					wl[j] = lerp(tab[a][j] || 0, tab[a+1][j] || 0, mu || 0.5);
-				}
-			} else if (nanCorrectionMode === 1) {
-				if (a+1 > wls.length-1) {
-					wl[j] = lerp(tab[a][j], null, mu);
-				} else {
-					wl[j] = lerp(tab[a][j], tab[a+1][j], mu);
-				}
 			} else {
-				//If necessary, sample from below
+				({index: a, mu: mu} = bisectionSearch(wls, zr));
+				if (a === wls.length-1) {
+					a = wls.length-2;
+					mu = 1;
+				}
+			}
+			
+			//Try to do linear interpolation between closest data waterlines, but handle null values well:
+			let wl = new Array(sts.length);
+			for (let j = 0; j < wl.length; j++) {
+				let lower, upper;
 				let b = a;
-				while (b>0 && isNaN(tab[b][j])) {
-					b--;
-				}
-				let lower;
-				if (b===0 && isNaN(tab[b][j])) {
-					lower = 0;
+				//Find lower value for interpolation
+				if (!isNaN(tab[b][j])) {
+					lower = tab[b][j];					
 				} else {
-					lower = tab[b][j];
+					b = a+1;
+					while(b < wls.length && isNaN(tab[b][j])) {
+						b++;
+					}
+					if (b !== wls.length) {
+						//Inner NaN
+						lower = 0;
+					} else {
+						//Upper NaN, search below:
+						b = a-1;
+						while (b >= 0 && isNaN(tab[b][j])) {
+							b--;
+						}
+						if (b===-1) {
+							//No number found:
+							lower = 0;
+							upper = 0;
+						} else {
+							lower = tab[b][j];
+							upper = lower;
+						}
+					}
 				}
-				//If necesary, sample from above
+				//Find upper value for interpolation
 				let c = a+1;
-				let upper;
-				if (c>wls.length-1) {
-					c = b;
-					upper = lower;
+				if (upper !== undefined) {/*upper found above*/}
+				else if (!isNaN(tab[c][j])) {
+					upper = tab[c][j];
 				} else {
-					while (c<wls.length-1 && isNaN(tab[c][j])) {
+					//The cell value is NaN.
+					//Upper is not defined.
+					//That means either tab[a][j] is a number
+					//or tab[a][j] is an inner NaN and
+					//there exists at least one number above it.
+					//In both cases I have to check above a+1.
+					c = a+2;
+					while (c < wls.length && isNaN(tab[c][j])) {
 						c++;
 					}
-					//now c===wls.length-1 or !isNaN(tab[c][j])
-					//unless c>wls.length-1 before the loop.
-					if (c===wls.length-1 && isNaN(tab[c][j])) {
-						//Fall back all the way to b
-						c = b;
-						upper = lower;
-					} else {
+					if (c === wls.length) upper = lower;
+					else {
 						upper = tab[c][j];
 					}
 				}
-				mu = c===b ? 0 : (a+(mu||0.5)-b)/(c-b);
+				//Linear interpolation
 				wl[j] = lerp(lower, upper, mu);
+						//Scale numerical values
+				if (!isNaN(wl[j])) wl[j] *= 0.5*ha.BOA;
 			}
-			
-			//Scale numerical values
-			if (!isNaN(wl[j])) wl[j] *= 0.5*ha.BOA;
-		}
-
 		return wl;
+		}
 	},
 	getStation: function(x) {
 		let ha = this.attributes;
@@ -184,14 +176,14 @@ Object.assign(Hull.prototype, {
 	
 	//THIS is a candidate for causing wrong Ix, Iy values.
 	//Much logic that can go wrong.
-										//typically deck bounds
+									//typically deck bounds
 	waterlineCalculation: function(z, bounds) {
 		let {minX, maxX, minY, maxY} = bounds || {};
 
-		console.groupCollapsed("waterlineCalculation.");
+		console.group/*Collapsed*/("waterlineCalculation.");
 		console.info("Arguments: z=", z, " Boundaries: ", arguments[1]);
 		
-		let wl = this.getWaterline(z, 0);
+		let wl = this.getWaterline(z);
 		console.info("wl: ", wl); //DEBUG
 
 		let LOA = this.attributes.LOA;
@@ -201,8 +193,8 @@ Object.assign(Hull.prototype, {
 			sts[i] *= LOA;
 		}
 		
-		let hasMinX = (minX !== undefined);
-		let hasMaxX = (maxX !== undefined);
+		let hasMinX = (minX !== undefined) && minX!==sts[0];
+		let hasMaxX = (maxX !== undefined) && maxX!==sts[sts.length-1];
 		if (hasMinX || hasMaxX) {
 			let first=0;
 			let wlpre;
@@ -244,7 +236,7 @@ Object.assign(Hull.prototype, {
 			}
 		}
 
-		//This does not yet account for undefined minY, maxY. Or does it?
+		//This does not yet account properly for undefined minY, maxY.
 		let port = [], star = [];
 		for (let i=0; i<wl.length; i++) {
 			if (isNaN(wl[i])) {
@@ -289,10 +281,21 @@ Object.assign(Hull.prototype, {
 		return output;
 	},
 	//Not done, and not tested
-	stationCalculation: function(x/*, {minZ, maxZ, minY, maxY}*/) {
+	//The optional maxZ parameter is introduced for enabling below-water calculations. More bounds will add more complexity, although then some common logic may perhaps be moved from this method and waterlineCalculation to sectionCalculation.
+	stationCalculation: function(x, maxZ) {
 		let wls = this.halfBreadths.waterlines.map(wl=>this.attributes.Depth*wl);
 		let port = this.getStation(x);
+		if (!isNaN(maxZ)) {
+			let {index, mu} = bisectionSearch(wls, maxZ);
+			if (index < wls.length-1) {
+				wls[index+1] = lerp(wls[index], wls[index+1], mu);
+				port[index+1] = lerp(port[index], port[index+1], mu);
+				wls = wls.slice(0,index+2);
+				port = port.slice(0,index+2);
+			}
+		}
 		let star = port.map(hb=>-hb);
+
 		let sc = sectionCalculation({xs: wls, ymins: star, ymaxs: port});
 		return {
 			x: x, //or xc? or cg.. Hm.
@@ -301,14 +304,15 @@ Object.assign(Hull.prototype, {
 			A: sc.A,
 			Iz: sc.Ix,
 			Iy: sc.Iy,
-			maxX: sc.maxX,
-			minX: sc.minX,
+			maxZ: sc.maxX,
+			minZ: sc.minX,
 			maxY: sc.maxY,
 			minY: sc.minY
 		};
 	},
-	//Unoptimized, some redundant repetitions of calculations.
-	//NOT DONE YET. Outputs lots of NaN values.
+
+	//NOT DONE YET. Many bugs are fixed, but the volume center calculation is broken. The bilinear volume and area calculations have been temporarily replaced with simpler (and worse) calculations, and at least the volume and volume center calculations should be revived soon.
+	//Important: calculateAttributesAtDraft takes one mandatory parameter T. (The function defined here is immediately called during construction of the prototype, and returns the proper function.)
 	calculateAttributesAtDraft: function() {
 		function levelCalculation(hull,
 			z,
@@ -327,61 +331,97 @@ Object.assign(Hull.prototype, {
 				Cv: {x:0, y:0, z:0}
 			}) {
 			
-			let wlc = hull.waterlineCalculation(z);
+			let wlc = hull.waterlineCalculation(z,{});
 			let lev = {};
 			Object.assign(lev, wlc);
 			//Projected area calculation (approximate):
-			lev.prMinY = wlc.minY || 0;
-			lev.prMaxY = wlc.maxY || 0; //|| 0 right?
-			lev.Ap = prev.Ap
-				+ trapezoidCalculation(prev.prMinY, prev.prMaxY, lev.prMinY, lev.prMaxY, prev.z, lev.z)["A"];
+			lev.prMinY = wlc.minY;
+			lev.prMaxY = wlc.maxY;
+			//DEBUG:
+			//console.info("prev.Ap = ", prev.Ap);
+			//console.info("Parameters to trapezoidCalculation: (%.2f, %.2f, %.2f, %.2f, %.2f, %.2f)", prev.prMinY, prev.prMaxY, lev.prMinY, lev.prMaxY, prev.z, z);
+			let AT = trapezoidCalculation(prev.prMinY, prev.prMaxY, lev.prMinY, lev.prMaxY, prev.z, z)["A"];
+			//console.log("Calculated area of trapezoid: ", AT);
+			lev.Ap = prev.Ap + AT;
+			//lev.Ap = prev.Ap
+			//	+ trapezoidCalculation(prev.prMinY, prev.prMaxY, lev.prMinY, lev.prMaxY, prev.z, z)["A"];
+			//DEBUG END
+
 			
 			//level bounds are for the bounding box of the submerged part of the hull
-			if (!isNaN(prev.minX) && prev.minX<=wlc.minX) 
+			if (!isNaN(wlc.minX) && wlc.minX<=prev.minX) 
+				lev.minX = wlc.minX;
+			else
 				lev.minX = prev.minX;
-			if (!isNaN(prev.maxX) && prev.maxX>=wlc.maxX) 
+			if (!isNaN(wlc.maxX) && wlc.maxX>=prev.maxX) 
+				lev.maxX = wlc.maxX;
+			else
 				lev.maxX = prev.maxX;
-			if (!isNaN(prev.minY) && prev.minY<=wlc.minY) 
+			if (!isNaN(wlc.minY) && wlc.minY<=prev.minY) 
+				lev.minY = wlc.minY;
+			else
 				lev.minY = prev.minY;
-			if (!isNaN(prev.maxY) && prev.maxY>=wlc.maxY) 
+			if (!isNaN(wlc.maxY) && wlc.maxY>=prev.maxY) 
+				lev.maxY = wlc.maxY;
+			else
 				lev.maxY = prev.maxY;
+			
 			lev.Vbb = (lev.maxX-lev.minX)*(lev.maxY-lev.minY)*z;
+			
+			//Keep level maxX and minX for finding end cap areas:
+			lev.maxXwp = wlc.maxX;
+			lev.minXwp = wlc.minX;
 			
 			//Find bilinear patches in the slice, and combine them.
 			//Many possibilities for getting the coordinate systems wrong.
 			let calculations = [];
-			//let wls = hull.halfBreadths.waterlines.map(wl=>wl*hull.attributes.Depth);
 			let sts = hull.halfBreadths.stations.map(st=>st*hull.attributes.LOA);
-			let wl = hull.getWaterline(z,0);
-			let prwl = hull.getWaterline(prev.z,0);
+			let wl = hull.getWaterline(z);
+			let prwl = hull.getWaterline(prev.z);
 			for (let j = 0; j < sts.length-1; j++) {
 				let port = 
-					bilinearPatchColumnCalculation(sts[j], sts[j+1], prev.z, z, -prwl[j], -wl[j], -prwl[j+1], -wl[j+1]);
+					patchColumnCalculation(sts[j], sts[j+1], prev.z, z, -prwl[j], -wl[j], -prwl[j+1], -wl[j+1]);
 				calculations.push(port);
 				let star =
-					bilinearPatchColumnCalculation(sts[j], sts[j+1], prev.z, z, prwl[j], wl[j], prwl[j+1], wl[j+1]);
+					patchColumnCalculation(sts[j], sts[j+1], prev.z, z, prwl[j], wl[j], prwl[j+1], wl[j+1]);
 				calculations.push(star);
 			}
+			console.log(calculations); //DEBUG
 			let C = combineVolumes(calculations);
+			//Cv of slice. Note that switching of yz must
+			//be done before combining with previous level
+			let Cv = {x: C.Cv.x, y: C.Cv.z, z: C.Cv.y};
+			
 			lev.Vs = prev.Vs + C.V; //hull volume below z
 			lev.As = prev.As + C.As; //outside surface below z
 
-			//center of volume below z (some potential for accumulated rounding error):
-			let Cv = addVec(scaleVec(prev.Cv,prev.Vs),
-					scaleVec(C.Cv,C.V));
-			let V = prev.Vs+C.V;
-			if (V!==0) {
-				Cv = scaleVec(Cv, 1/(prev.Vs+C.V));
-			}
-						//Note switching of yz
-			lev.Cv = {x: Cv.x, y: Cv.z, z: Cv.y};
+			//End caps:
+			if (lev.minXwp <= sts[0])
+				lev.As += hull.stationCalculation(lev.minXwp, z)["A"];
+			if (lev.maxXwp >= sts[sts.length-1])
+				lev.As += hull.stationCalculation(lev.maxXwp, z)["A"];
+			
+			//center of volume below z (some potential for accumulated rounding error when calculating an accumulated average like this):
+			lev.Cv = scaleVec(addVec(
+						scaleVec(prev.Cv,prev.Vs),
+						scaleVec(Cv,C.V)
+					), 1/(lev.Vs || 2));
 			
 			lev.Cb = lev.Vs/lev.Vbb;
+			lev.Cp = lev.Vs/(lev.Ap*(lev.maxX-lev.minX));
 			
 			return lev;
 		}
 		
+		//Here is the returned function calculateAttributesAtDraft(T):
 		return function(T) {
+			if (isNaN(T)) {
+				console.error("Hull.prototype.calculateAttributesAtDraft(T): No draft specified. Returning undefined.");
+				return;
+			} else if (T<0 || T>this.attributes.Depth) {
+				console.error("Hull.prototype.calculateAttributesAtDraft(T): Draft parameter " + T + "outside valid range of [0,Depth]. Returning undefined.");
+			}
+			
 			let wls = this.halfBreadths.waterlines.map(wl=>this.attributes.Depth*wl);
 			
 			//This is the part that can be reused as long as the geometry remains unchanged:
@@ -395,14 +435,18 @@ Object.assign(Hull.prototype, {
 				this.levelsNeedUpdate = false;
 			}
 			
-			//Find highest data waterline below water:
-			let {index: previ} = bisectionSearch(wls, T);
+			//Find highest data waterline below or at water level:
+			let {index, mu} = bisectionSearch(wls, T);
 			
-			let lc = levelCalculation(this, T, this.levels[previ]);
+			console.info("Highest data waterline below or at water level: " + index);
+			console.log(this.levels);
+			let lc;
+			if (mu===0) lc = this.levels[index];
+			else lc = levelCalculation(this, T, this.levels[index]);
 			
 			//Filter and rename for output
 			return {
-				xcwp: lc.xc,
+				xcwp: lc.xc, //water plane values
 				ycwp: lc.yc,
 				Awp: lc.Awp,
 				Ixwp: lc.Ix,
@@ -415,12 +459,13 @@ Object.assign(Hull.prototype, {
 				LWL: lc.LWL,
 				LBP: lc.LBP,
 				BWL: lc.BWL,
-				Ap: lc.Ap,
+				Ap: lc.Ap, //projected area in length direction
+				Cp: lc.Cp, //prismatic coefficient
 				//Vbb: lc.Vbb,
-				Vs: lc.Vs,
+				Vs: lc.Vs, //volume of submerged part of the hull
 				Cb: lc.Cb,
-				As: lc.As,
-				Cv: lc.Cv			
+				As: lc.As, //wetted area
+				Cv: lc.Cv //center of buoyancy
 			}
 		};
 	}()

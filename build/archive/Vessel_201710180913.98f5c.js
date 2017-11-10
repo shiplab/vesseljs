@@ -1,4 +1,4 @@
-//Vessel.js library, built 2017-11-10 12:21:12.376049, Checksum: 3162da26a8bf9803d2eabf6c27b72fb4
+//Vessel.js library, built 2017-10-18 09:13:35.951607, Checksum: 98f5cf6e023f4efb329738cead04ff77
 /*
 Import like this in HTML:
 <script src="Vessel.js"></script>
@@ -33,16 +33,11 @@ function vecNormSquared(v) {
 	return v.x**2+v.y**2+v.z**2;
 }
 
-/*Adds two or more vectors given as individual parameters,
-and returns a new vector that is the component-wise 
-sum of the input vectors.*/
 function addVec(u,v, ...rest) {
 	if (rest.length > 0) return sumVec([u,v]+rest);
 	return {x: u.x+v.x, y: u.y+v.y, z: u.z+v.z};
 }
 
-//Takes an array of vectors as input, and returns a new vector
-//that is the component-wise sum of the input vectors.
 function sumVec(vectors) {
 	let S = {x:0, y:0, z:0};
 	for (let i = 0; i < vectors.length; i++) {
@@ -52,12 +47,6 @@ function sumVec(vectors) {
 		S.z += v.z;
 	}
 	return S;
-}
-
-//Takes two vector parameters u,v, and returns the vector u-v.
-function subVec(u,v) {
-	//return addVec(u, scaleVec(v, -1)); //equivalent
-	return {x: u.x-v.x, y: u.y-v.y, z: u.z-v.z};
 }
 
 function dotProduct(u,v) {
@@ -73,6 +62,22 @@ function crossProduct(u,v) {
 }//@EliasHasle
 
 //Some interpolation helpers. Only linear and bilinear for now.
+
+//linear interpolation
+//Defaults are not finally decided
+//returns NaN if a and b are NaN or mu is NaN.
+function lerp(a, b, mu=0.5) {
+	if (isNaN(a)) return b;
+	if (isNaN(b)) return a;
+	return (1-mu)*a+mu*b;
+}
+
+//Test. Not safe yet.
+function linearFromArrays(xx, yy, x) {
+	let {index, mu} = bisectionSearch(xx, x);
+	if (index === undefined || mu === undefined) return 0;
+	return lerp(yy[index], yy[index+1], mu);	
+}
 
 /*Function that takes a sorted array as input, and finds the last index that holds a numerical value less than, or equal to, a given value.
 Returns an object with the index and an interpolation parameter mu that gives the position of value between index and index+1.
@@ -100,29 +105,11 @@ function bisectionSearch(array, value) {
 	return {index, mu};
 }
 
-//linear interpolation
-//Defaults are not finally decided
-//returns NaN if a and b are NaN or mu is NaN.
-function lerp(a, b, mu=0.5) {
-	if (isNaN(a)) return b;
-	if (isNaN(b)) return a;
-	return (1-mu)*a+mu*b;
-}
-
-//Test. Not safe yet.
-function linearFromArrays(xx, yy, x) {
-	let {index, mu} = bisectionSearch(xx, x);
-	if (index === undefined || mu === undefined) return 0;
-	return lerp(yy[index], yy[index+1], mu);	
-}
-
-//Source: https://en.wikipedia.org/wiki/Bilinear_interpolation
-//(I have used other sources too)
 function bilinearUnitSquareCoeffs(z00, z01, z10, z11) {
-	let a00 = z00;				//mux=muy=0
-	let a10 = z10-z00;			//mux=1, muy=0
-	let a01 = z01-z00;			//mux=0, muy=1
-	let a11 = z11+z00-z01-z10;	//mux=muy=1
+	let a00 = z00;
+	let a10 = z10-z00;
+	let a01 = z01-z00;
+	let a11 = z11+z00-z01-z10;
 	return [a00,a10,a01,a11];
 }
 
@@ -133,7 +120,7 @@ function bilinearUnitSquare(z00, z01, z10, z11, mux, muy) {
 
 //Find coefficients for 1, x, y, xy.
 //This doesn't yet handle zero-lengths well.
-function bilinearCoeffs(x1, x2, y1, y2, z00, z01, z10, z11) {
+function bilinearCoeffs(x1, x2, y1, y2, z11, z12, z21, z22) {
 	let X = (x2-x1);
 	let Y = (y2-y1);
 	
@@ -145,13 +132,13 @@ function bilinearCoeffs(x1, x2, y1, y2, z00, z01, z10, z11) {
 	let Ainv = 1/(X*Y);
 
 	//constant coeff:
-	let b00 = Ainv*(z00*x2*y2 - z10*x1*y2 - z01*x2*y1 + z11*x1*y1);
+	let b00 = Ainv*(z11*x2*y2 - z21*x1*y2 - z12*x2*y1 + z22*x1*y1);
 	//x coeff:
-	let b10 = Ainv*(-z00*y2 + z10*y2 + z01*y1 - z11*y1);
+	let b10 = Ainv*(-z11*y2 + z21*y2 + z12*y1 - z22*y1);
 	//y coeff:
-	let b01 = Ainv*(-z00*x2 + z10*x1 + z01*x2 -z11*x1);
+	let b01 = Ainv*(-z11*x2 + z21*x1 + z12*x2 -z22*x1);
 	//xy coeff:
-	let b11 = Ainv*(z00-z10-z01+z11);
+	let b11 = Ainv*(z11-z21-z12+z22);
 	
 	return [b00,b10,b01,b11];
 }
@@ -162,22 +149,17 @@ function bilinearCoeffs(x1, x2, y1, y2, z00, z01, z10, z11) {
 function bilinear(x1, x2, y1, y2, z11, z12, z21, z22, x, y) {
 	let [b00, b10, b01, b11] = 
 		bilinearCoeffs(x1, x2, y1, y2, z11, z12, z21, z22);
-	let fromCoeffs = b00 + b10*x + b01*y + b11*x*y;
-
-	//The following is supposed to be equivalent. Some tests yielding identical results (and no tests so far yielding different results) suggest that the calculations are in fact equivalent.
+	return b00 + b10*x + b01*y + b11*x*y;
+	//The following is supposed to be equivalent. Maybe I should compare, to make sure that the current calculation is correct.
 	/*let mux = (x-x1)/(x2-x1);
 	let muy = (y-y1)/(y2-y1);
-	let fromUnitSquare = bilinearUnitSquare(z11, z12, z21, z22, mux, muy);
-	
-	console.log("fromCoeffs=", fromCoeffs, ", fromUnitSquare=", fromUnitSquare);*/
-	
-	return fromCoeffs;
+	return bilinearUnitSquare(z11, z12, z21, z22, mux, muy);*/
 }
 //@EliasHasle
 
 //All inputs are numbers. The axes are given by a single coordinate.
 function steiner(I, A, sourceAxis, targetAxis) {
-	return I + A*(sourceAxis-targetAxis)**2;
+	return I + A*(sourceAxis-targetAxis)^2;
 }
 
 //Calculate area, center, Ix, Iy.
@@ -192,18 +174,18 @@ function trapezoidCalculation(xbase0, xbase1, xtop0, xtop1, ybase, ytop) {
 	let yc = (a==0 && b==0) ? ybase+0.5*h : ybase + h*(2*a+b)/(3*(a+b));
 	let d = xbase0+0.5*a; //shorthand
 	let xc = h===0 ? 0.25*(xbase0+xbase1+xtop0+xtop1) : d + (xtop0+0.5*b-d)*(yc-ybase)/h;
-	let Ix = (a==0 && b== 0) ? 0 : h**3*(a**2+4*a*b+b**2)/(36*(a+b));
+	let Ix = (a==0 && b== 0) ? 0 : h^3*(a^2+4*a*b+b^2)/(36*(a+b));
 
 	//For Iy I must decompose (I think negative results will work fine):
 	let Art1 = 0.5*(xtop0-xbase0)*h;
 	let xcrt1 = xbase0 + (xtop0-xbase0)/3;
-	let Iyrt1 = (xtop0-xbase0)**3*h/36;
+	let Iyrt1 = (xtop0-xbase0)^3*h/36;
 	let Arec = (xbase1-xtop0)*h;
 	let xcrec = 0.5*(xtop0+xbase1);
-	let Iyrec = (xbase1-xtop0)**3*h/12;
+	let Iyrec = (xbase1-xtop0)^3*h/12;
 	let Art2 = 0.5*(xbase1-xtop1)*h;
 	let xcrt2 = (xtop1 + (xbase1-xtop1)/3);
-	let Iyrt2 = (xbase1-xtop1)**3*h/36;
+	let Iyrt2 = (xbase1-xtop1)^3*h/36;
 
 	let Iy = steiner(Iyrt1, Art1, xcrt1, xc)
 		+ steiner(Iyrec, Arec, xcrec, xc)
@@ -245,7 +227,6 @@ function combineAreas(array) {
 		yc /= A;
 	} else {
 		console.warn("Zero area combination.");
-		console.trace();
 		xc /= L;
 		yc /= L;
 	}
@@ -261,8 +242,10 @@ function combineAreas(array) {
 
 //x and y here refers to coordinates in the plane that is being calculated on.
 function sectionCalculation({xs, ymins, ymaxs}) {
-	console.group/*Collapsed*/("sectionCalculation");
+	console.groupCollapsed("sectionCalculation");
 	console.info("Arguments (xs, ymins, ymaxs): ", arguments[0]);
+	
+	//Needed for Cwp (not a very efficient calculation, maybe):
 
 	let calculations = [];
 	for (let i = 0; i < xs.length-1; i++) {
@@ -282,11 +265,71 @@ function sectionCalculation({xs, ymins, ymaxs}) {
 	console.info("Output: ", output);
 	console.groupEnd();
 	return output;
+}//@EliasHasle
+
+function bilinearPatchColumnCalculation(x1, x2, y1, y2, z11, z12, z21, z22) {
+	let X = x2-x1;
+	let Y = y2-y1;
+	let [a00, a10, a01, a11] = bilinearUnitSquareCoeffs(z11, z12, z21, z22);
+	/*
+	From here I call mux for x, and muy for y.
+	Integral over unit square:
+	INT[x from 0 to 1, INT[y from 0 to 1, (a00 + a10*x + a01*y + a11*x*y) dy] dx]
+	= INT[x from 0 to 1, (a00+a10*x+0.5*a01+0.5*a11*x) dx]
+	= a00 + 0.5*a10 + 0.5*a01 + 0.25*a11
+	*/
+	let Ab = X*Y;
+	let zAvg = (a00 + 0.5*a10 + 0.5*a01 + 0.25*a11);
+	let V = Math.abs(Ab*zAvg); //new: absolute value
+	let zc = 0.5*zAvg;
+	/*
+	To find xc, I need to integrate x*z over the unit square, and scale and translate to world coordinates afterwards:
+	INT[x from 0 to 1, (a00+a10*x+0.5*a01+0.5*a11*x)*x dx]
+	= 0.5*a00 + a10/3 + 0.25*a01 + a11/6
+	Scale and translate:*/
+	let xc = y1 + X*(0.5*a00 + a10/3 + 0.25*a01 + a11/6)
+	
+	//Similar for yc:
+	let yc = y1 + Y*(0.5*a00 + 0.25*a10 + a01/3 + a11/6)
+	
+	//new: absolute value (OK?)
+	let As = Math.abs(bilinearArea(x1, x2, y1, y2, z11, z12, z21, z22));
+	
+	return {Ab: Ab, As: As, V: V, Cv: {x: xc, y: yc, z: zc}};
+}
+
+//Input: array of objects with calculation results for elements.
+//Output: the combined results.
+function combineVolumes(array) {
+	let V = 0;
+	let As = 0;
+	let Cv = {x:0, y:0, z:0};
+	let L = array.length;
+	if (L===0) return {V,As,Cv};
+	for (let i = 0; i < L; i++) {
+		let e = array[i];
+		V += e.V;
+		As += e.As; //typically wetted area
+		Cv.x += e.Cv.x*e.V;
+		Cv.y += e.Cv.y*e.V;
+		Cv.z += e.Cv.z*e.V;
+	}
+	//Safe zero check?
+	if (V!==0) {
+		Cv.x /= V;
+		Cv.y /= V;
+		Cv.z /= V;
+	} else {
+		console.warn("Zero volume combination.");
+		Cv.x /= L;
+		Cv.y /= L;
+		Cv.z /= L;
+	}
+	
+	return {V,As,Cv};//{V: V, As: As, Cv: Cv};
 }
 
 //For wetted area. I think this is right, but it is not tested.
-//The numerical integral will not scale well with larger geometries.
-//Then the full analytical solution is needed.
 function bilinearArea(x1, x2, y1, y2, z11, z12, z21, z22, segs=10) {
 	let [b00,b10,b01,b11] = bilinearCoeffs(x1, x2, y1, y2, z11, z12, z21, z22);
 	/*
@@ -299,8 +342,6 @@ function bilinearArea(x1, x2, y1, y2, z11, z12, z21, z22, segs=10) {
 	Then:
 	Tx X Ty = (-(b10+b11*y), -(b01+b11*x), 1)
 	|Tx X Ty| = sqrt((b10+b11*y)^2 + (b01+b11*x)^2 + 1)
-	
-	Now, to get the area I need to integrate |Tx X Ty| over X,Y.
 	
 	Wolfram Alpha gave me this for the inner integral using x (indefinite):
 	integral sqrt((b01 + b11 x)^2 + 1 + (b10+b11*y)^2) dx = ((b01 + b11*x) sqrt((b01 + b11*x)^2 + 1 + (b10+b11*y)^2) + (1 + (b10+b11*y)^2)*ln(sqrt((b01 + b11*x)^2 + 1 + (b10+b11*y)^2) + b01 + b11*x))/(2*b11) + constant
@@ -340,112 +381,7 @@ function bilinearArea(x1, x2, y1, y2, z11, z12, z21, z22, segs=10) {
 	A *= X*Y/(N*M); //dx dy
 	
 	return A;
-}
-
-/*Calculates the (arithmetic) average of the area of the two possible triangulations of the quad element (using two triangles).
-This requires the base of the quad to be convex. If the base is arrowhead shaped,
-The calculation will fail in undefined ways.
-*/
-function elementArea(v1,v2,v3,v4) {
-	let A1 = Math.abs(signedTriangleArea(v1,v2,v3)) + Math.abs(signedTriangleArea(v3,v4,v1));
-	let A2 = Math.abs(signedTriangleArea(v2,v3,v4)) + Math.abs(signedTriangleArea(v4,v1,v2));
-	let A = 0.5*(A1+A2);
-	return A;
-}
-
-function signedTriangleArea(v1,v2,v3) {
-	let u = subVec(v2,v1);
-	let v = subVec(v3,v1);
-	let c = crossProduct(u,v);
-	let A = 0.5*vecNorm(c);
-	return A;
-}//@EliasHasle
-
-//I have been doing some tests here of a simplified calculation.
-//The results so far indicate that, for the prism hull, the results are almost identical, except that with the simple calculation the center of volume is almost right (but wrong enough to disqualify such a simple calculation).
-/*Note that the coordinate system used here has xy as a grid, with z as heights on the grid, but in the intended application, which is calculations on transverse hull offsets, this z corresponds to the vessel y axis, and y corresponds to the vessel z axis. In any application of this function, the conversion between coordinate systems must be taken care of appropriately.*/
-											  // xy
-function patchColumnCalculation(x1, x2, y1, y2, z00, z01, z10, z11) {
-	//VOLUME:
-	//Analysis based on a bilinear patch:
-	// /*
-	// From here I call mux for x, and muy for y.
-	// Integral over unit square:
-	// INT[x from 0 to 1, INT[y from 0 to 1, (a00 + a10*x + a01*y + a11*x*y) dy] dx]
-	// = INT[x from 0 to 1, (a00+a10*x+0.5*a01+0.5*a11*x) dx]
-	// = a00 + 0.5*a10 + 0.5*a01 + 0.25*a11
-	// Note that by expanding a00,a10,a01,a11, it is demonstrated that this (rather unsurprisingly) is exactly equivalent to taking the average z offset of the control points.
-	// */
-	 let X = x2-x1;
-	 let Y = y2-y1;
-	 let Ab = X*Y; //area of base of patch column
-	 //let zAvg = (a00 + 0.5*a10 + 0.5*a01 + 0.25*a11);
-	 let zAvg = 0.25*(z00+z01+z10+z11); //equivalent
-	 let V = Math.abs(Ab*zAvg); //works
-
-	//CENTER OF VOLUME
-	 let zc = 0.5*zAvg;
-	 
-	//Very approximate center of volume
-	//(does not account for different signs on z values,
-	//but that should be OK for hull offsets)
-	//let xc = (x1*(z00+z01)+x2*(z10+z11))/((z00+z01+z10+z11) || 1);
-	//let yc = (y1*(z00+z10)+y2*(z01+z11))/((z00+z01+z10+z11) || 1);
-	
-	// /*
-	// To find xc properly, I need to integrate x*z over the unit square, divide by zAvg(?) and scale and translate to ship coordinates afterwards:
-	// INT[x from 0 to 1, INT[y from 0 to 1, x*(a00 + a10*x + a01*y + a11*x*y) dy] dx] =
-	// INT[x from 0 to 1, INT[y from 0 to 1, (a00*x + a10*x^2 + a01*xy + a11*x^2*y) dy] dx] =
-	// INT[x from 0 to 1, (a00*x + a10*x^2 + 0.5*a01*x + 0.5*a11*x^2) dx]
-	// = (0.5*a00 + a10/3 + 0.25*a01 + a11/6)
-	//Trying to expand the coeffs to original z offsets:
-	// = (0.5*z00 + (z10-z00)/3 + 0.25*(z01-z00) + (z00+z00-z01-z10)/6)
-	// = ((1/12)*z00 + (1/6)*z10 + (1/12)*z01 + (1/6)*z00)
-	//Divide by zAvg to get muxc, then scale and translate to xc.
-	let xc = x1+X*(((1/12)*z00 + (1/6)*z10 + (1/12)*z01 + (1/6)*z11) / (zAvg || 1));
-	//console.log("x1=%.2f, X=%.2f, muxc = %.2f", x1, X, (((1/12)*z00 + (1/6)*z10 + (1/12)*z01 + (1/6)*z11) / (zAvg || 1)));
-	//Similar for yc (modified symmetrically)
-	let yc = y1+Y*(((1/12)*z00 + (1/12)*z10 + (1/6)*z01 + (1/6)*z11) / (zAvg || 1));
-	let [a00, a10, a01, a11] = bilinearUnitSquareCoeffs(z00, z01, z10, z11);
-	
-	//console.log("Patch column Cv = (%.2f, %.2f, %.2f)", xc,yc,zc);
-	
-	//AREA
-	//These two methods give very similar results, within about 1% difference for the fishing boat hull (used in PX121.json).
-	//Simple triangle average approximation for area (works)
-	/*let As = elementArea(
-		{x: x1, y: y1, z: z00},
-		{x: x1, y: y2, z: z01},
-		{x: x2, y: y1, z: z10},
-		{x: x2, y: y2, z: z11});*/
-	//Bilinear area calculation. Works too, but is currently numerical, and quite complex (which means it is bug-prone and hard to maintain). But it is more exact, even with just a few segments for numerical integration (the last, optional, parameter)
-	let As = Math.abs(bilinearArea(x1, x2, y1, y2, z00, z01, z10, z11, 10));
-	
-	return {Ab: Ab, As: As, V: V, Cv: {x: xc, y: yc, z: zc}};
-}
-
-//Input: array of objects with calculation results for elements.
-//Output: the combined results.
-function combineVolumes(array) {
-	let V = 0;
-	let As = 0;
-	let Cv = {x:0, y:0, z:0};
-	let L = array.length;
-	//if (L===0) return {V,As,Cv};
-	for (let i = 0; i < L; i++) {
-		let e = array[i];
-		V += e.V;
-		As += e.As; //typically wetted area
-		//console.log(e.Cv);
-		Cv = addVec(Cv, scaleVec(e.Cv, e.V));
-	}
-	Cv = scaleVec(Cv, 1/(V || L || 1));
-	
-	//console.info("combineVolumes: Combined Cv is (" + Cv.x + ", " + Cv.y + ", " + Cv.z + ").");
-	
-	return {V,As,Cv};//{V: V, As: As, Cv: Cv};
-}
-//@MrEranwe
+}//@MrEranwe
 //@EliasHasle
 
 "use strict";
@@ -688,7 +624,7 @@ Object.assign(Ship.prototype, {
 	constructor: Ship,
 	setFromSpecification: function(specification) {
 		this.attributes = specification.attributes || {};
-		this.structure = new Structure(specification.structure/*,this*/);
+		this.structure = new Structure(specification.structure,this);
 		//baseObjects and derivedObjects are arrays in the specification, but are objects (hashmaps) in the constructed ship object:
 		this.baseObjects = {};
 		for (let i = 0; i < specification.baseObjects.length; i++) {
@@ -716,8 +652,6 @@ Object.assign(Ship.prototype, {
 
 		return specification;
 	},
-	//This should probably be separated in lightweight and deadweight
-	//Then this function should be replaced by a getDisplacement
 	getWeight: function(shipState) {
 		shipState = shipState || this.designState;
 
@@ -738,7 +672,6 @@ Object.assign(Ship.prototype, {
 		console.info("Calculated weight object: ", W);
 		return W;
 	},
-	//This should just take displacement as parameter instead. (later, soon)
 	calculateDraft(shipState, epsilon=0.001) {
 		let w = this.getWeight(shipState);
 		let M = w.mass;
@@ -762,20 +695,23 @@ Object.assign(Ship.prototype, {
         let T = this.calculateDraft(shipState);
         let ha = this.structure.hull.calculateAttributesAtDraft(T);
         let vol = ha.Vs;
+        if (vol === 0){
+            let Lwl = this.designState.calculationParameters.LWL_design;
+            let B = this.structure.hull.attributes.BOA;
+            let cb = this.designState.calculationParameters.Cb_design;
+            vol = Lwl * B * T * cb;
+        }
         let KG = this.getWeight(shipState).cg.z;
-		let Ix = ha.Ixwp;
-        let Iy = ha.Iywp;
-        let KB = ha.Cv.z;
-		let BMT = Ix / vol;
-        let BML = Iy / vol;
-        let GMT = KB + BMT - KG;
-        let GML = KB + BML - KG;
-        return {GMT, GML, GM: T, KB, BMT, BML, BM: BMT, KG};
+        let I = ha.Iywp;
+        let KB = 0.52 * T;
+        let BM = I / vol;
+        let GM = KB + BM - KG;
+        return {GM, KB, BM, KG};
 	}
 });//@EliasHasle
 
-function Structure(spec/*, ship*/) {
-	//this.ship = ship;
+function Structure(spec, ship) {
+	this.ship = ship;
 	JSONSpecObject.call(this, spec);
 }
 Structure.prototype = Object.create(JSONSpecObject.prototype);
@@ -920,99 +856,107 @@ Object.assign(Hull.prototype, {
 		return output;
 	},
 	/*
-	Testing new version without nanCorrectionMode parameter, that defaults to setting lower NaNs to 0 and extrapolating highest data entry for upper NaNs (if existant, else set to 0). Inner NaNs will also be set to zero.
-	
 	Input:
 	z: level from bottom of ship (absolute value in meters)
-	
-	Output:
-	Array representing waterline offsets for a given height from the keel (typically a draft).
+	nanCorrectionMode: 0 to set all NaNs to zero, 1 to output NaNs, set all NaNs to zero, 2 to replace NaNs with interpolated or extrapolated values.	
 	*/
-	getWaterline: function(z) {
+	getWaterline: function(z, nanCorrectionMode=1) {
 		let ha = this.attributes;
-		let zr = z/ha.Depth; //using zr requires fewer operations and less memory than a scaled copy of wls.
-		let wls = this.halfBreadths.waterlines;//.map(wl=>wl*ha.Depth);
+		let zr = z/ha.Depth;
+		let wls = this.halfBreadths.waterlines;
 		let sts = this.halfBreadths.stations;
 		let tab = this.halfBreadths.table;
 
-		if (zr<wls[0]) {
-				console.warn("getWaterLine: z below lowest defined waterline. Defaulting to all zero offsets.");
+		let {index: a, mu: mu} = bisectionSearch(wls, zr);
+		let wl;
+		if (a<0) {
+			if (nanCorrectionMode===0) {
+				console.warn("getWaterLine: z below lowest defined waterline. Defaulting to zeros.");
 				return new Array(sts.length).fill(0);
-		} else {
-			let a, mu;
-			if (zr>wls[wls.length-1]) {
-				console.warn("getWaterLine: z above highest defined waterline. Proceeding with highest data entries.");
+			}
+			if (nanCorrectionMode===1) {
+				console.warn("getWaterLine: z below lowest defined waterline. Outputting NaNs.");
+				return new Array(sts.length).fill(null);
+			}
+			else /*nanCorrectionMode===2*/ {
+				console.warn("getWaterLine: z below lowest defined waterline. Extrapolating lowest data entry.");
+				a=0;
+				mu=0;
+				//wl = tab[a].slice();
+			}			
+		} else if (a>/*=*/wls.length-1) {
+			if (nanCorrectionMode===0) {
+				console.warn("getWaterLine: z above highest defined waterline. Defaulting to zeros.");
+				return new Array(sts.length).fill(0);
+			}
+			if (nanCorrectionMode===1) {
+				console.warn("getWaterLine: z above highest defined waterline. Outputting NaNs.");
+				return new Array(sts.length).fill(null);
+			}
+			else /*nanCorrectionMode===2*/ {
+				console.warn("getWaterLine: z above highest defined waterline. Proceeding with highest data entry.");
 				a = wls.length-2; //if this level is defined...
 				mu=1;
 				//wl = tab[a].slice();
-			} else {
-				({index: a, mu: mu} = bisectionSearch(wls, zr));
-				if (a === wls.length-1) {
-					a = wls.length-2;
-					mu = 1;
-				}
 			}
-			
-			//Try to do linear interpolation between closest data waterlines, but handle null values well:
-			let wl = new Array(sts.length);
-			for (let j = 0; j < wl.length; j++) {
-				let lower, upper;
-				let b = a;
-				//Find lower value for interpolation
-				if (!isNaN(tab[b][j])) {
-					lower = tab[b][j];					
+		}
+
+		//Linear interpolation between data waterlines
+		wl = new Array(sts.length);
+		for (let j = 0; j < wl.length; j++) {
+			if (nanCorrectionMode === 0) {
+				if (a+1 > wls.length-1) {
+					wl[j] = lerp(tab[a][j], 0, 0.5);
 				} else {
-					b = a+1;
-					while(b < wls.length && isNaN(tab[b][j])) {
-						b++;
-					}
-					if (b !== wls.length) {
-						//Inner NaN
-						lower = 0;
-					} else {
-						//Upper NaN, search below:
-						b = a-1;
-						while (b >= 0 && isNaN(tab[b][j])) {
-							b--;
-						}
-						if (b===-1) {
-							//No number found:
-							lower = 0;
-							upper = 0;
-						} else {
-							lower = tab[b][j];
-							upper = lower;
-						}
-					}
+					wl[j] = lerp(tab[a][j] || 0, tab[a+1][j] || 0, mu || 0.5);
 				}
-				//Find upper value for interpolation
-				let c = a+1;
-				if (upper !== undefined) {/*upper found above*/}
-				else if (!isNaN(tab[c][j])) {
-					upper = tab[c][j];
+			} else if (nanCorrectionMode === 1) {
+				if (a+1 > wls.length-1) {
+					wl[j] = lerp(tab[a][j], null, mu);
 				} else {
-					//The cell value is NaN.
-					//Upper is not defined.
-					//That means either tab[a][j] is a number
-					//or tab[a][j] is an inner NaN and
-					//there exists at least one number above it.
-					//In both cases I have to check above a+1.
-					c = a+2;
-					while (c < wls.length && isNaN(tab[c][j])) {
+					wl[j] = lerp(tab[a][j], tab[a+1][j], mu);
+				}
+			} else {
+				//If necessary, sample from below
+				let b = a;
+				while (b>0 && isNaN(tab[b][j])) {
+					b--;
+				}
+				let lower;
+				if (b===0 && isNaN(tab[b][j])) {
+					lower = 0;
+				} else {
+					lower = tab[b][j];
+				}
+				//If necesary, sample from above
+				let c = a+1;
+				let upper;
+				if (c>wls.length-1) {
+					c = b;
+					upper = lower;
+				} else {
+					while (c<wls.length-1 && isNaN(tab[c][j])) {
 						c++;
 					}
-					if (c === wls.length) upper = lower;
-					else {
+					//now c===wls.length-1 or !isNaN(tab[c][j])
+					//unless c>wls.length-1 before the loop.
+					if (c===wls.length-1 && isNaN(tab[c][j])) {
+						//Fall back all the way to b
+						c = b;
+						upper = lower;
+					} else {
 						upper = tab[c][j];
 					}
 				}
-				//Linear interpolation
+				mu = c===b ? 0 : (a+(mu||0.5)-b)/(c-b);
 				wl[j] = lerp(lower, upper, mu);
-						//Scale numerical values
-				if (!isNaN(wl[j])) wl[j] *= 0.5*ha.BOA;
 			}
-		return wl;
+			
+			//Scale numerical values
+			if (!isNaN(wl[j])) wl[j] *= 0.5*ha.BOA;
 		}
+
+		return wl;
 	},
 	getStation: function(x) {
 		let ha = this.attributes;
@@ -1047,14 +991,14 @@ Object.assign(Hull.prototype, {
 	
 	//THIS is a candidate for causing wrong Ix, Iy values.
 	//Much logic that can go wrong.
-									//typically deck bounds
+										//typically deck bounds
 	waterlineCalculation: function(z, bounds) {
 		let {minX, maxX, minY, maxY} = bounds || {};
 
-		console.group/*Collapsed*/("waterlineCalculation.");
+		console.groupCollapsed("waterlineCalculation.");
 		console.info("Arguments: z=", z, " Boundaries: ", arguments[1]);
 		
-		let wl = this.getWaterline(z);
+		let wl = this.getWaterline(z, 0);
 		console.info("wl: ", wl); //DEBUG
 
 		let LOA = this.attributes.LOA;
@@ -1064,8 +1008,8 @@ Object.assign(Hull.prototype, {
 			sts[i] *= LOA;
 		}
 		
-		let hasMinX = (minX !== undefined) && minX!==sts[0];
-		let hasMaxX = (maxX !== undefined) && maxX!==sts[sts.length-1];
+		let hasMinX = (minX !== undefined);
+		let hasMaxX = (maxX !== undefined);
 		if (hasMinX || hasMaxX) {
 			let first=0;
 			let wlpre;
@@ -1107,7 +1051,7 @@ Object.assign(Hull.prototype, {
 			}
 		}
 
-		//This does not yet account properly for undefined minY, maxY.
+		//This does not yet account for undefined minY, maxY. Or does it?
 		let port = [], star = [];
 		for (let i=0; i<wl.length; i++) {
 			if (isNaN(wl[i])) {
@@ -1152,21 +1096,10 @@ Object.assign(Hull.prototype, {
 		return output;
 	},
 	//Not done, and not tested
-	//The optional maxZ parameter is introduced for enabling below-water calculations. More bounds will add more complexity, although then some common logic may perhaps be moved from this method and waterlineCalculation to sectionCalculation.
-	stationCalculation: function(x, maxZ) {
+	stationCalculation: function(x/*, {minZ, maxZ, minY, maxY}*/) {
 		let wls = this.halfBreadths.waterlines.map(wl=>this.attributes.Depth*wl);
 		let port = this.getStation(x);
-		if (!isNaN(maxZ)) {
-			let {index, mu} = bisectionSearch(wls, maxZ);
-			if (index < wls.length-1) {
-				wls[index+1] = lerp(wls[index], wls[index+1], mu);
-				port[index+1] = lerp(port[index], port[index+1], mu);
-				wls = wls.slice(0,index+2);
-				port = port.slice(0,index+2);
-			}
-		}
 		let star = port.map(hb=>-hb);
-
 		let sc = sectionCalculation({xs: wls, ymins: star, ymaxs: port});
 		return {
 			x: x, //or xc? or cg.. Hm.
@@ -1175,15 +1108,14 @@ Object.assign(Hull.prototype, {
 			A: sc.A,
 			Iz: sc.Ix,
 			Iy: sc.Iy,
-			maxZ: sc.maxX,
-			minZ: sc.minX,
+			maxX: sc.maxX,
+			minX: sc.minX,
 			maxY: sc.maxY,
 			minY: sc.minY
 		};
 	},
-
-	//NOT DONE YET. Many bugs are fixed, but the volume center calculation is broken. The bilinear volume and area calculations have been temporarily replaced with simpler (and worse) calculations, and at least the volume and volume center calculations should be revived soon.
-	//Important: calculateAttributesAtDraft takes one mandatory parameter T. (The function defined here is immediately called during construction of the prototype, and returns the proper function.)
+	//Unoptimized, some redundant repetitions of calculations.
+	//NOT DONE YET. Outputs lots of NaN values.
 	calculateAttributesAtDraft: function() {
 		function levelCalculation(hull,
 			z,
@@ -1202,97 +1134,61 @@ Object.assign(Hull.prototype, {
 				Cv: {x:0, y:0, z:0}
 			}) {
 			
-			let wlc = hull.waterlineCalculation(z,{});
+			let wlc = hull.waterlineCalculation(z);
 			let lev = {};
 			Object.assign(lev, wlc);
 			//Projected area calculation (approximate):
-			lev.prMinY = wlc.minY;
-			lev.prMaxY = wlc.maxY;
-			//DEBUG:
-			//console.info("prev.Ap = ", prev.Ap);
-			//console.info("Parameters to trapezoidCalculation: (%.2f, %.2f, %.2f, %.2f, %.2f, %.2f)", prev.prMinY, prev.prMaxY, lev.prMinY, lev.prMaxY, prev.z, z);
-			let AT = trapezoidCalculation(prev.prMinY, prev.prMaxY, lev.prMinY, lev.prMaxY, prev.z, z)["A"];
-			//console.log("Calculated area of trapezoid: ", AT);
-			lev.Ap = prev.Ap + AT;
-			//lev.Ap = prev.Ap
-			//	+ trapezoidCalculation(prev.prMinY, prev.prMaxY, lev.prMinY, lev.prMaxY, prev.z, z)["A"];
-			//DEBUG END
-
+			lev.prMinY = wlc.minY || 0;
+			lev.prMaxY = wlc.maxY || 0; //|| 0 right?
+			lev.Ap = prev.Ap
+				+ trapezoidCalculation(prev.prMinY, prev.prMaxY, lev.prMinY, lev.prMaxY, prev.z, lev.z)["A"];
 			
 			//level bounds are for the bounding box of the submerged part of the hull
-			if (!isNaN(wlc.minX) && wlc.minX<=prev.minX) 
-				lev.minX = wlc.minX;
-			else
+			if (!isNaN(prev.minX) && prev.minX<=wlc.minX) 
 				lev.minX = prev.minX;
-			if (!isNaN(wlc.maxX) && wlc.maxX>=prev.maxX) 
-				lev.maxX = wlc.maxX;
-			else
+			if (!isNaN(prev.maxX) && prev.maxX>=wlc.maxX) 
 				lev.maxX = prev.maxX;
-			if (!isNaN(wlc.minY) && wlc.minY<=prev.minY) 
-				lev.minY = wlc.minY;
-			else
+			if (!isNaN(prev.minY) && prev.minY<=wlc.minY) 
 				lev.minY = prev.minY;
-			if (!isNaN(wlc.maxY) && wlc.maxY>=prev.maxY) 
-				lev.maxY = wlc.maxY;
-			else
+			if (!isNaN(prev.maxY) && prev.maxY>=wlc.maxY) 
 				lev.maxY = prev.maxY;
-			
 			lev.Vbb = (lev.maxX-lev.minX)*(lev.maxY-lev.minY)*z;
-			
-			//Keep level maxX and minX for finding end cap areas:
-			lev.maxXwp = wlc.maxX;
-			lev.minXwp = wlc.minX;
 			
 			//Find bilinear patches in the slice, and combine them.
 			//Many possibilities for getting the coordinate systems wrong.
 			let calculations = [];
+			//let wls = hull.halfBreadths.waterlines.map(wl=>wl*hull.attributes.Depth);
 			let sts = hull.halfBreadths.stations.map(st=>st*hull.attributes.LOA);
-			let wl = hull.getWaterline(z);
-			let prwl = hull.getWaterline(prev.z);
+			let wl = hull.getWaterline(z,0);
+			let prwl = hull.getWaterline(prev.z,0);
 			for (let j = 0; j < sts.length-1; j++) {
 				let port = 
-					patchColumnCalculation(sts[j], sts[j+1], prev.z, z, -prwl[j], -wl[j], -prwl[j+1], -wl[j+1]);
+					bilinearPatchColumnCalculation(sts[j], sts[j+1], prev.z, z, -prwl[j], -wl[j], -prwl[j+1], -wl[j+1]);
 				calculations.push(port);
 				let star =
-					patchColumnCalculation(sts[j], sts[j+1], prev.z, z, prwl[j], wl[j], prwl[j+1], wl[j+1]);
+					bilinearPatchColumnCalculation(sts[j], sts[j+1], prev.z, z, prwl[j], wl[j], prwl[j+1], wl[j+1]);
 				calculations.push(star);
 			}
-			console.log(calculations); //DEBUG
 			let C = combineVolumes(calculations);
-			//Cv of slice. Note that switching of yz must
-			//be done before combining with previous level
-			let Cv = {x: C.Cv.x, y: C.Cv.z, z: C.Cv.y};
-			
 			lev.Vs = prev.Vs + C.V; //hull volume below z
 			lev.As = prev.As + C.As; //outside surface below z
 
-			//End caps:
-			if (lev.minXwp <= sts[0])
-				lev.As += hull.stationCalculation(lev.minXwp, z)["A"];
-			if (lev.maxXwp >= sts[sts.length-1])
-				lev.As += hull.stationCalculation(lev.maxXwp, z)["A"];
-			
-			//center of volume below z (some potential for accumulated rounding error when calculating an accumulated average like this):
-			lev.Cv = scaleVec(addVec(
-						scaleVec(prev.Cv,prev.Vs),
-						scaleVec(Cv,C.V)
-					), 1/(lev.Vs || 2));
+			//center of volume below z (some potential for accumulated rounding error):
+			let Cv = addVec(scaleVec(prev.Cv,prev.Vs),
+					scaleVec(C.Cv,C.V));
+			let V = prev.Vs+C.V;
+			if (V!==0) {
+				Cv = scaleVec(Cv, 1/(prev.Vs+C.V));
+			}
+						//Note switching of yz
+			lev.Cv = {x: Cv.x, y: Cv.z, z: Cv.y};
 			
 			lev.Cb = lev.Vs/lev.Vbb;
-			lev.Cp = lev.Vs/(lev.Ap*(lev.maxX-lev.minX));
 			
 			return lev;
 		}
 		
-		//Here is the returned function calculateAttributesAtDraft(T):
 		return function(T) {
-			if (isNaN(T)) {
-				console.error("Hull.prototype.calculateAttributesAtDraft(T): No draft specified. Returning undefined.");
-				return;
-			} else if (T<0 || T>this.attributes.Depth) {
-				console.error("Hull.prototype.calculateAttributesAtDraft(T): Draft parameter " + T + "outside valid range of [0,Depth]. Returning undefined.");
-			}
-			
 			let wls = this.halfBreadths.waterlines.map(wl=>this.attributes.Depth*wl);
 			
 			//This is the part that can be reused as long as the geometry remains unchanged:
@@ -1306,18 +1202,14 @@ Object.assign(Hull.prototype, {
 				this.levelsNeedUpdate = false;
 			}
 			
-			//Find highest data waterline below or at water level:
-			let {index, mu} = bisectionSearch(wls, T);
+			//Find highest data waterline below water:
+			let {index: previ} = bisectionSearch(wls, T);
 			
-			console.info("Highest data waterline below or at water level: " + index);
-			console.log(this.levels);
-			let lc;
-			if (mu===0) lc = this.levels[index];
-			else lc = levelCalculation(this, T, this.levels[index]);
+			let lc = levelCalculation(this, T, this.levels[previ]);
 			
 			//Filter and rename for output
 			return {
-				xcwp: lc.xc, //water plane values
+				xcwp: lc.xc,
 				ycwp: lc.yc,
 				Awp: lc.Awp,
 				Ixwp: lc.Ix,
@@ -1330,13 +1222,12 @@ Object.assign(Hull.prototype, {
 				LWL: lc.LWL,
 				LBP: lc.LBP,
 				BWL: lc.BWL,
-				Ap: lc.Ap, //projected area in length direction
-				Cp: lc.Cp, //prismatic coefficient
+				Ap: lc.Ap,
 				//Vbb: lc.Vbb,
-				Vs: lc.Vs, //volume of submerged part of the hull
+				Vs: lc.Vs,
 				Cb: lc.Cb,
-				As: lc.As, //wetted area
-				Cv: lc.Cv //center of buoyancy
+				As: lc.As,
+				Cv: lc.Cv			
 			}
 		};
 	}()
@@ -1756,8 +1647,7 @@ Object.assign(Vessel, {
 	loadShip: loadShip,
 	downloadShip: downloadShip,
         f: {
-            linearFromArrays: linearFromArrays,
-            bilinear: bilinear
+            linearFromArrays: linearFromArrays
         }
 });
 })();

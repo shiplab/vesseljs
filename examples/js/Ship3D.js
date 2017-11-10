@@ -154,8 +154,8 @@ function Ship3D(ship, stlPath) {
 		console.log("d.zFloor=%.1f", d.zFloor); //DEBUG
 		let zHigh = d.zFloor;
 		let zLow = d.zFloor-d.thickness;
-		let wlHigh = ship.structure.hull.getWaterline(zHigh, 2);
-		let wlLow = ship.structure.hull.getWaterline(zLow, 2);
+		let wlHigh = ship.structure.hull.getWaterline(zHigh);
+		let wlLow = ship.structure.hull.getWaterline(zLow);
 		let pos = deckGeom.getAttribute("position");
 		let pa = pos.array;
 		for (let j = 0; j < stss.length+1; j++) {
