@@ -43,7 +43,8 @@ Object.assign(Vessel, {
 	loadShip: loadShip,
 	downloadShip: downloadShip,
         f: {
-            linearFromArrays: linearFromArrays
+            linearFromArrays: linearFromArrays,
+            bilinear: bilinear
         }
 });
 })();

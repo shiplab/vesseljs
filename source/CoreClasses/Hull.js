@@ -311,7 +311,7 @@ Object.assign(Hull.prototype, {
 		};
 	},
 
-	//NOT DONE YET. Calculates too big Ap, Vs, Cb, and too small As for the test case. For the test, the Ap is exactly BWL*1m larger than it should be (why?). Too high Cb is clearly caused by too big Vs, and big Ap and Vs may have a common cause. The bilinear volume and area calculations have been temporarily replaced with simpler calculations, but this does not seem to help. I expect to find the bug(s) elsewhere.
+	//NOT DONE YET. Many bugs are fixed, but the volume center calculation is broken. The bilinear volume and area calculations have been temporarily replaced with simpler (and worse) calculations, and at least the volume and volume center calculations should be revived soon.
 	//Important: calculateAttributesAtDraft takes one mandatory parameter T. (The function defined here is immediately called during construction of the prototype, and returns the proper function.)
 	calculateAttributesAtDraft: function() {
 		function levelCalculation(hull,
@@ -408,6 +408,7 @@ Object.assign(Hull.prototype, {
 					), 1/(lev.Vs || 2));
 			
 			lev.Cb = lev.Vs/lev.Vbb;
+			lev.Cp = lev.Vs/(lev.Ap*(lev.maxX-lev.minX));
 			
 			return lev;
 		}
@@ -445,7 +446,7 @@ Object.assign(Hull.prototype, {
 			
 			//Filter and rename for output
 			return {
-				xcwp: lc.xc,
+				xcwp: lc.xc, //water plane values
 				ycwp: lc.yc,
 				Awp: lc.Awp,
 				Ixwp: lc.Ix,
@@ -458,12 +459,13 @@ Object.assign(Hull.prototype, {
 				LWL: lc.LWL,
 				LBP: lc.LBP,
 				BWL: lc.BWL,
-				Ap: lc.Ap,
+				Ap: lc.Ap, //projected area in length direction
+				Cp: lc.Cp, //prismatic coefficient
 				//Vbb: lc.Vbb,
-				Vs: lc.Vs,
+				Vs: lc.Vs, //volume of submerged part of the hull
 				Cb: lc.Cb,
-				As: lc.As,
-				Cv: lc.Cv			
+				As: lc.As, //wetted area
+				Cv: lc.Cv //center of buoyancy
 			}
 		};
 	}()

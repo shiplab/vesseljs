@@ -100,6 +100,7 @@ function useShip(ship) {
 	let Vs = 0.5*LWL*BWL*T;
 	//let Vbb = BWL*LWL*T;// = LOA*(BOA/Depth)*T^2
 	let Cb = 0.5;// = Vs/Vbb
+	let Cp = 1; // because the hull is a prism
 	let Ap = 0.5*BWL*T;
 	let As = 2*Ap + 2*LWL*Math.sqrt(T**2 + (0.5*BWL)**2);
 	let Awp = LWL*BWL;
@@ -127,6 +128,7 @@ function useShip(ship) {
 		Awp: Awp,
 		Cwp: Cwp,
 		Cb: Cb,
+		Cp: Cp,
 		Cv: Cv,/*{
 			x: LCBx,
 			y: undefined,

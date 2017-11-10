@@ -1,4 +1,4 @@
-//Vessel.js library, built 2017-11-03 21:58:34.624540, Checksum: 66754104a0f843a0cff421b5aa24f15e
+//Vessel.js library, built 2017-11-10 12:21:12.376049, Checksum: 3162da26a8bf9803d2eabf6c27b72fb4
 /*
 Import like this in HTML:
 <script src="Vessel.js"></script>
@@ -116,11 +116,13 @@ function linearFromArrays(xx, yy, x) {
 	return lerp(yy[index], yy[index+1], mu);	
 }
 
+//Source: https://en.wikipedia.org/wiki/Bilinear_interpolation
+//(I have used other sources too)
 function bilinearUnitSquareCoeffs(z00, z01, z10, z11) {
-	let a00 = z00;
-	let a10 = z10-z00;
-	let a01 = z01-z00;
-	let a11 = z11+z00-z01-z10;
+	let a00 = z00;				//mux=muy=0
+	let a10 = z10-z00;			//mux=1, muy=0
+	let a01 = z01-z00;			//mux=0, muy=1
+	let a11 = z11+z00-z01-z10;	//mux=muy=1
 	return [a00,a10,a01,a11];
 }
 
@@ -131,7 +133,7 @@ function bilinearUnitSquare(z00, z01, z10, z11, mux, muy) {
 
 //Find coefficients for 1, x, y, xy.
 //This doesn't yet handle zero-lengths well.
-function bilinearCoeffs(x1, x2, y1, y2, z11, z12, z21, z22) {
+function bilinearCoeffs(x1, x2, y1, y2, z00, z01, z10, z11) {
 	let X = (x2-x1);
 	let Y = (y2-y1);
 	
@@ -143,13 +145,13 @@ function bilinearCoeffs(x1, x2, y1, y2, z11, z12, z21, z22) {
 	let Ainv = 1/(X*Y);
 
 	//constant coeff:
-	let b00 = Ainv*(z11*x2*y2 - z21*x1*y2 - z12*x2*y1 + z22*x1*y1);
+	let b00 = Ainv*(z00*x2*y2 - z10*x1*y2 - z01*x2*y1 + z11*x1*y1);
 	//x coeff:
-	let b10 = Ainv*(-z11*y2 + z21*y2 + z12*y1 - z22*y1);
+	let b10 = Ainv*(-z00*y2 + z10*y2 + z01*y1 - z11*y1);
 	//y coeff:
-	let b01 = Ainv*(-z11*x2 + z21*x1 + z12*x2 -z22*x1);
+	let b01 = Ainv*(-z00*x2 + z10*x1 + z01*x2 -z11*x1);
 	//xy coeff:
-	let b11 = Ainv*(z11-z21-z12+z22);
+	let b11 = Ainv*(z00-z10-z01+z11);
 	
 	return [b00,b10,b01,b11];
 }
@@ -160,11 +162,16 @@ function bilinearCoeffs(x1, x2, y1, y2, z11, z12, z21, z22) {
 function bilinear(x1, x2, y1, y2, z11, z12, z21, z22, x, y) {
 	let [b00, b10, b01, b11] = 
 		bilinearCoeffs(x1, x2, y1, y2, z11, z12, z21, z22);
-	return b00 + b10*x + b01*y + b11*x*y;
-	//The following is supposed to be equivalent. Maybe I should compare, to make sure that the current calculation is correct.
+	let fromCoeffs = b00 + b10*x + b01*y + b11*x*y;
+
+	//The following is supposed to be equivalent. Some tests yielding identical results (and no tests so far yielding different results) suggest that the calculations are in fact equivalent.
 	/*let mux = (x-x1)/(x2-x1);
 	let muy = (y-y1)/(y2-y1);
-	return bilinearUnitSquare(z11, z12, z21, z22, mux, muy);*/
+	let fromUnitSquare = bilinearUnitSquare(z11, z12, z21, z22, mux, muy);
+	
+	console.log("fromCoeffs=", fromCoeffs, ", fromUnitSquare=", fromUnitSquare);*/
+	
+	return fromCoeffs;
 }
 //@EliasHasle
 
@@ -354,67 +361,67 @@ function signedTriangleArea(v1,v2,v3) {
 	return A;
 }//@EliasHasle
 
-//This one is broken, apparently.
-//It returns negative xc and yc when the z values are negative, 
-//even though all x and y values are positive.
-//I am currently doing some tests here of an (over-)simplified calculation
-//The results so far indicate that, for the prism hull, the results are almost identical, except that with the simple calculation the center of volume is almost right (but wrong enough to disqualify such a simple calculation). The bug causing very wrong (too big) submerged volume is likely to be found elsewhere.
-/*Note that the coordinate system used here has xy as a grid, with z as heights on the grid, but in the intended application, which is calculations on transverse hull offsets, z corresponds to the vessel y axis, and y corresponds to the vessel z axis. In the application, the conversion between coordinate systems must be taken care of appropriately.*/
+//I have been doing some tests here of a simplified calculation.
+//The results so far indicate that, for the prism hull, the results are almost identical, except that with the simple calculation the center of volume is almost right (but wrong enough to disqualify such a simple calculation).
+/*Note that the coordinate system used here has xy as a grid, with z as heights on the grid, but in the intended application, which is calculations on transverse hull offsets, this z corresponds to the vessel y axis, and y corresponds to the vessel z axis. In any application of this function, the conversion between coordinate systems must be taken care of appropriately.*/
 											  // xy
-function patchColumnCalculation(x1, x2, y1, y2, z11, z12, z21, z22) {
-	//DEBUG START:
-	//Simpler approximate calculation of volume:
-	let z = 0.25*(z11+z12+z21+z22); //"average height"
-	let V = Math.abs((x2-x1)*(y2-y1)*z); //base area times "average height"
-
-	//Very approximate center of volume
-	//(does not account for different signs on z values,
-	//but that should be OK for hull offsets)
-	let xc = (x1*(z11+z12)+x2*(z21+z22))/((z11+z12+z21+z22) || 1);
-	let yc = (y1*(z11+z21)+y2*(z12+z22))/((z11+z12+z21+z22) || 1);
-	let zc = 0.5*z;
-	
-	//Simple triangle average approximation for area
-	let As = elementArea(
-		{x: x1, y: y1, z: z11},
-		{x: x1, y: y2, z: z12},
-		{x: x2, y: y1, z: z21},
-		{x: x2, y: y2, z: z22});
-	
-	return {As: As, V: V, Cv: {x: xc, y: yc, z: zc}};
-	
-	//DEBUG END
-	
-	//Calculation based on a bilinear patch:
-
-	// let X = x2-x1;
-	// let Y = y2-y1;
-	// let [a00, a10, a01, a11] = bilinearUnitSquareCoeffs(z11, z12, z21, z22);
+function patchColumnCalculation(x1, x2, y1, y2, z00, z01, z10, z11) {
+	//VOLUME:
+	//Analysis based on a bilinear patch:
 	// /*
 	// From here I call mux for x, and muy for y.
 	// Integral over unit square:
 	// INT[x from 0 to 1, INT[y from 0 to 1, (a00 + a10*x + a01*y + a11*x*y) dy] dx]
 	// = INT[x from 0 to 1, (a00+a10*x+0.5*a01+0.5*a11*x) dx]
 	// = a00 + 0.5*a10 + 0.5*a01 + 0.25*a11
+	// Note that by expanding a00,a10,a01,a11, it is demonstrated that this (rather unsurprisingly) is exactly equivalent to taking the average z offset of the control points.
 	// */
-	// let Ab = X*Y; //area of base of patch column
-	// let zAvg = (a00 + 0.5*a10 + 0.5*a01 + 0.25*a11);
-	// let V = Math.abs(Ab*zAvg); //new: absolute value
-	// let zc = 0.5*zAvg;
+	 let X = x2-x1;
+	 let Y = y2-y1;
+	 let Ab = X*Y; //area of base of patch column
+	 //let zAvg = (a00 + 0.5*a10 + 0.5*a01 + 0.25*a11);
+	 let zAvg = 0.25*(z00+z01+z10+z11); //equivalent
+	 let V = Math.abs(Ab*zAvg); //works
+
+	//CENTER OF VOLUME
+	 let zc = 0.5*zAvg;
+	 
+	//Very approximate center of volume
+	//(does not account for different signs on z values,
+	//but that should be OK for hull offsets)
+	//let xc = (x1*(z00+z01)+x2*(z10+z11))/((z00+z01+z10+z11) || 1);
+	//let yc = (y1*(z00+z10)+y2*(z01+z11))/((z00+z01+z10+z11) || 1);
+	
 	// /*
-	// To find xc, I need to integrate x*z over the unit square, and scale and translate to ship coordinates afterwards:
-	// INT[x from 0 to 1, (a00+a10*x+0.5*a01+0.5*a11*x)*x dx]
-	// = 0.5*a00 + a10/3 + 0.25*a01 + a11/6
-	// Scale and translate:*/
-	// let xc = x1 + X*(0.5*a00 + a10/3 + 0.25*a01 + a11/6);
+	// To find xc properly, I need to integrate x*z over the unit square, divide by zAvg(?) and scale and translate to ship coordinates afterwards:
+	// INT[x from 0 to 1, INT[y from 0 to 1, x*(a00 + a10*x + a01*y + a11*x*y) dy] dx] =
+	// INT[x from 0 to 1, INT[y from 0 to 1, (a00*x + a10*x^2 + a01*xy + a11*x^2*y) dy] dx] =
+	// INT[x from 0 to 1, (a00*x + a10*x^2 + 0.5*a01*x + 0.5*a11*x^2) dx]
+	// = (0.5*a00 + a10/3 + 0.25*a01 + a11/6)
+	//Trying to expand the coeffs to original z offsets:
+	// = (0.5*z00 + (z10-z00)/3 + 0.25*(z01-z00) + (z00+z00-z01-z10)/6)
+	// = ((1/12)*z00 + (1/6)*z10 + (1/12)*z01 + (1/6)*z00)
+	//Divide by zAvg to get muxc, then scale and translate to xc.
+	let xc = x1+X*(((1/12)*z00 + (1/6)*z10 + (1/12)*z01 + (1/6)*z11) / (zAvg || 1));
+	//console.log("x1=%.2f, X=%.2f, muxc = %.2f", x1, X, (((1/12)*z00 + (1/6)*z10 + (1/12)*z01 + (1/6)*z11) / (zAvg || 1)));
+	//Similar for yc (modified symmetrically)
+	let yc = y1+Y*(((1/12)*z00 + (1/12)*z10 + (1/6)*z01 + (1/6)*z11) / (zAvg || 1));
+	let [a00, a10, a01, a11] = bilinearUnitSquareCoeffs(z00, z01, z10, z11);
 	
-	// //Similar for yc:
-	// let yc = y1 + Y*(0.5*a00 + 0.25*a10 + a01/3 + a11/6);
+	//console.log("Patch column Cv = (%.2f, %.2f, %.2f)", xc,yc,zc);
 	
-	//new: absolute value (OK?)
-	//let As = Math.abs(bilinearArea(x1, x2, y1, y2, z11, z12, z21, z22));
+	//AREA
+	//These two methods give very similar results, within about 1% difference for the fishing boat hull (used in PX121.json).
+	//Simple triangle average approximation for area (works)
+	/*let As = elementArea(
+		{x: x1, y: y1, z: z00},
+		{x: x1, y: y2, z: z01},
+		{x: x2, y: y1, z: z10},
+		{x: x2, y: y2, z: z11});*/
+	//Bilinear area calculation. Works too, but is currently numerical, and quite complex (which means it is bug-prone and hard to maintain). But it is more exact, even with just a few segments for numerical integration (the last, optional, parameter)
+	let As = Math.abs(bilinearArea(x1, x2, y1, y2, z00, z01, z10, z11, 10));
 	
-	// return {Ab: Ab, As: As, V: V, Cv: {x: xc, y: yc, z: zc}};
+	return {Ab: Ab, As: As, V: V, Cv: {x: xc, y: yc, z: zc}};
 }
 
 //Input: array of objects with calculation results for elements.
@@ -709,6 +716,8 @@ Object.assign(Ship.prototype, {
 
 		return specification;
 	},
+	//This should probably be separated in lightweight and deadweight
+	//Then this function should be replaced by a getDisplacement
 	getWeight: function(shipState) {
 		shipState = shipState || this.designState;
 
@@ -729,6 +738,7 @@ Object.assign(Ship.prototype, {
 		console.info("Calculated weight object: ", W);
 		return W;
 	},
+	//This should just take displacement as parameter instead. (later, soon)
 	calculateDraft(shipState, epsilon=0.001) {
 		let w = this.getWeight(shipState);
 		let M = w.mass;
@@ -752,18 +762,15 @@ Object.assign(Ship.prototype, {
         let T = this.calculateDraft(shipState);
         let ha = this.structure.hull.calculateAttributesAtDraft(T);
         let vol = ha.Vs;
-        if (vol === 0){
-            let Lwl = this.designState.calculationParameters.LWL_design;
-            let B = this.structure.hull.attributes.BOA;
-            let cb = this.designState.calculationParameters.Cb_design;
-            vol = Lwl * B * T * cb;
-        }
         let KG = this.getWeight(shipState).cg.z;
-        let I = ha.Iywp;
-        let KB = 0.52 * T;
-        let BM = I / vol;
-        let GM = KB + BM - KG;
-        return {GM, KB, BM, KG};
+		let Ix = ha.Ixwp;
+        let Iy = ha.Iywp;
+        let KB = ha.Cv.z;
+		let BMT = Ix / vol;
+        let BML = Iy / vol;
+        let GMT = KB + BMT - KG;
+        let GML = KB + BML - KG;
+        return {GMT, GML, GM: T, KB, BMT, BML, BM: BMT, KG};
 	}
 });//@EliasHasle
 
@@ -830,7 +837,7 @@ Object.assign(Structure.prototype, {
 			let zc = d.zFloor+0.5*d.thickness;
 			let yc = d.yCentre;
 			let b = d.breadth;
-			let wlc = this.hull.waterlineCalculation(zc, {minX: d.xAft, maxX: d.xFwd, minY: yc-0.5*b, maxY: yc+0.5*b}, 3);
+			let wlc = this.hull.waterlineCalculation(zc, {minX: d.xAft, maxX: d.xFwd, minY: yc-0.5*b, maxY: yc+0.5*b});
 			components.push({
 				//approximation
 				mass: wlc.Awp*d.thickness*d.density,
@@ -914,8 +921,6 @@ Object.assign(Hull.prototype, {
 	},
 	/*
 	Testing new version without nanCorrectionMode parameter, that defaults to setting lower NaNs to 0 and extrapolating highest data entry for upper NaNs (if existant, else set to 0). Inner NaNs will also be set to zero.
-	
-	This does not exactly work perfectly yet. getwaterline(0,3) gives interpolated values, even though the keel level is defined.
 	
 	Input:
 	z: level from bottom of ship (absolute value in meters)
@@ -1043,13 +1048,13 @@ Object.assign(Hull.prototype, {
 	//THIS is a candidate for causing wrong Ix, Iy values.
 	//Much logic that can go wrong.
 									//typically deck bounds
-	waterlineCalculation: function(z, bounds, nanCorrectionMode=3) {
+	waterlineCalculation: function(z, bounds) {
 		let {minX, maxX, minY, maxY} = bounds || {};
 
 		console.group/*Collapsed*/("waterlineCalculation.");
-		console.info("Arguments: z=", z, " Boundaries: ", arguments[1], " NaN correction mode: ", nanCorrectionMode);
+		console.info("Arguments: z=", z, " Boundaries: ", arguments[1]);
 		
-		let wl = this.getWaterline(z, nanCorrectionMode);
+		let wl = this.getWaterline(z);
 		console.info("wl: ", wl); //DEBUG
 
 		let LOA = this.attributes.LOA;
@@ -1177,7 +1182,7 @@ Object.assign(Hull.prototype, {
 		};
 	},
 
-	//NOT DONE YET. Calculates too big Ap, Vs, Cb, and too small As for the test case. For the test, the Ap is exactly BWL*1m larger than it should be (why?). Too high Cb is clearly caused by too big Vs, and big Ap and Vs may have a common cause. The bilinear volume and area calculations have been temporarily replaced with simpler calculations, but this does not seem to help. I expect to find the bug(s) elsewhere.
+	//NOT DONE YET. Many bugs are fixed, but the volume center calculation is broken. The bilinear volume and area calculations have been temporarily replaced with simpler (and worse) calculations, and at least the volume and volume center calculations should be revived soon.
 	//Important: calculateAttributesAtDraft takes one mandatory parameter T. (The function defined here is immediately called during construction of the prototype, and returns the proper function.)
 	calculateAttributesAtDraft: function() {
 		function levelCalculation(hull,
@@ -1197,7 +1202,7 @@ Object.assign(Hull.prototype, {
 				Cv: {x:0, y:0, z:0}
 			}) {
 			
-			let wlc = hull.waterlineCalculation(z,{},3);
+			let wlc = hull.waterlineCalculation(z,{});
 			let lev = {};
 			Object.assign(lev, wlc);
 			//Projected area calculation (approximate):
@@ -1242,8 +1247,8 @@ Object.assign(Hull.prototype, {
 			//Many possibilities for getting the coordinate systems wrong.
 			let calculations = [];
 			let sts = hull.halfBreadths.stations.map(st=>st*hull.attributes.LOA);
-			let wl = hull.getWaterline(z,3);
-			let prwl = hull.getWaterline(prev.z,3);
+			let wl = hull.getWaterline(z);
+			let prwl = hull.getWaterline(prev.z);
 			for (let j = 0; j < sts.length-1; j++) {
 				let port = 
 					patchColumnCalculation(sts[j], sts[j+1], prev.z, z, -prwl[j], -wl[j], -prwl[j+1], -wl[j+1]);
@@ -1274,6 +1279,7 @@ Object.assign(Hull.prototype, {
 					), 1/(lev.Vs || 2));
 			
 			lev.Cb = lev.Vs/lev.Vbb;
+			lev.Cp = lev.Vs/(lev.Ap*(lev.maxX-lev.minX));
 			
 			return lev;
 		}
@@ -1311,7 +1317,7 @@ Object.assign(Hull.prototype, {
 			
 			//Filter and rename for output
 			return {
-				xcwp: lc.xc,
+				xcwp: lc.xc, //water plane values
 				ycwp: lc.yc,
 				Awp: lc.Awp,
 				Ixwp: lc.Ix,
@@ -1324,12 +1330,13 @@ Object.assign(Hull.prototype, {
 				LWL: lc.LWL,
 				LBP: lc.LBP,
 				BWL: lc.BWL,
-				Ap: lc.Ap,
+				Ap: lc.Ap, //projected area in length direction
+				Cp: lc.Cp, //prismatic coefficient
 				//Vbb: lc.Vbb,
-				Vs: lc.Vs,
+				Vs: lc.Vs, //volume of submerged part of the hull
 				Cb: lc.Cb,
-				As: lc.As,
-				Cv: lc.Cv			
+				As: lc.As, //wetted area
+				Cv: lc.Cv //center of buoyancy
 			}
 		};
 	}()
@@ -1749,7 +1756,8 @@ Object.assign(Vessel, {
 	loadShip: loadShip,
 	downloadShip: downloadShip,
         f: {
-            linearFromArrays: linearFromArrays
+            linearFromArrays: linearFromArrays,
+            bilinear: bilinear
         }
 });
 })();
