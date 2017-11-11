@@ -311,7 +311,7 @@ Object.assign(Hull.prototype, {
 		};
 	},
 
-	//NOT DONE YET. Many bugs are fixed, but the volume center calculation is broken. The bilinear volume and area calculations have been temporarily replaced with simpler (and worse) calculations, and at least the volume and volume center calculations should be revived soon.
+	/*Known issue: some representations of flat bottom hulls will not have the bottom area included in the wetted area. The challenge is not finding the bottom area, but deciding the correct conditions for it to be added to a "level calculation". Is z===0 a good test, or how about z/Depth === waterlines[0]? I think none of these candidates are foolproof. (They can even fail just because of float precision issues.) A safer solution, perhaps, is the one I have just implemented now: Adding the bottom cap outside the level calculation only on the bottom level to be precalculated.*/
 	//Important: calculateAttributesAtDraft takes one mandatory parameter T. (The function defined here is immediately called during construction of the prototype, and returns the proper function.)
 	calculateAttributesAtDraft: function() {
 		function levelCalculation(hull,
@@ -429,7 +429,11 @@ Object.assign(Hull.prototype, {
 				this.levels = [];
 				for (let i = 0; i < wls.length; i++) {
 					let z = wls[i];
-					let lev = levelCalculation(this, z, this.levels[i-1]);
+					let lev = levelCalculation(this, z, this.levels[i-1]);			
+					//Bottom cap, only on the lowest level:
+					if (i === 0) {
+						lev.As += lev.Awp;
+					}
 					this.levels.push(lev);
 				}
 				this.levelsNeedUpdate = false;

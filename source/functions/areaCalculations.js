@@ -112,7 +112,7 @@ function sectionCalculation({xs, ymins, ymaxs}) {
 //For wetted area. I think this is right, but it is not tested.
 //The numerical integral will not scale well with larger geometries.
 //Then the full analytical solution is needed.
-function bilinearArea(x1, x2, y1, y2, z11, z12, z21, z22, segs=10) {
+function bilinearArea(x1, x2, y1, y2, z11, z12, z21, z22, segs=5) {
 	let [b00,b10,b01,b11] = bilinearCoeffs(x1, x2, y1, y2, z11, z12, z21, z22);
 	/*
 	z(x,y) = b00 + b10*x + b01*y + b11*xy

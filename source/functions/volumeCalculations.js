@@ -58,7 +58,7 @@ function patchColumnCalculation(x1, x2, y1, y2, z00, z01, z10, z11) {
 		{x: x2, y: y1, z: z10},
 		{x: x2, y: y2, z: z11});*/
 	//Bilinear area calculation. Works too, but is currently numerical, and quite complex (which means it is bug-prone and hard to maintain). But it is more exact, even with just a few segments for numerical integration (the last, optional, parameter)
-	let As = Math.abs(bilinearArea(x1, x2, y1, y2, z00, z01, z10, z11, 10));
+	let As = Math.abs(bilinearArea(x1, x2, y1, y2, z00, z01, z10, z11));
 	
 	return {Ab: Ab, As: As, V: V, Cv: {x: xc, y: yc, z: zc}};
 }

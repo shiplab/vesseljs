@@ -1,4 +1,4 @@
-//Vessel.js library, built 2017-11-10 12:21:12.376049, Checksum: 3162da26a8bf9803d2eabf6c27b72fb4
+//Vessel.js library, built 2017-11-11 20:21:53.889059, Checksum: 2badbccce83c67513ce451537117190e
 /*
 Import like this in HTML:
 <script src="Vessel.js"></script>
@@ -287,7 +287,7 @@ function sectionCalculation({xs, ymins, ymaxs}) {
 //For wetted area. I think this is right, but it is not tested.
 //The numerical integral will not scale well with larger geometries.
 //Then the full analytical solution is needed.
-function bilinearArea(x1, x2, y1, y2, z11, z12, z21, z22, segs=10) {
+function bilinearArea(x1, x2, y1, y2, z11, z12, z21, z22, segs=5) {
 	let [b00,b10,b01,b11] = bilinearCoeffs(x1, x2, y1, y2, z11, z12, z21, z22);
 	/*
 	z(x,y) = b00 + b10*x + b01*y + b11*xy
@@ -419,7 +419,7 @@ function patchColumnCalculation(x1, x2, y1, y2, z00, z01, z10, z11) {
 		{x: x2, y: y1, z: z10},
 		{x: x2, y: y2, z: z11});*/
 	//Bilinear area calculation. Works too, but is currently numerical, and quite complex (which means it is bug-prone and hard to maintain). But it is more exact, even with just a few segments for numerical integration (the last, optional, parameter)
-	let As = Math.abs(bilinearArea(x1, x2, y1, y2, z00, z01, z10, z11, 10));
+	let As = Math.abs(bilinearArea(x1, x2, y1, y2, z00, z01, z10, z11));
 	
 	return {Ab: Ab, As: As, V: V, Cv: {x: xc, y: yc, z: zc}};
 }
@@ -1182,7 +1182,7 @@ Object.assign(Hull.prototype, {
 		};
 	},
 
-	//NOT DONE YET. Many bugs are fixed, but the volume center calculation is broken. The bilinear volume and area calculations have been temporarily replaced with simpler (and worse) calculations, and at least the volume and volume center calculations should be revived soon.
+	/*Known issue: some representations of flat bottom hulls will not have the bottom area included in the wetted area. The challenge is not finding the bottom area, but deciding the correct conditions for it to be added to a "level calculation". Is z===0 a good test, or how about z/Depth === waterlines[0]? I think none of these candidates are foolproof. (They can even fail just because of float precision issues.) A safer solution, perhaps, is the one I have just implemented now: Adding the bottom cap outside the level calculation only on the bottom level to be precalculated.*/
 	//Important: calculateAttributesAtDraft takes one mandatory parameter T. (The function defined here is immediately called during construction of the prototype, and returns the proper function.)
 	calculateAttributesAtDraft: function() {
 		function levelCalculation(hull,
@@ -1300,7 +1300,11 @@ Object.assign(Hull.prototype, {
 				this.levels = [];
 				for (let i = 0; i < wls.length; i++) {
 					let z = wls[i];
-					let lev = levelCalculation(this, z, this.levels[i-1]);
+					let lev = levelCalculation(this, z, this.levels[i-1]);			
+					//Bottom cap, only on the lowest level:
+					if (i === 0) {
+						lev.As += lev.Awp;
+					}
 					this.levels.push(lev);
 				}
 				this.levelsNeedUpdate = false;
