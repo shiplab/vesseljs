@@ -152,15 +152,13 @@
 							<td id="cwpc"></span></td> 
 						</tr>
                         <tr>
-                           <td>KB (m) <b>WRONG VALUE</b></td>
+                           <td>KB (m)</td>
 						   <td id="KBc"></span></td> 
                         </tr>
-                        <tr>
-                           <td>BM (m) <b>WRONG VALUE</b></td>
+                        <!-- <tr>
+                           <td>BM (m)</td>
 						   <td id="BMc"></span></td> 
-                        </tr>
-                        <tr>
-                        
+                        </tr> -->
                     </body>
                 
                 </table>
@@ -256,29 +254,32 @@
 			controls.target = new THREE.Vector3(LOA/2,0,0);
 			controls.update();
 
+			let Value = {
+				Draft: ship.designState.calculationParameters.Draft_design
+			};
+
 			function fillDocument(){
 				//calculate hydrostatics
-				let {KB: KBc, BM: BMc} = ship.calculateStability();
-				let {LWL: lwlc, Cb: cbc, Cp: cpc, Cwp: cwpc, BWL: bwlc, Awp: Awpc} = ship.structure.hull.calculateAttributesAtDraft(ship.designState.calculationParameters.Draft_design);
-				let dispc = lwlc * bwlc * cbc * ship.designState.calculationParameters.Draft_design;
+				let {LWL: lwlc, Cb: cbc, Cp: cpc, Cwp: cwpc, BWL: bwlc, Awp: Awpc, Cv: {z: KBc}} = ship.structure.hull.calculateAttributesAtDraft(Value.Draft);
+				let dispc = lwlc * bwlc * cbc * Value.Draft;
 
-				document.getElementById("KBc").innerHTML = KBc.toFixed(3);
-				document.getElementById("BMc").innerHTML = BMc.toFixed(3);
-				document.getElementById("draftc").innerHTML = ship.designState.calculationParameters.Draft_design.toFixed(3);
-				document.getElementById("lwlc").innerHTML = lwlc.toFixed(3);
-				document.getElementById("bwlc").innerHTML = bwlc.toFixed(3);
-				document.getElementById("Awpc").innerHTML = Awpc.toFixed(3);
-				document.getElementById("cbc").innerHTML = cbc.toFixed(3);
-				document.getElementById("cpc").innerHTML = cpc.toFixed(3);
-				document.getElementById("cwpc").innerHTML = cwpc.toFixed(3);
-				document.getElementById("dispc").innerHTML = dispc.toFixed(3);
+				document.getElementById("draftc").innerHTML = Value.Draft.toFixed(2);
+				document.getElementById("lwlc").innerHTML = lwlc.toFixed(2);
+				document.getElementById("bwlc").innerHTML = bwlc.toFixed(2);
+				document.getElementById("Awpc").innerHTML = Awpc.toFixed(2);
+				document.getElementById("cbc").innerHTML = cbc.toFixed(2);
+				document.getElementById("cpc").innerHTML = cpc.toFixed(2);
+				document.getElementById("cwpc").innerHTML = cwpc.toFixed(2);
+				document.getElementById("dispc").innerHTML = dispc.toFixed(2);
+				document.getElementById("KBc").innerHTML = KBc.toFixed(2);
+				// document.getElementById("BMc").innerHTML = BMc.toFixed(2);
 			}
 
 			fillDocument();
 
-			gui.add(ship.designState.calculationParameters, "Draft_design", 0, 4, 0.01).onChange(function (value) {
+			gui.add(Value, "Draft", 0, 4, 0.01).onChange(function (value) {
 				fillDocument();
-				ship3D.position.z = -ship.designState.calculationParameters.Draft_design;
+				ship3D.position.z = -Value.Draft;
 			});
 
 			animate();
