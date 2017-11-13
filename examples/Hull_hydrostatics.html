@@ -155,10 +155,22 @@
                            <td>KB (m)</td>
 						   <td id="KBc"></span></td> 
                         </tr>
-                        <!-- <tr>
-                           <td>BM (m)</td>
-						   <td id="BMc"></span></td> 
-                        </tr> -->
+						<tr>
+							<td>LCB (m)</td>
+							<td id="LCBc"></span></td> 
+						</tr>
+						<tr>
+							<td>LCF (m)</td>
+							<td id="LCFc"></span></td> 
+						</tr>
+                        <tr>
+                           <td>BMt (m)</td>
+						   <td id="BMtc"></span></td> 
+                        </tr>
+						<tr>
+							<td>BMl (m)</td>
+							<td id="BMlc"></span></td> 
+						</tr>
                     </body>
                 
                 </table>
@@ -260,9 +272,11 @@
 
 			function fillDocument(){
 				//calculate hydrostatics
-				let {LWL: lwlc, Cb: cbc, Cp: cpc, Cwp: cwpc, BWL: bwlc, Awp: Awpc, Cv: {z: KBc}} = ship.structure.hull.calculateAttributesAtDraft(Value.Draft);
+				let {LWL: lwlc, Cb: cbc, Cp: cpc, Cwp: cwpc, BWL: bwlc, Awp: Awpc, Cv: {x: LCBc, z: KBc}, Ixwp: ixwpc, Iywp: iywpc, xcwp: LCFc} = ship.structure.hull.calculateAttributesAtDraft(Value.Draft);
 				let dispc = lwlc * bwlc * cbc * Value.Draft;
-
+				let BMtc = ixwpc/dispc;
+				let BMlc = iywpc/dispc;
+				
 				document.getElementById("draftc").innerHTML = Value.Draft.toFixed(2);
 				document.getElementById("lwlc").innerHTML = lwlc.toFixed(2);
 				document.getElementById("bwlc").innerHTML = bwlc.toFixed(2);
@@ -272,9 +286,12 @@
 				document.getElementById("cwpc").innerHTML = cwpc.toFixed(2);
 				document.getElementById("dispc").innerHTML = dispc.toFixed(2);
 				document.getElementById("KBc").innerHTML = KBc.toFixed(2);
-				// document.getElementById("BMc").innerHTML = BMc.toFixed(2);
+				document.getElementById("LCBc").innerHTML = LCBc.toFixed(2);
+				document.getElementById("LCFc").innerHTML = LCFc.toFixed(2);
+				document.getElementById("BMtc").innerHTML = BMtc.toFixed(2);
+				document.getElementById("BMlc").innerHTML = BMlc.toFixed(2);
 			}
-
+			
 			fillDocument();
 
 			gui.add(Value, "Draft", 0, 4, 0.01).onChange(function (value) {
