@@ -27,7 +27,7 @@
 	<!-- Three script -->
     <script src="js/libs/three.js"></script>
 	<script src="js/libs/STLLoader.js"></script>
-    <script src='js/libs/OrbitControls.js'></script>
+    <script src="js/libs/OrbitControls.js"></script>
 
 	<!--Import library-->
 	<script src="../build/Vessel.js"></script>
@@ -54,7 +54,7 @@
         <div class="container">
             <!-- Add  the <div>[Something]</div> structure for each header in the navbar-->
             <div class="navbar-header">               
-                <a class="navbar-brand" href="https://github.com/hmgaspar/shipjs">Github project page</a>
+                <a class="navbar-brand" href="https://github.com/shiplab/vesseljs">Github project page</a>
             </div>
             <!-- This is for the right part of the navbar. Reserved for Shiplab logo-->
             <div class="nav navbar-nav navbar-right">
@@ -414,7 +414,7 @@
         }
 		
 		//Load sample file:
-		new THREE.FileLoader().load("data/ship_specifications/blockCase.JSON", useFileData);
+		new THREE.FileLoader().load("data/ship_specifications/blockCase.json", useFileData);
 		
 		function useFileData(contents) {
 			var shipspec = JSON.parse(contents);
