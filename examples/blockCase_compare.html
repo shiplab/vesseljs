@@ -550,10 +550,23 @@
             document.getElementById("bareac").innerHTML = bareac;
             document.getElementById("bvolc").innerHTML = bvolc;
             
+
+            
+            //calculated values
+            let KBc = a.KB.toFixed(3);
+            let KGc = a.KG.toFixed(3);
+            let BMc = a.BM.toFixed(3);
+            let draftc = ship.designState.calculationParameters.Draft_design;
+            let lwlc = ship.structure.hull.calculateAttributesAtDraft(draftc).LWL;
+            let bwlc = ship.structure.hull.calculateAttributesAtDraft(draftc).BWL;
+            let Awpc = ship.structure.hull.calculateAttributesAtDraft(draftc).Awp;
+            let cbc = ship.structure.hull.calculateAttributesAtDraft(draftc).Cb;
+            let dispc = lwlc * bwlc * cbc * draftc;
+            
             //stability small angles, only LW
             let KGlw = depth * 2 / 3;
             let KBlw = draftdesign / 3 * 2;
-            let BMlw = 1 / 12 * Math.pow(5,3) * LOA / (LOA * draftdesign * 5 / 2);
+            let BMlw = 1 / 12 * Math.pow(bwlc,3) * LOA / (LOA * draftdesign * bwlc / 2);
             let GMlw = KBlw + BMlw - KGlw;
             let GZ = [];
             let deg =[]
@@ -566,9 +579,7 @@
             let deg2 = [];
             for (var ii = 10; ii< 110; ii+= 10){
                 let rad = (ii / 180) * Math.PI;
-                
                 let ideg2 = Math.sin(rad);
-                console.log(ideg2)
                 let KN = [0.612, 1.312, 2.285, 2.974, 3.390, 3.616, 3.598, 3.395, 3.057, 2.612];
                 let a = (ii / 10) - 1;
                 let kgsin = KGlw * ideg2
@@ -593,17 +604,6 @@
             let data1 = [traze];
             Plotly.newPlot('myDiv', data1, layout)
             
-            //calculated values
-            let KBc = a.KB.toFixed(3);
-            let KGc = a.KG.toFixed(3);
-            let BMc = a.BM.toFixed(3);
-            let draftc = ship.designState.calculationParameters.Draft_design;
-            let lwlc = ship.structure.hull.calculateAttributesAtDraft(draftc).LWL;
-            let bwlc = ship.structure.hull.calculateAttributesAtDraft(draftc).BWL;
-            let Awpc = ship.structure.hull.calculateAttributesAtDraft(draftc).Awp;
-            let cbc = ship.structure.hull.calculateAttributesAtDraft(draftc).Cb;
-            let dispc = lwlc * bwlc * cbc * draftc;
-
             document.getElementById("KBc").innerHTML = KBc;
             document.getElementById("KGc").innerHTML = KGc;
             document.getElementById("BMc").innerHTML = BMc;
@@ -615,6 +615,7 @@
             document.getElementById("lightweight").innerHTML = lightweight.toFixed(3);
             document.getElementById("deadweightc").innerHTML = deadweightc.toFixed(3);
             document.getElementById("dispc").innerHTML = dispc.toFixed(3);
+            
             
             //% diff
             let KBd = (1-KB/KBc)*100;
@@ -640,8 +641,7 @@
             document.getElementById("dispd").innerHTML = dispd.toFixed(3);
             
             
-            //console.log(ship.structure.hull.calculateAttributesAtDraft(draftc))
-            console.log (BMlw, KGlw, GMlw, KBlw)
+        //console.log(ship.structure.hull.calculateAttributesAtDraft(draftc))
 		}
 		
 		function animate() {
