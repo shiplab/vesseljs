@@ -551,9 +551,9 @@
             document.getElementById("bvolc").innerHTML = bvolc;
             
             //stability small angles, only LW
-            let KGlw = 2.667;
-            let KBlw = 1.333;
-            let BMlw = 2.083;
+            let KGlw = depth * 2 / 3;
+            let KBlw = draftdesign / 3 * 2;
+            let BMlw = 1 / 12 * Math.pow(5,3) * LOA / (LOA * draftdesign * 5 / 2);
             let GMlw = KBlw + BMlw - KGlw;
             let GZ = [];
             let deg =[]
@@ -641,7 +641,7 @@
             
             
             //console.log(ship.structure.hull.calculateAttributesAtDraft(draftc))
-            console.log (GZ)
+            console.log (BMlw, KGlw, GMlw, KBlw)
 		}
 		
 		function animate() {
