@@ -23,7 +23,7 @@
     <script src="js/libs/bootstrap.min.js"></script> 
 	
 	<!-- D3JavaScript -->
-	<script src="js/libs/d3_v4.9.1.js"></script>
+	<!--script src="js/libs/d3_v4.9.1.js"></script-->
 
 	<!-- Graphical user interface -->
 	<script src="js/libs/dat.gui.min.js"></script>
@@ -31,7 +31,7 @@
 	<!-- Three script -->
     <script src="js/libs/three.js"></script>
 	<script src="js/libs/STLLoader.js"></script>
-    <script src='js/libs/OrbitControls.js'></script>
+    <script src="js/libs/OrbitControls.js"></script>
 
 	<!--Import library-->
 	<script src="../build/Vessel.js"></script>
@@ -124,8 +124,8 @@
                            <td id="draftc"></span></td> 
                         </tr>
                         <tr>
-                           <td>Displacement (t)</td> 
-                           <td id="dispc"></span></td> 
+                           <td>Volume of Displacement (m<sup>3</sup>)</td> 
+                           <td id="voldc"></span></td> 
                         </tr>
                         <tr>
                            <td>Waterline Length (m)</td>
@@ -139,20 +139,38 @@
                            <td>Waterplane Area (m<sup>2</sup>)</td>
 						   <td id="Awpc"></span></td>
                         </tr>
+						<tr>
+							<td>Cb</td>
+							<td id="cbc"></span></td> 
+						</tr>
+						<tr>
+							<td>Cp</td>
+							<td id="cpc"></span></td> 
+						</tr>
+						<tr>
+							<td>Cwp</td>
+							<td id="cwpc"></span></td> 
+						</tr>
                         <tr>
-                           <td>Cb</td>
-						   <td id="cbc"></span></td> 
-                        </tr>
-                        <tr>
-                           <td>KB (m) <b>WRONG VALUE</b></td>
+                           <td>KB (m)</td>
 						   <td id="KBc"></span></td> 
                         </tr>
+						<tr>
+							<td>LCB (m)</td>
+							<td id="LCBc"></span></td> 
+						</tr>
+						<tr>
+							<td>LCF (m)</td>
+							<td id="LCFc"></span></td> 
+						</tr>
                         <tr>
-                           <td>BM (m) <b>WRONG VALUE</b></td>
-						   <td id="BMc"></span></td> 
+                           <td>BMt (m)</td>
+						   <td id="BMtc"></span></td> 
                         </tr>
-                        <tr>
-                        
+						<tr>
+							<td>BMl (m)</td>
+							<td id="BMlc"></span></td> 
+						</tr>
                     </body>
                 
                 </table>
@@ -231,7 +249,7 @@
         }
 		
 		//Load sample file:
-		new THREE.FileLoader().load("data/ship_specifications/prysmaticHull.JSON", useFileData);
+		new THREE.FileLoader().load("data/ship_specifications/prismaticHull.json", useFileData);
 		
 		function useFileData(contents) {
 			var shipspec = JSON.parse(contents);
@@ -248,39 +266,39 @@
 			controls.target = new THREE.Vector3(LOA/2,0,0);
 			controls.update();
 
-            //calculate hydrostatics
-			let {KB: KBc, BM: BMc} = ship.calculateStability();
-			let {LWL: lwlc, Cb: cbc, BWL: bwlc, Awp: Awpc} = ship.structure.hull.calculateAttributesAtDraft(ship.designState.calculationParameters.Draft_design);
-			let dispc = lwlc * bwlc * cbc * ship.designState.calculationParameters.Draft_design;
+			let Value = {
+				Draft: ship.designState.calculationParameters.Draft_design
+			};
 
-			document.getElementById("KBc").innerHTML = KBc.toFixed(3);
-			document.getElementById("BMc").innerHTML = BMc.toFixed(3);
-			document.getElementById("draftc").innerHTML = ship.designState.calculationParameters.Draft_design.toFixed(3);
-			document.getElementById("lwlc").innerHTML = lwlc.toFixed(3);
-			document.getElementById("bwlc").innerHTML = bwlc.toFixed(3);
-			document.getElementById("Awpc").innerHTML = Awpc.toFixed(3);
-			document.getElementById("cbc").innerHTML = cbc.toFixed(3);
-			document.getElementById("dispc").innerHTML = dispc.toFixed(3);
+			function fillDocument(){
+				//calculate hydrostatics
+				let {LWL: lwlc, Cb: cbc, Cp: cpc, Cwp: cwpc, BWL: bwlc, Awp: Awpc, LCB: LCBc, KB: KBc, Ixwp: ixwpc, Iywp: iywpc,
+				xcwp: LCFc, Vs: voldc, BMt: BMtc, BMl: BMlc} = ship.structure.hull.calculateAttributesAtDraft(Value.Draft);
+				
+				document.getElementById("draftc").innerHTML = Value.Draft.toFixed(2);
+				document.getElementById("lwlc").innerHTML = lwlc.toFixed(2);
+				document.getElementById("bwlc").innerHTML = bwlc.toFixed(2);
+				document.getElementById("Awpc").innerHTML = Awpc.toFixed(2);
+				document.getElementById("cbc").innerHTML = cbc.toFixed(2);
+				document.getElementById("cpc").innerHTML = cpc.toFixed(2);
+				document.getElementById("cwpc").innerHTML = cwpc.toFixed(2);
+				document.getElementById("voldc").innerHTML = voldc.toFixed(2);
+				document.getElementById("KBc").innerHTML = KBc.toFixed(2);
+				document.getElementById("LCBc").innerHTML = LCBc.toFixed(2);
+				document.getElementById("LCFc").innerHTML = LCFc.toFixed(2);
+				document.getElementById("BMtc").innerHTML = BMtc.toFixed(2);
+				document.getElementById("BMlc").innerHTML = BMlc.toFixed(2);
+			}
+			
+			fillDocument();
 
-			gui.add(ship.designState.calculationParameters, "Draft_design", 0, 4, 0.01).onChange(function (value) {
-				let {KB: KBc, BM: BMc} = ship.calculateStability();
-				let {LWL: lwlc, Cb: cbc, BWL: bwlc, Awp: Awpc} = ship.structure.hull.calculateAttributesAtDraft(ship.designState.calculationParameters.Draft_design);
-				let dispc = lwlc * bwlc * cbc * ship.designState.calculationParameters.Draft_design;
-
-				document.getElementById("KBc").innerHTML = KBc.toFixed(3);
-				document.getElementById("BMc").innerHTML = BMc.toFixed(3);
-				document.getElementById("draftc").innerHTML = ship.designState.calculationParameters.Draft_design.toFixed(3);
-				document.getElementById("lwlc").innerHTML = lwlc.toFixed(3);
-				document.getElementById("bwlc").innerHTML = bwlc.toFixed(3);
-				document.getElementById("Awpc").innerHTML = Awpc.toFixed(3);
-				document.getElementById("cbc").innerHTML = cbc.toFixed(3);
-				document.getElementById("dispc").innerHTML = dispc.toFixed(3);
-				ship3D.position.z = -ship.designState.calculationParameters.Draft_design;
-
+			gui.add(Value, "Draft", 0, 4, 0.01).onChange(function (value) {
+				fillDocument();
+				ship3D.position.z = -Value.Draft;
 			});
 
 			animate();
-			
+
 		}
 		
 		function animate() {
@@ -299,7 +317,7 @@
         
         // Catch file browse
         document.getElementById('file-input')
-          .addEventListener('change', readSingleFile, false)
+          .addEventListener('change', readSingleFile, false);
         
         //compare values
         
