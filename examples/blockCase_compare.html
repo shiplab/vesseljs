@@ -39,7 +39,10 @@
 	<script src="js/Ship3D.js"></script>
     
     <!-- Plotly.js -->
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>    
+    
+    <!-- alegebra.js -->
+    <script src="js/libs/algebra-0.2.6.min.js"></script>
 
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
     <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -564,45 +567,20 @@
             let dispc = lwlc * bwlc * cbc * draftc;
             
             //stability small angles, only LW
+            let GZmax = [];
+            let degmax = [];
             let KGlw = depth * 2 / 3;
             let KBlw = draftdesign / 3 * 2;
             let BMlw = 1 / 12 * Math.pow(bwlc,3) * LOA / (LOA * draftdesign * bwlc / 2);
             let GMlw = KBlw + BMlw - KGlw;
             let GZ = [];
             let deg =[]
-            for (var i = 0; i < 10; i++){
-                let ideg = Math.sin(i / 180 * Math.PI) ;
-                GZ.push(GMlw * ideg);   
-                deg.push(i+1);
-            }
-            let GZ2 = [];
-            let deg2 = [];
-            for (var ii = 10; ii< 110; ii+= 10){
-                let rad = (ii / 180) * Math.PI;
-                let ideg2 = Math.sin(rad);
-                let KN = [0.612, 1.312, 2.285, 2.974, 3.390, 3.616, 3.598, 3.395, 3.057, 2.612];
-                let a = (ii / 10) - 1;
-                let kgsin = KGlw * ideg2
-                GZ.push(KN[a] - kgsin);
-                deg.push(ii);
-            }
             
-            let traze = {
-                x: deg, 
-                y: GZ, 
-                type: "scatter"
+            for (let i = 0; i < 10; i++){
+                let ideg = Math.sin(i / 180 * Math.PI) ;
+                GZmax.push(GMlw * ideg);   
+                degmax.push(i+1);
             }
-            let layout = {
-                title: "GZ Curve",
-                xaxis:{
-                    title: "degrees (º)"
-                },
-                yaxis:{
-                    title: "GZ (m))"
-                }
-            }
-            let data1 = [traze];
-            Plotly.newPlot('myDiv', data1, layout)
             
             document.getElementById("KBc").innerHTML = KBc;
             document.getElementById("KGc").innerHTML = KGc;
@@ -639,9 +617,115 @@
             document.getElementById("awpd").innerHTML = awpd.toFixed(3);
             document.getElementById("cbd").innerHTML = cbd.toFixed(3);
             document.getElementById("dispd").innerHTML = dispd.toFixed(3);
+                                    
+            //GZ curve
+            let Fraction = algebra.Fraction;
+            let Expression = algebra.Expression;
+            let Equation = algebra.Equation;
             
+            let maxang = Math.atan(ship.structure.hull.attributes.Depth / (ship.structure.hull.attributes.BOA / 2)) / Math.PI * 180;
+            let maxanground = Math.round(maxang / 10) * 10
+            //loop for degrees of heel
+            let GZ2 = [];
+            let deg2 = [];
+            for (let i = 0; i < 101; i += 1){
+                //loop for moving the wl through the model
+                for (let ii = 0; ii < 2.5; ii += 0.0001){ /*proper value 0.00001*/
+                    //right line of the hull mr = slope and br = b from y=mx+b
+                    let mr = (ship.structure.hull.attributes.Depth / (ship.structure.hull.attributes.BOA / 2));
+                    let br = ship.structure.hull.attributes.Depth - mr * ship.structure.hull.attributes.BOA / 2;
+
+                    //left line of the hull ml = slope and bl = b from y=mx+b
+                    let ml = (ship.structure.hull.attributes.Depth / (-ship.structure.hull.attributes.BOA / 2));
+                    let bl = ship.structure.hull.attributes.Depth - mr * (ship.structure.hull.attributes.BOA / 2);
+
+                    //water line mwl = slope and bwl = b from y=mx+b
+                    let mwl = Math.tan(i * Math.PI /180);
+                    let bwl = ship.designState.calculationParameters.Draft_design - mwl * ii ;
+                    
+                    //intersection betwen waterline and right hull line
+                    let answer1xr = (bwl - br) / (mr - mwl);
+                    let answer1yr = mr * answer1xr - br;
+                    
+                    //intersection betwen waterline and left hull line
+                    let answer1xl = (bwl - bl) / (ml - mwl);
+                    let answer1yl = ml * answer1xl - bl;
+                    
+                    //intersection with main deck (wl)
+                    let answerdx = (ship.structure.hull.attributes.Depth - bwl) / mwl;
+                    
+                    //iteration to find equal areas
+                    let basestartl = ship.designState.calculationParameters.Draft_design / mr +ii;
+                    let basestartr = ship.designState.calculationParameters.Draft_design / mr -ii;
+                    
+                    //measure areas 
+                    let al = Math.abs ((answer1yl - ship.designState.calculationParameters.Draft_design) * (basestartl) / 2);
+                                        
+                    let ar = 0;
+                    let topb = 0;
+                    if (answerdx < ship.structure.hull.attributes.BOA / 2){
+                        topb = (ship.structure.hull.attributes.BOA / 2) - answerdx;
+                        ar = (ship.structure.hull.attributes.Depth - ship.designState.calculationParameters.Draft_design) * (topb + basestartr) / 2;
+                    }
+                    else {
+                        
+                        ar = Math.abs ((answer1yr - ship.designState.calculationParameters.Draft_design) * (basestartr) / 2);
+                    }                    
+                    
+                    let comp = (ar.toFixed(3)-al.toFixed(3));
+                    //compare areas
+                    if (comp === 0){
+                        //calculate perpendicular line
+                        let ppmwl = - 1 / mwl;
+                        let ppbwl = ship.designState.calculationParameters.Draft_design - (basestartl - ship.designState.calculationParameters.Draft_design / mr) * ppmwl;
+                        //calculate distance to K
+                        let KNnew = ppbwl / Math.sqrt (Math.pow(-ppmwl, 2)+1)
+                        let radnew = (i / 180) * Math.PI;
+                        let GZnew = KNnew - Math.sin(radnew) * KGlw
+                        deg.push(i)
+                        GZ.push(GZnew);
+                        break;
+                       
+                    }
+                    
+                }
+
+            }
             
-        //console.log(ship.structure.hull.calculateAttributesAtDraft(draftc))
+            for (var ii = 10; ii< 110; ii+= 10){
+                let rad = (ii / 180) * Math.PI;
+                let ideg2 = Math.sin(rad);
+                let KN = [0.612, 1.312, 2.285, 2.974, 3.390, 3.616, 3.598, 3.395, 3.057, 2.612];
+                let a = (ii / 10) - 1;
+                let kgsin = KGlw * ideg2
+                GZmax.push(KN[a] - kgsin);
+                degmax.push(ii)
+            }
+            
+            let traze1 = {
+                x: deg, 
+                y: GZ, 
+                type: "scatter",
+                name: "Handmode"
+            }
+            let traze2 ={
+                x: degmax,
+                y: GZmax,
+                type:"scatter",
+                name: "Maxsurf"
+            }
+            let layout = {
+                title: "GZ Curve",
+                xaxis:{
+                    title: "degrees (º)"
+                },
+                yaxis:{
+                    title: "GZ (m))"
+                }
+            }
+            let data1 = [traze1, traze2];
+            Plotly.newPlot('myDiv', data1, layout)
+
 		}
 		
 		function animate() {
