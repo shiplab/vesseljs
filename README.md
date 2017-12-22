@@ -1,4 +1,4 @@
 # vesseljs
 Vessel.js Ship Design Library
 
-https://github.com/shiplab/vesseljs/wiki
+Visit our [wiki](https://github.com/shiplab/vesseljs/wiki).
