@@ -449,10 +449,13 @@ Object.assign(Hull.prototype, {
 			//Filter and rename for output
 			return {
 				xcwp: lc.xc, //water plane values
+				LCF: lc.xc,
 				ycwp: lc.yc,
 				Awp: lc.Awp,
 				Ixwp: lc.Ix,
+				BMt: lc.Ix/lc.Vs,
 				Iywp: lc.Iy,
+				BMl: lc.Iy/lc.Vs,
 				maxXs: lc.maxX, //boundaries of the submerged part of the hull
 				minXs: lc.minX,
 				maxYs: lc.maxY,
@@ -467,7 +470,9 @@ Object.assign(Hull.prototype, {
 				Vs: lc.Vs, //volume of submerged part of the hull
 				Cb: lc.Cb,
 				As: lc.As, //wetted area
-				Cv: lc.Cv //center of buoyancy
+				Cv: lc.Cv, //center of buoyancy
+				LCB: lc.Cv.x,
+				KB: lc.Cv.z
 			}
 		};
 	}()
