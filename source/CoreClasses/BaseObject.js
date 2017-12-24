@@ -60,7 +60,7 @@ Object.assign(BaseObject.prototype, {
 					//Linear interpolation between closest entries:
 					c = lerp(cgs[i][j], cgs[i+1][j], mu);
 				else c = cgs[i][j];
-				//if (isNaN(c)) console.error("BaseObject.getWeight: NaN value found after interpolation.");
+				//if (c===null || isNaN(c)) console.error("BaseObject.getWeight: Invalid value found after interpolation.");
 				cg.push(c);
 			}
 		} else if (wi.cg !== undefined) {

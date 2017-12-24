@@ -11,46 +11,65 @@
 	<script src="../build/Vessel.js"></script>
 	
 	<script src="js/libs/three.js"></script>
-	<!--<script src="js/libs/dat.gui.js"></script>-->
+	<script src="js/libs/dat.gui.min.js"></script>
 	<script src="js/libs/STLLoader.js"></script>
-	<script src="js/libs/OrbitControls.js"></script>
 	<script src="js/libs/d3_v4.9.1.js"></script>
 	<script src="js/Ship3D.js"></script>
 	
     <script>
 "use strict";
 
+var viewContainer;
 var renderer, scene, camera;
 var ship3D;
+var LOA=100, BOA=50; //placeholder values
+var HMAX = 1000; //vertical (z) position of top view camera
+
+//This function updates the orthographic camera
+					//optional parameters
+function updateCamera(upper, lower) {
+	renderer.setSize(window.innerWidth, window.innerHeight);
+	
+	//Assuming the renderer area is more square than the vessel, the following will be right.
+	let aspect = viewContainer.clientWidth/viewContainer.clientHeight;
+	
+	//Configure camera here!
+	Object.assign(camera, {
+		left: 0-5,
+		right: LOA,
+		top: -0.5*BOA + LOA/aspect,
+		bottom: -0.5*BOA
+	});
+	
+	if (typeof upper !== "undefined") camera.near = HMAX-upper;
+	if (typeof lower !== "undefined") camera.far = HMAX-lower;
+	
+	camera.updateProjectionMatrix();
+	
+	if (typeof ship3D !== "undefined" && camera.parent !== ship3D) {
+		ship3D.add(camera);
+	}
+}
 
 //This runs automatically:
 (function main() {
 	//Renderer setup:
-	let container = document.createElement("div");
-	container.style = "position:absolute; overflow: hidden; top:0; left:0; width:100vw; height:100vh";
+	viewContainer = document.createElement("div");
+	viewContainer.style = "position:absolute; overflow: hidden; top:0; left:0; width:100vw; height:100vh";
 	renderer = new THREE.WebGLRenderer({antialias: true});
 	renderer.setPixelRatio(window.devicePixelRatio);
 	//renderer.setClearColor(0xA9CCE3, 1);
-	container.appendChild(renderer.domElement);
-	document.body.appendChild(container);
+	viewContainer.appendChild(renderer.domElement);
+	document.body.appendChild(viewContainer);
 
 	//Build scene:
 	scene = new THREE.Scene(); 
 	
-	//Camera and controls:
-	camera = new THREE.PerspectiveCamera(50);
-	camera.up.set(0,0,1);
-	scene.add(camera);
-	var controls = new THREE.OrbitControls(camera, renderer.domElement);
-	
-	//Respond to window resize:
-	function onResize() {
-		renderer.setSize(window.innerWidth, window.innerHeight);
-		camera.aspect = window.innerWidth / window.innerHeight;
-		camera.updateProjectionMatrix();
-	}
-	window.addEventListener("resize", onResize);
-	onResize(); //Ensure the initial setup is good too
+	//Camera:
+	camera = new THREE.OrthographicCamera(-100,100,100,-100, 0, HMAX);
+	camera.position.set(0,0,HMAX);
+	window.addEventListener("resize", updateCamera);
+	updateCamera();
 	
 	//Add lights:
 	scene.add(new THREE.AmbientLight(0xffffff,0.3));
@@ -72,9 +91,9 @@ var ship3D;
 		scene.add(ship3D);
 
 		let LOA = ship.structure.hull.attributes.LOA;
-		camera.position.set(0.7*LOA, 0.7*LOA, 0.7*LOA);
-		controls.target = new THREE.Vector3(LOA/2,0,0);
-		controls.update();
+		let BOA = ship.structure.hull.attributes.BOA;
+
+		updateCamera();
 		
 		//Add grid (as reference for draft and sizes):
 		/*scene.add(function(){
@@ -85,7 +104,22 @@ var ship3D;
 			return gh;
 		}());*/
 		//scene.add(new THREE.Mesh(new THREE.PlaneBufferGeometry(100*LOA,100*LOA), new THREE.MeshPhongMaterial({color:0x0000ff, transparent:true, opacity:0.8})));
-	});
+		
+		let gui = new dat.GUI();
+		let current = {deck: null, object: null};
+		let cdeck = gui.add(current, "deck", Object.keys(ship3D.ship.structure.decks)).onChange(function(dname) {
+			current.deck = ship3D.ship.structure.decks[dname];
+			let upper = current.deck.zFloor+2; //assumes 2 m height, can fail
+			let lower = current.deck.zFloor-current.deck.thickness;
+			updateCamera(upper,lower);
+		});
+		//let o = {};
+		
+		//Experiment with mouse wheel:
+		//renderer.domElement.addEventListener("wheel", function(e) {
+		
+		});
+	});	
 })();
 
 // Rendering function

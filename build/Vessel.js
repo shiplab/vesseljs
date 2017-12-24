@@ -1,4 +1,4 @@
-//Vessel.js library, built 2017-11-11 20:21:53.889059, Checksum: 2badbccce83c67513ce451537117190e
+//Vessel.js library, built 2017-12-21 10:31:01.053142, Checksum: d6e8cf90034820dd3479bbc31e356c23
 /*
 Import like this in HTML:
 <script src="Vessel.js"></script>
@@ -959,11 +959,11 @@ Object.assign(Hull.prototype, {
 				let lower, upper;
 				let b = a;
 				//Find lower value for interpolation
-				if (!isNaN(tab[b][j])) {
+				if (tab[b][j]!==null && !isNaN(tab[b][j])) {
 					lower = tab[b][j];					
 				} else {
 					b = a+1;
-					while(b < wls.length && isNaN(tab[b][j])) {
+					while(b < wls.length && (isNaN(tab[b][j]) || tab[b][j]===null)) {
 						b++;
 					}
 					if (b !== wls.length) {
@@ -972,7 +972,7 @@ Object.assign(Hull.prototype, {
 					} else {
 						//Upper NaN, search below:
 						b = a-1;
-						while (b >= 0 && isNaN(tab[b][j])) {
+						while (b >= 0 && (isNaN(tab[b][j]) || tab[b][j]===null)) {
 							b--;
 						}
 						if (b===-1) {
@@ -988,7 +988,7 @@ Object.assign(Hull.prototype, {
 				//Find upper value for interpolation
 				let c = a+1;
 				if (upper !== undefined) {/*upper found above*/}
-				else if (!isNaN(tab[c][j])) {
+				else if (tab[c][j]!==null && !isNaN(tab[c][j])) {
 					upper = tab[c][j];
 				} else {
 					//The cell value is NaN.
@@ -998,7 +998,7 @@ Object.assign(Hull.prototype, {
 					//there exists at least one number above it.
 					//In both cases I have to check above a+1.
 					c = a+2;
-					while (c < wls.length && isNaN(tab[c][j])) {
+					while (c < wls.length && (isNaN(tab[c][j]) || tab[c][j]===null)) {
 						c++;
 					}
 					if (c === wls.length) upper = lower;
@@ -1009,7 +1009,7 @@ Object.assign(Hull.prototype, {
 				//Linear interpolation
 				wl[j] = lerp(lower, upper, mu);
 						//Scale numerical values
-				if (!isNaN(wl[j])) wl[j] *= 0.5*ha.BOA;
+				if (wl[j]!==null && !isNaN(wl[j])) wl[j] *= 0.5*ha.BOA;
 			}
 		return wl;
 		}
@@ -1025,13 +1025,13 @@ Object.assign(Hull.prototype, {
 
 		let st;
 		if (a<0 || a>=sts.length) st = new Array(wls.length).fill(null);
-		else if (a+1===sts.length) st = tab.map(row=>row[wls.length-1]);
+		else if (a+1===sts.length) st = tab.map(row=>row[sts.length-1]);
 		else {
 			st = [];
 			for (let j = 0; j < wls.length; j++) {
 				let after = tab[j][a];
 				let forward = tab[j][a+1];
-				if (isNaN(after) && isNaN(forward)) {
+				if ((after===null || isNaN(after)) && (forward===null || isNaN(forward))) {
 					st.push(null);
 				} else {
 					st.push(lerp(after || 0, forward || 0, mu));
@@ -1040,22 +1040,19 @@ Object.assign(Hull.prototype, {
 		}
 		for (let j=0; j<this.halfBreadths.waterlines.length; j++) {
 			st[j] *= 0.5*ha.BOA;
-			if (isNaN(st[j])) st[j] = null;
+			if (isNaN(st[j]) || st[j] === null) st[j] = null;
 		}
 		return st;
 	},
-	
-	//THIS is a candidate for causing wrong Ix, Iy values.
-	//Much logic that can go wrong.
 									//typically deck bounds
 	waterlineCalculation: function(z, bounds) {
 		let {minX, maxX, minY, maxY} = bounds || {};
 
-		console.group/*Collapsed*/("waterlineCalculation.");
-		console.info("Arguments: z=", z, " Boundaries: ", arguments[1]);
+		//console.group/*Collapsed*/("waterlineCalculation.");
+		//console.info("Arguments: z=", z, " Boundaries: ", arguments[1]);
 		
 		let wl = this.getWaterline(z);
-		console.info("wl: ", wl); //DEBUG
+		//console.info("wl: ", wl); //DEBUG
 
 		let LOA = this.attributes.LOA;
 		
@@ -1074,7 +1071,7 @@ Object.assign(Hull.prototype, {
 				({index: first, mu: muf} = bisectionSearch(sts, minX));
 				let lower = wl[first];
 				let upper = wl[first+1];
-				if (isNaN(lower) && isNaN(upper)) {
+				if ((lower===null || isNaN(lower)) && (upper===null || isNaN(upper))) {
 					wlpre = null;
 				} else {
 					wlpre = lerp(lower || 0, upper || 0, muf);
@@ -1087,7 +1084,7 @@ Object.assign(Hull.prototype, {
 				({index: last, mu: mul} = bisectionSearch(sts, maxX));
 				let lower = wl[last];
 				let upper = wl[last+1];
-				if (isNaN(lower) && isNaN(upper)) {
+				if ((lower===null || isNaN(lower)) && (upper===null || isNaN(upper))) {
 					wlsuff = null;
 				} else {
 					wlsuff = lerp(lower || 0, upper || 0, mul);
@@ -1110,7 +1107,7 @@ Object.assign(Hull.prototype, {
 		//This does not yet account properly for undefined minY, maxY.
 		let port = [], star = [];
 		for (let i=0; i<wl.length; i++) {
-			if (isNaN(wl[i])) {
+			if (wl[i]===null || isNaN(wl[i])) {
 				star[i] = minY || null;
 				port[i] = maxY || null;
 			} else {
@@ -1120,9 +1117,9 @@ Object.assign(Hull.prototype, {
 		}
 		
 		//DEBUG
-		console.info("Arguments to sectionCalculation:", sts, star, port);
+		//console.info("Arguments to sectionCalculation:", sts, star, port);
 		
-		//sectionCalculation can potentially be served some NaNs.
+		//sectionCalculation can potentially be served some nulls.
 		let sc = sectionCalculation({xs: sts, ymins: star, ymaxs: port});
 		let LWL = sc.maxX-sc.minX;
 		let BWL = sc.maxY-sc.minY;
@@ -1147,8 +1144,8 @@ Object.assign(Hull.prototype, {
 			LBP: LBP,
 			BWL: BWL
 		};
-		console.info("Output from waterlineCalculation: ", output);
-		console.groupEnd();
+		//console.info("Output from waterlineCalculation: ", output);
+		//console.groupEnd();
 		return output;
 	},
 	//Not done, and not tested
@@ -1156,7 +1153,7 @@ Object.assign(Hull.prototype, {
 	stationCalculation: function(x, maxZ) {
 		let wls = this.halfBreadths.waterlines.map(wl=>this.attributes.Depth*wl);
 		let port = this.getStation(x);
-		if (!isNaN(maxZ)) {
+		if (maxZ!==null && !isNaN(maxZ)) {
 			let {index, mu} = bisectionSearch(wls, maxZ);
 			if (index < wls.length-1) {
 				wls[index+1] = lerp(wls[index], wls[index+1], mu);
@@ -1220,19 +1217,19 @@ Object.assign(Hull.prototype, {
 
 			
 			//level bounds are for the bounding box of the submerged part of the hull
-			if (!isNaN(wlc.minX) && wlc.minX<=prev.minX) 
+			if (wlc.minX!==null && !isNaN(wlc.minX) && wlc.minX<=prev.minX) 
 				lev.minX = wlc.minX;
 			else
 				lev.minX = prev.minX;
-			if (!isNaN(wlc.maxX) && wlc.maxX>=prev.maxX) 
+			if (wlc.maxX!==null && !isNaN(wlc.maxX) && wlc.maxX>=prev.maxX) 
 				lev.maxX = wlc.maxX;
 			else
 				lev.maxX = prev.maxX;
-			if (!isNaN(wlc.minY) && wlc.minY<=prev.minY) 
+			if (wlc.minY!==null && !isNaN(wlc.minY) && wlc.minY<=prev.minY) 
 				lev.minY = wlc.minY;
 			else
 				lev.minY = prev.minY;
-			if (!isNaN(wlc.maxY) && wlc.maxY>=prev.maxY) 
+			if (wlc.maxY!==null && !isNaN(wlc.maxY) && wlc.maxY>=prev.maxY) 
 				lev.maxY = wlc.maxY;
 			else
 				lev.maxY = prev.maxY;
@@ -1286,7 +1283,7 @@ Object.assign(Hull.prototype, {
 		
 		//Here is the returned function calculateAttributesAtDraft(T):
 		return function(T) {
-			if (isNaN(T)) {
+			if (T===null || isNaN(T)) {
 				console.error("Hull.prototype.calculateAttributesAtDraft(T): No draft specified. Returning undefined.");
 				return;
 			} else if (T<0 || T>this.attributes.Depth) {
@@ -1406,7 +1403,7 @@ Object.assign(BaseObject.prototype, {
 					//Linear interpolation between closest entries:
 					c = lerp(cgs[i][j], cgs[i+1][j], mu);
 				else c = cgs[i][j];
-				//if (isNaN(c)) console.error("BaseObject.getWeight: NaN value found after interpolation.");
+				//if (c===null || isNaN(c)) console.error("BaseObject.getWeight: Invalid value found after interpolation.");
 				cg.push(c);
 			}
 		} else if (wi.cg !== undefined) {
