@@ -1,0 +1,431 @@
+<!-- @MrEranwe @EliasHasle -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Vessel Stability</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- jQuery Version 1.11.1 -->
+    <script src="js/libs/jquery.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="js/libs/bootstrap.min.js"></script> 
+	
+	<!-- D3JavaScript -->
+	<!--script src="js/libs/d3_v4.9.1.js"></script-->
+	
+	<!-- Three script -->
+    <script src="js/libs/three.js"></script>
+	<script src="js/libs/STLLoader.js"></script>
+    <script src="js/libs/OrbitControls.js"></script>
+
+	<!--Import library-->
+	<script src="../build/Vessel.js"></script>
+
+	<!-- Prettyprinting of JSON data -->
+	<script type="text/javascript" src="js/libs/renderjson.js"></script>
+	
+	<!--Ship3D class for three.js-->
+	<script src="js/Ship3D.js"></script>
+	
+	<!-- Plotly.js -->
+	<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/js/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/js/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-inverse">
+        <div class="container">
+            <!-- Add  the <div>[Something]</div> structure for each header in the navbar-->
+            <div class="navbar-header">               
+                <a class="navbar-brand" href="https://github.com/shiplab/vesseljs">Github project page</a>
+            </div>
+            <!-- This is for the right part of the navbar. Reserved for Shiplab logo-->
+            <div class="nav navbar-nav navbar-right">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="http://www.shiplab.hials.org/"><img src="images/barquinho.png" alt="Shiplab logo" style="height:150%"> 
+                    </a>                    
+                </div>
+            </div>
+        </div>
+    </nav>
+            
+    <!-- Container creates the space -->
+    <div class="container">
+        
+        <!-- Row creates horizontal groups of columns -->
+        <div class="row">
+            
+            <!-- choose horizontal layout in https://www.w3schools.com/bootstrap/bootstrap_grid_examples.asp-->
+            
+            <!-- No divisions in page. Only 1 column. -->
+             <div class="col-md-12 text-center">
+                <h2>Vessel Stability</h2>
+            </div>  
+            
+			<div class="col-md-12 text-center">
+                
+                <!-- Link the GitHub page if you have one. Add a pdf of how the project works if necessary. Just put it inside the same folder and call it how_to.pdf -->
+                <!--<h1>Hull Hydrostatics</h1>-->
+                <p>Interactive calculation of vessel stability properties.</p>
+				                                    
+				<p>Developed by: Elias Hasle, Vicente Alejandro Iváñez Encinas and Henrique M. Gaspar. Visualization made using three.js.</p>
+
+            </div>
+			
+            <div class="col-md-12 text-left">
+                <h2>Input</h2>
+                <input type="file" id="file-input" />
+                <h3>Contents of the file:</h3>
+                <pre id="file-content"></pre>
+                <br>
+            </div>
+            
+            <div class="col-md-12 text-left">
+                <h2>3D orbit view of hull</h2>
+			</div>
+			<div id="3d" class="col-md-12 text-left" style="min-height: 80vh">
+            </div>
+                
+			</div>
+            <div class="col-md-12 text-left">
+                <h3>Weight Definition</h3>
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <!-- <th>Lenght (m)</th>
+                            <th>Breadth (m)</th> -->
+                            <th>z Base (m)</th>
+                            <th>Weight (kg)</th>
+                        </tr>
+                    </thead>
+                    <body>
+                        <tr>
+                            <td><span>Block0</span></td>
+                            <!-- <td id="bl0"></span></td>
+                            <td id="bb0"></span></td> -->
+                            <td id="bh0c"></span></td>
+                            <td><input type="text" id="bwe0c" onchange="fillDocument()"></span></td>
+                        </tr>
+                        <tr>
+                            <td><span>Block1</span></td>
+                            <!-- <td id="bl1"></span></td>
+                            <td id="bb1"></span></td> -->
+                            <td id="bh1c"></span></td>
+                            <td><input type="text" id="bwe1c" onchange="fillDocument()"></span></td>
+                        </tr>
+                        <tr>
+                            <td><span>Block2</span></td>
+                            <!-- <td id="bl2"></span></td>
+                            <td id="bb2"></span></td> -->
+                            <td id="bh2c"></span></td>
+                            <td><input type="text" id="bwe2c" onchange="fillDocument()"></span></td>
+                        </tr>
+                        
+                    </body>
+                
+                </table>
+                <h3>Calculations</h3>
+                <table class="table">
+                    <thead>
+                        <th>Variable</th>
+                        <th>Results</th>
+                    </thead>
+                    <body>
+                        <tr>
+                            <td>Hull Weight (kg)</td> 
+                            <td id = "hullweight"></span><td>
+                        </tr>
+                        <tr>
+                            <td>Blocks Weight (kg)</td> 
+                            <td id = "blocksweight"></span><td>
+                        </tr>
+                        <tr>
+                            <td>Displacement (kg)</td> 
+                            <td id = "displac"></span><td>
+                        </tr>
+                        <tr>
+                            <td>Draft (m)</td> 
+                            <td id = "draft"></span><td>
+                        </tr>
+                        <tr>
+                            <td>BM (m)</td> 
+                            <td id = "bm"></span><td>
+                        </tr>
+                        <tr>
+                            <td>BMT (m)</td> 
+                            <td id = "bmt"></span><td>
+                        </tr>
+                        <tr>
+                            <td>BML (m)</td> 
+                            <td id = "bml"></span><td>
+                        </tr>
+                        <tr>
+                            <td>GM (m)</td> 
+                            <td id = "gm"></span><td>
+                        </tr>
+                        <tr>
+                            <td>GML (m)</td> 
+                            <td id = "gml"></span><td>
+                        </tr>
+                        <tr>
+                            <td>GMT (m)</td> 
+                            <td id = "gmt"></span><td>
+                        </tr>
+                        <tr>
+                            <td>KB (m)</td> 
+                            <td id = "kb"></span><td>
+                        </tr>
+                        <tr>
+                            <td>KG (m)</td> 
+                            <td id = "kg"></span><td>
+                        </tr>
+                    </body>
+                
+                </table>
+                <div id="myDiv" style="width: 480px; height: 400px;">
+			</div>
+        </div>
+    </div>
+        
+    <script>
+		"use strict";
+		
+	    // Create scene+
+		var renderer, scene, camera, controls, ship3D, ocean, fillDocument;
+		
+		//Ready renderer and scene
+        (function (){
+			renderer = new THREE.WebGLRenderer({antialias: true});
+			renderer.setPixelRatio(window.devicePixelRatio);
+			renderer.setClearColor(0xA9CCE3, 1);
+
+			// get the div that will hold the renderer
+			var container = document.getElementById('3d');
+			//renderer.setSize(container.clientWidth, container.clientHeight);
+			// add the renderer to the div
+			container.appendChild(renderer.domElement);
+			
+			scene = new THREE.Scene();
+			
+			//Camera and controls:
+			camera = new THREE.PerspectiveCamera(50);
+			camera.up.set(0,0,1);
+			scene.add(camera);
+			controls = new THREE.OrbitControls(camera, renderer.domElement);
+			
+			//Respond to window resize:
+			function onResize() {
+				renderer.setSize(container.clientWidth, container.clientHeight);
+				camera.aspect = container.clientWidth / container.clientHeight;
+				camera.updateProjectionMatrix();
+			}
+			window.addEventListener("resize", onResize);
+			onResize(); //Ensure the initial setup is good too
+	
+			//Add lights:
+			scene.add(new THREE.AmbientLight(0xffffff,0.3));
+			scene.add(function() {
+				let sun = new THREE.DirectionalLight(0xffffff,1);
+				sun.position.set(1,1,1);
+				return sun;
+			}());
+
+			//Add rudimentary ocean, to see effect of draft changes:
+			ocean = new THREE.Mesh(new THREE.PlaneBufferGeometry(1000,1000), new THREE.MeshPhongMaterial({color: 0x2222bb}));
+			scene.add(ocean);
+			var grid = new THREE.GridHelper(1000, 100);
+			grid.rotation.x = 0.5*Math.PI;
+			grid.position.z = 0.01;
+			scene.add(grid);
+			
+        })();
+
+        // read file from user
+        function readSingleFile(e){
+            var file = e.target.files[0];
+            if (!file) {
+                return;
+            }
+			
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var contents = e.target.result;
+				//call common function for user files and server files
+				useFileData(contents);
+            };
+            reader.readAsText(file);
+        }
+		
+		//Load sample file:
+		new THREE.FileLoader().load("data/ship_specifications/blockCase.json", useFileData);
+		
+		function useFileData(contents) {
+			var shipspec = JSON.parse(contents);
+			displayContents(shipspec);
+			var ship = new Vessel.Ship(shipspec);
+			if (ship3D !== undefined) {
+				scene.remove(ship3D);
+			}
+
+			ship3D = new Ship3D(ship, "data/STL files");
+			scene.add(ship3D);
+			
+			let LOA = ship.structure.hull.attributes.LOA;
+			camera.position.set(0.7*LOA, 0.7*LOA, 0.7*LOA);
+			controls.target = new THREE.Vector3(LOA/2,0,0);
+			controls.update();
+
+			let block0_der = ship.derivedObjects[Object.keys(ship.derivedObjects)[0]];
+			let block1_der = ship.derivedObjects[Object.keys(ship.derivedObjects)[1]];
+			let block2_der = ship.derivedObjects[Object.keys(ship.derivedObjects)[2]];
+
+			let block0_base = ship.baseObjects[Object.keys(ship.baseObjects)[0]];
+			let block1_base = ship.baseObjects[Object.keys(ship.baseObjects)[1]];
+			let block2_base = ship.baseObjects[Object.keys(ship.baseObjects)[2]];
+
+			let bh0 = block0_der.referenceState.zBase;
+			let bwe0 = block0_base.weightInformation.lightweight;
+
+			let bh1 = block1_der.referenceState.zBase;
+			let bwe1 = block1_base.weightInformation.lightweight;
+
+			let bh2 = block2_der.referenceState.zBase;
+			let bwe2 = block2_base.weightInformation.lightweight;
+
+			document.getElementById("bh0c").innerHTML = bh0.toFixed(2);
+			document.getElementById("bwe0c").setAttribute("value", bwe0.toFixed(2));
+
+			document.getElementById("bh1c").innerHTML = bh1.toFixed(2);
+			document.getElementById("bwe1c").setAttribute("value", bwe1.toFixed(2));
+
+			document.getElementById("bh2c").innerHTML = bh2.toFixed(2);
+			document.getElementById("bwe2c").setAttribute("value", bwe2.toFixed(2));
+
+			fillDocument = function (){
+				// //manipulating blocks vertical positions
+				// ship.derivedObjects[Object.keys(ship.derivedObjects)[0]].referenceState.zBase = Number(document.getElementById("bh0c").value);
+				// ship.derivedObjects[Object.keys(ship.derivedObjects)[1]].referenceState.zBase = Number(document.getElementById("bh1c").value);
+				// ship.derivedObjects[Object.keys(ship.derivedObjects)[2]].referenceState.zBase = Number(document.getElementById("bh2c").value);
+
+				// console.log("oi", ship.derivedObjects[Object.keys(ship.derivedObjects)[2]].referenceState.zBase, ship.derivedObjects.Tank3.referenceState.zBase);
+				// //ship.derivedObjects[Object.keys(ship.derivedObjects)[2]].referenceState.zBase=200;
+
+				//redefining block weights
+				bwe0 = Number(document.getElementById("bwe0c").value);
+				bwe1 = Number(document.getElementById("bwe1c").value);
+				bwe2 = Number(document.getElementById("bwe2c").value);
+
+				ship.baseObjects[Object.keys(ship.baseObjects)[0]].weightInformation.lightweight = bwe0;
+				ship.baseObjects[Object.keys(ship.baseObjects)[1]].weightInformation.lightweight = bwe1;
+				ship.baseObjects[Object.keys(ship.baseObjects)[2]].weightInformation.lightweight = bwe2;
+
+				let blocksweight = bwe0 + bwe1 + bwe2;
+				let displac = ship.getWeight().mass;
+				let hullweight = displac - blocksweight;
+
+				//calculate stability
+				let {BM: bm, BML: bml, BMT:bmt, GM:gm, GML: gml, GMT: gmt, KB: kb, KG: kg} = ship.calculateStability();
+
+				let draft = ship.calculateDraft();
+				ship3D.position.z = -draft;
+
+				document.getElementById("hullweight").innerHTML = hullweight.toFixed(2);
+				document.getElementById("blocksweight").innerHTML = blocksweight.toFixed(2);
+				document.getElementById("displac").innerHTML = displac.toFixed(2);
+				document.getElementById("draft").innerHTML = draft.toFixed(2);
+				document.getElementById("bm").innerHTML = bm.toFixed(2);
+				document.getElementById("bml").innerHTML = bml.toFixed(2);
+				document.getElementById("bmt").innerHTML = bmt.toFixed(2);
+				document.getElementById("gm").innerHTML = gm.toFixed(2);
+				document.getElementById("gml").innerHTML = gml.toFixed(2);
+				document.getElementById("gmt").innerHTML = gmt.toFixed(2);
+				document.getElementById("kb").innerHTML = kb.toFixed(2);
+				document.getElementById("kg").innerHTML = kg.toFixed(2);
+
+				//stability small angles, only LW
+				let GZ = [];
+				let deg =[];
+				for (var i = 0; i < 10; i++){
+				    let ideg = Math.sin(i / 180 * Math.PI) ;
+				    GZ.push(gm * ideg);   
+				    deg.push(i+1);
+				}
+
+				let traze = {
+				    x: deg, 
+				    y: GZ, 
+				    type: "scatter"
+				};
+				let layout = {
+				    title: "GZ Curve for small angles",
+				    xaxis:{
+				        title: "degrees (º)"
+				    },
+				    yaxis:{
+				        title: "GZ (m)"
+				    }
+				};
+				let data1 = [traze];
+				Plotly.newPlot('myDiv', data1, layout);
+			};
+			
+			fillDocument();
+
+			animate();
+
+		}
+		
+		function animate() {
+			requestAnimationFrame(animate);			
+			renderer.render(scene, camera);
+		}
+        
+        // display pretty JSON
+        function displayContents(jsonData) {
+			let fileCont = document.getElementById("file-content");
+			fileCont.innerHTML = "";
+			fileCont.appendChild(
+            renderjson(jsonData)
+            );
+        }
+        
+        // Catch file browse
+        document.getElementById('file-input')
+          .addEventListener('change', readSingleFile, false);
+        
+        //compare values
+        
+         
+    </script>
+    <!-- /.container -->
+    
+    
+    
+    <!-- Insert own scripts here -->
+      
+
+</body>
+
+</html>

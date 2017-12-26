@@ -3,30 +3,31 @@
 /*
 THREE.js Object3D constructed from Vessel.js Ship object.
 
-A known serious bug of this is that it wraps together the top of the hull, making the hull look lower than it is, and occluding top views a bit.
-
-There are some serious limitations too:
-1. NaN values encountered are assumed to be either at the top or bottom of the given station.
-2. It produces no default end caps or keel.
+There are some serious limitations to this:
+1. null values encountered are assumed to be either at the top or bottom of the given station.
+2. It produces no default bottom cap.
+3. The end caps and bulkheads are sometimes corrected with zeros where they should perhaps have been clipped because of null values.
 */
 
 function Ship3D(ship, stlPath) {
 	THREE.Group.call(this);
 	
 	this.ship = ship;
+	
+	let hull = ship.structure.hull;
 
-	let LOA = ship.structure.hull.attributes.LOA;
-	let BOA = ship.structure.hull.attributes.BOA;
-	let Depth = ship.structure.hull.attributes.Depth;
+	let LOA = hull.attributes.LOA;
+	let BOA = hull.attributes.BOA;
+	let Depth = hull.attributes.Depth;
 
 	//console.log("LOA:%.1f, BOA:%.1f, Depth:%.1f",LOA,BOA,Depth);
 	
 	this.position.z = -ship.designState.calculationParameters.Draft_design;
 	
 	//Hull
-	let stations = ship.structure.hull.halfBreadths.stations;
-	let waterlines = ship.structure.hull.halfBreadths.waterlines;
-	let table = ship.structure.hull.halfBreadths.table;
+	let stations = hull.halfBreadths.stations;
+	let waterlines = hull.halfBreadths.waterlines;
+	let table = hull.halfBreadths.table;
 	//None of these are changed during correction of the geometry.
 
 	console.log(stations);
@@ -35,47 +36,61 @@ function Ship3D(ship, stlPath) {
 	
 	let N = stations.length;
 	let M = waterlines.length;
-	let hGeom = new THREE.PlaneBufferGeometry(undefined, undefined, M-1,N-1);
+	//Hull side, in principle Y offsets on an XZ plane:
+	//Even though a plane geometry is usually defined in terms of Z offsets on an XY plane, the order of the coordinates for each vertex is not so important. What is important is to get the topology right. This is ensured by working with the right order of the vertices.
+	let hGeom = new THREE.PlaneBufferGeometry(undefined, undefined, N-1,M-1);
 	let pos = hGeom.getAttribute("position");
 	let pa = pos.array;
 
 	//loop1:
-	for (let i = 0, c = 0; i < N; i++) {
+	//zs
+	let c = 0;
+	//Iterate over waterlines
+	for (let j = 0; j < M; j++) {
 		//loop2:
-		for (let j = 0; j < M; j++) {
-			//if (isNaN(table[j][i])) continue;// loop1;
-			pa[c] = stations[i];
-			if(table[j]===undefined) console.error("table[%d] is undefined", j);
-			pa[c+1] = table[j][i];//isNaN(table[j][i]) ? 0 : table[j][i];
-			pa[c+2] = waterlines[j];
+		//xs
+		//iterate over stations
+		for (let i = 0; i < N; i++) {
+			//if (table[j][i] === null) continue;// loop1;
+			pa[c] = stations[i]; //x
+			//DEBUG, OK. No attempts to read outside of table
+			/*if(typeof table[j] === "undefined") console.error("table[%d] is undefined", j);
+			else if (typeof table[j][i] === "undefined") console.error("table[%d][%d] is undefined", j, i);*/
+			//y
+			pa[c+1] = table[j][i]; //y
+			pa[c+2] = waterlines[j]; //z
 			c += 3;
 		}
 	}
+	//console.error("c-pa.length = %d", c-pa.length); //OK, sets all cells
 		
-	//Get rid of NaNs by merging their points with the closest non-NaN point in the same station:
+	//Get rid of nulls by merging their points with the closest non-null point in the same station:
 	/*I am joining some uvs too. Then an applied texture will be cropped, not distorted, where the hull is cropped.*/
 	let uv = hGeom.getAttribute("uv");
 	let uva = uv.array;
 	//Iterate over stations
 	for (let i = 0; i < N; i++) {
-		//Iterate over waterlines
 		let firstNumberJ;
 		let lastNumberJ;
+		//Iterate over waterlines
 		let j;
 		for (j = 0; j < M; j++) {
 			let y = table[j][i];
-			if (!isNaN(y)) {
+			//If this condition is satisfied (number found),
+			//the loop will be quitted
+			//after the extra logic below:
+			if (y !== null) {
 				firstNumberJ = j;
 				lastNumberJ = j;
-				//copy vector for i,j to positions for all NaN cells below:
-				let c = i*M+firstNumberJ;
+				//copy vector for i,j to positions for all null cells below:
+				let c = firstNumberJ*N+i;
 				let x = pa[3*c];
 				let y = pa[3*c+1];					
 				let z = pa[3*c+2];
 				let d = c;
 				while (firstNumberJ > 0) {
 					firstNumberJ--;			
-					d -= 1;
+					d -= N;
 					pa[3*d] = x;
 					pa[3*d+1] = y;
 					pa[3*d+2] = z;
@@ -84,25 +99,29 @@ function Ship3D(ship, stlPath) {
 				}
 				break;
 			}
+			console.log("null encountered.");
 		}
 		
-		//Continue up the hull (with same j counter), searching for upper number. This does not account for numbers after the first NaN is encountered.
+		//Continue up the hull (with same j counter), searching for upper number. This does not account for the existence of numbers above the first null encountered.
 		for (; j < M; j++) {
 			let y = table[j][i];
-			if (isNaN(y)) break;
-			//else not NaN:
+			if (y === null) {
+				console.log("null encountered.");
+				break;
+			}
+			//else not null:
 			lastNumberJ = j;
 		}
 		
-		//copy vector for i,j to positions for all NaN cells above:
-		let c = i*M+lastNumberJ;
+		//copy vector for i,j to positions for all null cells above:
+		let c = lastNumberJ*N+i;
 		let x = pa[3*c];
-		let y = pa[3*c+1];					
+		let y = pa[3*c+1];			
 		let z = pa[3*c+2];
 		let d = c;
 		while (lastNumberJ < M-1) {
 			lastNumberJ++;
-			d += 1;
+			d += N;
 			pa[3*d] = x;
 			pa[3*d+1] = y;
 			pa[3*d+2] = z;
@@ -118,29 +137,64 @@ function Ship3D(ship, stlPath) {
 	uv.needsUpdate = true;
 	hGeom.computeVertexNormals();
 	
+	//End caps and bottom cap (TODO):
+	
+	//Bow cap:
+	let bowPlaneOffsets = hull.getStation(LOA).map(str=>str/(0.5*BOA)); //normalized
+	let bowCapG = new THREE.PlaneBufferGeometry(undefined, undefined, 1,M-1);
+	pos = bowCapG.getAttribute("position");
+	pa = pos.array;
+	//constant x-offset yz plane
+	for (let j = 0; j < M; j++) {
+		pa[3*(2*j)] = 1;
+		pa[3*(2*j)+1] = bowPlaneOffsets[j];
+		pa[3*(2*j)+2] = waterlines[j];
+		pa[3*(2*j+1)] = 1;
+		pa[3*(2*j+1)+1] = -bowPlaneOffsets[j];
+		pa[3*(2*j+1)+2] = waterlines[j];
+	}
+	pos.needsUpdate = true;
+	
+	//Aft cap:
+	let aftPlaneOffsets = hull.getStation(0).map(str=>str/(0.5*BOA)); //normalized
+	let aftCapG = new THREE.PlaneBufferGeometry(undefined, undefined, 1,M-1);
+	pos = aftCapG.getAttribute("position");
+	pa = pos.array;
+	//constant x-offset yz plane
+	for (let j = 0; j < M; j++) {
+		pa[3*(2*j)] = 0;
+		pa[3*(2*j)+1] = -aftPlaneOffsets[j];
+		pa[3*(2*j)+2] = waterlines[j];
+		pa[3*(2*j+1)] = 0;
+		pa[3*(2*j+1)+1] = aftPlaneOffsets[j];
+		pa[3*(2*j+1)+2] = waterlines[j];
+	}
+	pos.needsUpdate = true;
+	
 	//Hull hMaterial
 	let hMat = new THREE.MeshPhongMaterial({color: "red", side: THREE.DoubleSide, transparent: true, opacity: /*1*/0.5});
 	
-	let hull = new THREE.Group();
+	let hullGroup = new THREE.Group();
 	let port = new THREE.Mesh(hGeom, hMat);
 	let starboard = new THREE.Mesh(hGeom, hMat);
 	starboard.scale.y = -1;
-	hull.add(port, starboard);
+	hullGroup.add(port, starboard);
 	
-	hull.scale.set(LOA,0.5*BOA,Depth);
-	this.hull = hull;
-	this.add(hull);
+	//End caps:
+	hullGroup.add(new THREE.Mesh(bowCapG, hMat));
+	hullGroup.add(new THREE.Mesh(aftCapG, hMat));	
 	
-	function randomColor() {
-		let r = Math.round(Math.random()*0xff);
-		let g = Math.round(Math.random()*0xff);
-		let b = Math.round(Math.random()*0xff);
-		return ((r<<16)|(g<<8)|b);
-	}
+	
+	hullGroup.scale.set(LOA,0.5*BOA,Depth);
+	this.hullGroup = hullGroup;
+	this.add(hullGroup);
+	
+	//DEBUG, to show only hull:
+	//return;
 	
 	//Decks:
 	var decks = new THREE.Group();
-	let deckMat = new THREE.MeshPhongMaterial({color: 0xcccccc/*randomColor()*/, transparent: true, opacity: 0.2, side: THREE.DoubleSide});
+	let deckMat = new THREE.MeshPhongMaterial({color: 0xcccccc/*this.randomColor()*/, transparent: true, opacity: 0.2, side: THREE.DoubleSide});
 	//deckGeom.translate(0,0,-0.5);
 	let ds = ship.structure.decks;
 	let dk = Object.keys(ds);
@@ -154,8 +208,8 @@ function Ship3D(ship, stlPath) {
 		console.log("d.zFloor=%.1f", d.zFloor); //DEBUG
 		let zHigh = d.zFloor;
 		let zLow = d.zFloor-d.thickness;
-		let wlHigh = ship.structure.hull.getWaterline(zHigh);
-		let wlLow = ship.structure.hull.getWaterline(zLow);
+		let wlHigh = hull.getWaterline(zHigh);
+		let wlLow = hull.getWaterline(zLow);
 		let pos = deckGeom.getAttribute("position");
 		let pa = pos.array;
 		for (let j = 0; j < stss.length+1; j++) {
@@ -186,10 +240,10 @@ function Ship3D(ship, stlPath) {
 	
 	//Bulkheads:
 	var bulkheads = new THREE.Group();
-	bulkheads.scale.set(1, BOA, Depth);
+	bulkheads.scale.set(1, 0.5*BOA, Depth);
 	let bhGeom = new THREE.BoxBufferGeometry(1,1,1);
 	bhGeom.translate(0,0,0.5);
-	let bhMat = new THREE.MeshPhongMaterial({color: 0xcccccc/*randomColor()*/, transparent: true, opacity: 0.5, side: THREE.DoubleSide});
+	let bhMat = new THREE.MeshPhongMaterial({color: 0xcccccc/*this.randomColor()*/, transparent: true, opacity: 0.5, side: THREE.DoubleSide});
 	bhGeom.translate(0.5,0,0);
 	let bhs = ship.structure.bulkheads;
 	let bhk = Object.keys(bhs);
@@ -205,58 +259,57 @@ function Ship3D(ship, stlPath) {
 	this.add(bulkheads);
 	
 	//Objects
-	//this function is used as a temporary hack to group similar objects by color
-	function stripName(s) {
-		s=s.replace(/[0-9]/g, "");
-		s=s.trim();
-		return s;
-	}
-	let materials = {};
-	
+
+	this.materials = {};
+	this.stlPath = stlPath;
 	let stlManager = new THREE.LoadingManager();
-	let stlLoader = new THREE.STLLoader(stlManager);
+	this.stlLoader = new THREE.STLLoader(stlManager);
 	/*stlManager.onLoad = function() {
 		createGUI(materials, deckMat);
 	}*/
 
-	let blocks = new THREE.Group();
-	this.blocks = blocks;
-	this.add(blocks);
+	this.blocks = new THREE.Group();
+	this.add(this.blocks);
 
-	let boxGeom = new THREE.BoxBufferGeometry(1,1,1);
-	boxGeom.translate(0,0,0.5);
+	//Default placeholder geometry
+	this.boxGeom = new THREE.BoxBufferGeometry(1,1,1);
+	this.boxGeom.translate(0,0,0.5);
 	
 	let objects = Object.values(ship.derivedObjects);	
 	for (let i = 0; i < objects.length; i++) {
-		let o = objects[i];
+		this.addObject(objects[i]);
+	}
+	
+	//console.log("Reached end of Ship3D constructor.");
+}
+Ship3D.prototype = Object.create(THREE.Group.prototype);
+Object.assign(Ship3D.prototype, {
+	constructor: Ship3D,
+	addObject: function(object) {
 		let mat;
-		let name = stripName(o.id);
-		if (materials[name] !== undefined) {
-			mat = materials[name];
+		let name = this.stripName(object.id);
+		if (this.materials[name] !== undefined) {
+			mat = this.materials[name];
 		} else {
-			mat = new THREE.MeshPhongMaterial({color: randomColor(), transparent: true, opacity: 0.5});
-			materials[name] = mat;
+			mat = new THREE.MeshPhongMaterial({color: this.randomColor(), transparent: true, opacity: 0.5});
+			this.materials[name] = mat;
 		}
 		
-		let bo = o.baseObject;
-
-		//This function is redefined in every loop iteration.
-		//Maybe not the most elegant solution?
-		let addBlock = function (geom) {
-			let m = new THREE.Mesh(geom, mat);
-			s = ship.designState.getObjectState(o);
-			let x = s.xCentre;
-			let y = s.yCentre;
-			let z = s.zBase;
-			m.position.set(x, y, z);
-			let d = bo.boxDimensions;
-			m.scale.set(d.length, d.breadth, d.height);
-			blocks.add(m);
-		}
+		let bo = object.baseObject;
+		
+		//Position
+		s = this.ship.designState.getObjectState(object);
+		let x = s.xCentre;
+		let y = s.yCentre;
+		let z = s.zBase;
+		
+		//Scale
+		let d = bo.boxDimensions;
 		
 		if (bo.file3D) {
-			stlLoader.load(
-				stlPath+"/"+bo.file3D,
+			let self = this;
+			this.stlLoader.load(
+				this.stlPath+"/"+bo.file3D,
 				function onLoad(geometry) {
 					//Normalize:
 					geometry.computeBoundingBox();
@@ -267,21 +320,38 @@ function Ship3D(ship, stlPath) {
 								1/(b.max.z-b.min.z));
 					//Align with the same coordinate system as placeholder blocks:
 					geometry.translate(-0.5,-0.5,0);
-					addBlock(geometry);
+					let m = new THREE.Mesh(geometry, mat);
+					m.position.set(x, y, z);
+					m.scale.set(d.length, d.breadth, d.height);
+					self.blocks.add(m);
 				},
 				undefined,
 				function onError() {
 					console.warn("Specified file " + e.File + " not found. Falling back on placeholder.");
-					addBlock(boxGeom);
+					let m = new THREE.Mesh(this.boxGeom, mat);
+					m.position.set(x, y, z);
+					m.scale.set(d.length, d.breadth, d.height);
+					this.blocks.add(m);
 				}
 			);
 		} else {
 			//Placeholder:
-			addBlock(boxGeom);
+			let m = new THREE.Mesh(this.boxGeom, mat);
+			m.position.set(x, y, z);
+			m.scale.set(d.length, d.breadth, d.height);
+			this.blocks.add(m);
 		}
+	},
+	//this function is used as a temporary hack to group similar objects by color
+	stripName: function(s) {
+		s=s.replace(/[0-9]/g, "");
+		s=s.trim();
+		return s;
+	},
+	randomColor: function() {
+		let r = Math.round(Math.random()*0xff);
+		let g = Math.round(Math.random()*0xff);
+		let b = Math.round(Math.random()*0xff);
+		return ((r<<16)|(g<<8)|b);
 	}
-	
-	//console.log("Reached end of Ship3D constructor.");
-}
-Ship3D.prototype = Object.create(THREE.Group.prototype);
-Ship3D.prototype.constructor = Ship3D;
+});
