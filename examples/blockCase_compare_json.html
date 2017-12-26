@@ -106,10 +106,15 @@ function useShip(ship) {
 	let Awp = LWL*BWL;
 	let Cwp = 1;
 	let Cv = {x:0.5*LOA, y:0, z:(2/3.)*T}
+	let LCB = Cv.x;
+	let KB = Cv.z;
 	let Ixwp = LWL*BWL**3/12.;
 	let Iywp = BWL*LWL**3/12.;
+	let BWt = Ixwp/Vs;
+	let BWl = Iywp/Vs;
 	let xcwp = 0.5*LWL;
 	let ycwp = 0;
+	let LCF = xcwp;
 	let minXs = 0;
 	let maxXs = LWL;
 	let minYs = -0.5*BWL;
@@ -134,10 +139,15 @@ function useShip(ship) {
 			y: undefined,
 			z: KB
 		},*/
+		LCB: LCB,
+		KB: KB,
 		xcwp: xcwp,//LCFx
 		ycwp: ycwp,
+		LCF: LCF,
 		Ixwp: Ixwp,
 		Iywp: Iywp,
+		BWt: BWt,
+		BWl: BWl,
 		Vs: Vs,
 		//Vbb: Vbb,
 		minXs: minXs,

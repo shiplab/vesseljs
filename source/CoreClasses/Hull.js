@@ -475,5 +475,22 @@ Object.assign(Hull.prototype, {
 				KB: lc.Cv.z
 			}
 		};
-	}()
+	}(),
+	//M is the mass (in kg) of the ship
+	calculateDraftAtMass: function(M, epsilon=0.001, rho=1025) {
+		let VT = M/rho; //Target submerged volume (1025=rho_seawater)
+		//Interpolation:
+		let a = 0;
+		let b = this.attributes.Depth;
+		let t = 0.5*b;
+		while (b-a>epsilon) {
+			t = 0.5*(a+b);
+			let V = this.calculateAttributesAtDraft(t)["Vs"];
+			console.log(V); //DEBUG
+			if (V>VT) b = t;
+			else a = t;
+		}
+		console.info("Calculated draft: %.2f", t);
+		return t;
+	}
 });
