@@ -1,0 +1,63 @@
+{
+  "attributes": {},
+  "designState": {
+    "calculationParameters": {
+      "LWL_design": 20,
+      "Draft_design": 2,
+      "Cb_design": 0.5,
+      "Co": 0.3,
+      "tripDuration": 40
+    },
+    "objectOverrides": {
+      "common": {
+        "fullness": 0.7
+      }
+    }
+  },
+  "structure": {
+    "hull": {
+      "attributes": {
+        "LOA": 20,
+        "BOA": 10,
+        "Depth": 4,
+        "APP": 0,
+        "lightweight": 15000
+      },
+      "halfBreadths": {
+        "waterlines": [
+          0,
+          1
+        ],
+        "stations": [
+          0,
+          1
+        ],
+        "table": [
+          [
+            0.5,
+            0.5
+          ],
+          [
+            1,
+            1
+          ]
+        ]
+      },
+      "buttockHeights": {}
+    },
+    "decks": {
+      "WheelHouseTop": {
+        "zFloor": 4,
+        "thickness": 0.3,
+        "xAft": 0,
+        "xFwd": 20,
+        "yCentre": 0,
+        "breadth": 10,
+        "density": 1500
+      }
+    },
+    "bulkheads": {}
+  },
+  "baseObjects": [],
+  "derivedObjects": []
+}
