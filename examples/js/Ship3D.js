@@ -5,8 +5,7 @@ THREE.js Object3D constructed from Vessel.js Ship object.
 
 There are some serious limitations to this:
 1. null values encountered are assumed to be either at the top or bottom of the given station.
-2. It produces no default bottom cap.
-3. The end caps and bulkheads are sometimes corrected with zeros where they should perhaps have been clipped because of null values.
+2. The end caps and bulkheads are sometimes corrected with zeros where they should perhaps have been clipped because of null values.
 */
 
 function Ship3D(ship, stlPath) {
@@ -137,8 +136,6 @@ function Ship3D(ship, stlPath) {
 	uv.needsUpdate = true;
 	hGeom.computeVertexNormals();
 	
-	//End caps and bottom cap (TODO):
-	
 	//Bow cap:
 	let bowPlaneOffsets = hull.getStation(LOA).map(str=>str/(0.5*BOA)); //normalized
 	let bowCapG = new THREE.PlaneBufferGeometry(undefined, undefined, 1,M-1);
@@ -171,6 +168,22 @@ function Ship3D(ship, stlPath) {
 	}
 	pos.needsUpdate = true;
 	
+	//Bottom cap:
+	let bottomPlaneOffsets = hull.getWaterline(0).map(hw=>hw/(0.5*BOA)); //normalized
+	let bottomCapG = new THREE.PlaneBufferGeometry(undefined, undefined, N-1,1);
+	pos = bottomCapG.getAttribute("position");
+	pa = pos.array;
+	//constant z-offset xy plane
+	for (let i = 0; i < N; i++) {
+		pa[3*(i)] = stations[i];
+		pa[3*(i)+1] = -bottomPlaneOffsets[i];
+		pa[3*(i)+2] = 0;
+		pa[3*(N+i)] = stations[i];
+		pa[3*(N+i)+1] = bottomPlaneOffsets[i];
+		pa[3*(N+i)+2] = 0;
+	}
+	pos.needsUpdate = true;
+	
 	//Hull hMaterial
 	let hMat = new THREE.MeshPhongMaterial({color: "red", side: THREE.DoubleSide, transparent: true, opacity: /*1*/0.5});
 	
@@ -180,10 +193,10 @@ function Ship3D(ship, stlPath) {
 	starboard.scale.y = -1;
 	hullGroup.add(port, starboard);
 	
-	//End caps:
+	//Caps:
 	hullGroup.add(new THREE.Mesh(bowCapG, hMat));
-	hullGroup.add(new THREE.Mesh(aftCapG, hMat));	
-	
+	hullGroup.add(new THREE.Mesh(aftCapG, hMat));
+	hullGroup.add(new THREE.Mesh(bottomCapG, hMat));
 	
 	hullGroup.scale.set(LOA,0.5*BOA,Depth);
 	this.hullGroup = hullGroup;
