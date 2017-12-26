@@ -1,4 +1,4 @@
-//Vessel.js library, built 2017-12-26 10:51:02.400618, Checksum: 6de507fd010ff6c393db963d7f9eb5b7
+//Vessel.js library, built 2017-12-26 12:02:44.219893, Checksum: 07c7fc84334c0f2232ca89b34f7005c5
 /*
 Import like this in HTML:
 <script src="Vessel.js"></script>
@@ -739,38 +739,20 @@ Object.assign(Ship.prototype, {
 		return W;
 	},
 	//This should just take displacement as parameter instead. (later, soon)
-	calculateDraft(shipState, epsilon=0.001) {
+	calculateDraft(shipState, epsilon=0.001, rho=1025) {
 		let w = this.getWeight(shipState);
 		let M = w.mass;
-		let VT = M/1025; //Target submerged volume (1025=rho_seawater)
-		//Interpolation:
-		let a = 0;
-		let b = this.structure.hull.attributes.Depth;
-		let t = 0.5*b;
-		while (b-a>epsilon) {
-			t = 0.5*(a+b);
-			let V = this.structure.hull.calculateAttributesAtDraft(t)["Vs"];
-			console.log(V); //DEBUG
-			if (V>VT) b = t;
-			else a = t;
-		}
-		console.info("Calculated draft: %.2f", t);
-		return t;
+		return this.structure.hull.calculateDraftAtMass(M, epsilon, rho);
 	},
-	//Should separate between longitudinal and transverse GM too
+	//Separates between longitudinal and transverse GM
     calculateStability(shipState){
-        let T = this.calculateDraft(shipState);
-        let ha = this.structure.hull.calculateAttributesAtDraft(T);
-        let vol = ha.Vs;
-        let KG = this.getWeight(shipState).cg.z;
-		let Ix = ha.Ixwp;
-        let Iy = ha.Iywp;
-        let KB = ha.Cv.z;
-		let BMT = Ix / vol;
-        let BML = Iy / vol;
-        let GMT = KB + BMT - KG;
-        let GML = KB + BML - KG;
-        return {GMT, GML, GM: T, KB, BMT, BML, BM: BMT, KG};
+		let w = this.getWeight(shipState);
+	    let KG = w.cg.z;
+        let T = this.structure.hull.calculateDraftAtMass(w.mass);
+        let {BMt,BMl,KB} = this.structure.hull.calculateAttributesAtDraft(T);
+        let GMt = KB + BMt - KG;
+        let GMl = KB + BMl - KG;
+        return {GMt, GMl, KB, BMt, BMl, KG};
 	}
 });//@EliasHasle
 
@@ -1346,7 +1328,24 @@ Object.assign(Hull.prototype, {
 				KB: lc.Cv.z
 			}
 		};
-	}()
+	}(),
+	//M is the mass (in kg) of the ship
+	calculateDraftAtMass: function(M, epsilon=0.001, rho=1025) {
+		let VT = M/rho; //Target submerged volume (1025=rho_seawater)
+		//Interpolation:
+		let a = 0;
+		let b = this.attributes.Depth;
+		let t = 0.5*b;
+		while (b-a>epsilon) {
+			t = 0.5*(a+b);
+			let V = this.calculateAttributesAtDraft(t)["Vs"];
+			console.log(V); //DEBUG
+			if (V>VT) b = t;
+			else a = t;
+		}
+		console.info("Calculated draft: %.2f", t);
+		return t;
+	}
 });//@EliasHasle
 
 /*

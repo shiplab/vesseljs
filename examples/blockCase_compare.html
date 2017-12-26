@@ -453,7 +453,7 @@
             
             //calculate stability
             let a = ship.calculateStability();
-            let GM2 = a.GM.toFixed(3);
+            let GM2 = a.GMt.toFixed(3);
             document.getElementById("GM2").innerHTML = GM2;    
             
             //hand values 
@@ -558,7 +558,7 @@
             //calculated values
             let KBc = a.KB.toFixed(3);
             let KGc = a.KG.toFixed(3);
-            let BMc = a.BM.toFixed(3);
+            let BMc = a.BMt.toFixed(3);
             let draftc = ship.designState.calculationParameters.Draft_design;
             let lwlc = ship.structure.hull.calculateAttributesAtDraft(draftc).LWL;
             let bwlc = ship.structure.hull.calculateAttributesAtDraft(draftc).BWL;
