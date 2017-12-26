@@ -1,4 +1,4 @@
-//Vessel.js library, built 2017-12-21 10:31:01.053142, Checksum: d6e8cf90034820dd3479bbc31e356c23
+//Vessel.js library, built 2017-12-26 10:51:02.400618, Checksum: 6de507fd010ff6c393db963d7f9eb5b7
 /*
 Import like this in HTML:
 <script src="Vessel.js"></script>
@@ -1014,6 +1014,7 @@ Object.assign(Hull.prototype, {
 		return wl;
 		}
 	},
+	//This must be debugged more. getWaterline got an overhaul, but this did not.
 	getStation: function(x) {
 		let ha = this.attributes;
 		let xr = x/ha.LOA;
@@ -1319,10 +1320,13 @@ Object.assign(Hull.prototype, {
 			//Filter and rename for output
 			return {
 				xcwp: lc.xc, //water plane values
+				LCF: lc.xc,
 				ycwp: lc.yc,
 				Awp: lc.Awp,
 				Ixwp: lc.Ix,
+				BMt: lc.Ix/lc.Vs,
 				Iywp: lc.Iy,
+				BMl: lc.Iy/lc.Vs,
 				maxXs: lc.maxX, //boundaries of the submerged part of the hull
 				minXs: lc.minX,
 				maxYs: lc.maxY,
@@ -1337,7 +1341,9 @@ Object.assign(Hull.prototype, {
 				Vs: lc.Vs, //volume of submerged part of the hull
 				Cb: lc.Cb,
 				As: lc.As, //wetted area
-				Cv: lc.Cv //center of buoyancy
+				Cv: lc.Cv, //center of buoyancy
+				LCB: lc.Cv.x,
+				KB: lc.Cv.z
 			}
 		};
 	}()
