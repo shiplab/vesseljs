@@ -272,10 +272,8 @@
 
 			function fillDocument(){
 				//calculate hydrostatics
-				let {LWL: lwlc, Cb: cbc, Cp: cpc, Cwp: cwpc, BWL: bwlc, Awp: Awpc, Cv: {x: LCBc, z: KBc}, Ixwp: ixwpc, Iywp: iywpc, xcwp: LCFc} = ship.structure.hull.calculateAttributesAtDraft(Value.Draft);
-				let voldc = cbc* lwlc * bwlc * Value.Draft;
-				let BMtc = ixwpc/voldc;
-				let BMlc = iywpc/voldc;
+				let {LWL: lwlc, Cb: cbc, Cp: cpc, Cwp: cwpc, BWL: bwlc, Awp: Awpc, LCB: LCBc, KB: KBc, Ixwp: ixwpc, Iywp: iywpc,
+					xcwp: LCFc, Vs: voldc, BMt: BMtc, BMl: BMlc} = ship.structure.hull.calculateAttributesAtDraft(Value.Draft);
 				
 				document.getElementById("draftc").innerHTML = Value.Draft.toFixed(2);
 				document.getElementById("lwlc").innerHTML = lwlc.toFixed(2);
