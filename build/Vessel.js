@@ -1,4 +1,4 @@
-//Vessel.js library, built 2017-12-26 12:02:44.219893, Checksum: 07c7fc84334c0f2232ca89b34f7005c5
+//Vessel.js library, built 2017-12-28 08:05:27.129649, Checksum: f7eaedd140e3ae3c2ad3cadf95464dc4
 /*
 Import like this in HTML:
 <script src="Vessel.js"></script>
@@ -14,62 +14,63 @@ var Vessel = {};
 
 //Some small helpers for operations on 3D vectors
 //A vector is simply defined as an object with properties x,y,z.
-//Written by Elias Hasle
 
-function scaleVec(v, s) {
-	return {x: s*v.x, y: s*v.y, z: s*v.z};
-}
+var Vectors = {
+	scale: function(v, s) {
+		return {x: s*v.x, y: s*v.y, z: s*v.z};
+	},
 
-function vecNorm(v) {
-	return Math.sqrt(v.x**2+v.y**2+v.z**2);
-}
+	norm: function(v) {
+		return Math.sqrt(v.x**2+v.y**2+v.z**2);
+	},
 
-function normalizeVec(v) {
-	let l = vectorLength(v);
-	return {x: v.x/l, y: v.y/l, z: v.z/l};
-}
+	normalize: function(v) {
+		let l = vectorLength(v);
+		return {x: v.x/l, y: v.y/l, z: v.z/l};
+	},
 
-function vecNormSquared(v) {
-	return v.x**2+v.y**2+v.z**2;
-}
+	normSquared: function(v) {
+		return v.x**2+v.y**2+v.z**2;
+	},
 
-/*Adds two or more vectors given as individual parameters,
-and returns a new vector that is the component-wise 
-sum of the input vectors.*/
-function addVec(u,v, ...rest) {
-	if (rest.length > 0) return sumVec([u,v]+rest);
-	return {x: u.x+v.x, y: u.y+v.y, z: u.z+v.z};
-}
+	/*Adds two or more vectors given as individual parameters,
+	and returns a new vector that is the component-wise 
+	sum of the input vectors.*/
+	add: function(u,v, ...rest) {
+		if (rest.length > 0) return Vectors.sum([u,v]+rest);
+		return {x: u.x+v.x, y: u.y+v.y, z: u.z+v.z};
+	},
 
-//Takes an array of vectors as input, and returns a new vector
-//that is the component-wise sum of the input vectors.
-function sumVec(vectors) {
-	let S = {x:0, y:0, z:0};
-	for (let i = 0; i < vectors.length; i++) {
-		let v = vectors[i];
-		S.x += v.x;
-		S.y += v.y;
-		S.z += v.z;
+	//Takes an array of vectors as input, and returns a new vector
+	//that is the component-wise sum of the input vectors.
+	sum: function(vectors) {
+		let S = {x:0, y:0, z:0};
+		for (let i = 0; i < vectors.length; i++) {
+			let v = vectors[i];
+			S.x += v.x;
+			S.y += v.y;
+			S.z += v.z;
+		}
+		return S;
+	},
+
+	//Takes two vector parameters u,v, and returns the vector u-v.
+	sub: function(u,v) {
+		//return Vectors.add(u, Vectors.scale(v, -1)); //equivalent
+		return {x: u.x-v.x, y: u.y-v.y, z: u.z-v.z};
+	},
+
+	dot: function(u,v) {
+		return u.x*v.x + u.y*v.y + u.z*v.z;
+	},
+
+	cross: function(u,v) {
+		return {
+			x: u.y*v.z-u.z*v.y,
+			y: u.z*v.x-u.x*v.z,
+			z: u.x*v.y-u.y*v.x
+		};
 	}
-	return S;
-}
-
-//Takes two vector parameters u,v, and returns the vector u-v.
-function subVec(u,v) {
-	//return addVec(u, scaleVec(v, -1)); //equivalent
-	return {x: u.x-v.x, y: u.y-v.y, z: u.z-v.z};
-}
-
-function dotProduct(u,v) {
-	return u.x*v.x + u.y*v.y + u.z*v.z;
-}
-
-function crossProduct(u,v) {
-	return {
-		x: u.y*v.z-u.z*v.y,
-		y: u.z*v.x-u.x*v.z,
-		z: u.x*v.y-u.y*v.x
-	};
 }//@EliasHasle
 
 //Some interpolation helpers. Only linear and bilinear for now.
@@ -261,8 +262,8 @@ function combineAreas(array) {
 
 //x and y here refers to coordinates in the plane that is being calculated on.
 function sectionCalculation({xs, ymins, ymaxs}) {
-	console.group/*Collapsed*/("sectionCalculation");
-	console.info("Arguments (xs, ymins, ymaxs): ", arguments[0]);
+	//console.group/*Collapsed*/("sectionCalculation");
+	//console.info("Arguments (xs, ymins, ymaxs): ", arguments[0]);
 
 	let calculations = [];
 	for (let i = 0; i < xs.length-1; i++) {
@@ -279,8 +280,8 @@ function sectionCalculation({xs, ymins, ymaxs}) {
 	let C = combineAreas(calculations); //Might be zero areas!
 
 	let output = {A: C.A, maxX: C.maxY, minX: C.minY, maxY: C.maxX, minY: C.minX, xc: C.yc, yc: C.xc, Ix: C.Iy, Iy: C.Ix, Abb: (C.maxY-C.minY)*(C.maxX-C.minX)};
-	console.info("Output: ", output);
-	console.groupEnd();
+	//console.info("Output: ", output);
+	//console.groupEnd();
 	return output;
 }
 
@@ -354,10 +355,10 @@ function elementArea(v1,v2,v3,v4) {
 }
 
 function signedTriangleArea(v1,v2,v3) {
-	let u = subVec(v2,v1);
-	let v = subVec(v3,v1);
-	let c = crossProduct(u,v);
-	let A = 0.5*vecNorm(c);
+	let u = Vectors.sub(v2,v1);
+	let v = Vectors.sub(v3,v1);
+	let c = Vectors.cross(u,v);
+	let A = 0.5*Vectors.norm(c);
 	return A;
 }//@EliasHasle
 
@@ -437,9 +438,9 @@ function combineVolumes(array) {
 		V += e.V;
 		As += e.As; //typically wetted area
 		//console.log(e.Cv);
-		Cv = addVec(Cv, scaleVec(e.Cv, e.V));
+		Cv = Vectors.add(Cv, Vectors.scale(e.Cv, e.V));
 	}
-	Cv = scaleVec(Cv, 1/(V || L || 1));
+	Cv = Vectors.scale(Cv, 1/(V || L || 1));
 	
 	//console.info("combineVolumes: Combined Cv is (" + Cv.x + ", " + Cv.y + ", " + Cv.z + ").");
 	
@@ -611,8 +612,8 @@ function combineVolumes(array) {
 //Very unoptimized for now.
 function combineWeights(array) {
 	let M = array.reduce((sum,e)=>sum+e.mass,0);
-	let cgms = array.map(e=>scaleVec(e.cg, e.mass));
-	let CG = scaleVec(sumVec(cgms), 1/M);
+	let cgms = array.map(e=>Vectors.scale(e.cg, e.mass));
+	let CG = Vectors.scale(Vectors.sum(cgms), 1/M);
 	
 	return {mass: M, cg: CG};
 }//@EliasHasle
@@ -1017,6 +1018,7 @@ Object.assign(Hull.prototype, {
 				if ((after===null || isNaN(after)) && (forward===null || isNaN(forward))) {
 					st.push(null);
 				} else {
+					//Simply correcting by "|| 0" is not consistent with what is done in getWaterline. It may be better to correct upper nulls by nearest neighbor below.
 					st.push(lerp(after || 0, forward || 0, mu));
 				}
 			}
@@ -1162,7 +1164,10 @@ Object.assign(Hull.prototype, {
 		};
 	},
 
-	/*Known issue: some representations of flat bottom hulls will not have the bottom area included in the wetted area. The challenge is not finding the bottom area, but deciding the correct conditions for it to be added to a "level calculation". Is z===0 a good test, or how about z/Depth === waterlines[0]? I think none of these candidates are foolproof. (They can even fail just because of float precision issues.) A safer solution, perhaps, is the one I have just implemented now: Adding the bottom cap outside the level calculation only on the bottom level to be precalculated.*/
+	/*
+	Known issues:
+	nulls in the offset table will be corrected to numbers in this calculation, whereas the intended meaning of a null supposedly is that there is no hull at that position. This means the calculation can overestimate the wetted area (and possibly make other errors too).
+	*/
 	//Important: calculateAttributesAtDraft takes one mandatory parameter T. (The function defined here is immediately called during construction of the prototype, and returns the proper function.)
 	calculateAttributesAtDraft: function() {
 		function levelCalculation(hull,
@@ -1253,9 +1258,9 @@ Object.assign(Hull.prototype, {
 				lev.As += hull.stationCalculation(lev.maxXwp, z)["A"];
 			
 			//center of volume below z (some potential for accumulated rounding error when calculating an accumulated average like this):
-			lev.Cv = scaleVec(addVec(
-						scaleVec(prev.Cv,prev.Vs),
-						scaleVec(Cv,C.V)
+			lev.Cv = Vectors.scale(Vectors.add(
+						Vectors.scale(prev.Cv,prev.Vs),
+						Vectors.scale(Cv,C.V)
 					), 1/(lev.Vs || 2));
 			
 			lev.Cb = lev.Vs/lev.Vbb;
@@ -1334,7 +1339,7 @@ Object.assign(Hull.prototype, {
 		let VT = M/rho; //Target submerged volume (1025=rho_seawater)
 		//Interpolation:
 		let a = 0;
-		let b = this.attributes.Depth;
+		let b = this.attributes.Depth;                                                                                                                                                                                                                                                                           
 		let t = 0.5*b;
 		while (b-a>epsilon) {
 			t = 0.5*(a+b);
@@ -1475,7 +1480,7 @@ Object.assign(DerivedObject.prototype, {
 
 		let w = this.baseObject.getWeight(oState.fullness);
 		let m = w.mass;
-		let cg = addVec(p, w.cg);
+		let cg = Vectors.add(p, w.cg);
 		
 		if (isNaN(cg.x+cg.y+cg.z)) {
 			console.error("DerivedObject.getWeight: returning NaN values.");
@@ -1764,6 +1769,7 @@ Object.assign(Vessel, {
         f: {
             linearFromArrays: linearFromArrays,
             bilinear: bilinear
-        }
+        },
+        Vectors: Vectors
 });
 })();

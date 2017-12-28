@@ -52,7 +52,7 @@ Object.assign(DerivedObject.prototype, {
 
 		let w = this.baseObject.getWeight(oState.fullness);
 		let m = w.mass;
-		let cg = addVec(p, w.cg);
+		let cg = Vectors.add(p, w.cg);
 		
 		if (isNaN(cg.x+cg.y+cg.z)) {
 			console.error("DerivedObject.getWeight: returning NaN values.");

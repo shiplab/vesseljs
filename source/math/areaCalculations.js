@@ -86,8 +86,8 @@ function combineAreas(array) {
 
 //x and y here refers to coordinates in the plane that is being calculated on.
 function sectionCalculation({xs, ymins, ymaxs}) {
-	console.group/*Collapsed*/("sectionCalculation");
-	console.info("Arguments (xs, ymins, ymaxs): ", arguments[0]);
+	//console.group/*Collapsed*/("sectionCalculation");
+	//console.info("Arguments (xs, ymins, ymaxs): ", arguments[0]);
 
 	let calculations = [];
 	for (let i = 0; i < xs.length-1; i++) {
@@ -104,8 +104,8 @@ function sectionCalculation({xs, ymins, ymaxs}) {
 	let C = combineAreas(calculations); //Might be zero areas!
 
 	let output = {A: C.A, maxX: C.maxY, minX: C.minY, maxY: C.maxX, minY: C.minX, xc: C.yc, yc: C.xc, Ix: C.Iy, Iy: C.Ix, Abb: (C.maxY-C.minY)*(C.maxX-C.minX)};
-	console.info("Output: ", output);
-	console.groupEnd();
+	//console.info("Output: ", output);
+	//console.groupEnd();
 	return output;
 }
 
@@ -179,9 +179,9 @@ function elementArea(v1,v2,v3,v4) {
 }
 
 function signedTriangleArea(v1,v2,v3) {
-	let u = subVec(v2,v1);
-	let v = subVec(v3,v1);
-	let c = crossProduct(u,v);
-	let A = 0.5*vecNorm(c);
+	let u = Vectors.sub(v2,v1);
+	let v = Vectors.sub(v3,v1);
+	let c = Vectors.cross(u,v);
+	let A = 0.5*Vectors.norm(c);
 	return A;
 }

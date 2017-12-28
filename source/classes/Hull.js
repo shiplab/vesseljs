@@ -164,6 +164,7 @@ Object.assign(Hull.prototype, {
 				if ((after===null || isNaN(after)) && (forward===null || isNaN(forward))) {
 					st.push(null);
 				} else {
+					//Simply correcting by "|| 0" is not consistent with what is done in getWaterline. It may be better to correct upper nulls by nearest neighbor below.
 					st.push(lerp(after || 0, forward || 0, mu));
 				}
 			}
@@ -309,7 +310,10 @@ Object.assign(Hull.prototype, {
 		};
 	},
 
-	/*Known issue: some representations of flat bottom hulls will not have the bottom area included in the wetted area. The challenge is not finding the bottom area, but deciding the correct conditions for it to be added to a "level calculation". Is z===0 a good test, or how about z/Depth === waterlines[0]? I think none of these candidates are foolproof. (They can even fail just because of float precision issues.) A safer solution, perhaps, is the one I have just implemented now: Adding the bottom cap outside the level calculation only on the bottom level to be precalculated.*/
+	/*
+	Known issues:
+	nulls in the offset table will be corrected to numbers in this calculation, whereas the intended meaning of a null supposedly is that there is no hull at that position. This means the calculation can overestimate the wetted area (and possibly make other errors too).
+	*/
 	//Important: calculateAttributesAtDraft takes one mandatory parameter T. (The function defined here is immediately called during construction of the prototype, and returns the proper function.)
 	calculateAttributesAtDraft: function() {
 		function levelCalculation(hull,
@@ -400,9 +404,9 @@ Object.assign(Hull.prototype, {
 				lev.As += hull.stationCalculation(lev.maxXwp, z)["A"];
 			
 			//center of volume below z (some potential for accumulated rounding error when calculating an accumulated average like this):
-			lev.Cv = scaleVec(addVec(
-						scaleVec(prev.Cv,prev.Vs),
-						scaleVec(Cv,C.V)
+			lev.Cv = Vectors.scale(Vectors.add(
+						Vectors.scale(prev.Cv,prev.Vs),
+						Vectors.scale(Cv,C.V)
 					), 1/(lev.Vs || 2));
 			
 			lev.Cb = lev.Vs/lev.Vbb;
@@ -481,7 +485,7 @@ Object.assign(Hull.prototype, {
 		let VT = M/rho; //Target submerged volume (1025=rho_seawater)
 		//Interpolation:
 		let a = 0;
-		let b = this.attributes.Depth;
+		let b = this.attributes.Depth;                                                                                                                                                                                                                                                                           
 		let t = 0.5*b;
 		while (b-a>epsilon) {
 			t = 0.5*(a+b);
