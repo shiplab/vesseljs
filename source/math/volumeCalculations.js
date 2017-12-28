@@ -76,9 +76,9 @@ function combineVolumes(array) {
 		V += e.V;
 		As += e.As; //typically wetted area
 		//console.log(e.Cv);
-		Cv = addVec(Cv, scaleVec(e.Cv, e.V));
+		Cv = Vectors.add(Cv, Vectors.scale(e.Cv, e.V));
 	}
-	Cv = scaleVec(Cv, 1/(V || L || 1));
+	Cv = Vectors.scale(Cv, 1/(V || L || 1));
 	
 	//console.info("combineVolumes: Combined Cv is (" + Cv.x + ", " + Cv.y + ", " + Cv.z + ").");
 	

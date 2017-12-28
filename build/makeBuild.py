@@ -1,11 +1,11 @@
 from datetime import datetime
 
-coreClasses = ["JSONSpecObject.js", "Ship.js", "Structure.js", "Hull.js", "BaseObject.js", "DerivedObject.js", "ShipState.js"]
-importExport = ["browseShip.js", "loadShip.js", "downloadShip.js"]
-functions = ["vectorOperations.js", "interpolation.js", "areaCalculations.js", "volumeCalculations.js", "parametricWeightParsons.js", "combineWeights.js"]
-filepaths = list(map((lambda filename: "../source/functions/"+filename), functions)) \
-            + list(map((lambda filename: "../source/CoreClasses/"+filename), coreClasses)) \
-            + list(map((lambda filename: "../source/ImportExport/"+filename), importExport))
+classes = ["JSONSpecObject.js", "Ship.js", "Structure.js", "Hull.js", "BaseObject.js", "DerivedObject.js", "ShipState.js"]
+fileIO = ["browseShip.js", "loadShip.js", "downloadShip.js"]
+math = ["Vectors.js", "interpolation.js", "areaCalculations.js", "volumeCalculations.js", "parametricWeightParsons.js", "combineWeights.js"]
+filepaths = list(map((lambda filename: "../source/math/"+filename), math)) \
+            + list(map((lambda filename: "../source/classes/"+filename), classes)) \
+            + list(map((lambda filename: "../source/fileIO/"+filename), fileIO))
 
 code = """
 /*
@@ -45,7 +45,8 @@ Object.assign(Vessel, {
         f: {
             linearFromArrays: linearFromArrays,
             bilinear: bilinear
-        }
+        },
+        Vectors: Vectors
 });
 })();
 """
