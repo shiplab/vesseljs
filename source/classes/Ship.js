@@ -67,13 +67,13 @@ Object.assign(Ship.prototype, {
 		console.info("Calculated weight object: ", W);
 		return W;
 	},
-	//This should just take displacement as parameter instead. (later, soon)
 	calculateDraft(shipState, epsilon=0.001, rho=1025) {
 		let w = this.getWeight(shipState);
 		let M = w.mass;
 		return this.structure.hull.calculateDraftAtMass(M, epsilon, rho);
 	},
 	//Separates between longitudinal and transverse GM
+	//To avoid confusion, no "default" GM or BM is specified in the output.
     calculateStability(shipState){
 		let w = this.getWeight(shipState);
 	    let KG = w.cg.z;

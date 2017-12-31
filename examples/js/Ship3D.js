@@ -8,6 +8,8 @@ There are some serious limitations to this:
 2. The end caps and bulkheads are sometimes corrected with zeros where they should perhaps have been clipped because of null values.
 */
 
+//var hMat; //global for debugging
+
 function Ship3D(ship, stlPath) {
 	THREE.Group.call(this);
 	
@@ -184,8 +186,23 @@ function Ship3D(ship, stlPath) {
 	}
 	pos.needsUpdate = true;
 	
-	//Hull hMaterial
-	let hMat = new THREE.MeshPhongMaterial({color: "red", side: THREE.DoubleSide, transparent: true, opacity: /*1*/0.5});
+	//Hull material
+	let phong = THREE.ShaderLib.phong;
+	let commonDecl = "uniform float wlThreshold;uniform vec3 aboveWL; uniform vec3 belowWL;\nvarying vec3 vPos;";
+	let hMat = new THREE.ShaderMaterial({
+		uniforms: THREE.UniformsUtils.merge([phong.uniforms, {
+			wlThreshold: new THREE.Uniform(ship.designState.calculationParameters.Draft_design/Depth),
+			aboveWL: new THREE.Uniform(new THREE.Color(0x33aa33)),
+			belowWL:  new THREE.Uniform(new THREE.Color(0xaa3333))	
+		}]),
+		vertexShader: commonDecl+phong.vertexShader.replace("main() {", "main() {\nvPos = position.xyz;").replace("#define PHONG", ""),
+		fragmentShader: commonDecl+phong.fragmentShader.replace("vec4 diffuseColor = vec4( diffuse, opacity );",
+		"vec4 diffuseColor = vec4( (vPos.z>wlThreshold)? aboveWL.rgb : belowWL.rgb, opacity );").replace("#define PHONG", ""),
+		side: THREE.DoubleSide,
+		lights: true,
+		transparent: true
+	});
+	hMat.uniforms.opacity.value = 0.5;
 	
 	let hullGroup = new THREE.Group();
 	let port = new THREE.Mesh(hGeom, hMat);

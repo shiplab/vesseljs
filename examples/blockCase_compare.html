@@ -1,4 +1,7 @@
 <!-- @MrEranwe @EliasHasle -->
+
+<!--Elias comments: This can be simplified a lot by exploiting the pattern in the table. Make a loop that takes a list of pretty names and a list of property names, and generates the table row by row, extracting the given properties from one hand-calculated object and one machine-calculated object, and comparing them with %diff automatically within the loop.-->
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -217,15 +220,15 @@
                            <td><span id = "cbd"></span></td> 
                         </tr>
                         <tr>
-                           <td>LCBx (m)</td> 
-                           <td><span id = "LCBx"></span></td> 
-                           <td></td> 
+                           <td>LCB (m)</td> 
+                           <td><span id = "LCB"></span></td> 
+                           <td><span id = "LCBc"></span></td> 
                            <td></td> 
                         </tr>
                         <tr>
-                           <td>LCFx (m)</td> 
-                           <td><span id = "LCFx"></span></td> 
-                           <td></td> 
+                           <td>LCF (m)</td> 
+                           <td><span id = "LCF"></span></td> 
+                           <td><span id = "LCFc"></span></td> 
                            <td></td> 
                         </tr>
                         <tr>
@@ -466,8 +469,8 @@
             let Awet = 136.989;
             let Awp = 98.95;
             let Cb = disp / (draftms * lwl * bwl * 1.025);
-            let LCBx = 9.636;
-            let LCFx = 9.818;
+            let LCB = 9.636;
+            let LCF = 9.818;
             let KB = 1.319;
             let KG = 3.525;
             let BM = 2.061;
@@ -488,8 +491,8 @@
             document.getElementById("Awet").innerHTML = Awet.toFixed(3);
             document.getElementById("Awp").innerHTML = Awp.toFixed(3);
             document.getElementById("Cb").innerHTML = Cb.toFixed(3);
-            document.getElementById("LCBx").innerHTML = LCBx.toFixed(3);
-            document.getElementById("LCFx").innerHTML = LCFx.toFixed(3);
+            document.getElementById("LCB").innerHTML = LCB.toFixed(3);
+            document.getElementById("LCF").innerHTML = LCF.toFixed(3);
             document.getElementById("KB").innerHTML = KB.toFixed(3);
             document.getElementById("KG").innerHTML = KG.toFixed(3);
             document.getElementById("BM").innerHTML = BM.toFixed(3);
@@ -553,17 +556,19 @@
             document.getElementById("bareac").innerHTML = bareac;
             document.getElementById("bvolc").innerHTML = bvolc;
             
-
-            
+			//Elias comments: calculated stability values a uses a calculated draft, whereas the other values below are calculated from a given "design draft".
             //calculated values
             let KBc = a.KB.toFixed(3);
             let KGc = a.KG.toFixed(3);
             let BMc = a.BMt.toFixed(3);
             let draftc = ship.designState.calculationParameters.Draft_design;
-            let lwlc = ship.structure.hull.calculateAttributesAtDraft(draftc).LWL;
-            let bwlc = ship.structure.hull.calculateAttributesAtDraft(draftc).BWL;
-            let Awpc = ship.structure.hull.calculateAttributesAtDraft(draftc).Awp;
-            let cbc = ship.structure.hull.calculateAttributesAtDraft(draftc).Cb;
+			let ha = ship.structure.hull.calculateAttributesAtDraft(draftc);
+			let LCBc = ha.LCB;
+			let LCFc = ha.LCF;
+            let lwlc = ha.LWL;
+            let bwlc = ha.BWL;
+            let Awpc = ha.Awp;
+            let cbc = ha.Cb;
             let dispc = lwlc * bwlc * cbc * draftc;
             
             //stability small angles, only LW
@@ -590,6 +595,8 @@
             document.getElementById("bwlc").innerHTML = bwlc.toFixed(3);
             document.getElementById("Awpc").innerHTML = Awpc.toFixed(3);
             document.getElementById("cbc").innerHTML = cbc.toFixed(3);
+            document.getElementById("LCBc").innerHTML = LCBc.toFixed(3);
+            document.getElementById("LCFc").innerHTML = LCFc.toFixed(3);
             document.getElementById("lightweight").innerHTML = lightweight.toFixed(3);
             document.getElementById("deadweightc").innerHTML = deadweightc.toFixed(3);
             document.getElementById("dispc").innerHTML = dispc.toFixed(3);
