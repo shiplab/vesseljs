@@ -8,6 +8,7 @@ There are some serious limitations to this:
 2. The end caps and bulkheads are sometimes corrected with zeros where they should perhaps have been clipped because of null values.
 */
 
+//var hMat; //global for debugging
 
 function Ship3D(ship, stlPath) {
 	THREE.Group.call(this);
@@ -188,6 +189,7 @@ function Ship3D(ship, stlPath) {
 	//Hull material
 	let phong = THREE.ShaderLib.phong;
 	let commonDecl = "uniform float wlThreshold;uniform vec3 aboveWL; uniform vec3 belowWL;\nvarying vec3 vPos;";
+	let hMat = new THREE.ShaderMaterial({
 		uniforms: THREE.UniformsUtils.merge([phong.uniforms, {
 			wlThreshold: new THREE.Uniform(ship.designState.calculationParameters.Draft_design/Depth),
 			aboveWL: new THREE.Uniform(new THREE.Color(0x33aa33)),
