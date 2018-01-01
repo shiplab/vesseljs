@@ -11,7 +11,7 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Vessel Stability</title>
+    <title>Ship Stability with Cargo Blocks</title>
 
     <!-- Bootstrap Core CSS -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
@@ -80,16 +80,14 @@
             
             <!-- No divisions in page. Only 1 column. -->
              <div class="col-md-12 text-center">
-                <h2>Vessel Stability</h2>
+                <h2>Ship Stability with Cargo Blocks</h2>
             </div>  
             
 			<div class="col-md-12 text-center">
                 
-                <!-- Link the GitHub page if you have one. Add a pdf of how the project works if necessary. Just put it inside the same folder and call it how_to.pdf -->
-                <!--<h1>Hull Hydrostatics</h1>-->
-                <p>Interactive calculation of vessel stability properties.</p>
+                <p>Calculation of ship stability properties with configurable cargo blocks.</p>
 				                                    
-				<p>Developed by: Elias Hasle, Vicente Alejandro Iváñez Encinas and Henrique M. Gaspar. Visualization made using three.js.</p>
+				<p>Visualizations made using three.js and Plotly.</p>
 
             </div>
 			
@@ -110,7 +108,9 @@
 			</div>
             <div class="col-md-12 text-left">
                 <h3>Weight Definition</h3>
-                <table class="table">
+				<button onclick="CreateBlock()">Create block</button>
+				<button onclick="DeleteBlock()">Delete block</button>
+                <table class="table", id="blockdef">
                     <thead>
                         <tr>
                             <th>ID</th>
@@ -120,31 +120,6 @@
                             <th>Weight (kg)</th>
                         </tr>
                     </thead>
-                    <body>
-                        <tr>
-                            <td><span>Block0</span></td>
-                            <!-- <td id="bl0"></span></td>
-                            <td id="bb0"></span></td> -->
-                            <td id="bh0c"></span></td>
-                            <td><input type="text" id="bwe0c" onchange="fillDocument()"></span></td>
-                        </tr>
-                        <tr>
-                            <td><span>Block1</span></td>
-                            <!-- <td id="bl1"></span></td>
-                            <td id="bb1"></span></td> -->
-                            <td id="bh1c"></span></td>
-                            <td><input type="text" id="bwe1c" onchange="fillDocument()"></span></td>
-                        </tr>
-                        <tr>
-                            <td><span>Block2</span></td>
-                            <!-- <td id="bl2"></span></td>
-                            <td id="bb2"></span></td> -->
-                            <td id="bh2c"></span></td>
-                            <td><input type="text" id="bwe2c" onchange="fillDocument()"></span></td>
-                        </tr>
-                        
-                    </body>
-                
                 </table>
                 <h3>Calculations</h3>
                 <table class="table">
@@ -170,27 +145,19 @@
                             <td id = "draft"></span><td>
                         </tr>
                         <tr>
-                            <td>BM (m)</td> 
-                            <td id = "bm"></span><td>
-                        </tr>
-                        <tr>
-                            <td>BMT (m)</td> 
+                            <td>BMt (m)</td> 
                             <td id = "bmt"></span><td>
                         </tr>
                         <tr>
-                            <td>BML (m)</td> 
+                            <td>BMl (m)</td> 
                             <td id = "bml"></span><td>
                         </tr>
                         <tr>
-                            <td>GM (m)</td> 
-                            <td id = "gm"></span><td>
-                        </tr>
-                        <tr>
-                            <td>GML (m)</td> 
+                            <td>GMl (m)</td> 
                             <td id = "gml"></span><td>
                         </tr>
                         <tr>
-                            <td>GMT (m)</td> 
+                            <td>GMt (m)</td> 
                             <td id = "gmt"></span><td>
                         </tr>
                         <tr>
@@ -213,7 +180,7 @@
 		"use strict";
 		
 	    // Create scene+
-		var renderer, scene, camera, controls, ship3D, ocean, fillDocument;
+		var renderer, scene, camera, controls, ship3D, ocean, fillDocument, CreateBlock, DeleteBlock;
 		
 		//Ready renderer and scene
         (function (){
@@ -297,56 +264,122 @@
 			controls.target = new THREE.Vector3(LOA/2,0,0);
 			controls.update();
 
-			let block0_der = ship.derivedObjects[Object.keys(ship.derivedObjects)[0]];
-			let block1_der = ship.derivedObjects[Object.keys(ship.derivedObjects)[1]];
-			let block2_der = ship.derivedObjects[Object.keys(ship.derivedObjects)[2]];
+			// save original block weights in an array
+			let bwe =[];
 
-			let block0_base = ship.baseObjects[Object.keys(ship.baseObjects)[0]];
-			let block1_base = ship.baseObjects[Object.keys(ship.baseObjects)[1]];
-			let block2_base = ship.baseObjects[Object.keys(ship.baseObjects)[2]];
+			for (let prop in ship.baseObjects) {
+				let block_base = ship.baseObjects[prop];
+				bwe.push(block_base.weightInformation.lightweight);
+			}
 
-			let bh0 = block0_der.referenceState.zBase;
-			let bwe0 = block0_base.weightInformation.lightweight;
+			// save original block vertical positions in an array
+			let bh =[];
 
-			let bh1 = block1_der.referenceState.zBase;
-			let bwe1 = block1_base.weightInformation.lightweight;
+			for (var prop in ship.derivedObjects) {
+				let block_der = ship.derivedObjects[prop];
+				bh.push(block_der.referenceState.zBase);
+			}
 
-			let bh2 = block2_der.referenceState.zBase;
-			let bwe2 = block2_base.weightInformation.lightweight;
+			// create table rows with fetched data
+			for (var i = 0; i < bwe.length; i++) {
+				let table = document.getElementById("blockdef");
+				let row = table.insertRow(document.getElementById("blockdef").rows.length);
+				let cell1 = row.insertCell(0);
+			    let cell2 = row.insertCell(1);
+			    let cell3 = row.insertCell(2);
+			    
+			    cell1.innerHTML = "Block" + i;
 
-			document.getElementById("bh0c").innerHTML = bh0.toFixed(2);
-			document.getElementById("bwe0c").setAttribute("value", bwe0.toFixed(2));
+			    cell2.innerHTML = '<input type="text" id="bh'+ i +'" onchange="fillDocument()"></span>';bh[i].toFixed(2);
+			    document.getElementById("bh"+i).setAttribute("value", bh[i].toFixed(2));
 
-			document.getElementById("bh1c").innerHTML = bh1.toFixed(2);
-			document.getElementById("bwe1c").setAttribute("value", bwe1.toFixed(2));
+			    cell3.innerHTML = '<input type="text" id="bwe'+ i +'" onchange="fillDocument()"></span>';
+			    document.getElementById("bwe"+i).setAttribute("value", bwe[i].toFixed(2));
+			}
 
-			document.getElementById("bh2c").innerHTML = bh2.toFixed(2);
-			document.getElementById("bwe2c").setAttribute("value", bwe2.toFixed(2));
+			//create base and derived object for instantiation when creating blocks
+			let refBaseObject = new ship.baseObjects[Object.keys(ship.baseObjects)[0]].constructor();
+			let refDerivedObject = new ship.derivedObjects[Object.keys(ship.derivedObjects)[0]].constructor();
+
+			CreateBlock = function () {
+				// find next block position on block list
+				let pos = bwe.length + 1;
+
+				// create new block
+				ship.baseObjects["Tankuserdefined" + pos] = new refBaseObject.constructor({"id":"Tankuserdefined"+pos,"affiliations":{},"boxDimensions":{"length":2.5,"breadth":2.5,"height":2},"capabilities":{},"baseState":{"fullness":0},"weightInformation":{"contentDensity":0,"volumeCapacity":12.5,"lightweight":1000}});
+
+				ship.derivedObjects["Tank" + pos] = new refDerivedObject.constructor({"id":"Tank" + pos,"baseObject":"Tankuserdefined"+pos,"affiliations":{"Deck":"BridgeDeck","SFI":"102"},"referenceState":{"xCentre":10,"yCentre":0,"zBase":4}}, ship.baseObjects);
+
+				ship.designState.objectCache["Tank" + pos] = {
+					thisStateVer: 1,
+					state: ship.derivedObjects["Tank" + pos].referenceState
+				};
+
+				bwe.push(ship.baseObjects["Tankuserdefined" + pos].weightInformation.lightweight);
+				bh.push(ship.derivedObjects["Tank" + pos].referenceState.zBase);
+
+				let index = pos - 1;
+
+				let table = document.getElementById("blockdef");
+				let row = table.insertRow(document.getElementById("blockdef").rows.length);
+				let cell1 = row.insertCell(0);
+				let cell2 = row.insertCell(1);
+				let cell3 = row.insertCell(2);
+
+				cell1.innerHTML = "Block" + index;
+
+			    cell2.innerHTML = '<input type="text" id="bh'+ index +'" onchange="fillDocument()"></span>';bh[index].toFixed(2);
+			    document.getElementById("bh"+index).setAttribute("value", bh[index].toFixed(2));
+
+			    cell3.innerHTML = '<input type="text" id="bwe'+ index +'" onchange="fillDocument()"></span>';
+			    document.getElementById("bwe"+index).setAttribute("value", bwe[index].toFixed(2));
+
+			    fillDocument();
+			};
+
+			DeleteBlock = function () {
+				let no_rows = document.getElementById("blockdef").rows.length;
+				if (no_rows>1) { // avoid deleting table header
+					// find position of last block on list
+					let pos = bwe.length - 1;
+					document.getElementById("blockdef").deleteRow(-1);
+					bh.splice(pos, 1);
+					bwe.splice(pos, 1);
+					console.log(bh, "oi");
+					delete ship.baseObjects[Object.keys(ship.baseObjects)[pos]];
+					delete ship.derivedObjects[Object.keys(ship.derivedObjects)[pos]];
+					delete ship.designState.objectCache[Object.keys(ship.designState.objectCache)[pos]];
+				}
+				fillDocument();
+			};
 
 			fillDocument = function (){
-				// //manipulating blocks vertical positions
-				// ship.derivedObjects[Object.keys(ship.derivedObjects)[0]].referenceState.zBase = Number(document.getElementById("bh0c").value);
-				// ship.derivedObjects[Object.keys(ship.derivedObjects)[1]].referenceState.zBase = Number(document.getElementById("bh1c").value);
-				// ship.derivedObjects[Object.keys(ship.derivedObjects)[2]].referenceState.zBase = Number(document.getElementById("bh2c").value);
+				console.log("oi",ship);
+				// (re)defining block vertical positions
+				for (var i = 0; i < bh.length; i++) {
+					bh[i] = Number(document.getElementById("bh" + i).value);
+					ship.designState.objectCache[Object.keys(ship.designState.objectCache)[i]].state.zBase = bh[i];
+				}
 
-				// console.log("oi", ship.derivedObjects[Object.keys(ship.derivedObjects)[2]].referenceState.zBase, ship.derivedObjects.Tank3.referenceState.zBase);
-				// //ship.derivedObjects[Object.keys(ship.derivedObjects)[2]].referenceState.zBase=200;
+				// substitute 3D ship model
+				scene.remove(ship3D);
+				ship3D = new Ship3D(ship, "data/STL files");
+				scene.add(ship3D);
 
-				//redefining block weights
-				bwe0 = Number(document.getElementById("bwe0c").value);
-				bwe1 = Number(document.getElementById("bwe1c").value);
-				bwe2 = Number(document.getElementById("bwe2c").value);
+				// (re)defining block weights
+				let blocksweight = 0;
 
-				ship.baseObjects[Object.keys(ship.baseObjects)[0]].weightInformation.lightweight = bwe0;
-				ship.baseObjects[Object.keys(ship.baseObjects)[1]].weightInformation.lightweight = bwe1;
-				ship.baseObjects[Object.keys(ship.baseObjects)[2]].weightInformation.lightweight = bwe2;
+				for (var i = 0; i < bwe.length; i++) {
+					bwe[i] = Number(document.getElementById("bwe" + i).value);
+					ship.baseObjects[Object.keys(ship.baseObjects)[i]].weightInformation.lightweight = bwe[i];
+					blocksweight = blocksweight + bwe[i];
+				}
 
-				let blocksweight = bwe0 + bwe1 + bwe2;
 				let displac = ship.getWeight().mass;
 				let hullweight = displac - blocksweight;
 
-				//calculate stability
-				let {BM: bm, BML: bml, BMT:bmt, GM:gm, GML: gml, GMT: gmt, KB: kb, KG: kg} = ship.calculateStability();
+				// calculate stability
+				let {BMl: bml, BMt:bmt, GMl: gml, GMt: gmt, KB: kb, KG: kg} = ship.calculateStability();
 
 				let draft = ship.calculateDraft();
 				ship3D.position.z = -draft;
@@ -355,41 +388,99 @@
 				document.getElementById("blocksweight").innerHTML = blocksweight.toFixed(2);
 				document.getElementById("displac").innerHTML = displac.toFixed(2);
 				document.getElementById("draft").innerHTML = draft.toFixed(2);
-				document.getElementById("bm").innerHTML = bm.toFixed(2);
 				document.getElementById("bml").innerHTML = bml.toFixed(2);
 				document.getElementById("bmt").innerHTML = bmt.toFixed(2);
-				document.getElementById("gm").innerHTML = gm.toFixed(2);
 				document.getElementById("gml").innerHTML = gml.toFixed(2);
 				document.getElementById("gmt").innerHTML = gmt.toFixed(2);
 				document.getElementById("kb").innerHTML = kb.toFixed(2);
 				document.getElementById("kg").innerHTML = kg.toFixed(2);
 
-				//stability small angles, only LW
+				//GZ curve
 				let GZ = [];
 				let deg =[];
-				for (var i = 0; i < 10; i++){
-				    let ideg = Math.sin(i / 180 * Math.PI) ;
-				    GZ.push(gm * ideg);   
-				    deg.push(i+1);
-				}
+	            let maxang = Math.atan(ship.structure.hull.attributes.Depth / (ship.structure.hull.attributes.BOA / 2)) / Math.PI * 180;
+	            let maxanground = Math.round(maxang / 10) * 10;
+
+	            //loop for degrees of heel
+	            for (let i = 0; i < 101; i += 1){
+	                //loop for moving the wl through the model
+	                for (let ii = 0; ii < draft; ii += 0.0001){ /*proper value 0.00001*/
+	                    //right line of the hull mr = slope and br = b from y=mx+b
+	                    let mr = (ship.structure.hull.attributes.Depth / (ship.structure.hull.attributes.BOA / 2));
+	                    let br = ship.structure.hull.attributes.Depth - mr * ship.structure.hull.attributes.BOA / 2;
+
+	                    //left line of the hull ml = slope and bl = b from y=mx+b
+	                    let ml = (ship.structure.hull.attributes.Depth / (-ship.structure.hull.attributes.BOA / 2));
+	                    let bl = ship.structure.hull.attributes.Depth - mr * (ship.structure.hull.attributes.BOA / 2);
+
+	                    //water line mwl = slope and bwl = b from y=mx+b
+	                    let mwl = Math.tan(i * Math.PI /180);
+	                    let bwl = draft - mwl * ii ;
+	                    
+	                    //intersection betwen waterline and right hull line
+	                    let answer1xr = (bwl - br) / (mr - mwl);
+	                    let answer1yr = mr * answer1xr - br;
+	                    
+	                    //intersection betwen waterline and left hull line
+	                    let answer1xl = (bwl - bl) / (ml - mwl);
+	                    let answer1yl = ml * answer1xl - bl;
+	                    
+	                    //intersection with main deck (wl)
+	                    let answerdx = (ship.structure.hull.attributes.Depth - bwl) / mwl;
+	                    
+	                    //iteration to find equal areas
+	                    let basestartl = draft / mr +ii;
+	                    let basestartr = draft / mr -ii;
+	                    
+	                    //measure areas 
+	                    let al = Math.abs ((answer1yl - draft) * (basestartl) / 2);
+
+	                    let ar = 0;
+	                    let topb = 0;
+	                    if (answerdx < ship.structure.hull.attributes.BOA / 2){
+	                        topb = (ship.structure.hull.attributes.BOA / 2) - answerdx;
+	                        ar = (ship.structure.hull.attributes.Depth - draft) * (topb + basestartr) / 2;
+	                    }
+	                    else {
+	                        ar = Math.abs ((answer1yr - draft) * (basestartr) / 2);
+	                    }                    
+	                    
+	                    let comp = (ar.toFixed(3)-al.toFixed(3));
+	                    //compare areas
+	                    if (comp === 0){
+	                        //calculate perpendicular line
+	                        let ppmwl = - 1 / mwl;
+	                        let ppbwl = draft - (basestartl - draft / mr) * ppmwl;
+	                        //calculate distance to K
+	                        let KNnew = ppbwl / Math.sqrt (Math.pow(-ppmwl, 2)+1)
+	                        let radnew = (i / 180) * Math.PI;
+	                        let GZnew = KNnew - Math.sin(radnew) * kg
+	                        deg.push(i)
+	                        GZ.push(GZnew);
+	                        break;
+	                    }
+					}
+                }
 
 				let traze = {
 				    x: deg, 
 				    y: GZ, 
 				    type: "scatter"
-				};
+				}
+
 				let layout = {
-				    title: "GZ Curve for small angles",
+				    title: "GZ Curve",
 				    xaxis:{
 				        title: "degrees (º)"
 				    },
 				    yaxis:{
 				        title: "GZ (m)"
 				    }
-				};
+				}
+
 				let data1 = [traze];
 				Plotly.newPlot('myDiv', data1, layout);
-			};
+            };
 			
 			fillDocument();
 
