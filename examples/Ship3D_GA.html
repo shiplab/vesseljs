@@ -1,4 +1,12 @@
 <!--@EliasHasle-->
+<!--
+To do:
+- Allow zooming in/out with mouse wheel, according to mouse position.
+- Hover over info for objects.
+- Drag and drop of objects within deck.
+- Allow moving objects between decks, and setting vertical position (by text box, maybe).
+- Button to save changes to new ship specification.
+-->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -25,20 +33,53 @@ var ship3D;
 var LOA=100, BOA=50; //placeholder values
 var HMAX = 1000; //vertical (z) position of top view camera
 
+var controlState = {
+	mouseX: 0,
+	mouseY: 0,
+	scale: 1.5,
+	offsetX: -5,
+	offsetY: 0,
+	leftDown: false,
+	rightDown: false,
+	hoveredObject: null,
+	heldObject: null,
+	selectedObject: null
+};
+
 //This function updates the orthographic camera
 					//optional parameters
-function updateCamera(upper, lower) {
-	renderer.setSize(window.innerWidth, window.innerHeight);
+					//wheel is wheel rotation direction, -1,0 or 1.
+function updateCamera(upper, lower, wheel=0) {
+	let width = viewContainer.clientWidth;
+	let height = viewContainer.clientHeight;
+	renderer.setSize(width, height);
 	
 	//Assuming the renderer area is more square than the vessel, the following will be right.
-	let aspect = viewContainer.clientWidth/viewContainer.clientHeight;
+	let aspect = width/height;
+	
+	//apply wheel scroll
+	let base = 1.2;
+	let factor = Math.min(2/controlState.scale, Math.max(0.001/controlState.scale,base**wheel));
+	let oScale = controlState.scale;
+	let conv = LOA/width;
+	let relMouseX = conv*(controlState.mouseX);
+	let relMouseY = conv*(controlState.mouseY-0.5*height);
+	console.log("client mouse: (%.2f, %.2f)", controlState.mouseX, controlState.mouseY);
+	console.log("rel mouse: (%.2f, %.2f)", relMouseX, relMouseY);
+	if (wheel != 0) {
+		controlState.offsetX += relMouseX*oScale*(1-factor);
+		controlState.offsetY -= relMouseY*oScale*(1-factor);
+	}
+	controlState.offsetX = Math.min(LOA+5, Math.max(-5, controlState.offsetX));
+	controlState.offsetY = Math.min(0.5*BOA+5, Math.max(-0.5*BOA-5, controlState.offsetY));
+	controlState.scale *= factor;
 	
 	//Configure camera here!
 	Object.assign(camera, {
-		left: 0-5,
-		right: LOA,
-		top: -0.5*BOA + LOA/aspect,
-		bottom: -0.5*BOA
+		left: controlState.offsetX,
+		right: LOA*controlState.scale +controlState.offsetX,
+		top: (0.5*LOA/aspect)*controlState.scale +controlState.offsetY,
+		bottom: (-0.5*LOA/aspect)*controlState.scale +controlState.offsetY
 	});
 	
 	if (typeof upper !== "undefined") camera.near = HMAX-upper;
@@ -90,8 +131,8 @@ function updateCamera(upper, lower) {
 		ship3D = new Ship3D(ship, "data/STL files");
 		scene.add(ship3D);
 
-		let LOA = ship.structure.hull.attributes.LOA;
-		let BOA = ship.structure.hull.attributes.BOA;
+		LOA = ship.structure.hull.attributes.LOA;
+		BOA = ship.structure.hull.attributes.BOA;
 
 		updateCamera();
 		
@@ -116,7 +157,12 @@ function updateCamera(upper, lower) {
 		//let o = {};
 		
 		//Experiment with mouse wheel:
-		//renderer.domElement.addEventListener("wheel", function(e) {
+		renderer.domElement.addEventListener("wheel", function(e) {
+			e.preventDefault();
+			controlState.mouseX = e.offsetX;//e.clientX;
+			controlState.mouseY = e.offsetY;//e.clientY;
+			updateCamera(undefined, undefined, e.deltaY>0 ? 1 : e.deltaY<0 ? -1 : 0);
+		});
 	});	
 })();
 
