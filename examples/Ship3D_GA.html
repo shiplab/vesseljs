@@ -64,8 +64,6 @@ function updateCamera(upper, lower, wheel=0) {
 	let conv = LOA/width;
 	let relMouseX = conv*(controlState.mouseX);
 	let relMouseY = conv*(controlState.mouseY-0.5*height);
-	console.log("client mouse: (%.2f, %.2f)", controlState.mouseX, controlState.mouseY);
-	console.log("rel mouse: (%.2f, %.2f)", relMouseX, relMouseY);
 	if (wheel != 0) {
 		controlState.offsetX += relMouseX*oScale*(1-factor);
 		controlState.offsetY -= relMouseY*oScale*(1-factor);
@@ -156,7 +154,7 @@ function updateCamera(upper, lower, wheel=0) {
 		});
 		//let o = {};
 		
-		//Experiment with mouse wheel:
+		//Read mouse wheel input:
 		renderer.domElement.addEventListener("wheel", function(e) {
 			e.preventDefault();
 			controlState.mouseX = e.offsetX;//e.clientX;
@@ -171,43 +169,6 @@ function animate() {
 	requestAnimationFrame(animate);
 	renderer.render(scene, camera);		
 }
-	
-/*function createGUI(materials, deckMat) {
-	//GUI:
-	let gui = new dat.GUI();
-	gui.add(deckMat, "opacity", 0,1,0.01).name("Deck opacity");
-	
-	//console.log("Creating Show/Hide GUI...");
-	let shgui = gui.addFolder("Show/Hide");
-	shgui.open();
-	
-	let keys = Object.keys(materials).sort(String.localeCompare);
-
-	shgui.add({showAll: function() {
-		for (let k of keys) materials[k].visible = true;
-		shgui.updateDisplay();
-	}}, "showAll");
-	shgui.add({hideAll: function() {
-		for (let k of keys) materials[k].visible = false;
-		shgui.updateDisplay();
-	}}, "hideAll");
-	shgui.add({invert: function() {
-		for (let k of keys) materials[k].visible = !materials[k].visible;
-		shgui.updateDisplay();
-	}}, "invert");
-	
-	//By name, alphabetically:
-	let alphabetic = shgui.addFolder("By name");
-	let currentLetter = undefined;
-	let currentFolder = undefined;
-	for (let k of keys) {
-		if (k[0].toUpperCase() !== currentLetter) {
-			currentLetter = k[0].toUpperCase();
-			currentFolder = alphabetic.addFolder(currentLetter);
-		}
-		currentFolder.add(materials[k], "visible").name(k);
-	}
-}*/
 	
     </script>
 </body>
