@@ -304,18 +304,14 @@
 				scene.add(ship3D);
 			}
 
-			//create base and derived object for instantiation when creating blocks
-			let refBaseObject = new ship.baseObjects[Object.keys(ship.baseObjects)[0]].constructor();
-			let refDerivedObject = new ship.derivedObjects[Object.keys(ship.derivedObjects)[0]].constructor();
-
 			CreateBlock = function () {
 				// find next block position on block list
 				let pos = bwe.length + 1;
 
 				// create new block
-				ship.baseObjects["Tankuserdefined" + pos] = new refBaseObject.constructor({"id":"Tankuserdefined"+pos,"affiliations":{},"boxDimensions":{"length":2.5,"breadth":2.5,"height":2},"capabilities":{},"baseState":{"fullness":0},"weightInformation":{"contentDensity":0,"volumeCapacity":12.5,"lightweight":1000}});
+				ship.baseObjects["Tankuserdefined" + pos] = new Vessel.BaseObject({"id":"Tankuserdefined"+pos,"affiliations":{},"boxDimensions":{"length":2.5,"breadth":2.5,"height":2},"capabilities":{},"baseState":{"fullness":0},"weightInformation":{"contentDensity":0,"volumeCapacity":12.5,"lightweight":1000}});
 
-				ship.derivedObjects["Tank" + pos] = new refDerivedObject.constructor({"id":"Tank" + pos,"baseObject":"Tankuserdefined"+pos,"affiliations":{"Deck":"BridgeDeck","SFI":"102"},"referenceState":{"xCentre":10,"yCentre":0,"zBase":4}}, ship.baseObjects);
+				ship.derivedObjects["Tank" + pos] = new Vessel.DerivedObject({"id":"Tank" + pos,"baseObject":"Tankuserdefined"+pos,"affiliations":{"Deck":"BridgeDeck","SFI":"102"},"referenceState":{"xCentre":10,"yCentre":0,"zBase":4}}, ship.baseObjects);
 
 				bwe.push(ship.baseObjects["Tankuserdefined" + pos].weightInformation.lightweight);
 				bh.push(ship.derivedObjects["Tank" + pos].referenceState.zBase);
