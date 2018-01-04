@@ -6,6 +6,6 @@ The library is developed by **Ship Design and Operation Lab** at Norwegian Unive
 
 ## Contributing
 
-When contributing, fork the repository and send pull requests with your commits. If your modifications are only to files related to examples, you can approve them by yourself. If you introduce changes to source files, wait for review and approval by the development team.
+When contributing, fork the repository and send pull requests with your commits. If your modifications are only to files related to examples and you have pull request authorization, you can approve them by yourself. If not, then wait for review and approval by the development team.
 
 You are also welcome to create [issues](https://github.com/shiplab/vesseljs/issues) reporting bugs or suggesting improvements and features for development.
