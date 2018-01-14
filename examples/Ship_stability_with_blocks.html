@@ -85,7 +85,8 @@
             
 			<div class="col-md-12 text-center">
                 
-                <p>Calculation of ship stability properties with configurable cargo blocks.</p>
+                <p>Calculation of ship stability properties with configurable cargo blocks.<br>
+                The current version of the library does not support trim calculations.</p>
 				                                    
 				<p>Visualizations made using three.js and Plotly.</p>
 
@@ -180,7 +181,7 @@
 		"use strict";
 		
 	    // Create scene+
-		var renderer, scene, camera, controls, ship3D, ocean, fillDocument, createBlock, deleteBlock, changePositions;
+		var renderer, scene, camera, controls, ship3D, ocean, fillDocument, createBlock, deleteBlock, changePosition, changeWeights;
 		
 		//Ready renderer and scene
         (function (){
@@ -266,57 +267,28 @@
 
 			// save original block weights in an array
 			let bwe =[];
+			let blocksweight = 0;
 
 			for (let prop in ship.baseObjects) {
-				let block_base = ship.baseObjects[prop];
-				bwe.push(block_base.weightInformation.lightweight);
+				let blockBase = ship.baseObjects[prop];
+				bwe.push(blockBase.weightInformation.lightweight);
+				blocksweight = blocksweight + blockBase.weightInformation.lightweight;
 			}
 
-			// save original block positions in arrays
-			let bx =[];
-			let by =[];
-			let bz =[];
+			// index original block positions in an array
+			let refStates = [];
 
 			for (var prop in ship.derivedObjects) {
 				let block_der = ship.derivedObjects[prop];
-				bx.push(block_der.referenceState.xCentre);
-				by.push(block_der.referenceState.yCentre);
-				bz.push(block_der.referenceState.zBase);
+				refStates.push(block_der.referenceState);
 			}
 
 			// create table rows with fetched data
 			for (var i = 0; i < bwe.length; i++) {
-				let table = document.getElementById("blockdef");
-				let row = table.insertRow(document.getElementById("blockdef").rows.length);
-				let cell1 = row.insertCell(0);
-			    let cell2 = row.insertCell(1);
-			    let cell3 = row.insertCell(2);
-			    let cell4 = row.insertCell(3);
-			    let cell5 = row.insertCell(4);
-			    
-			    cell1.innerHTML = "Block" + i;
-
-			    cell2.innerHTML = '<input type="text" id="bx'+ i +'" onchange="changePositions()"></span>';
-			    document.getElementById("bx"+i).setAttribute("value", bx[i].toFixed(2));
-
-			    cell3.innerHTML = '<input type="text" id="by'+ i +'" onchange="changePositions()"></span>';
-			    document.getElementById("by"+i).setAttribute("value", by[i].toFixed(2));
-
-			    cell4.innerHTML = '<input type="text" id="bz'+ i +'" onchange="changePositions()"></span>';
-			    document.getElementById("bz"+i).setAttribute("value", bz[i].toFixed(2));
-
-			    cell5.innerHTML = '<input type="text" id="bwe'+ i +'" onchange="fillDocument()"></span>';
-			    document.getElementById("bwe"+i).setAttribute("value", bwe[i].toFixed(2));
+				appendRow(i);
 			}
 
-			// update 3D ship model
-			function update3D() {
-				scene.remove(ship3D);
-				ship3D = new Ship3D(ship, "data/STL files");
-				scene.add(ship3D);
-			}
-
-			createBlock = function () {
+			createBlock = function() {
 				// find next block position on block list
 				let pos = bwe.length + 1;
 
@@ -325,13 +297,47 @@
 
 				ship.derivedObjects["Tank" + pos] = new Vessel.DerivedObject({"id":"Tank" + pos,"baseObject":"Tankuserdefined"+pos,"affiliations":{"Deck":"BridgeDeck","SFI":"102"},"referenceState":{"xCentre":10,"yCentre":0,"zBase":4}}, ship.baseObjects);
 
-				bx.push(ship.derivedObjects["Tank" + pos].referenceState.xCentre);
-				by.push(ship.derivedObjects["Tank" + pos].referenceState.yCentre);
-				bz.push(ship.derivedObjects["Tank" + pos].referenceState.zBase);
+				refStates.push(ship.derivedObjects["Tank" + pos].referenceState);
 				bwe.push(ship.baseObjects["Tankuserdefined" + pos].weightInformation.lightweight);
 
-				let index = pos - 1;
+				appendRow(pos - 1);
+				ship3D.addObject(ship.derivedObjects["Tank" + pos]);
+				fillDocument();
+			};
 
+			deleteBlock = function() {
+				let no_rows = document.getElementById("blockdef").rows.length;
+				if (no_rows>1) { // avoid deleting table header
+					let pos = bwe.length - 1; // find position of last block on list
+					document.getElementById("blockdef").deleteRow(-1);
+					refStates.splice(pos, 1);
+					bwe.splice(pos, 1);
+					delete ship.baseObjects[Object.keys(ship.baseObjects)[pos]];
+					delete ship.derivedObjects[Object.keys(ship.derivedObjects)[pos]];
+					delete ship.designState.objectCache[Object.keys(ship.designState.objectCache)[pos]];
+					update3D ();
+					fillDocument();
+				}
+			};
+
+			changePosition = function(no, coord) {
+				// redefining block positions
+				refStates[no][coord] = Number(document.getElementById(coord + no).value);
+				ship.designState.objectCache[Object.keys(ship.designState.objectCache)[no]].state[coord] = Number(document.getElementById(coord + no).value);
+				update3D();
+				fillDocument();
+			};
+
+			changeWeights = function(no) {
+				// redefining block weights
+				blocksweight = blocksweight - bwe[no];
+				bwe[no] = Number(document.getElementById("bwe" + no).value);
+				ship.baseObjects[Object.keys(ship.baseObjects)[no]].weightInformation.lightweight = bwe[no];
+				blocksweight = blocksweight + bwe[no];
+				fillDocument();
+			};
+
+			function appendRow(index) {
 				let table = document.getElementById("blockdef");
 				let row = table.insertRow(document.getElementById("blockdef").rows.length);
 				let cell1 = row.insertCell(0);
@@ -342,68 +348,27 @@
 
 				cell1.innerHTML = "Block" + index;
 
-			    cell2.innerHTML = '<input type="text" id="bx'+ index +'" onchange="changePositions()"></span>';
-			    document.getElementById("bx"+index).setAttribute("value", bx[index].toFixed(2));
+			    cell2.innerHTML = '<input type="text" id="xCentre'+ index +'" onchange="changePosition('+ index +',\''+ "xCentre" +'\')"></span>';
+			    document.getElementById("xCentre"+index).setAttribute("value", refStates[i].xCentre.toFixed(2));
 
-			    cell3.innerHTML = '<input type="text" id="by'+ index +'" onchange="changePositions()"></span>';
-			    document.getElementById("by"+index).setAttribute("value", by[index].toFixed(2));
+			    cell3.innerHTML = '<input type="text" id="yCentre'+ index +'" onchange="changePosition('+ index +',\''+ "yCentre" +'\')"></span>';
+			    document.getElementById("yCentre"+index).setAttribute("value", refStates[i].yCentre.toFixed(2));
 
-			    cell4.innerHTML = '<input type="text" id="bz'+ index +'" onchange="changePositions()"></span>';
-			    document.getElementById("bz"+index).setAttribute("value", bz[index].toFixed(2));
+			    cell4.innerHTML = '<input type="text" id="zBase'+ index +'" onchange="changePosition('+ index +',\''+ "zBase" +'\')"></span>';
+			    document.getElementById("zBase"+index).setAttribute("value", refStates[i].zBase.toFixed(2));
 
-			    cell5.innerHTML = '<input type="text" id="bwe'+ index +'" onchange="fillDocument()"></span>';
+			    cell5.innerHTML = '<input type="text" id="bwe'+ index +'" onchange="changeWeights('+ index +')"></span>';
 			    document.getElementById("bwe"+index).setAttribute("value", bwe[index].toFixed(2));
+			}
 
-			    update3D();
-			    fillDocument();
-			};
+			// update 3D ship model
+			function update3D() {
+				scene.remove(ship3D);
+				ship3D = new Ship3D(ship, "data/STL files");
+				scene.add(ship3D);
+			}
 
-			deleteBlock = function () {
-				let no_rows = document.getElementById("blockdef").rows.length;
-				if (no_rows>1) { // avoid deleting table header
-					// find position of last block on list
-					let pos = bwe.length - 1;
-					document.getElementById("blockdef").deleteRow(-1);
-					bx.splice(pos, 1);
-					by.splice(pos, 1);
-					bz.splice(pos, 1);
-					bwe.splice(pos, 1);
-					delete ship.baseObjects[Object.keys(ship.baseObjects)[pos]];
-					delete ship.derivedObjects[Object.keys(ship.derivedObjects)[pos]];
-					delete ship.designState.objectCache[Object.keys(ship.designState.objectCache)[pos]];
-
-					update3D ();
-					fillDocument();
-				}
-			};
-
-			changePositions = function (){
-				// redefining block positions
-				for (var i = 0; i < bx.length; i++) {
-					bx[i] = Number(document.getElementById("bx" + i).value);
-					ship.designState.objectCache[Object.keys(ship.designState.objectCache)[i]].state.xCentre = bx[i];
-
-					by[i] = Number(document.getElementById("by" + i).value);
-					ship.designState.objectCache[Object.keys(ship.designState.objectCache)[i]].state.yCentre = by[i];
-
-					bz[i] = Number(document.getElementById("bz" + i).value);
-					ship.designState.objectCache[Object.keys(ship.designState.objectCache)[i]].state.zBase = bz[i];
-				}
-
-				update3D();
-				fillDocument();
-			};
-
-			fillDocument = function (){
-				// (re)defining block weights
-				let blocksweight = 0;
-
-				for (var i = 0; i < bwe.length; i++) {
-					bwe[i] = Number(document.getElementById("bwe" + i).value);
-					ship.baseObjects[Object.keys(ship.baseObjects)[i]].weightInformation.lightweight = bwe[i];
-					blocksweight = blocksweight + bwe[i];
-				}
-
+			fillDocument = function() {
 				let displac = ship.getWeight().mass;
 				let hullweight = displac - blocksweight;
 
