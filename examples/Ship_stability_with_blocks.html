@@ -86,7 +86,8 @@
 			<div class="col-md-12 text-center">
                 
                 <p>Calculation of ship stability properties with configurable cargo blocks.<br>
-                The current version of the library does not support trim calculations.</p>
+                The current version of the library does not support trim calculations.<br>
+            	GZ curve should still be validated.</p>
 				                                    
 				<p>Visualizations made using three.js and Plotly.</p>
 
@@ -178,6 +179,7 @@
     </div>
         
     <script>
+		/*jshint esversion: 6 */
 		"use strict";
 		
 	    // Create scene+
@@ -499,17 +501,8 @@
         // Catch file browse
         document.getElementById('file-input')
           .addEventListener('change', readSingleFile, false);
-        
-        //compare values
-        
          
     </script>
-    <!-- /.container -->
-    
-    
-    
-    <!-- Insert own scripts here -->
-      
 
 </body>
 
