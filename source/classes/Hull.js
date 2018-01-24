@@ -473,6 +473,7 @@ Object.assign(Hull.prototype, {
 				//Vbb: lc.Vbb,
 				Vs: lc.Vs, //volume of submerged part of the hull
 				Cb: lc.Cb,
+				Cm: lc.Cb/lc.Cp,
 				As: lc.As, //wetted area
 				Cv: lc.Cv, //center of buoyancy
 				LCB: lc.Cv.x,
