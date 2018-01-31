@@ -485,7 +485,7 @@ Object.assign(Hull.prototype, {
 		let VT = M/rho; //Target submerged volume (1025=rho_seawater)
 		//Interpolation:
 		let a = 0;
-		let b = this.attributes.Depth;                                                                                                                                                                                                                                                                           
+		let b = this.attributes.Depth;             //depth is not draft ¿?                                                                                                                                                                                                                                                              
 		let t = 0.5*b;
 		while (b-a>epsilon) {
 			t = 0.5*(a+b);

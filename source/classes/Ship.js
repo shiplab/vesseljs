@@ -77,10 +77,43 @@ Object.assign(Ship.prototype, {
     calculateStability(shipState){
 		let w = this.getWeight(shipState);
 	    let KG = w.cg.z;
-        let T = this.structure.hull.calculateDraftAtMass(w.mass);
+        let T = this.designState.calculationParameters.Draft_design;
         let {BMt,BMl,KB} = this.structure.hull.calculateAttributesAtDraft(T);
         let GMt = KB + BMt - KG;
         let GMl = KB + BMl - KG;
         return {GMt, GMl, KB, BMt, BMl, KG};
-	}
+	},
+   calculateDraftWeigthBased(shipState){
+        let dw = this.getWeight(shipState).mass / 1000;
+        let L = this.structure.hull.attributes.LOA;
+        let B = this.structure.hull.attributes.BOA;
+        let v = this.designState.calculationParameters.speed * 0.5144;
+        let Fn = v / (Math.sqrt(9.81 * L));
+        //let Cbj = -4.22 + 27.8 * Math.sqrt(Fn) - 39.1 * Fn + 46.6 * Math.pow(Fn, 3); // SDfEE p.33
+        let Cb =  19410 * Math.pow (Fn,6 )  - 31353 * Math.pow(Fn, 5) + 20164 * Math.pow(Fn, 4) - 6528.3 * Math.pow(Fn, 3) + 1107.6 * Math.pow(Fn, 2) - 93.703 * Fn + 3.9648;
+        //let Cbdiff = Cb - Cbj
+        let T = dw / (L * B * Cb)
+        let BT = dw / (L * Cb)
+        return {TWB:T, BTWB:BT, CbWB:Cb};
+        
+    },
+    calculateDraftIterationBased(shipState){
+        let L = this.structure.hull.attributes.LOA;
+        let dw = this.getWeight(shipState).mass / 1000;
+        let lw = dw / 2;         
+        let LB = 6.5; //required info about type of ship
+        let BD = 1.8; //required info about type of ship
+        let TD = 0.7; //required info about type of ship
+        let v = this.designState.calculationParameters.speed * 0.5144;
+        let Fn = v / (Math.sqrt(9.81 * L));
+        
+        let B = L / LB;
+        let D = B / BD;
+        let T = D * TD;
+        let Cb = 0.7 + 1 / 8 * Math.atan((23 - 100 * Fn) / (4));
+        let disp = B * T * L * Cb;
+        return {LIB:L, BIB:B, DIB:D, TIB:T, CbIB:Cb, dispIB:disp};
+        
+        
+    }
 });
