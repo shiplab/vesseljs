@@ -19,6 +19,8 @@
 			}
 		}
 	},
+    "data":{     
+    },
 	"structure": {
 		"hull": {
 			"attributes": {
