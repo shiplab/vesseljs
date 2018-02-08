@@ -5,7 +5,6 @@ Notes:
 For calculated values, I envision a lazy calculation pattern, where all properties involved in calculations are only accessed by specialized getters and setters, and calculated properties have some kind of needsUpdate flag or version number (that is set by any setters that will directly or indirectly affect the property). When, and only when, running the getter for the given property, the flag/version is checked, and if false (same version as in cache) the getter just returns the stored value. If true, the getter starts the calculation of the value, invoking other getters.
 
 Suggested calculations to do:
-- Resistance at given speed (based on Holtrop).
 - Inertia matrix (will need more detailed properties of parts).
 */
 
