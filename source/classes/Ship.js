@@ -74,9 +74,9 @@ Object.assign(Ship.prototype, {
 	//Separates between longitudinal and transverse GM
 	//To avoid confusion, no "default" GM or BM is specified in the output.
     calculateStability(shipState){
-		let w = this.getWeight(shipState);
-	    let KG = w.cg.z;
-        let T = this.designState.calculationParameters.Draft_design;
+	let w = this.getWeight(shipState);
+	let KG = w.cg.z;
+        let T = this.structure.hull.calculateDraftAtMass(w.mass);
         let {BMt,BMl,KB} = this.structure.hull.calculateAttributesAtDraft(T);
         let GMt = KB + BMt - KG;
         let GMl = KB + BMl - KG;
