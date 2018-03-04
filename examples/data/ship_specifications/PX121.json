@@ -12,65 +12,65 @@
 			"SFC": 0.000215,
 			"Co": 0.3,
 			"tripDuration": 40,
-			"bulb": 1,
-			"transom": 1,
+			"bulb": true,
+			"transom": true,
 			"cstern": 0,
 			"etas": 0.97,
 			"naturalRollPeriod": 6.5,
 			"prismaticLengthRatio": 0.6,
-			"appendiceData": {
+			"hullAppendices": {
 				"skegRudder": {
-					"hasApp": 0,
+					"hasApp": false,
 					"coeff": 1.5,
 					"area": 10
 				},
 				"sternRudder": {
-					"hasApp": 0,
+					"hasApp": false,
 					"coeff": 1.3,
 					"area": 10
 				},
 				"twinScrewBalanceRudder": {
-					"hasApp": 0,
+					"hasApp": false,
 					"coeff": 2.8,
 					"area": 10
 				},
 				"shaftBrackets": {
-					"hasApp": 0,
+					"hasApp": false,
 					"coeff": 3,
 					"area": 10
 				},
 				"skeg": {
-					"hasApp": 0,
+					"hasApp": false,
 					"coeff": 1.5,
 					"area": 10
 				},
 				"strutBossings": {
-					"hasApp": 0,
+					"hasApp": false,
 					"coeff": 3,
 					"area": 10
 				},
 				"hullBossings": {
-					"hasApp": 0,
+					"hasApp": false,
 					"coeff": 2,
 					"area": 10
 				},
 				"shafts": {
-					"hasApp": 0,
+					"hasApp": false,
 					"coeff": 2,
 					"area": 10
 				},
 				"stabilizerFins": {
-					"hasApp": 0,
+					"hasApp": false,
 					"coeff": 2.8,
 					"area": 10
 				},
 				"dome": {
-					"hasApp": 0,
+					"hasApp": false,
 					"coeff": 2.7,
 					"area": 10
 				},
 				"bilgeKeel": {
-					"hasApp": 0,
+					"hasApp": false,
 					"coeff": 1.4,
 					"area": 10
 				}
@@ -609,13 +609,15 @@
 			"breadth": 3,
 			"height": 5.3
 		},
-		"capabilities": {},
+		"capabilities": {
+			"fuelTank": true
+		},
 		"file3D": "tank11.stl",
 		"baseState": {
 			"fullness": 0.5
 		},
 		"weightInformation": {
-			"contentDensity": 1000,
+			"contentDensity": 850,
 			"volumeCapacity": 131.122223379204,
 			"lightweight": 1669.5,
 			"fullnessCGMapping": {
@@ -637,13 +639,15 @@
 			"breadth": 10,
 			"height": 9.5
 		},
-		"capabilities": {},
+		"capabilities": {
+			"fuelTank": true
+		},
 		"file3D": "tank12.stl",
 		"baseState": {
 			"fullness": 0.5
 		},
 		"weightInformation": {
-			"contentDensity": 1000,
+			"contentDensity": 850,
 			"volumeCapacity": 484.98336589792433,
 			"lightweight": 6175,
 			"fullnessCGMapping": {
