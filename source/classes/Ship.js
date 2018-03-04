@@ -137,13 +137,13 @@ Object.assign(Ship.prototype, {
 			if (mass <= tkMass) { // if yes, subtract mass
 				this.designState.objectCache[tkId].state.fullness -= mass/(this.derivedObjects[tkId].baseObject.weightInformation.volumeCapacity * myShip.derivedObjects[tkId].baseObject.weightInformation.contentDensity);
 				mass = 0;
-				console.log("Vessel is sailing on " + tkId + ".");
+				console.log("Vessel is sailing on fuel from " + tkId + ".");
 			} else { // if not, make tank empty
 				mass -= tkMass;
 				myShip.designState.objectCache[tkId].state.fullness = 0;
 				console.warn(tkId + " is empty.");
 				if  (tankMass[tk+1] === undefined) { // if vessel does not have other tank, exit loop
-					console.error("Vessel ran out of fuel before " + mass.toFixed(2) + " tons were dicounted.");
+					console.error("Vessel ran out of fuel before " + mass.toFixed(2) + " tons were subtracted.");
 					break;
 				}
 				// if it has, proceed to it
