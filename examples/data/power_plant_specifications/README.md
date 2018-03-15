@@ -1,10 +1,10 @@
 Power plant objects can be assembled from an engine library. For fuel consumption simulations, the properties of an engine specification should include `MCR` and coefficients for approximation of the SFOC curve as a 2nd or 3rd order polynomial. If property `polOrder = 2`:
 
-SFOC(load %) = a\*x² + b\*x + c
+SFOC(load in %) = a\*load² + b\*load + c
 
 If `polOrder = 3`:
 
-SFOC(load %) = a\*x³ + b\*x²+ c\*x + d
+SFOC(load in %) = a\*load³ + b\*load²+ c\*load + d
 
 A power plant object should have at least one main power providing system, as in this diesel electric example:
 ```js
