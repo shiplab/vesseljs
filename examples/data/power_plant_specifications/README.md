@@ -6,7 +6,16 @@ If `polOrder = 3`:
 
 SFOC(load) = a\*load³ + b\*load²+ c\*load + d
 
-Where load is the ratio between an engine's current working load and its MCR.
+Where load is the ratio between an engine's current working load and its MCR. An example of engine specification would be:
+```json
+{
+	"MCR": 11000,
+	"a": 90,
+	"b": 130,
+	"c": 210,
+	"polOrder": 2
+}
+```
 
 A power plant object should have at least one main power providing system, as in this diesel electric example:
 ```js
