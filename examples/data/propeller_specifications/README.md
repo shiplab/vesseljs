@@ -1,10 +1,10 @@
-Propellers are linearized from Kt, Kq curves for expected working regime (that is, high efficiency region of the curves) with:
+A propeller object defines physical characteristics, namely: number of propellers, number of blades, diameter and expanded area ratio. Furthermore, efficiency data is linearized from Kt, Kq curves for expected working regime (that is, high efficiency region of the curves), with:
 
 Kt = beta1 - beta2\*J
 
 Kq = gamma1 - gamma2\*J
 
-An example of propeller specification would be:
+Linearization coefficients are included as properties of a propeller object. An example of propeller specification would be:
 ```json
 {
 	"noProps": 2,
