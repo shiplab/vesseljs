@@ -37,12 +37,12 @@ var powerPlant2 = {
 	main: {
 		noSys: 2,
 		etas: 0.99,
-		engines: [medSpeedmEng]
+		engines: [CAT_3516C]
 	},
 	auxiliary: {
 		etas: 0.95,
 		etag: 0.95,
-		engines: [hiSpeedEng, hiSpeedEng]
+		engines: [CAT_C32, CAT_C32]
 	}
 };
 ```
