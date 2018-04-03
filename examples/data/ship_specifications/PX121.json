@@ -16,58 +16,23 @@
 			"naturalRollPeriod": 6.5,
 			"prismaticLengthRatio": 0.6,
 			"hullAppendices": {
-				"skegRudder": {
-					"hasApp": false,
-					"coeff": 1.5,
-					"area": 10
-				},
-				"sternRudder": {
-					"hasApp": false,
-					"coeff": 1.3,
-					"area": 10
-				},
 				"twinScrewBalanceRudder": {
-					"hasApp": false,
 					"coeff": 2.8,
 					"area": 10
 				},
 				"shaftBrackets": {
-					"hasApp": false,
 					"coeff": 3,
 					"area": 10
 				},
 				"skeg": {
-					"hasApp": false,
 					"coeff": 1.5,
 					"area": 10
 				},
-				"strutBossings": {
-					"hasApp": false,
-					"coeff": 3,
-					"area": 10
-				},
-				"hullBossings": {
-					"hasApp": false,
-					"coeff": 2,
-					"area": 10
-				},
 				"shafts": {
-					"hasApp": false,
-					"coeff": 2,
-					"area": 10
-				},
-				"stabilizerFins": {
-					"hasApp": false,
-					"coeff": 2.8,
-					"area": 10
-				},
-				"dome": {
-					"hasApp": false,
-					"coeff": 2.7,
+					"coeff": 4,
 					"area": 10
 				},
 				"bilgeKeel": {
-					"hasApp": false,
 					"coeff": 1.4,
 					"area": 10
 				}
