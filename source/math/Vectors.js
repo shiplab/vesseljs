@@ -13,7 +13,7 @@ var Vectors = {
 	},
 
 	normalize: function(v) {
-		let l = vectorLength(v);
+		let l = norm(v);
 		return {x: v.x/l, y: v.y/l, z: v.z/l};
 	},
 
