@@ -8,7 +8,7 @@ Handy function for loading a ship design from file.
 Typical usage:
 var myShip;
 var filePath = "ships/myShip.json";
-loadShip(filePath, function(ship) {
+Vessel.loadShip(filePath, function(ship) {
 	myShip = ship;
 	doSomething();
 });
