@@ -89,7 +89,7 @@
                 <!--<h1>Hull Hydrostatics</h1>-->
                 <p>Interactive calculation of hull hydrostatic properties.</p>
 				                                    
-				<p>Developed by: Elias Hasle, Vicente Alejandro Iváñez Encinas and Henrique M. Gaspar. Visualization made using three.js.</p>
+				<p>Developed by: Vicente Alejandro Iváñez Encinas, Elias Hasle, and Henrique M. Gaspar. Visualization made using three.js. GUI made with dat.GUI.</p>
 
             </div>
 			
@@ -121,7 +121,7 @@
                     </thead>
                     <body>
                         <tr>
-                           <td>Lenght over all (m)</td> 
+                           <td>Length over all (m)</td> 
                            <td id="LOA"></span></td> 
                            <td id="LOAib"></span></td> 
                         </tr>
@@ -204,6 +204,37 @@
         
     <script>
 		"use strict";
+		
+	Vessel.Ship.prototype.calculateDraftWeightBased = function(shipState){
+		let dw = this.getWeight(shipState).mass / 1000;
+		let L = this.structure.hull.attributes.LOA;
+		let B = this.structure.hull.attributes.BOA;
+		let v = this.designState.calculationParameters.speed * 0.5144;
+		let Fn = v / (Math.sqrt(9.81 * L));
+		//let Cbj = -4.22 + 27.8 * Math.sqrt(Fn) - 39.1 * Fn + 46.6 * Math.pow(Fn, 3); // SDfEE p.33
+		let Cb =  19410 * Math.pow (Fn,6 )  - 31353 * Math.pow(Fn, 5) + 20164 * Math.pow(Fn, 4) - 6528.3 * Math.pow(Fn, 3) + 1107.6 * Math.pow(Fn, 2) - 93.703 * Fn + 3.9648;
+		//let Cbdiff = Cb - Cbj
+		let T = dw / (L * B * Cb)
+		let BT = dw / (L * Cb)
+		return {TWB:T, BTWB:BT, CbWB:Cb};
+	};
+	Vessel.Ship.prototype.calculateDraftIterationBased = function(shipState){
+		let L = this.structure.hull.attributes.LOA;
+		let dw = this.getWeight(shipState).mass / 1000;
+		let lw = dw / 2;
+		let LB = 6.5; //required info about type of ship
+		let BD = 1.8; //required info about type of ship
+		let TD = 0.7; //required info about type of ship
+		let v = this.designState.calculationParameters.speed * 0.5144;
+		let Fn = v / (Math.sqrt(9.81 * L));
+
+		let B = L / LB;
+		let D = B / BD;
+		let T = D * TD;
+		let Cb = 0.7 + 1 / 8 * Math.atan((23 - 100 * Fn) / (4));
+		let disp = B * T * L * Cb;
+		return {LIB:L, BIB:B, DIB:D, TIB:T, CbIB:Cb, dispIB:disp};
+	};
 		
 	    // Create scene+
 		var renderer, scene, camera, controls, ship3D, ocean;
@@ -290,11 +321,11 @@
 			controls.update();
 
 			let Value = {
-				Draft: ship.calculateDraftWeigthBased().TWB,
+				Draft: ship.calculateDraftWeightBased().TWB,
                 
 			};
             let CalcIB = ship.calculateDraftIterationBased();
-            let CalcWB = ship.calculateDraftWeigthBased();
+            let CalcWB = ship.calculateDraftWeightBased();
             
             let Bvar = CalcWB.BTWB / Value.Draft;
 
@@ -302,7 +333,7 @@
 				//calculate hydrostatics (weight based)
 				let {LWL: lwlc, Cb: cbc, Cp: cpc, Cwp: cwpc, BWL: bwlc, Awp: Awpc, LCB: LCBc, KB: KBc, Ixwp: ixwpc, Iywp: iywpc,
 					LCF: LCFc, Vs: voldc, BMt: BMtc, BMl: BMlc} = ship.structure.hull.calculateAttributesAtDraft(Value.Draft);
-                let cbbw = ship.calculateDraftWeigthBased().CbWB;				
+                let cbbw = ship.calculateDraftWeightBased().CbWB;				
 				document.getElementById("draftc").innerHTML = Value.Draft.toFixed(2);
 				document.getElementById("lwlc").innerHTML = lwlc.toFixed(2);
 				document.getElementById("bwlc").innerHTML = bwlc.toFixed(2);
