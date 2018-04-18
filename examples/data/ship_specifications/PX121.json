@@ -26,7 +26,33 @@
 				"LOA": 82,
 				"BOA": 18,
 				"Depth": 8,
-				"APP": 2
+				"APP": 2,
+				"bulb": true,
+				"transom": true,
+				"cstern": 0,
+				"prismaticLengthRatio": 0.6,
+				"appendices": {
+					"twinScrewBalanceRudder": {
+						"coeff": 2.8,
+						"area": 10
+					},
+					"shaftBrackets": {
+						"coeff": 3,
+						"area": 10
+					},
+					"skeg": {
+						"coeff": 1.5,
+						"area": 10
+					},
+					"shafts": {
+						"coeff": 4,
+						"area": 10
+					},
+					"bilgeKeel": {
+						"coeff": 1.4,
+						"area": 10
+					}
+				}
 			},
 			"halfBreadths": {
 				"waterlines": [0, 0.2, 0.4, 0.6, 0.8, 1, 1.2, 1.4, 1.6, 1.8],
@@ -44,33 +70,7 @@
 					[null, null, null, null, null, null, null, null, null, null, 0.3263157894736842]
 				]
 			},
-			"buttockHeights": {},
-			"bulb": true,
-			"transom": true,
-			"cstern": 0,
-			"prismaticLengthRatio": 0.6,
-			"appendices": {
-				"twinScrewBalanceRudder": {
-					"coeff": 2.8,
-					"area": 10
-				},
-				"shaftBrackets": {
-					"coeff": 3,
-					"area": 10
-				},
-				"skeg": {
-					"coeff": 1.5,
-					"area": 10
-				},
-				"shafts": {
-					"coeff": 4,
-					"area": 10
-				},
-				"bilgeKeel": {
-					"coeff": 1.4,
-					"area": 10
-				}
-			}
+			"buttockHeights": {}
 		},
 		"decks": {
 			"WheelHouseTop": {
