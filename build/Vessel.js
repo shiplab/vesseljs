@@ -1,4 +1,4 @@
-//Vessel.js library, built 2018-04-04 14:16:32.915980, Checksum: 038306ac5aa4daf52131f1ae4f40579b
+//Vessel.js library, built 2018-04-18 16:30:09.674156, Checksum: 28f39a0311cc45b9cff0bc444d0803c6
 /*
 Import like this in HTML:
 <script src="Vessel.js"></script>
@@ -738,14 +738,14 @@ Object.assign(Ship.prototype, {
 		console.info("Calculated weight object: ", W);
 		return W;
 	},
-	calculateDraft(shipState, epsilon=0.001, rho=1025) {
+	calculateDraft: function(shipState, epsilon=0.001, rho=1025) {
 		let w = this.getWeight(shipState);
 		let M = w.mass;
 		return this.structure.hull.calculateDraftAtMass(M, epsilon, rho);
 	},
 	//Separates between longitudinal and transverse GM
 	//To avoid confusion, no "default" GM or BM is specified in the output.
-	calculateStability(shipState){
+	calculateStability: function(shipState){
 		let w = this.getWeight(shipState);
 		let KG = w.cg.z;
 		let T = this.structure.hull.calculateDraftAtMass(w.mass);
@@ -754,22 +754,26 @@ Object.assign(Ship.prototype, {
 		let GMl = KB + BMl - KG;
 		return {GMt, GMl, KB, BMt, BMl, KG};
 	},
-	getFuelMass() {
+	getFuelMass: function(shipState) {
+		shipState = shipState || this.designState;
+
 		var fuelMass = {};
 		fuelMass.totalMass = 0;
 		fuelMass.tankMass = {};
 		fuelMass.tankStates = {};
 		for (let o of Object.values(this.derivedObjects)) {
-			if (o.baseObject.capabilities.fuelTank) {
-				fuelMass.tankStates[o.id] = this.designState.getObjectState(o);
+			if (o.group === "fuel tanks") {
+				fuelMass.tankStates[o.id] = shipState.getObjectState(o);
 				fuelMass.tankMass[o.id] = o.baseObject.weightInformation.contentDensity * o.baseObject.weightInformation.volumeCapacity * fuelMass.tankStates[o.id].fullness;
 				fuelMass.totalMass += fuelMass.tankMass[o.id];
 			}
 		}
 		return fuelMass;
 	},
-	subtractFuelMass(mass) {
-		var tankMass = Object.entries(this.getFuelMass().tankMass);
+	subtractFuelMass: function(mass, shipState) {
+		shipState = shipState || this.designState;
+
+		var tankMass = Object.entries(this.getFuelMass(shipState).tankMass);
 		var tk = 0;
 		var tkId = tankMass[tk][0];
 		var tkMass = tankMass[tk][1];
@@ -777,12 +781,12 @@ Object.assign(Ship.prototype, {
 		while (0 < mass) {
 			// check if tank has necessary fuel
 			if (mass <= tkMass) { // if yes, subtract mass
-				this.designState.objectCache[tkId].state.fullness -= mass/(this.derivedObjects[tkId].baseObject.weightInformation.volumeCapacity * this.derivedObjects[tkId].baseObject.weightInformation.contentDensity);
+				shipState.objectCache[tkId].state.fullness -= mass/(this.derivedObjects[tkId].baseObject.weightInformation.volumeCapacity * this.derivedObjects[tkId].baseObject.weightInformation.contentDensity);
 				mass = 0;
 				console.log("Vessel is sailing on fuel from " + tkId + ".");
 			} else { // if not, make tank empty
 				mass -= tkMass;
-				this.designState.objectCache[tkId].state.fullness = 0;
+				shipState.objectCache[tkId].state.fullness = 0;
 				console.warn(tkId + " is empty.");
 				if  (tankMass[tk+1] === undefined) { // if vessel does not have other tank, exit loop
 					console.error("Vessel ran out of fuel before " + mass.toFixed(2) + " tons were subtracted.");
@@ -795,10 +799,10 @@ Object.assign(Ship.prototype, {
 			}
 		}
 		// update related states. In the future, make this consistent with improved caching system
-		for (var prop in this.designState.objectCache) {
-			this.designState.objectCache[prop].thisStateVer++;
+		for (var prop in shipState.objectCache) {
+			shipState.objectCache[prop].thisStateVer++;
 		}
-		this.designState.version++;
+		shipState.version++;
 	}
 });
 //@EliasHasle
