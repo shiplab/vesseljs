@@ -571,9 +571,7 @@
 			"breadth": 3,
 			"height": 5.3
 		},
-		"capabilities": {
-			"fuelTank": true
-		},
+		"capabilities": {},
 		"file3D": "tank11.stl",
 		"baseState": {
 			"fullness": 0.5
@@ -601,9 +599,7 @@
 			"breadth": 10,
 			"height": 9.5
 		},
-		"capabilities": {
-			"fuelTank": true
-		},
+		"capabilities": {},
 		"file3D": "tank12.stl",
 		"baseState": {
 			"fullness": 0.5
@@ -2759,10 +2755,11 @@
 		}
 	}, {
 		"id": "Tank24",
+		"group": "fuel tanks",
 		"baseObject": "TankL10.5B3H5.3fdundefinedFtank11.stl",
 		"affiliations": {
 			"Deck": "TankTop",
-			"SFI": "143"
+			"SFI": "70X.XXX.01"
 		},
 		"referenceState": {
 			"xCentre": 70.25,
@@ -2771,10 +2768,11 @@
 		}
 	}, {
 		"id": "Tank25",
+		"group": "fuel tanks",
 		"baseObject": "TankL10.5B3H5.3fdundefinedFtank11.stl",
 		"affiliations": {
 			"Deck": "TankTop",
-			"SFI": "144"
+			"SFI": "70X.XXX.02"
 		},
 		"referenceState": {
 			"xCentre": 70.25,
@@ -2783,10 +2781,11 @@
 		}
 	}, {
 		"id": "Tank26",
+		"group": "fuel tanks",
 		"baseObject": "TankL6.5B10H9.5fdundefinedFtank12.stl",
 		"affiliations": {
 			"Deck": "TankTop",
-			"SFI": "145"
+			"SFI": "70X.XXX.03"
 		},
 		"referenceState": {
 			"xCentre": 78.75,
