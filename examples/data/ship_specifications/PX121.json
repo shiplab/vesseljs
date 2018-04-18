@@ -10,33 +10,7 @@
 			"K": 0.032,
 			"Co": 0.3,
 			"tripDuration": 40,
-			"bulb": true,
-			"transom": true,
-			"cstern": 0,
-			"naturalRollPeriod": 6.5,
-			"prismaticLengthRatio": 0.6,
-			"hullAppendices": {
-				"twinScrewBalanceRudder": {
-					"coeff": 2.8,
-					"area": 10
-				},
-				"shaftBrackets": {
-					"coeff": 3,
-					"area": 10
-				},
-				"skeg": {
-					"coeff": 1.5,
-					"area": 10
-				},
-				"shafts": {
-					"coeff": 4,
-					"area": 10
-				},
-				"bilgeKeel": {
-					"coeff": 1.4,
-					"area": 10
-				}
-			}
+			"naturalRollPeriod": 6.5
 		},
 		"objectOverrides": {
 			"common": {
@@ -70,7 +44,33 @@
 					[null, null, null, null, null, null, null, null, null, null, 0.3263157894736842]
 				]
 			},
-			"buttockHeights": {}
+			"buttockHeights": {},
+			"bulb": true,
+			"transom": true,
+			"cstern": 0,
+			"prismaticLengthRatio": 0.6,
+			"appendices": {
+				"twinScrewBalanceRudder": {
+					"coeff": 2.8,
+					"area": 10
+				},
+				"shaftBrackets": {
+					"coeff": 3,
+					"area": 10
+				},
+				"skeg": {
+					"coeff": 1.5,
+					"area": 10
+				},
+				"shafts": {
+					"coeff": 4,
+					"area": 10
+				},
+				"bilgeKeel": {
+					"coeff": 1.4,
+					"area": 10
+				}
+			}
 		},
 		"decks": {
 			"WheelHouseTop": {
