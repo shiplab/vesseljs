@@ -1,4 +1,4 @@
-//Vessel.js library, built 2018-04-18 16:30:09.674156, Checksum: 28f39a0311cc45b9cff0bc444d0803c6
+//Vessel.js library, built 2018-04-19 15:52:15.109992, Checksum: 723836af66a6e9df3c48a50527658032
 /*
 Import like this in HTML:
 <script src="Vessel.js"></script>
@@ -1492,6 +1492,7 @@ Object.assign(DerivedObject.prototype, {
 	constructor: DerivedObject,
 	setFromSpecification: function(spec) {
 		this.id = spec.id;
+		this.group = spec.group || null;
 		this.affiliations = spec.affiliations;
 		if (typeof spec.baseObject === "string") {
 			this.baseObject = this.baseObjects[spec.baseObject];
@@ -1504,6 +1505,7 @@ Object.assign(DerivedObject.prototype, {
 	getSpecification: function() {
 		let spec = {
 			id: this.id,
+			group: this.group,
 			affiliations: this.affiliations,
 			referenceState: this.referenceState
 		};
