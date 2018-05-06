@@ -1,8 +1,8 @@
-//Vessel.js library, built 2018-04-04 14:16:32.915980, Checksum: 038306ac5aa4daf52131f1ae4f40579b
+//Vessel.js library, built 2018-05-06 09:34:31.491148
 /*
 Import like this in HTML:
 <script src="Vessel.js"></script>
-Then in javascript use classes and functions with a ShipDesign prefix. Example:
+Then in javascript use classes and functions with a Vessel prefix. Example:
 let ship = new Vessel.Ship(someSpecification);
 */
 
@@ -752,7 +752,7 @@ Object.assign(Ship.prototype, {
 		let {BMt,BMl,KB} = this.structure.hull.calculateAttributesAtDraft(T);
 		let GMt = KB + BMt - KG;
 		let GMl = KB + BMl - KG;
-		return {GMt, GMl, KB, BMt, BMl, KG};
+		return {w, T, GMt, GMl, KB, BMt, BMl, KG};
 	},
 	getFuelMass() {
 		var fuelMass = {};
@@ -1584,6 +1584,9 @@ Object.assign(ShipState.prototype, {
 			this.cachedVersion = this.version;
 		}
 		return this.specCache;
+	},
+	clone: function() {
+		return new ShipState(this.getSpecification());
 	},
 	getObjectState: function(o) {
 		if (this.objectCache[o.id] !== undefined) {
