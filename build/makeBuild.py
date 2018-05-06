@@ -64,7 +64,3 @@ stamp = timestamp[0:17] + "." + codehash[0:5]
 oFile = open("Vessel.js", "w")
 oFile.write(output)
 oFile.close()
-
-oFile = open("archive/Vessel_"+stamp.replace("-","").replace(":","").replace(" ","")+".js", "w")
-oFile.write(output)
-oFile.close()
