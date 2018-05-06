@@ -13,6 +13,7 @@ Object.assign(DerivedObject.prototype, {
 	constructor: DerivedObject,
 	setFromSpecification: function(spec) {
 		this.id = spec.id;
+		this.group = spec.group || null;
 		this.affiliations = spec.affiliations;
 		if (typeof spec.baseObject === "string") {
 			this.baseObject = this.baseObjects[spec.baseObject];
@@ -25,6 +26,7 @@ Object.assign(DerivedObject.prototype, {
 	getSpecification: function() {
 		let spec = {
 			id: this.id,
+			group: this.group,
 			affiliations: this.affiliations,
 			referenceState: this.referenceState
 		};

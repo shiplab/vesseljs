@@ -66,7 +66,6 @@ output = header + code
 oFile = open("Vessel.js", "w")
 oFile.write(output)
 oFile.close()
-
 #oFile = open("archive/Vessel_"+stamp.replace("-","").replace(":","").replace(" ","")+".js", "w")
 #oFile.write(output)
 #oFile.close()
