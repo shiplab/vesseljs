@@ -80,7 +80,7 @@ Object.assign(Ship.prototype, {
 		let {BMt,BMl,KB} = this.structure.hull.calculateAttributesAtDraft(T);
 		let GMt = KB + BMt - KG;
 		let GMl = KB + BMl - KG;
-		return {GMt, GMl, KB, BMt, BMl, KG};
+		return {w, T, GMt, GMl, KB, BMt, BMl, KG};
 	},
 	getFuelMass: function(shipState) {
 		shipState = shipState || this.designState;

@@ -6,6 +6,8 @@
       "Draft_design": 2,
       "Cb_design": 0.5,
       "Co": 0.3,
+	  "K": 0.032,
+	  "speed": 12,
       "tripDuration": 40
     },
     "objectOverrides": {

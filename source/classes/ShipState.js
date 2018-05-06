@@ -48,6 +48,9 @@ Object.assign(ShipState.prototype, {
 		}
 		return this.specCache;
 	},
+	clone: function() {
+		return new ShipState(this.getSpecification());
+	},
 	getObjectState: function(o) {
 		if (this.objectCache[o.id] !== undefined) {
 			let c = this.objectCache[o.id];
