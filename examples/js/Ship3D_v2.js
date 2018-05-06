@@ -100,15 +100,17 @@ function Ship3D(ship, {shipState, stlPath, upperColor, lowerColor, hullOpacity, 
 	let deckMat = new THREE.MeshPhongMaterial({color: 0xcccccc/*this.randomColor()*/, transparent: true, opacity: deckOpacity, side: THREE.DoubleSide});
 	//deckGeom.translate(0,0,-0.5);
 	let ds = ship.structure.decks;
-	let dk = Object.keys(ds);
+	//let dk = Object.keys(ds);
 	let stss = stations.map(st=>LOA*st); //use scaled stations for now
-	console.log(dk);
-	for (let i = 0; i < dk.length; i++) {
-		let d = ds[dk[i]]; //deck in ship structure
+	//console.log(dk);
+	//for (let i = 0; i < dk.length; i++) {
+	for (let dk in ds) {
+		//let d = ds[dk[i]]; //deck in ship structure
+		let d = ds[dk];
 		
 		//Will eventually use BoxBufferGeometry, but that is harder, because vertices are duplicated in the face planes.
 		let deckGeom = new THREE.PlaneBufferGeometry(1, 1, stss.length, 1);//new THREE.BoxBufferGeometry(1,1,1,sts.length,1,1);
-		console.log("d.zFloor=%.1f", d.zFloor); //DEBUG
+		//console.log("d.zFloor=%.1f", d.zFloor); //DEBUG
 		let zHigh = d.zFloor;
 		let zLow = d.zFloor-d.thickness;
 		let wlHigh = hull.getWaterline(zHigh);
@@ -128,11 +130,11 @@ function Ship3D(ship, {shipState, stlPath, upperColor, lowerColor, hullOpacity, 
 		pos.needsUpdate = true;
 		
 		//DEBUG
-		console.log("d.xFwd=%.1f, d.xAft=%.1f, 0.5*d.breadth=%.1f", d.xFwd, d.xAft, 0.5*d.breadth);
-		console.log(pa);
+		//console.log("d.xFwd=%.1f, d.xAft=%.1f, 0.5*d.breadth=%.1f", d.xFwd, d.xAft, 0.5*d.breadth);
+		//console.log(pa);
 
 		let deck = new THREE.Mesh(deckGeom, deckMat);
-		deck.name = dk[i];
+		deck.name = dk;//[i];
 		deck.position.z = d.zFloor;
 		//deck.scale.set(d.xFwd-d.xAft, d.breadth, d.thickness);
 		//deck.position.set(0.5*(d.xFwd+d.xAft), 0, d.zFloor);
@@ -149,11 +151,12 @@ function Ship3D(ship, {shipState, stlPath, upperColor, lowerColor, hullOpacity, 
 	let bhMat = new THREE.MeshPhongMaterial({color: 0xcccccc/*this.randomColor()*/, transparent: true, opacity: deckOpacity, side: THREE.DoubleSide});
 	bhGeom.translate(0.5,0,0);
 	let bhs = ship.structure.bulkheads;
-	let bhk = Object.keys(bhs);
-	for (let i = 0; i < bhk.length; i++) {
+	//let bhk = Object.keys(bhs);
+	//for (let i = 0; i < bhk.length; i++) {
+	for (let bhk in bhs) {
 		let bulkhead = new THREE.Mesh(bhGeom, bhMat);
-		let bh = bhs[bhk[i]];
-		bulkhead.name = bhk[i];
+		let bh = bhs[bhk];//bhs[bhk[i]];
+		bulkhead.name = bhk;//[i];
 		bulkhead.scale.set(bh.thickness, 1, 1);
 		bulkhead.position.set(bh.xAft, 0, 0);
 		bulkheads.add(bulkhead);
@@ -270,9 +273,9 @@ function Hull3D(hull, upperColor=0x33aa33, lowerColor=0xaa3333, design_draft, op
 	let table = hull.halfBreadths.table;
 	//None of these are changed during correction of the geometry.
 
-	console.log(stations);
-	console.log(waterlines);
-	console.log(table);
+	//console.log(stations);
+	//console.log(waterlines);
+	//console.log(table);
 	
 	let N = stations.length;
 	let M = waterlines.length;
@@ -339,14 +342,14 @@ function Hull3D(hull, upperColor=0x33aa33, lowerColor=0xaa3333, design_draft, op
 				}
 				break;
 			}
-			console.log("null encountered.");
+			//console.log("null encountered.");
 		}
 		
 		//Continue up the hull (with same j counter), searching for upper number. This does not account for the existence of numbers above the first null encountered.
 		for (; j < M; j++) {
 			let y = table[j][i];
 			if (y === null) {
-				console.log("null encountered.");
+				//console.log("null encountered.");
 				break;
 			}
 			//else not null:

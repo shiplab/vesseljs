@@ -56,14 +56,14 @@ Object.assign(Ship.prototype, {
 		);
 		
 		//DEBUG
-		console.log(components);
+		//console.log(components);
 
 		for (let o of Object.values(this.derivedObjects)) {
 			components.push(o.getWeight(shipState));
 		}
 
 		var W = combineWeights(components);
-		console.info("Calculated weight object: ", W);
+		//console.info("Calculated weight object: ", W);
 		return W;
 	},
 	calculateDraft: function(shipState, epsilon=0.001, rho=1025) {
@@ -111,7 +111,7 @@ Object.assign(Ship.prototype, {
 			if (mass <= tkMass) { // if yes, subtract mass
 				shipState.objectCache[tkId].state.fullness -= mass/(this.derivedObjects[tkId].baseObject.weightInformation.volumeCapacity * this.derivedObjects[tkId].baseObject.weightInformation.contentDensity);
 				mass = 0;
-				console.log("Vessel is sailing on fuel from " + tkId + ".");
+				//console.log("Vessel is sailing on fuel from " + tkId + ".");
 			} else { // if not, make tank empty
 				mass -= tkMass;
 				shipState.objectCache[tkId].state.fullness = 0;

@@ -30,29 +30,31 @@ Object.assign(Playback.prototype, {
 		this.playables.remove(playable);
 	},*/
 	playOrPause: function() {
-		let pn = 0.001*performance.now();
-		
 		if (!this.playing) {
-			if (!this.paused) {
-				this.tStart = pn;
-				this.tLast = this.tStart;
-				this.playing = true;
-			} else {
-				//resume
-				let skip = pn-this.tPaused;
-				this.tStart += skip;
-				this.paused = false;
-				this.playing = true;
-			}
+			this.play();
 		} else {
 			//pause
 			this.playing = false;
 			this.paused = true;
-			this.tPaused = pn;
+			this.tPaused = 0.001*performance.now();
 		}
 	},
 	//This is kept as an alias:
-	play: function(){this.playOrPause()},
+	play: function() {
+		let pn = 0.001*performance.now();
+		if (!this.paused) {
+			//Play from start
+			this.tStart = pn;
+			this.tLast = this.tStart;
+			this.playing = true;
+		} else {
+			//Resume
+			let skip = pn-this.tPaused;
+			this.tStart += skip;
+			this.paused = false;
+			this.playing = true;
+		}
+	},
 	stop: function() {
 		this.playing = false;
 		this.paused = false;

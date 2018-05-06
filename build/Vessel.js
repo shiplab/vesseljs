@@ -1,4 +1,4 @@
-//Vessel.js library, built 2018-05-06 09:34:31.491148
+//Vessel.js library, built 2018-05-06 21:55:03.738395
 /*
 Import like this in HTML:
 <script src="Vessel.js"></script>
@@ -139,7 +139,7 @@ function bilinearCoeffs(x1, x2, y1, y2, z00, z01, z10, z11) {
 	let Y = (y2-y1);
 	
 	if (X===0 || Y=== 0) {
-		console.warn("bilinearCoeffs: Zero base area. Setting coefficients to zero.");
+		//console.warn("bilinearCoeffs: Zero base area. Setting coefficients to zero.");
 		return [0,0,0,0];
 	}
 	
@@ -245,8 +245,8 @@ function combineAreas(array) {
 		xc /= A;
 		yc /= A;
 	} else {
-		console.warn("Zero area combination.");
-		console.trace();
+		//console.warn("Zero area combination.");
+		//console.trace();
 		xc /= L;
 		yc /= L;
 	}
@@ -728,14 +728,14 @@ Object.assign(Ship.prototype, {
 		);
 		
 		//DEBUG
-		console.log(components);
+		//console.log(components);
 
 		for (let o of Object.values(this.derivedObjects)) {
 			components.push(o.getWeight(shipState));
 		}
 
 		var W = combineWeights(components);
-		console.info("Calculated weight object: ", W);
+		//console.info("Calculated weight object: ", W);
 		return W;
 	},
 	calculateDraft: function(shipState, epsilon=0.001, rho=1025) {
@@ -783,7 +783,7 @@ Object.assign(Ship.prototype, {
 			if (mass <= tkMass) { // if yes, subtract mass
 				shipState.objectCache[tkId].state.fullness -= mass/(this.derivedObjects[tkId].baseObject.weightInformation.volumeCapacity * this.derivedObjects[tkId].baseObject.weightInformation.contentDensity);
 				mass = 0;
-				console.log("Vessel is sailing on fuel from " + tkId + ".");
+				//console.log("Vessel is sailing on fuel from " + tkId + ".");
 			} else { // if not, make tank empty
 				mass -= tkMass;
 				shipState.objectCache[tkId].state.fullness = 0;
@@ -857,7 +857,7 @@ Object.assign(Structure.prototype, {
 		
 		return spec;
 	},
-	//Alejandro is working on a more proper calculation of this
+	//This is all dummy calculations
 	getWeight: function(designState) {
 		let components = [];
 		//Hull
@@ -899,7 +899,7 @@ Object.assign(Structure.prototype, {
 		}
 		
 		let output = combineWeights(components);
-		console.info("Total structural weight: ", output);
+		//console.info("Total structural weight: ", output);
 		return output;
 	}
 });//@EliasHasle
@@ -949,7 +949,7 @@ Object.assign(Hull.prototype, {
 		parsons.mass *= 1000; //ad hoc conversion to kg, because the example K value is aimed at ending with tonnes.
 		
 		let output = parsons;
-		console.info("Hull weight:", output);
+		//console.info("Hull weight:", output);
 		return output;
 	},
 	/*
@@ -969,12 +969,12 @@ Object.assign(Hull.prototype, {
 		let tab = this.halfBreadths.table;
 
 		if (zr<wls[0]) {
-				console.warn("getWaterLine: z below lowest defined waterline. Defaulting to all zero offsets.");
+				//console.warn("getWaterLine: z below lowest defined waterline. Defaulting to all zero offsets.");
 				return new Array(sts.length).fill(0);
 		} else {
 			let a, mu;
 			if (zr>wls[wls.length-1]) {
-				console.warn("getWaterLine: z above highest defined waterline. Proceeding with highest data entries.");
+				//console.warn("getWaterLine: z above highest defined waterline. Proceeding with highest data entries.");
 				a = wls.length-2; //if this level is defined...
 				mu=1;
 				//wl = tab[a].slice();
@@ -1292,7 +1292,7 @@ Object.assign(Hull.prototype, {
 					patchColumnCalculation(sts[j], sts[j+1], prev.z, z, prwl[j], wl[j], prwl[j+1], wl[j+1]);
 				calculations.push(star);
 			}
-			console.log(calculations); //DEBUG
+			//console.log(calculations); //DEBUG
 			let C = combineVolumes(calculations);
 			//Cv of slice. Note that switching of yz must
 			//be done before combining with previous level
@@ -1348,8 +1348,8 @@ Object.assign(Hull.prototype, {
 			//Find highest data waterline below or at water level:
 			let {index, mu} = bisectionSearch(wls, T);
 			
-			console.info("Highest data waterline below or at water level: " + index);
-			console.log(this.levels);
+			//console.info("Highest data waterline below or at water level: " + index);
+			//console.log(this.levels);
 			let lc;
 			if (mu===0) lc = this.levels[index];
 			else lc = levelCalculation(this, T, this.levels[index]);
@@ -1395,11 +1395,11 @@ Object.assign(Hull.prototype, {
 		while (b-a>epsilon) {
 			t = 0.5*(a+b);
 			let V = this.calculateAttributesAtDraft(t)["Vs"];
-			console.log(V); //DEBUG
+			//console.log(V); //DEBUG
 			if (V>VT) b = t;
 			else a = t;
 		}
-		console.info("Calculated draft: %.2f", t);
+		//console.info("Calculated draft: %.2f", t);
 		return t;
 	}
 });//@EliasHasle
@@ -1468,7 +1468,7 @@ Object.assign(BaseObject.prototype, {
 				cg.push(c);
 			}
 		} else if (wi.cg !== undefined) {
-			console.log("BaseObject.getWeight: Using specified cg.");
+			//console.log("BaseObject.getWeight: Using specified cg.");
 			cg = wi.cg;
 		} else {
 			console.warn("BaseObject.getWeight: No cg or fullnessCGMapping supplied. Defaults to center of bounding box.");
@@ -1544,9 +1544,9 @@ Object.assign(DerivedObject.prototype, {
 });//@EliasHasle
 
 /*
-The object state assignments could/should also have a baseByGroup. A group of baseObjects could for instance be a category including all tanks that carry a given compound, regardless of their size and shape. Maybe "group" is not a good name for something that can be set freely. Maybe "label" or "tag" or something else. The same goes for derivedByGroup.
+The object state assignments can now target baseByGroup. A group of baseObjects can for instance be a category including all tanks that carry a given compound, regardless of their size and shape. Maybe "group" is not a good name for something that can be set freely. Maybe "label" or "tag" or something else. The same goes for derivedByGroup.
 
-With this, there would be five types of assignments:
+Now there are five types of assignments in this class:
 common: All objects.
 baseByGroup: Applies to every object that has its base object's property "group" set to the given name.
 baseByID: Applies to all objects that have base object consistent with the given ID:
@@ -1554,6 +1554,8 @@ derivedByGroup: Applies to every object that has its property "group" set to the
 derivedByID: Applies only to the object with given ID.
 
 Assignments of subsequent types override assignments of previous types.
+
+Note that the foundation for object state is laid in baseObject.baseState and derivedObject.referenceState. The abovementioned assignments apply only as overrides. They do not introduce new properties.
 */
 
 /*
@@ -1594,28 +1596,38 @@ Object.assign(ShipState.prototype, {
 	clone: function() {
 		return new ShipState(this.getSpecification());
 	},
+	//Method to get the state of a DerivedObject
 	getObjectState: function(o) {
 		if (this.objectCache[o.id] !== undefined) {
 			let c = this.objectCache[o.id];
 			if (c.thisStateVer === this.version
 				/*&& c.baseStateVer === o.baseObject.baseStateVersion
 				&& c.refStateVer === o.referenceStateVersion*/) {
-				console.log("ShipState.getObjectState: Using cache.");
+				//console.log("ShipState.getObjectState: Using cache.");
 				return c.state;	
 			}				
 		}
-		console.log("ShipState.getObjectState: Not using cache.");
+		//console.log("ShipState.getObjectState: Not using cache.");
 		
+		//Build the state in multiple steps,
+		//such that the later steps override
+		//the earlier ones when in conflict.
+		//The two first steps lay the foundation.
 		let state = {};
+		//1.
 		Object.assign(state, o.baseObject.baseState);
+		//2.
 		Object.assign(state, o.referenceState);
+		//The next steps are different, because there,
+		//only existing properties will be updated.
 		let oo = this.objectOverrides;
-		let sources = [oo.common, oo.baseByID[o.baseObject.id], oo.derivedByGroup[o.affiliations.group], oo.derivedByID[o.id]];
+		//3., 4., 5., 6.
+		let sources = [oo.common, oo.baseByGroup[o.baseObject.group], oo.baseByID[o.baseObject.id], oo.derivedByGroup[o.affiliations.group], oo.derivedByID[o.id]];
 		for (let i = 0; i < sources.length; i++) {
 			let s = sources[i];
 			if (!s) continue;
-			let sk = Object.keys(s);
-			for (let k of sk) {
+			//let sk = Object.keys(s);
+			for (let k in/*of*/ s) {//(sk) {
 				//Override existing properties only:
 				if (state[k] !== undefined) {
 					state[k] = s[k];
@@ -1623,6 +1635,8 @@ Object.assign(ShipState.prototype, {
 			}
 		}
 		
+		//Cache the result, conditioned on the ShipState version
+		//(not good, should restrict the dependency more)
 		this.objectCache[o.id] = {
 			thisStateVer: this.version,
 			/*baseStateVer: o.baseObject.baseStateVersion,
@@ -1637,7 +1651,7 @@ Object.assign(ShipState.prototype, {
 		return this.getObjectState(o)[k];
 		//I have commented out a compact, but not very efficient, implementation of Alejandro's pattern, that does not fit too well with my caching solution.
 /*		let oo = this.objectOverrides;
-		let sources = [oo.derivedByID[o.id], oo.derivedByGroup[o.affiliations.group], oo.baseByID[o.baseObject.id], oo.common, o.getReferenceState(), o.baseObject.getBaseState()].filter(e=>!!e);
+		let sources = [oo.derivedByID[o.id], oo.derivedByGroup[o.affiliations.group], oo.baseByID[o.baseObject.id], oo.baseByGroup[o.baseObject.group], oo.common, o.getReferenceState(), o.baseObject.getBaseState()].filter(e=>!!e);
 		for (let i = 0; i < sources.length; i++) {
 			if (sources[i][k] !== undefined) return sources[i][k];
 		}
@@ -1652,7 +1666,7 @@ Object.assign(ShipState.prototype, {
 				//Named overrides because only existing corresponding properties will be set
 				objectOverrides: {
 					commmon: {},
-					//baseByGroup: {},
+					baseByGroup: {},
 					baseByID: {},
 					derivedByGroup: {},
 					derivedByID: {}
@@ -1666,6 +1680,7 @@ Object.assign(ShipState.prototype, {
 		let oo = this.objectOverrides;
 		let soo = spec.objectOverrides || {};
 		oo.common = soo.common || {};
+		oo.baseByGroup = soo.baseByGroup || {};
 		oo.baseByID = soo.baseByID || {};
 		oo.derivedByGroup = soo.derivedByGroup || {};
 		oo.derivedByID = soo.derivedByID || {};
@@ -1679,8 +1694,8 @@ Object.assign(ShipState.prototype, {
 		let oo = this.objectOverrides;
 		let soo = spec.objectOverrides || {};
 		Object.assign(oo.common, soo.common);
-		let sources = [soo.baseByID, soo.derivedByGroup, soo.derivedByID];
-		let targets = [oo.baseByID, oo.derivedByGroup, oo.derivedByID];
+		let sources = [soo.baseByGroup, soo.baseByID, soo.derivedByGroup, soo.derivedByID];
+		let targets = [oo.baseByGroup, oo.baseByID, oo.derivedByGroup, oo.derivedByID];
 		for (let i = 0; i < sources.length; i++) {
 			if (!sources[i]) continue;
 			let sk = Object.keys(sources[i]);
@@ -1712,8 +1727,8 @@ Object.assign(ShipState.prototype, {
 			}
 		}
 
-		sources = [soo.common, soo.baseByID, soo.derivedByGroup, soo.derivedByID];
-		targets = [oo.common, oo.baseByID, oo.derivedByGroup, oo.derivedByID];
+		sources = [soo.common, soo.baseByGroup, soo.baseByID, soo.derivedByGroup, soo.derivedByID];
+		targets = [oo.common, oo.baseByGroup, oo.baseByID, oo.derivedByGroup, oo.derivedByID];
 		
 		for (let i = 0; i < sources.length; i++) {
 			if (!sources[i]) continue;
