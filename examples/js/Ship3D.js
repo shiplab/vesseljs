@@ -328,7 +328,7 @@ Object.assign(Ship3D.prototype, {
 		let bo = object.baseObject;
 		
 		//Position
-		s = this.ship.designState.getObjectState(object);
+		let s = this.ship.designState.getObjectState(object);
 		let x = s.xCentre;
 		let y = s.yCentre;
 		let z = s.zBase;

@@ -9,7 +9,7 @@ have to be done within the update functions.)*/
 
 "use strict";
 
-function Playback(params) {
+function Playback(params={}) {
 	if (params.parentGUI) {
 		this.conf = params.parentGUI.addFolder("Playback")
 		this.conf.open();
@@ -51,6 +51,7 @@ Object.assign(Playback.prototype, {
 			//Resume
 			let skip = pn-this.tPaused;
 			this.tStart += skip;
+			this.tLast += skip;
 			this.paused = false;
 			this.playing = true;
 		}

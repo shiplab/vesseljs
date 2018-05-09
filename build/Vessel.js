@@ -1,4 +1,4 @@
-//Vessel.js library, built 2018-05-06 21:55:03.738395
+//Vessel.js library, built 2018-05-09 22:34:54.326966
 /*
 Import like this in HTML:
 <script src="Vessel.js"></script>
@@ -1544,9 +1544,9 @@ Object.assign(DerivedObject.prototype, {
 });//@EliasHasle
 
 /*
-The object state assignments can now target baseByGroup. A group of baseObjects can for instance be a category including all tanks that carry a given compound, regardless of their size and shape. Maybe "group" is not a good name for something that can be set freely. Maybe "label" or "tag" or something else. The same goes for derivedByGroup.
+The object state assignments could/should also have a baseByGroup. A group of baseObjects could for instance be a category including all tanks that carry a given compound, regardless of their size and shape. Maybe "group" is not a good name for something that can be set freely. Maybe "label" or "tag" or something else. The same goes for derivedByGroup.
 
-Now there are five types of assignments in this class:
+With this, there would be five types of assignments:
 common: All objects.
 baseByGroup: Applies to every object that has its base object's property "group" set to the given name.
 baseByID: Applies to all objects that have base object consistent with the given ID:
@@ -1554,8 +1554,6 @@ derivedByGroup: Applies to every object that has its property "group" set to the
 derivedByID: Applies only to the object with given ID.
 
 Assignments of subsequent types override assignments of previous types.
-
-Note that the foundation for object state is laid in baseObject.baseState and derivedObject.referenceState. The abovementioned assignments apply only as overrides. They do not introduce new properties.
 */
 
 /*
@@ -1596,38 +1594,28 @@ Object.assign(ShipState.prototype, {
 	clone: function() {
 		return new ShipState(this.getSpecification());
 	},
-	//Method to get the state of a DerivedObject
 	getObjectState: function(o) {
 		if (this.objectCache[o.id] !== undefined) {
 			let c = this.objectCache[o.id];
 			if (c.thisStateVer === this.version
 				/*&& c.baseStateVer === o.baseObject.baseStateVersion
 				&& c.refStateVer === o.referenceStateVersion*/) {
-				//console.log("ShipState.getObjectState: Using cache.");
+				console.log("ShipState.getObjectState: Using cache.");
 				return c.state;	
 			}				
 		}
-		//console.log("ShipState.getObjectState: Not using cache.");
+		console.log("ShipState.getObjectState: Not using cache.");
 		
-		//Build the state in multiple steps,
-		//such that the later steps override
-		//the earlier ones when in conflict.
-		//The two first steps lay the foundation.
 		let state = {};
-		//1.
 		Object.assign(state, o.baseObject.baseState);
-		//2.
 		Object.assign(state, o.referenceState);
-		//The next steps are different, because there,
-		//only existing properties will be updated.
 		let oo = this.objectOverrides;
-		//3., 4., 5., 6.
-		let sources = [oo.common, oo.baseByGroup[o.baseObject.group], oo.baseByID[o.baseObject.id], oo.derivedByGroup[o.affiliations.group], oo.derivedByID[o.id]];
+		let sources = [oo.common, oo.baseByID[o.baseObject.id], oo.derivedByGroup[o.affiliations.group], oo.derivedByID[o.id]];
 		for (let i = 0; i < sources.length; i++) {
 			let s = sources[i];
 			if (!s) continue;
-			//let sk = Object.keys(s);
-			for (let k in/*of*/ s) {//(sk) {
+			let sk = Object.keys(s);
+			for (let k of sk) {
 				//Override existing properties only:
 				if (state[k] !== undefined) {
 					state[k] = s[k];
@@ -1635,8 +1623,6 @@ Object.assign(ShipState.prototype, {
 			}
 		}
 		
-		//Cache the result, conditioned on the ShipState version
-		//(not good, should restrict the dependency more)
 		this.objectCache[o.id] = {
 			thisStateVer: this.version,
 			/*baseStateVer: o.baseObject.baseStateVersion,
@@ -1651,7 +1637,7 @@ Object.assign(ShipState.prototype, {
 		return this.getObjectState(o)[k];
 		//I have commented out a compact, but not very efficient, implementation of Alejandro's pattern, that does not fit too well with my caching solution.
 /*		let oo = this.objectOverrides;
-		let sources = [oo.derivedByID[o.id], oo.derivedByGroup[o.affiliations.group], oo.baseByID[o.baseObject.id], oo.baseByGroup[o.baseObject.group], oo.common, o.getReferenceState(), o.baseObject.getBaseState()].filter(e=>!!e);
+		let sources = [oo.derivedByID[o.id], oo.derivedByGroup[o.affiliations.group], oo.baseByID[o.baseObject.id], oo.common, o.getReferenceState(), o.baseObject.getBaseState()].filter(e=>!!e);
 		for (let i = 0; i < sources.length; i++) {
 			if (sources[i][k] !== undefined) return sources[i][k];
 		}
@@ -1666,7 +1652,7 @@ Object.assign(ShipState.prototype, {
 				//Named overrides because only existing corresponding properties will be set
 				objectOverrides: {
 					commmon: {},
-					baseByGroup: {},
+					//baseByGroup: {},
 					baseByID: {},
 					derivedByGroup: {},
 					derivedByID: {}
@@ -1680,7 +1666,6 @@ Object.assign(ShipState.prototype, {
 		let oo = this.objectOverrides;
 		let soo = spec.objectOverrides || {};
 		oo.common = soo.common || {};
-		oo.baseByGroup = soo.baseByGroup || {};
 		oo.baseByID = soo.baseByID || {};
 		oo.derivedByGroup = soo.derivedByGroup || {};
 		oo.derivedByID = soo.derivedByID || {};
@@ -1694,8 +1679,8 @@ Object.assign(ShipState.prototype, {
 		let oo = this.objectOverrides;
 		let soo = spec.objectOverrides || {};
 		Object.assign(oo.common, soo.common);
-		let sources = [soo.baseByGroup, soo.baseByID, soo.derivedByGroup, soo.derivedByID];
-		let targets = [oo.baseByGroup, oo.baseByID, oo.derivedByGroup, oo.derivedByID];
+		let sources = [soo.baseByID, soo.derivedByGroup, soo.derivedByID];
+		let targets = [oo.baseByID, oo.derivedByGroup, oo.derivedByID];
 		for (let i = 0; i < sources.length; i++) {
 			if (!sources[i]) continue;
 			let sk = Object.keys(sources[i]);
@@ -1727,8 +1712,8 @@ Object.assign(ShipState.prototype, {
 			}
 		}
 
-		sources = [soo.common, soo.baseByGroup, soo.baseByID, soo.derivedByGroup, soo.derivedByID];
-		targets = [oo.common, oo.baseByGroup, oo.baseByID, oo.derivedByGroup, oo.derivedByID];
+		sources = [soo.common, soo.baseByID, soo.derivedByGroup, soo.derivedByID];
+		targets = [oo.common, oo.baseByID, oo.derivedByGroup, oo.derivedByID];
 		
 		for (let i = 0; i < sources.length; i++) {
 			if (!sources[i]) continue;

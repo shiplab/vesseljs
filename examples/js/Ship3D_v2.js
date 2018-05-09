@@ -28,6 +28,7 @@ function Ship3D(ship, {shipState, stlPath, upperColor, lowerColor, hullOpacity, 
 	
 	this.normalizer = new THREE.Group();
 	this.fluctCont = new THREE.Group();
+	this.fluctCont.rotation.order = "ZYX"; //right?
 	this.cmContainer = new THREE.Group();
 	this.fluctCont.add(this.cmContainer);
 	this.normalizer.add(this.fluctCont);
@@ -204,7 +205,7 @@ Object.assign(Ship3D.prototype, {
 		let bo = object.baseObject;
 		
 		//Position
-		s = this.ship.designState.getObjectState(object);
+		let s = this.ship.designState.getObjectState(object);
 		let x = s.xCentre;
 		let y = s.yCentre;
 		let z = s.zBase;
