@@ -1,4 +1,4 @@
-//Vessel.js library, built 2018-04-19 15:52:15.109992, Checksum: 723836af66a6e9df3c48a50527658032
+//Vessel.js library, built 2018-05-24 13:27:43.361690, Checksum: d0f52be2b3ae78af119675386f9d28e2
 /*
 Import like this in HTML:
 <script src="Vessel.js"></script>
@@ -665,11 +665,12 @@ Object.assign(JSONSpecObject.prototype, {
 			if (this.hasOwnProperty(k)) spec[k] = this[k];
 		}
 		return spec;
-	},
-	toJSON: function() {
-		//First test:
-		return JSON.stringify(this);
 	}
+	// this function causes an endless loop when stringify is invoked
+	//toJSON: function() {
+		//First test:
+		//return JSON.stringify(this);
+	//}
 });//@EliasHasle
 
 /*
