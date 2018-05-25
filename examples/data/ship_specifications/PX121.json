@@ -9,8 +9,7 @@
 			"crew": 20,
 			"K": 0.032,
 			"Co": 0.3,
-			"tripDuration": 40,
-			"naturalRollPeriod": 6.5
+			"tripDuration": 40
 		},
 		"objectOverrides": {
 			"common": {
