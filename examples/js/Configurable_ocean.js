@@ -182,7 +182,8 @@ function Ocean(params) {
 	}
 	
 	this.waves = [];
-		
+	let scope = this;
+	
 	//Sampling
 	this.sampling = {
 		segments: 50,
@@ -191,16 +192,16 @@ function Ocean(params) {
 		generateSamples: function() {
 			let lines = [];
 			//non-standard header
-			lines.push("size, " + oSize.toString());
+			lines.push("size, " + scope.size.toString());
 			lines.push("segments, " + this.segments.toString());
 			lines.push("dt, " + this.dt.toString());
 			for (let t = 0; t<=this.T; t+=this.dt) {
 				let line = [];
 				for (let i = 0; i < this.segments+1; i++) {
-					let y = (i/this.segments-0.5)*oSize;
+					let y = (i/this.segments-0.5)*scope.size;
 					for (let j = 0; j < this.segments+1; j++) {
-						let x = (j/this.segments-0.5)*oSize;
-						let z = calculateZ(x,y,t);
+						let x = (j/this.segments-0.5)*scope.size;
+						let z = scope.calculateZ(x,y,t);
 						line.push((Math.round(1000*z)*0.001).toFixed(3));
 					}
 				}
@@ -221,7 +222,6 @@ function Ocean(params) {
 	if (params.parentGUI) {
 		this.conf = params.parentGUI.addFolder("Ocean");
 		this.conf.open();
-		let scope = this;
 		
 		//Cos menu
 		this.currentCos = new DirectionalCosine(); //dummy object
@@ -471,9 +471,10 @@ Object.assign(Ocean.prototype, {
 	update: function(t) {
 		let pos = this.geometry.getAttribute("position");
 		
-		//REGULAR GRID:
 		let size = this.size;
 		let segs = this.segments;
+		
+		//REGULAR GRID:
 		let vSize = segs+1
 		for (let j = 0; j < vSize; j++) {
 			let y = (0.5-j/segs)*size;//(j/segs-0.5)*size;
@@ -499,21 +500,21 @@ Object.assign(Ocean.prototype, {
 				  [-400,-400]];
 
 		var wFun = function(r) {
-			//return 1/Math.sqrt(1+(10*r/oSize)**2);
-			return Math.exp(-((10*r/oSize)**2));
-			//1/(r+0.001);//(1-r/(Math.sqrt(2)*oSize));
+			//return 1/Math.sqrt(1+(10*r/size)**2);
+			return Math.exp(-((10*r/size)**2));
+			//1/(r+0.001);//(1-r/(Math.sqrt(2)*size));
 		}
 		
-		for (let j=0; j<oSegs+1; j++) {
-			let y0 = (j/oSegs-0.5)*oSize;
-			for (let i=0; i<oSegs+1; i++) {
-				let x0 = (i/oSegs-0.5)*oSize;
+		for (let j=0; j<segs+1; j++) {
+			let y0 = (j/segs-0.5)*size;
+			for (let i=0; i<segs+1; i++) {
+				let x0 = (i/segs-0.5)*size;
 				
 				let w0 = 0.8; //the weight of the default point
 
 				let x=0,y=0,WX=0,WY=0;
 				
-				if ((i==0 || i==oSegs || j==0 || j==oSegs)) {
+				if ((i==0 || i==segs || j==0 || j==segs)) {
 					x = x0;
 					y = y0;
 					WX = 1;
@@ -530,24 +531,24 @@ Object.assign(Ocean.prototype, {
 					}
 
 					//edge weights:
-					let d = Math.abs(x0-oSize/2);
+					let d = Math.abs(x0-size/2);
 					let w = wFun(d);
-					x += w*oSize/2;
+					x += w*size/2;
 					WX += w;
 					
-					d = Math.abs(x0+oSize/2);
+					d = Math.abs(x0+size/2);
 					w = wFun(d);
-					x += -w*oSize/2;
+					x += -w*size/2;
 					WX += w;
 					
-					d = Math.abs(y0-oSize/2);
+					d = Math.abs(y0-size/2);
 					w = wFun(d);
-					y += w*oSize/2;
+					y += w*size/2;
 					WY += w;
 					
-					d = Math.abs(y+oSize/2);
+					d = Math.abs(y+size/2);
 					w = wFun(d);
-					y += -w*oSize/2;
+					y += -w*size/2;
 					WY += w;	
 					
 				}
@@ -557,14 +558,14 @@ Object.assign(Ocean.prototype, {
 				
 				let z = calculateZ(x,y,t);
 
-				let k = (j*(oSegs+1) + i);
+				let k = (j*(segs+1) + i);
 
 				posa[3*k] = x;
 				posa[3*k+1] = y;
 				posa[3*k+2] = z;
 
-					uva[2*k] = x/oSize+0.5;
-					uva[2*k+1] = y/oSize+0.5;
+					uva[2*k] = x/size+0.5;
+					uva[2*k+1] = y/size+0.5;
 			}
 		}
 		uv.needsUpdate = true;
