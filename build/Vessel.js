@@ -1,4 +1,4 @@
-//Vessel.js library, built 2018-06-05 15:25:59.803779
+//Vessel.js library, built 2018-06-05 22:59:06.624672
 /*
 Import like this in HTML:
 <script src="Vessel.js"></script>
@@ -1360,6 +1360,7 @@ Object.assign(Hull.prototype, {
 				xcwp: lc.xc, //water plane values
 				LCF: lc.xc,
 				ycwp: lc.yc,
+				TCF: lc.yc,
 				Awp: lc.Awp,
 				Ixwp: lc.Ix,
 				BMt: lc.Ix/lc.Vs,
@@ -1382,6 +1383,7 @@ Object.assign(Hull.prototype, {
 				As: lc.As, //wetted area
 				Cv: lc.Cv, //center of buoyancy
 				LCB: lc.Cv.x,
+				TCB: lc.Cv.y,
 				KB: lc.Cv.z
 			}
 		};
