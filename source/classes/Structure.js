@@ -50,7 +50,7 @@ Object.assign(Structure.prototype, {
 		
 		return spec;
 	},
-	//Alejandro is working on a more proper calculation of this
+	//This is all dummy calculations
 	getWeight: function(designState) {
 		let components = [];
 		//Hull
@@ -92,7 +92,7 @@ Object.assign(Structure.prototype, {
 		}
 		
 		let output = combineWeights(components);
-		console.info("Total structural weight: ", output);
+		//console.info("Total structural weight: ", output);
 		return output;
 	}
 });

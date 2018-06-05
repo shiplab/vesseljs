@@ -45,7 +45,7 @@ Object.assign(Hull.prototype, {
 		parsons.mass *= 1000; //ad hoc conversion to kg, because the example K value is aimed at ending with tonnes.
 		
 		let output = parsons;
-		console.info("Hull weight:", output);
+		//console.info("Hull weight:", output);
 		return output;
 	},
 	/*
@@ -65,12 +65,12 @@ Object.assign(Hull.prototype, {
 		let tab = this.halfBreadths.table;
 
 		if (zr<wls[0]) {
-				console.warn("getWaterLine: z below lowest defined waterline. Defaulting to all zero offsets.");
+				//console.warn("getWaterLine: z below lowest defined waterline. Defaulting to all zero offsets.");
 				return new Array(sts.length).fill(0);
 		} else {
 			let a, mu;
 			if (zr>wls[wls.length-1]) {
-				console.warn("getWaterLine: z above highest defined waterline. Proceeding with highest data entries.");
+				//console.warn("getWaterLine: z above highest defined waterline. Proceeding with highest data entries.");
 				a = wls.length-2; //if this level is defined...
 				mu=1;
 				//wl = tab[a].slice();
@@ -388,7 +388,7 @@ Object.assign(Hull.prototype, {
 					patchColumnCalculation(sts[j], sts[j+1], prev.z, z, prwl[j], wl[j], prwl[j+1], wl[j+1]);
 				calculations.push(star);
 			}
-			console.log(calculations); //DEBUG
+			//console.log(calculations); //DEBUG
 			let C = combineVolumes(calculations);
 			//Cv of slice. Note that switching of yz must
 			//be done before combining with previous level
@@ -444,8 +444,8 @@ Object.assign(Hull.prototype, {
 			//Find highest data waterline below or at water level:
 			let {index, mu} = bisectionSearch(wls, T);
 			
-			console.info("Highest data waterline below or at water level: " + index);
-			console.log(this.levels);
+			//console.info("Highest data waterline below or at water level: " + index);
+			//console.log(this.levels);
 			let lc;
 			if (mu===0) lc = this.levels[index];
 			else lc = levelCalculation(this, T, this.levels[index]);
@@ -491,11 +491,11 @@ Object.assign(Hull.prototype, {
 		while (b-a>epsilon) {
 			t = 0.5*(a+b);
 			let V = this.calculateAttributesAtDraft(t)["Vs"];
-			console.log(V); //DEBUG
+			//console.log(V); //DEBUG
 			if (V>VT) b = t;
 			else a = t;
 		}
-		console.info("Calculated draft: %.2f", t);
+		//console.info("Calculated draft: %.2f", t);
 		return t;
 	}
 });

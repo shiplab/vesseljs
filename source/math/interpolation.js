@@ -66,7 +66,7 @@ function bilinearCoeffs(x1, x2, y1, y2, z00, z01, z10, z11) {
 	let Y = (y2-y1);
 	
 	if (X===0 || Y=== 0) {
-		console.warn("bilinearCoeffs: Zero base area. Setting coefficients to zero.");
+		//console.warn("bilinearCoeffs: Zero base area. Setting coefficients to zero.");
 		return [0,0,0,0];
 	}
 	
