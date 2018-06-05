@@ -1,5 +1,4 @@
-//Vessel.js library, built 2018-05-09 22:34:54.326966
-
+//Vessel.js library, built 2018-06-05 15:25:59.803779
 /*
 Import like this in HTML:
 <script src="Vessel.js"></script>
