@@ -47,9 +47,10 @@ Object.assign(JSONSpecObject.prototype, {
 			if (this.hasOwnProperty(k)) spec[k] = this[k];
 		}
 		return spec;
-	},
-	toJSON: function() {
-		//First test:
-		return JSON.stringify(this);
 	}
+	// this function causes an endless loop when stringify is invoked
+	//toJSON: function() {
+		//First test:
+		//return JSON.stringify(this);
+	//}
 });
