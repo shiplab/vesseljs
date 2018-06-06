@@ -62,7 +62,7 @@ function DirectionalCosine(params) {
 			this.omega = 2*Math.PI/T;
 		}
 	});
-	this.T = params.T || 5;
+	this.T = typeof params.T !== "undefined" ? params.T : 5;
 	//direction
 	let theta;
 	Object.defineProperty(this, "theta", {
@@ -75,9 +75,9 @@ function DirectionalCosine(params) {
 			this.sinth = Math.sin(theta);
 		}
 	});
-	this.theta = params.theta || 0;
+	this.theta = typeof params.theta !== "undefined" ? params.theta : 0;
 	//phase shift
-	if (typeof params.phi !== "undefined") this.phi = params.phi;
+	this.phi = typeof params.phi !== "undefined" ? params.phi : 0;
 	
 	this.updateWavelength();
 }
@@ -224,7 +224,7 @@ function Ocean(params) {
 		this.conf.open();
 		
 		//Cos menu
-		this.currentCos = new DirectionalCosine(); //dummy object
+		this.currentCos = new DirectionalCosine();//{A:NaN,T:NaN,theta:NaN,phi:NaN}); //dummy object
 		let pcos = new Proxy(/*ptarget*/{}, {
 			get: function(obj,prop) {
 				return scope.currentCos[prop];
@@ -279,9 +279,12 @@ function Ocean(params) {
 		this.cosConf.add(pcos, "L",6.0,700.0, 0.5);
 		this.cosConf.add(pcos, "theta", -Math.PI, Math.PI, 0.01);
 		this.cosConf.add(pcos, "phi", -Math.PI, Math.PI, 0.01);
-
+		//Dispose of temporary cosine wave object
+		this.currentCos = {};
+		this.cosConf.updateDisplay();
+		
 		//Splash menu
-		this.currentSplash = new FakeSplash(); //dummy object
+		this.currentSplash = new FakeSplash();//{xc:NaN,yc:NaN,t0:NaN,A1:NaN,v:NaN,L:NaN}); //dummy object
 		let psplash = new Proxy({}, {
 			get: function(obj,prop) {
 				return scope.currentSplash[prop];
@@ -336,6 +339,9 @@ function Ocean(params) {
 		this.splashConf.add(psplash, "A1", 500, 5000);
 		this.splashConf.add(psplash, "v", 5.0, 100.0);
 		this.splashConf.add(psplash, "L", 5.0, 100.0);
+		//Dispose of temporary splash object
+		this.currentSplash = {};
+		this.splashConf.updateDisplay();
 		
 		//Sampled wave menu
 		this.currentSampled = {filename: "No file"};
