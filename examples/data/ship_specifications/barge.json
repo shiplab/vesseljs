@@ -25,8 +25,7 @@
   			"LOA": 25,
   			"BOA": 10,
   			"Depth": 2.5,
-  			"APP": 0,
-              "lightweight": 15000
+  			"APP": 0
   		},
   		"halfBreadths": {
   			"waterlines": [0, 0, 1],
