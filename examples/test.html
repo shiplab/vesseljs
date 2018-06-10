@@ -158,132 +158,62 @@
                     <thead>
                         <tr>
                             <th>Variable</th>
-                            <th>Hand value</th>
                             <th>Calculated value</th>                      
-                            <th>% diff</th>                 
                         </tr>
                     
                     </thead>
                     <body>
                         <tr>
                            <td>Draft Amidships (m)</td> 
-                           <td><span id = "draftms"></span></td> 
                            <td><span id = "draftc"></span></td> 
-                           <td><span id = "draftd"></span></td> 
                         </tr>
-                        <tr>
-                           <td>Draft at FP (m)</td> 
-                           <td><span id = "draftfp"></span></td> 
-                           <td></td> 
-                           <td></td> 
-                        </tr>
-                        <tr>
-                           <td>Draft AP (m)</td> 
-                           <td><span id = "draftap"></span></td> 
-                           <td></td> 
-                           <td></td> 
-                        </tr>
+
                         <tr>
                            <td>Displacement (t)</td> 
-                           <td><span id = "disp"></span></td> 
                             <td><span id = "dispc"></span></td> 
-                           <td><span id = "dispd"></span></td> 
                         </tr>
                         <tr>
                            <td>Waterline Lenght (m)</td> 
-                           <td><span id = "lwl"></span></td> 
                            <td><span id = "lwlc"></span></td> 
-                           <td><span id = "lwld"></span></td> 
                         </tr>
                         <tr>
                            <td>Maximum Waterline Breath (m)</td> 
-                           <td><span id = "bwl"></span></td> 
                            <td><span id = "bwlc"></span></td> 
-                           <td><span id = "bwld"></span></td> 
                         </tr>
-                        <tr>
-                           <td>Wetted area (m2)</td> 
-                           <td><span id = "Awet"></span></td> 
-                           <td></td> 
-                           <td></td> 
-                        </tr>
+
                         <tr>
                            <td>Waterplane Area (m2)</td> 
-                           <td><span id = "Awp"></span></td> 
                            <td><span id = "Awpc"></span></td> 
-                           <td><span id = "awpd"></span></td> 
                         </tr>
                         <tr>
                            <td>Cb</td> 
-                           <td><span id = "Cb"></span></td> 
                            <td><span id = "cbc"></span></td> 
-                           <td><span id = "cbd"></span></td> 
                         </tr>
                         <tr>
                            <td>LCB (m)</td> 
-                           <td><span id = "LCB"></span></td> 
                            <td><span id = "LCBc"></span></td> 
                            <td></td> 
                         </tr>
                         <tr>
                            <td>LCF (m)</td> 
-                           <td><span id = "LCF"></span></td> 
                            <td><span id = "LCFc"></span></td> 
                            <td></td> 
                         </tr>
                         <tr>
                            <td>KB (m)</td> 
-                           <td><span id = "KB"></span></td> 
                            <td><span id = "KBc"></span></td> 
-                           <td><span id = "KBd"></span></td> 
                         </tr>
                         <tr>
                            <td>KG (m)</td> 
-                           <td><span id = "KG"></span></td> 
                            <td><span id = "KGc"></span></td> 
-                           <td><span id = "KGd"></span></td> 
                         </tr>
                         <tr>
                            <td>BM (m)</td> 
-                           <td><span id = "BM"></span></td> 
                            <td><span id = "BMc"></span></td> 
-                           <td><span id = "BMd"></span></td> 
                         </tr>
                         <tr>
                            <td>GM (m)</td> 
-                           <td><span id = "GM"></span></td> 
-                           <td><span id = "GM2"></span><td>
-                           <td><span id = "GMd"></span></td> 
-                        </tr>
-                        <tr>
-                           <td>Trim (m)</td> 
-                           <td><span id = "trimd"></span></td> 
-                           <td><span></span><td>
-                           <td><span></span></td> 
-                        </tr>
-                        <tr>
-                           <td>Trim (º)</td> 
-                           <td><span id = "trima"></span></td> 
-                           <td><span></span><td>
-                           <td><span></span></td> 
-                        </tr>
-                        <tr>
-                           <td>Heel (m)</td> 
-                           <td><span id = "heel"></span></td> 
-                           <td><span></span><td>
-                           <td><span></span></td> 
-                        </tr>
-                        <tr>
-                           <td>Maximum moment (ton m)</td> 
-                           <td><span id = "maxmom"></span></td> 
-                           <td><span></span><td>
-                           <td><span></span></td> 
-                        </tr>
-                        <tr>
-                           <td>Shear  (t)</td> 
-                           <td><span id = "shear"></span></td> 
-                           <td><span></span><td>
-                           <td><span></span></td> 
+                           <td><span id = "GMc"></span></td> 
                         </tr>
                         
                     </body>
@@ -423,7 +353,7 @@
         }
 		
 		//Load sample file:
-		new THREE.FileLoader().load("data/ship_specifications/blockCase.json", useFileData);
+		new THREE.FileLoader().load("data/ship_specifications/test.json", useFileData);
 		
 		function useFileData(contents) {
 			var shipspec = JSON.parse(contents);
@@ -457,7 +387,6 @@
             //calculate stability
             let a = ship.calculateStability();
             let GM2 = a.GMt.toFixed(3);
-            document.getElementById("GM2").innerHTML = GM2;    
             
             //hand values 
             let disp = 100;
@@ -482,27 +411,7 @@
             let shear = 13.327;
             let deadweight = 85000;
             
-            document.getElementById("disp").innerHTML = disp.toFixed(3);
-            document.getElementById("draftms").innerHTML = draftms.toFixed(3);
-            document.getElementById("draftfp").innerHTML = draftfp.toFixed(3);
-            document.getElementById("draftap").innerHTML = draftap.toFixed(3);
-            document.getElementById("lwl").innerHTML = lwl.toFixed(3);
-            document.getElementById("bwl").innerHTML = bwl.toFixed(3);
-            document.getElementById("Awet").innerHTML = Awet.toFixed(3);
-            document.getElementById("Awp").innerHTML = Awp.toFixed(3);
-            document.getElementById("Cb").innerHTML = Cb.toFixed(3);
-            document.getElementById("LCB").innerHTML = LCB.toFixed(3);
-            document.getElementById("LCF").innerHTML = LCF.toFixed(3);
-            document.getElementById("KB").innerHTML = KB.toFixed(3);
-            document.getElementById("KG").innerHTML = KG.toFixed(3);
-            document.getElementById("BM").innerHTML = BM.toFixed(3);
-            document.getElementById("GM").innerHTML = GM.toFixed(3);
-            document.getElementById("trimd").innerHTML = trimd.toFixed(3);
-            document.getElementById("trima").innerHTML = trima.toFixed(3);
-            document.getElementById("heel").innerHTML = heel.toFixed(3);
-            document.getElementById("maxmom").innerHTML = maxmom.toFixed(3);
-            document.getElementById("shear").innerHTML = shear.toFixed(3);
-            document.getElementById("deadweight").innerHTML = deadweight.toFixed(3);
+
             
             //baseObjects
             let lightweight = ship.structure.hull.attributes.lightweight;
@@ -590,6 +499,7 @@
             document.getElementById("KBc").innerHTML = KBc;
             document.getElementById("KGc").innerHTML = KGc;
             document.getElementById("BMc").innerHTML = BMc;
+            document.getElementById("GMc").innerHTML = GMlw.toFixed(3);
             document.getElementById("draftc").innerHTML = draftc;
             document.getElementById("lwlc").innerHTML = lwlc.toFixed(3);
             document.getElementById("bwlc").innerHTML = bwlc.toFixed(3);
@@ -614,16 +524,7 @@
             let cbd = (1-Cb/cbc)*100;
             let dispd = (1-disp/dispc)*100;
             
-            document.getElementById("KBd").innerHTML = KBd.toFixed(3);
-            document.getElementById("KGd").innerHTML = KGd.toFixed(3);
-            document.getElementById("BMd").innerHTML = BMd.toFixed(3);
-            document.getElementById("GMd").innerHTML = GMd.toFixed(3);
-            document.getElementById("draftd").innerHTML = draftd.toFixed(3);
-            document.getElementById("lwld").innerHTML = lwld.toFixed(3);
-            document.getElementById("bwld").innerHTML = bwld.toFixed(3);
-            document.getElementById("awpd").innerHTML = awpd.toFixed(3);
-            document.getElementById("cbd").innerHTML = cbd.toFixed(3);
-            document.getElementById("dispd").innerHTML = dispd.toFixed(3);
+
                                     
             //GZ curve
             
