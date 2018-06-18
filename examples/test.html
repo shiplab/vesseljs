@@ -353,7 +353,7 @@
         }
 		
 		//Load sample file:
-		new THREE.FileLoader().load("data/ship_specifications/test.json", useFileData);
+		new THREE.FileLoader().load("data/ship_specifications/Cruise.json", useFileData);
 		
 		function useFileData(contents) {
 			var shipspec = JSON.parse(contents);
@@ -413,7 +413,7 @@
             
 
             
-            //baseObjects
+            /*//baseObjects
             let lightweight = ship.structure.hull.attributes.lightweight;
             
             let block0 = ship.baseObjects[Object.keys(ship.baseObjects)[0]];
@@ -443,6 +443,7 @@
             document.getElementById("bl0").innerHTML = bl0;
             document.getElementById("bb0").innerHTML = bb0;
             document.getElementById("bh0").innerHTML = bh0;
+            document.getElementById("bh0").innerHTML = bh0;
             document.getElementById("bwe0").innerHTML = bwe0;
             
             document.getElementById("bl1").innerHTML = bl1;
@@ -464,7 +465,7 @@
             let bvolc = 240;
             document.getElementById("bareac").innerHTML = bareac;
             document.getElementById("bvolc").innerHTML = bvolc;
-            
+            */
 			//Elias comments: calculated stability values a uses a calculated draft, whereas the other values below are calculated from a given "design draft".
             //calculated values
             let KBc = a.KB.toFixed(3);
@@ -507,8 +508,7 @@
             document.getElementById("cbc").innerHTML = cbc.toFixed(3);
             document.getElementById("LCBc").innerHTML = LCBc.toFixed(3);
             document.getElementById("LCFc").innerHTML = LCFc.toFixed(3);
-            document.getElementById("lightweight").innerHTML = lightweight.toFixed(3);
-            document.getElementById("deadweightc").innerHTML = deadweightc.toFixed(3);
+            /*cument.getElementById("lightweight").innerHTML = lightweight.toFixed(3);        document.getElementById("deadweightc").innerHTML = deadweightc.toFixed(3);*/ 
             document.getElementById("dispc").innerHTML = dispc.toFixed(3);
             
             
