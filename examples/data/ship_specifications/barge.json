@@ -13,7 +13,16 @@
   		"Co" : 0.3, 
   		"tripDuration": 40
   	},
-  	"objectOverrides": {}
+  	"objectOverrides": {
+      "derivedByGroup": {
+        "cargo tanks": {
+          "fullness": 0
+        },
+        "ballast tanks": {
+          "fullness": 1
+        }
+      }
+    }
   },
   "structure": {
   	"hull": {
@@ -88,7 +97,7 @@
       },
       "capabilities": {},
       "baseState": {
-        "fullness": 1
+        "fullness": 0
       },
       "weightInformation": {
         "contentDensity": 1025,
@@ -112,6 +121,7 @@
       "id": "Tank1",
       "baseObject": "cargo",
       "affiliations": {
+        "group": "cargo tanks",
         "Deck": "CargoDeck",
         "SFI": "102"
       },
@@ -125,6 +135,7 @@
       "id": "Tank2",
       "baseObject": "cargo",
       "affiliations": {
+        "group": "cargo tanks",
         "Deck": "CargoDeck",
         "SFI": "103"
       },
@@ -137,7 +148,9 @@
     {
       "id": "Tank3",
       "baseObject": "ballast",
+      
       "affiliations": {
+        "group": "ballast tanks",
         "Deck": "BallastDeck",
         "SFI": "104"
       },
@@ -151,6 +164,7 @@
       "id": "Tank4",
       "baseObject": "ballast",
       "affiliations": {
+        "group": "ballast tanks",
         "Deck": "BallastDeck",
         "SFI": "105"
       },
