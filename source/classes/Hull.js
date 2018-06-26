@@ -455,6 +455,7 @@ Object.assign(Hull.prototype, {
 				xcwp: lc.xc, //water plane values
 				LCF: lc.xc,
 				ycwp: lc.yc,
+				TCF: lc.yc,
 				Awp: lc.Awp,
 				Ixwp: lc.Ix,
 				BMt: lc.Ix/lc.Vs,
@@ -477,6 +478,7 @@ Object.assign(Hull.prototype, {
 				As: lc.As, //wetted area
 				Cv: lc.Cv, //center of buoyancy
 				LCB: lc.Cv.x,
+				TCB: lc.Cv.y,
 				KB: lc.Cv.z
 			}
 		};

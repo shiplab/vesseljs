@@ -1,0 +1,731 @@
+{
+"attributes": {
+},
+"designState": {
+	"calculationParameters": {
+		"LWL_design": 20,
+		"Draft_design": 6,
+		"Cb_design": 0.5,
+		"speed": 17,
+	    "crew" : 20,
+		"K" : 0.032,
+		"MCR" : 10000,
+		"SFC" : 0.000215,
+		"Co" : 0.3, 
+		"tripDuration": 40
+	},
+	"objectOverrides": {
+		"common": {
+			"fullness": 0.7
+		}
+	}
+},
+	"structure": {
+		"hull": {
+			"attributes": {
+				"LOA": 125,
+				"BOA": 20,
+				"Depth": 9,
+				"APP": 2,
+				"bulb": true,
+				"transom": true,
+				"cstern": 0,
+				"prismaticLengthRatio": 0.6,
+				"appendices": {
+					"twinScrewBalanceRudder": {
+						"coeff": 2.8,
+						"area": 10
+					},
+					"shaftBrackets": {
+						"coeff": 3,
+						"area": 10
+					},
+					"skeg": {
+						"coeff": 1.5,
+						"area": 10
+					},
+					"shafts": {
+						"coeff": 4,
+						"area": 10
+					},
+					"bilgeKeel": {
+						"coeff": 1.4,
+						"area": 10
+					}
+				}
+			},
+			"halfBreadths": {
+				"waterlines": [0, 0.2, 0.4, 0.6, 0.8, 1, 1.2, 1.4, 1.6, 1.8],
+				"stations": [0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
+				"table": [
+					[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, null],
+					[0, 0, 0, 0.07017543859649122, 0.4789473684210526, 0.5605263157894737, 0.513157894736842, 0.38947368421052636, 0.21403508771929824, 0.06315789473684211, null],
+					[0.27017543859649124, 0.637719298245614, 0.7456140350877193, 0.8114035087719298, 0.8482456140350877, 0.8464912280701754, 0.7789473684210527, 0.6342105263157894, 0.40350877192982454, 0.15789473684210525, null],
+					[0.7929824561403508, 0.8385964912280702, 0.874561403508772, 0.9052631578947369, 0.9263157894736842, 0.9342105263157895, 0.8903508771929824, 0.7728070175438597, 0.5482456140350876, 0.25789473684210523, 0],
+					[0.8464912280701754, 0.8833333333333333, 0.9131578947368421, 0.9350877192982456, 0.9535087719298244, 0.9631578947368421, 0.9333333333333333, 0.8447368421052632, 0.6517543859649122, 0.3570175438596491, 0.04035087719298246],
+					[0.863157894736842, 0.900877192982456, 0.9289473684210526, 0.9508771929824561, 0.9692982456140351, 0.9798245614035087, 0.9587719298245614, 0.8956140350877193, 0.7359649122807018, 0.45526315789473687, 0.08508771929824561],
+					[0.8789473684210526, 0.9166666666666666, 0.943859649122807, 0.9666666666666666, 0.9833333333333334, 0.9929824561403509, 0.981578947368421, 0.9385964912280701, 0.8070175438596491, 0.5491228070175438, 0.1385964912280702],
+					[0.8850877192982456, 0.9236842105263157, 0.9508771929824561, 0.9710526315789474, 0.987719298245614, 1, 0.9991228070175439, 0.9736842105263157, 0.8710526315789473, 0.6456140350877193, 0.21140350877192984],
+					[null, null, null, null, null, null, null, 0.9780701754385965, 0.8885964912280702, 0.6947368421052631, 0.2807017543859649],
+					[null, null, null, null, null, null, null, null, null, null, 0.3263157894736842]
+				]
+			},
+			"buttockHeights": {}
+		},
+		"decks": {
+			"deck3": {
+				"zFloor": 3,
+				"thickness": 0.3,
+				"xAft": 125,
+				"xFwd": 0,
+				"yCentre": 0,
+				"breadth": 20,
+				"density": 1500
+			},
+            "deck6": {
+				"zFloor": 6,
+				"thickness": 0.3,
+				"xAft": 125,
+				"xFwd": 0,
+				"yCentre": 0,
+				"breadth": 20,
+				"density": 1500
+			},
+            "deck9": {
+				"zFloor": 9,
+				"thickness": 0.3,
+				"xAft": 125,
+				"xFwd": 0,
+				"yCentre": 0,
+				"breadth": 20,
+				"density": 1500
+			},
+            "deck12": {
+				"zFloor": 12,
+				"thickness": 0.3,
+				"xAft": 125,
+				"xFwd": 0,
+				"yCentre": 0,
+				"breadth": 20,
+				"density": 1500
+			},
+            "deck15": {
+				"zFloor": 15,
+				"thickness": 0.3,
+				"xAft": 125,
+				"xFwd": 0,
+				"yCentre": 0,
+				"breadth": 20,
+				"density": 1500
+			}
+			
+		},
+		"bulkheads": {
+			
+		}
+	},
+"baseObjects": [
+    {
+		"id": "TankL2.1B6.13H4.3fdundefinedFtank1.stl",
+		"affiliations": {},
+		"boxDimensions": {
+			"length": 50,
+			"breadth": 17,
+			"height": 3
+		},
+		"file3D": "tank1.stl",
+		"weightInformation": {
+			"lightweight": 2000000,
+            "cg": [0, 0, 1.5]
+
+		}
+	},
+    {
+		"id": "TankL4.199999999999999B6.7H4.3fdundefinedFtank2.stl",
+		"affiliations": {},
+		"boxDimensions": {
+			"length": 10,
+			"breadth": 17,
+			"height": 6
+		},
+		"file3D": "tank2.stl",
+		"weightInformation": {
+			"lightweight": 2000000,
+            "cg": [0, 0, 3]
+
+		}
+	},
+    {
+		"id": "TankL4.8999999999999995B6.1H4.3fdundefinedFtank3.stl",
+		"affiliations": {},
+		"boxDimensions": {
+			"length": 15,
+			"breadth": 17,
+			"height": 6
+		},
+		"file3D": "tank3.stl",
+		"weightInformation": {
+			"lightweight": 1628000,
+            "cg": [0, 0, 3]
+
+		}
+	},
+    {
+		"id": "TankL6.699999999999999B5.5H4.3fdundefinedFtank4.stl",
+		"affiliations": {},
+		"boxDimensions": {
+			"length": 5,
+			"breadth": 17,
+			"height": 3
+		},
+		"file3D": "tank4.stl",
+		"weightInformation": {
+			"lightweight": 77000,
+            "cg": [0, 0, 1.5]
+
+		}
+	},
+    {
+		"id": "TankL6.5B1H5.3fdundefinedFtank6.stl",
+		"affiliations": {},
+		"boxDimensions": {
+			"length": 18,
+			"breadth": 10,
+			"height": 6
+		},
+		"file3D": "tank6.stl",
+		"weightInformation": {
+			"lightweight": 1032000,
+            "cg": [0, 0, 3]
+
+		}
+	},
+    {
+		"id": "TankL1B1.5H5.3fdundefinedFtank8.stl",
+		"affiliations": {},
+		"boxDimensions": {
+			"length": 18,
+			"breadth": 10,
+			"height": 6
+		},
+		"file3D": "tank6.stl",
+		"weightInformation": {
+			"lightweight": 1032000,
+            "cg": [0, 0, 3]
+
+		}
+	},
+    {
+		"id": "TankL6B3H5.3fdundefinedFtank10.stl",
+		"affiliations": {},
+		"boxDimensions": {
+			"length": 32,
+			"breadth": 10,
+			"height": 3
+		},
+		"file3D": "tank10.stl",
+		"weightInformation": {
+			"lightweight": 110400,
+            "cg": [0, 0, 1.5]
+
+		}
+	},
+    {
+		"id": "TankL3.5B1.5H5.3fdundefinedFtank9.stl",
+		"affiliations": {},
+		"boxDimensions": {
+			"length": 32,
+			"breadth": 10,
+			"height": 3
+		},
+		"file3D": "tank10.stl",
+		"weightInformation": {
+			"lightweight": 110400,
+            "cg": [0, 0, 1.5]
+
+		}
+	},
+    {
+		"id": "TankL10.5B3H5.3fdundefinedFtank11.stl",
+		"affiliations": {},
+		"boxDimensions": {
+			"length": 10,
+			"breadth": 6,
+			"height": 3
+		},
+		"file3D": "tank11.stl",
+		"weightInformation": {
+			"lightweight": 24000,
+            "cg": [0, 0, 1.5]
+
+		}
+	},
+    {
+		"id": "TankL6.5B10H9.5fdundefinedFtank12.stl",
+		"affiliations": {},
+		"boxDimensions": {
+			"length": 10,
+			"breadth": 15,
+			"height": 3
+		},
+		"file3D": "tank11.stl",
+		"weightInformation": {
+			"lightweight": 24000,
+            "cg": [0, 0, 1.5]
+
+		}
+	},
+    {
+		"id": "EngineRoomLowerL12B7H3.9fdundefinedFEngineRoomLower.stl",
+		"affiliations": {},
+		"boxDimensions": {
+			"length": 90,
+			"breadth": 18,
+			"height": 3
+		},
+		"file3D": "tank11.stl",
+		"weightInformation": {
+			"lightweight": 280000,
+            "cg": [0, 0, 1.5]
+
+		}
+	},
+    {
+		"id": "BowThrusterRoomL12B3H3.9fdundefinedFBowThrusterRoom1.stl",
+		"affiliations": {},
+		"boxDimensions": {
+			"length": 12,
+			"breadth": 18,
+			"height": 3
+		},
+		"file3D": "tank11.stl",
+		"weightInformation": {
+			"lightweight": 28800,
+            "cg": [0, 0, 1.5]
+
+		}
+	},
+    {
+		"id": "TankL3B9H2.7fdundefinedFtank13.stl",
+		"affiliations": {},
+		"boxDimensions": {
+			"length": 9,
+			"breadth": 9,
+			"height": 3
+		},
+		"file3D": "tank11.stl",
+		"weightInformation": {
+			"lightweight": 8000,
+            "cg": [0, 0, 1.5]
+
+		}
+	},
+    {
+		"id": "TankL4B3H2.7fdundefinedFtank14.stl",
+		"affiliations": {},
+		"boxDimensions": {
+			"length": 5,
+			"breadth": 9,
+			"height": 3
+		},
+		"file3D": "tank11.stl",
+		"weightInformation": {
+			"lightweight": 38400,
+            "cg": [0, 0, 1.5]
+
+		}
+	},
+    {
+		"id": "MotorLeftL6B4H2.7fdundefinedFMotors.stl",
+		"affiliations": {},
+		"boxDimensions": {
+			"length": 5,
+			"breadth": 9,
+			"height": 3
+		},
+		"file3D": "tank11.stl",
+		"weightInformation": {
+			"lightweight": 38400,
+            "cg": [0, 0, 1.5]
+
+		}
+	},
+    {
+		"id": "MotorRightL6B4H2.7fdundefinedFMotors.stl",
+		"affiliations": {},
+		"boxDimensions": {
+			"length": 15,
+			"breadth": 18,
+			"height": 3
+		},
+		"file3D": "tank11.stl",
+		"weightInformation": {
+			"lightweight": 80000,
+            "cg": [0, 0, 1.5]
+
+		}
+	},
+    {
+		"id": "TankL4.5B7H2.4fdundefinedFtank17.stl",
+		"affiliations": {},
+		"boxDimensions": {
+			"length": 15,
+			"breadth": 10,
+			"height": 3
+		},
+		"file3D": "tank11.stl",
+		"weightInformation": {
+			"lightweight": 40000,
+            "cg": [0, 0, 1.5]
+
+		}
+	},
+    {
+		"id": "TankL6B1H2.4fdundefinedFtank16.stl",
+		"affiliations": {},
+		"boxDimensions": {
+			"length": 9,
+			"breadth": 20,
+			"height": 3
+		},
+		"file3D": "tank11.stl",
+		"weightInformation": {
+			"lightweight": 56000,
+            "cg": [0, 0, 1.5]
+
+		}
+	},
+    {
+		"id": "TankL7B1.5H2.9fdundefinedFtank18.stl",
+		"affiliations": {},
+		"boxDimensions": {
+			"length": 10,
+			"breadth": 20,
+			"height": 3
+		},
+		"file3D": "tank11.stl",
+		"weightInformation": {
+			"lightweight": 12000,
+            "cg": [0, 0, 1.5]
+
+		}
+	},
+    {
+		"id": "TankL1B2H2.9fdundefinedFtank19.stl",
+		"affiliations": {},
+		"boxDimensions": {
+			"length": 4,
+			"breadth": 20,
+			"height": 3
+		},
+		"file3D": "tank11.stl",
+		"weightInformation": {
+			"lightweight": 24000,
+            "cg": [0, 0, 1.5]
+
+		}
+	},
+    {
+		"id": "DeckWorkshopL2.5B3.5H2.9fdundefinedFDeckWorkshop.stl",
+		"affiliations": {},
+		"boxDimensions": {
+			"length": 15,
+			"breadth": 10,
+			"height": 3
+		},
+		"file3D": "tank11.stl",
+		"weightInformation": {
+			"lightweight": 48000,
+            "cg": [0, 0, 1.5]
+
+		}
+	},
+    {
+		"id": "TankL2B1.5H2.9fdundefinedFtank20.stl",
+		"affiliations": {},
+		"boxDimensions": {
+			"length": 15,
+			"breadth": 10,
+			"height": 3
+		},
+		"file3D": "tank11.stl",
+		"weightInformation": {
+			"lightweight": 48000,
+            "cg": [0, 0, 1.5]
+
+		}
+	},
+    {
+		"id": "StoreL2B2H2.9fdundefinedFStore1.stl",
+		"affiliations": {},
+		"boxDimensions": {
+			"length": 15,
+			"breadth": 10,
+			"height": 3
+		},
+		"file3D": "tank11.stl",
+		"weightInformation": {
+			"lightweight": 48000,
+            "cg": [0, 0, 1.5]
+
+		}
+	}
+],
+
+"derivedObjects": [
+    {
+		"id": "engineRoom",
+		"baseObject": "TankL2.1B6.13H4.3fdundefinedFtank1.stl",
+		"affiliations": {
+		},
+		"referenceState": {
+			"xCentre": 25,
+			"yCentre": 0,
+			"zBase": 6
+		}
+	} ,   
+    {
+		"id": "pumpRoom",
+		"baseObject": "TankL4.199999999999999B6.7H4.3fdundefinedFtank2.stl",
+		"affiliations": {
+		},
+		"referenceState": {
+			"xCentre": 55,
+			"yCentre": 0,
+			"zBase": 6
+		}
+	},
+    {
+		"id": "FOtank",
+		"baseObject": "TankL4.8999999999999995B6.1H4.3fdundefinedFtank3.stl",
+		"affiliations": {
+		},
+		"referenceState": {
+			"xCentre": 67.5,
+			"yCentre": 0,
+			"zBase": 6
+		}
+	},
+    {
+		"id": "LOtank",
+		"baseObject": "TankL6.699999999999999B5.5H4.3fdundefinedFtank4.stl",
+		"affiliations": {
+		},
+		"referenceState": {
+			"xCentre": 52.5,
+			"yCentre": 0,
+			"zBase": 3
+		}
+	},
+    {
+		"id": "Water",
+		"baseObject": "TankL6.5B1H5.3fdundefinedFtank6.stl",
+		"affiliations": {
+		},
+		"referenceState": {
+			"xCentre": 84,
+			"yCentre": 5,
+			"zBase": 6
+		}
+	},
+    {
+		"id": "Sewage",
+		"baseObject": "TankL1B1.5H5.3fdundefinedFtank8.stl",
+		"affiliations": {
+		},
+		"referenceState": {
+			"xCentre": 84,
+			"yCentre": -5,
+			"zBase": 6
+		}
+	},
+    {
+		"id": "Cabin1",
+		"baseObject": "TankL6B3H5.3fdundefinedFtank10.stl",
+		"affiliations": {
+		},
+		"referenceState": {
+			"xCentre": 109,
+			"yCentre": 0,
+			"zBase": 6
+		}
+	},
+    {
+		"id": "Cabin2",
+		"baseObject": "TankL3.5B1.5H5.3fdundefinedFtank9.stl",
+		"affiliations": {
+		},
+		"referenceState": {
+			"xCentre": 109,
+			"yCentre": 0,
+			"zBase": 9
+		}
+	},
+    {
+		"id": "Luxury",
+		"baseObject": "TankL10.5B3H5.3fdundefinedFtank11.stl",
+		"affiliations": {
+		},
+		"referenceState": {
+			"xCentre": 120,
+			"yCentre": 0,
+			"zBase": 12
+		}
+	},
+    {
+		"id": "Captain",
+		"baseObject": "TankL6.5B10H9.5fdundefinedFtank12.stl",
+		"affiliations": {
+		},
+		"referenceState": {
+			"xCentre": 110,
+			"yCentre": 0,
+			"zBase": 12
+		}
+	},
+    {
+		"id": "crew",
+		"baseObject": "EngineRoomLowerL12B7H3.9fdundefinedFEngineRoomLower.stl",
+		"affiliations": {
+		},
+		"referenceState": {
+			"xCentre": 60,
+			"yCentre": 0,
+			"zBase": 12
+		}
+	},
+    {
+		"id": "mess",
+		"baseObject": "BowThrusterRoomL12B3H3.9fdundefinedFBowThrusterRoom1.stl",
+		"affiliations": {
+		},
+		"referenceState": {
+			"xCentre": 9,
+			"yCentre": 0,
+			"zBase": 12
+		}
+	},
+    {
+		"id": "dayroom",
+		"baseObject": "TankL3B9H2.7fdundefinedFtank13.stl",
+		"affiliations": {
+		},
+		"referenceState": {
+			"xCentre": 120.5,
+			"yCentre": 0,
+			"zBase": 15
+		}
+	},
+    {
+		"id": "rec",
+		"baseObject": "TankL4B3H2.7fdundefinedFtank14.stl",
+		"affiliations": {
+		},
+		"referenceState": {
+			"xCentre": 113.5,
+			"yCentre": 5,
+			"zBase": 15
+		}
+	},
+    {
+		"id": "lounge",
+		"baseObject": "MotorLeftL6B4H2.7fdundefinedFMotors.stl",
+		"affiliations": {
+		},
+		"referenceState": {
+			"xCentre": 113.5,
+			"yCentre": -5,
+			"zBase": 15
+		}
+	},
+    {
+		"id": "rest",
+		"baseObject": "MotorRightL6B4H2.7fdundefinedFMotors.stl",
+		"affiliations": {
+		},
+		"referenceState": {
+			"xCentre": 102,
+			"yCentre": 0,
+			"zBase": 15
+		}
+	},
+    {
+		"id": "seaf",
+		"baseObject": "TankL4.5B7H2.4fdundefinedFtank17.stl",
+		"affiliations": {
+		},
+		"referenceState": {
+			"xCentre": 85,
+			"yCentre": 5,
+			"zBase": 15
+		}
+	},
+    {
+		"id": "casino",
+		"baseObject": "TankL6B1H2.4fdundefinedFtank16.stl",
+		"affiliations": {
+		},
+		"referenceState": {
+			"xCentre": 56.5,
+			"yCentre": 0,
+			"zBase": 15
+		}
+	},
+    {
+		"id": "swp",
+		"baseObject": "TankL7B1.5H2.9fdundefinedFtank18.stl",
+		"affiliations": {
+		},
+		"referenceState": {
+			"xCentre": 47,
+			"yCentre": 0,
+			"zBase": 15
+		}
+	},
+    {
+		"id": "storage",
+		"baseObject": "TankL1B2H2.9fdundefinedFtank19.stl",
+		"affiliations": {
+		},
+		"referenceState": {
+			"xCentre": 7.5,
+			"yCentre": 0,
+			"zBase": 15
+		}
+	},
+    {
+		"id": "amphiteatre",
+		"baseObject": "DeckWorkshopL2.5B3.5H2.9fdundefinedFDeckWorkshop.stl",
+		"affiliations": {
+		},
+		"referenceState": {
+			"xCentre": 68.5,
+			"yCentre": 5,
+			"zBase": 15
+		}
+	},
+    {
+		"id": "disco1",
+		"baseObject": "TankL2B1.5H2.9fdundefinedFtank20.stl",
+		"affiliations": {
+		},
+		"referenceState": {
+			"xCentre": 68.5,
+			"yCentre": -5,
+			"zBase": 15
+		}
+	},
+    {
+		"id": "disco2",
+		"baseObject": "StoreL2B2H2.9fdundefinedFStore1.stl",
+		"affiliations": {
+		},
+		"referenceState": {
+			"xCentre": 85,
+			"yCentre": -5,
+			"zBase": 15
+		}
+	}
+]
+
+}
