@@ -5,6 +5,9 @@
       "LWL_design": 20,
       "Draft_design": 2,
       "Cb_design": 0.5,
+      "speed": 12,
+	  "crew" : 20,
+	  "K" : 0.032,
       "Co": 0.3,
       "tripDuration": 40
     },

@@ -1,8 +1,8 @@
-//Vessel.js library, built 2018-05-24 13:27:43.361690, Checksum: d0f52be2b3ae78af119675386f9d28e2
+//Vessel.js library, built 2018-06-05 22:59:06.624672
 /*
 Import like this in HTML:
 <script src="Vessel.js"></script>
-Then in javascript use classes and functions with a ShipDesign prefix. Example:
+Then in javascript use classes and functions with a Vessel prefix. Example:
 let ship = new Vessel.Ship(someSpecification);
 */
 
@@ -139,7 +139,7 @@ function bilinearCoeffs(x1, x2, y1, y2, z00, z01, z10, z11) {
 	let Y = (y2-y1);
 	
 	if (X===0 || Y=== 0) {
-		console.warn("bilinearCoeffs: Zero base area. Setting coefficients to zero.");
+		//console.warn("bilinearCoeffs: Zero base area. Setting coefficients to zero.");
 		return [0,0,0,0];
 	}
 	
@@ -245,8 +245,8 @@ function combineAreas(array) {
 		xc /= A;
 		yc /= A;
 	} else {
-		console.warn("Zero area combination.");
-		console.trace();
+		//console.warn("Zero area combination.");
+		//console.trace();
 		xc /= L;
 		yc /= L;
 	}
@@ -729,14 +729,14 @@ Object.assign(Ship.prototype, {
 		);
 		
 		//DEBUG
-		console.log(components);
+		//console.log(components);
 
 		for (let o of Object.values(this.derivedObjects)) {
 			components.push(o.getWeight(shipState));
 		}
 
 		var W = combineWeights(components);
-		console.info("Calculated weight object: ", W);
+		//console.info("Calculated weight object: ", W);
 		return W;
 	},
 	calculateDraft: function(shipState, epsilon=0.001, rho=1025) {
@@ -753,7 +753,7 @@ Object.assign(Ship.prototype, {
 		let {BMt,BMl,KB} = this.structure.hull.calculateAttributesAtDraft(T);
 		let GMt = KB + BMt - KG;
 		let GMl = KB + BMl - KG;
-		return {GMt, GMl, KB, BMt, BMl, KG};
+		return {w, T, GMt, GMl, KB, BMt, BMl, KG};
 	},
 	getFuelMass: function(shipState) {
 		shipState = shipState || this.designState;
@@ -784,7 +784,7 @@ Object.assign(Ship.prototype, {
 			if (mass <= tkMass) { // if yes, subtract mass
 				shipState.objectCache[tkId].state.fullness -= mass/(this.derivedObjects[tkId].baseObject.weightInformation.volumeCapacity * this.derivedObjects[tkId].baseObject.weightInformation.contentDensity);
 				mass = 0;
-				console.log("Vessel is sailing on fuel from " + tkId + ".");
+				//console.log("Vessel is sailing on fuel from " + tkId + ".");
 			} else { // if not, make tank empty
 				mass -= tkMass;
 				shipState.objectCache[tkId].state.fullness = 0;
@@ -858,7 +858,7 @@ Object.assign(Structure.prototype, {
 		
 		return spec;
 	},
-	//Alejandro is working on a more proper calculation of this
+	//This is all dummy calculations
 	getWeight: function(designState) {
 		let components = [];
 		//Hull
@@ -900,7 +900,7 @@ Object.assign(Structure.prototype, {
 		}
 		
 		let output = combineWeights(components);
-		console.info("Total structural weight: ", output);
+		//console.info("Total structural weight: ", output);
 		return output;
 	}
 });//@EliasHasle
@@ -950,7 +950,7 @@ Object.assign(Hull.prototype, {
 		parsons.mass *= 1000; //ad hoc conversion to kg, because the example K value is aimed at ending with tonnes.
 		
 		let output = parsons;
-		console.info("Hull weight:", output);
+		//console.info("Hull weight:", output);
 		return output;
 	},
 	/*
@@ -970,12 +970,12 @@ Object.assign(Hull.prototype, {
 		let tab = this.halfBreadths.table;
 
 		if (zr<wls[0]) {
-				console.warn("getWaterLine: z below lowest defined waterline. Defaulting to all zero offsets.");
+				//console.warn("getWaterLine: z below lowest defined waterline. Defaulting to all zero offsets.");
 				return new Array(sts.length).fill(0);
 		} else {
 			let a, mu;
 			if (zr>wls[wls.length-1]) {
-				console.warn("getWaterLine: z above highest defined waterline. Proceeding with highest data entries.");
+				//console.warn("getWaterLine: z above highest defined waterline. Proceeding with highest data entries.");
 				a = wls.length-2; //if this level is defined...
 				mu=1;
 				//wl = tab[a].slice();
@@ -1293,7 +1293,7 @@ Object.assign(Hull.prototype, {
 					patchColumnCalculation(sts[j], sts[j+1], prev.z, z, prwl[j], wl[j], prwl[j+1], wl[j+1]);
 				calculations.push(star);
 			}
-			console.log(calculations); //DEBUG
+			//console.log(calculations); //DEBUG
 			let C = combineVolumes(calculations);
 			//Cv of slice. Note that switching of yz must
 			//be done before combining with previous level
@@ -1349,8 +1349,8 @@ Object.assign(Hull.prototype, {
 			//Find highest data waterline below or at water level:
 			let {index, mu} = bisectionSearch(wls, T);
 			
-			console.info("Highest data waterline below or at water level: " + index);
-			console.log(this.levels);
+			//console.info("Highest data waterline below or at water level: " + index);
+			//console.log(this.levels);
 			let lc;
 			if (mu===0) lc = this.levels[index];
 			else lc = levelCalculation(this, T, this.levels[index]);
@@ -1360,6 +1360,7 @@ Object.assign(Hull.prototype, {
 				xcwp: lc.xc, //water plane values
 				LCF: lc.xc,
 				ycwp: lc.yc,
+				TCF: lc.yc,
 				Awp: lc.Awp,
 				Ixwp: lc.Ix,
 				BMt: lc.Ix/lc.Vs,
@@ -1382,6 +1383,7 @@ Object.assign(Hull.prototype, {
 				As: lc.As, //wetted area
 				Cv: lc.Cv, //center of buoyancy
 				LCB: lc.Cv.x,
+				TCB: lc.Cv.y,
 				KB: lc.Cv.z
 			}
 		};
@@ -1396,11 +1398,11 @@ Object.assign(Hull.prototype, {
 		while (b-a>epsilon) {
 			t = 0.5*(a+b);
 			let V = this.calculateAttributesAtDraft(t)["Vs"];
-			console.log(V); //DEBUG
+			//console.log(V); //DEBUG
 			if (V>VT) b = t;
 			else a = t;
 		}
-		console.info("Calculated draft: %.2f", t);
+		//console.info("Calculated draft: %.2f", t);
 		return t;
 	}
 });//@EliasHasle
@@ -1469,7 +1471,7 @@ Object.assign(BaseObject.prototype, {
 				cg.push(c);
 			}
 		} else if (wi.cg !== undefined) {
-			console.log("BaseObject.getWeight: Using specified cg.");
+			//console.log("BaseObject.getWeight: Using specified cg.");
 			cg = wi.cg;
 		} else {
 			console.warn("BaseObject.getWeight: No cg or fullnessCGMapping supplied. Defaults to center of bounding box.");
@@ -1591,6 +1593,9 @@ Object.assign(ShipState.prototype, {
 			this.cachedVersion = this.version;
 		}
 		return this.specCache;
+	},
+	clone: function() {
+		return new ShipState(this.getSpecification());
 	},
 	getObjectState: function(o) {
 		if (this.objectCache[o.id] !== undefined) {

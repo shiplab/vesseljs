@@ -1,0 +1,52 @@
+{
+"attributes": {
+},
+"designState": {
+	"calculationParameters": {
+		"LWL_design": 20,
+		"Draft_design": 2,
+		"Cb_design": 0.5,
+		"speed": 12,
+	    "crew" : 20,
+		"K" : 0.032,
+		"MCR" : 10000,
+		"SFC" : 0.000215,
+		"Co" : 0.3, 
+		"tripDuration": 40
+	},
+	"objectOverrides": {
+		"common": {
+			"fullness": 0.7
+		}
+	}
+},
+"structure": {
+	"hull": {
+		"attributes": {
+			"LOA": 20,
+			"BOA": 8,
+			"Depth": 4,
+			"APP": 0,
+            "lightweight": 15000
+		},
+		"halfBreadths": {
+			"waterlines": [0, 1],
+			"stations": [0, 1],
+			"table": [[0, 0], [1, 1]]
+		},
+		"buttockHeights": {}
+	},
+	"decks": {
+		
+		
+	},
+	"bulkheads": {
+	}
+},
+"baseObjects": 
+[{"id":"TankL2.1B6.13H4.3fdundefinedFtank1.stl","boxDimensions":{"length":6,"breadth":4,"height":5},"file3D":"tank1.stl","weightInformation":{"contentDensity":0,"volumeCapacity":120,"lightweight":22800,"fullnessCGMapping":{"fullnesses":[0,0.25,0.5,0.75,1],"cgs":[[0,0,2.15],[0,0,0.6449999999999999],[0,0,1.2899999999999998],[0,0,1.72],[0,0,2.15]]}}},
+ {"id":"TankL2.1B6.13H4.3fdundefinedFundefined","boxDimensions":{"length":5,"breadth":4,"height":2},"baseState":{"fullness":0},"weightInformation":{"contentDensity":0,"volumeCapacity":20,"lightweight":28200,"fullnessCGMapping":{"fullnesses":[0,0.25,0.5,0.75,1],"cgs":[[0,0,2.15],[0,0,0.6449999999999999],[0,0,1.2899999999999998],[0,0,1.72],[0,0,2.15]]}}},{"id":"TankL4.199999999999999B6.7H4.3fdundefinedFtank2.stl","boxDimensions":{"length":10,"breadth":4,"height":2},"file3D":"tank2.stl","baseState":{"fullness":0},"weightInformation":{"contentDensity":0,"volumeCapacity":48,"lightweight":80000,"fullnessCGMapping":{"fullnesses":[0,0.25,0.5,0.75,1],"cgs":[[0,0,2.15],[0,0,0.6449999999999999],[0,0,1.2899999999999998],[0,0,1.72],[0,0,2.15]]}}}],
+
+"derivedObjects": [{"id":"Tank1","baseObject":"TankL2.1B6.13H4.3fdundefinedFtank1.stl","affiliations":{"Deck":"WheelHouseTop","SFI":"101"},"referenceState":{"xCentre":2,"yCentre":0,"zBase":4}},{"id":"Tank2","baseObject":"TankL2.1B6.13H4.3fdundefinedFundefined","affiliations":{"Deck":"BridgeDeck","SFI":"102"},"referenceState":{"xCentre":5,"yCentre":0,"zBase":2}},{"id":"Tank3","baseObject":"TankL4.199999999999999B6.7H4.3fdundefinedFtank2.stl","affiliations":{"Deck":"BridgeDeck","SFI":"103"},"referenceState":{"xCentre":14,"yCentre":0,"zBase":2}}]
+
+}

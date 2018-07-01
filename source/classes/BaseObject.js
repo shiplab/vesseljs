@@ -64,7 +64,7 @@ Object.assign(BaseObject.prototype, {
 				cg.push(c);
 			}
 		} else if (wi.cg !== undefined) {
-			console.log("BaseObject.getWeight: Using specified cg.");
+			//console.log("BaseObject.getWeight: Using specified cg.");
 			cg = wi.cg;
 		} else {
 			console.warn("BaseObject.getWeight: No cg or fullnessCGMapping supplied. Defaults to center of bounding box.");

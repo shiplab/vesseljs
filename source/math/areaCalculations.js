@@ -69,8 +69,8 @@ function combineAreas(array) {
 		xc /= A;
 		yc /= A;
 	} else {
-		console.warn("Zero area combination.");
-		console.trace();
+		//console.warn("Zero area combination.");
+		//console.trace();
 		xc /= L;
 		yc /= L;
 	}

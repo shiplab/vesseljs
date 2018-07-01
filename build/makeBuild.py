@@ -1,3 +1,5 @@
+#Now the "geeky" md5 hash and archiving is disabled. It was of no practical use, really.
+
 from datetime import datetime
 
 classes = ["JSONSpecObject.js", "Ship.js", "Structure.js", "Hull.js", "BaseObject.js", "DerivedObject.js", "ShipState.js"]
@@ -11,7 +13,7 @@ code = """
 /*
 Import like this in HTML:
 <script src="Vessel.js"></script>
-Then in javascript use classes and functions with a ShipDesign prefix. Example:
+Then in javascript use classes and functions with a Vessel prefix. Example:
 let ship = new Vessel.Ship(someSpecification);
 */
 
@@ -52,15 +54,18 @@ Object.assign(Vessel, {
 """
 
 timestamp = str(datetime.today())
-from hashlib import md5
-codehash = md5(code.encode()).hexdigest()
+#from hashlib import md5
+#codehash = md5(code.encode()).hexdigest()
 
-header = "//Vessel.js library, built " + timestamp + ", Checksum: " + codehash
+header = "//Vessel.js library, built " + timestamp# + ", Checksum: " + codehash
 
 output = header + code
 
-stamp = timestamp[0:17] + "." + codehash[0:5]
+#stamp = timestamp[0:17] + "." + codehash[0:5]
 
 oFile = open("Vessel.js", "w")
 oFile.write(output)
 oFile.close()
+#oFile = open("archive/Vessel_"+stamp.replace("-","").replace(":","").replace(" ","")+".js", "w")
+#oFile.write(output)
+#oFile.close()
