@@ -14,36 +14,45 @@
   		"tripDuration": 40
   	},
   	"objectOverrides": {
-  		"common": {
-  			"fullness": 0.0
-  		}
-  	}
+      "derivedByGroup": {
+        "cargo tanks": {
+          "fullness": 0
+        },
+        "ballast tanks": {
+          "fullness": 1
+        }
+      }
+    }
   },
   "structure": {
   	"hull": {
   		"attributes": {
-  			"LOA": 25,
+  			"LOA": 22.5,
   			"BOA": 10,
   			"Depth": 2.5,
-  			"APP": 0,
-              "lightweight": 15000
+  			"APP": 0
   		},
   		"halfBreadths": {
   			"waterlines": [0, 0, 1],
-  			"stations": [0, 0.9, 1],
-  			"table": [[0, 0, 0], [1, 1, 0], [1, 1, 0]]
+  			"stations": [0, 1],
+  			"table": [[0, 0], [1, 1], [1, 1]]
   		},
   		"buttockHeights": {}
   	},
-  	"decks": {},
+  	"decks": {
+      "BallastTop": {
+				"zFloor": 0.4,
+				"thickness": 0.1,
+				"xAft": 0,
+				"xFwd": 22.5,
+				"yCentre": 0,
+				"breadth": 10,
+				"density": 1500
+			}
+    },
   	"bulkheads": {
   		"AB": {
   			"xAft": 11.25,
-  			"thickness": 0.1,
-  			"density": 7850
-  		},
-  		"BC": {
-  			"xAft": 22.5,
   			"thickness": 0.1,
   			"density": 7850
   		}
@@ -51,12 +60,12 @@
   },
   "baseObjects": [
     {
-      "id": "TankL2.1B6.13H4.3fdundefinedFundefined",
+      "id": "cargo",
       "affiliations": {},
       "boxDimensions": {
         "length": 10.25,
         "breadth": 9,
-        "height": 2
+        "height": 1.6
       },
       "capabilities": {},
       "baseState": {
@@ -64,16 +73,44 @@
       },
       "weightInformation": {
         "contentDensity": 850,
-        "volumeCapacity": 180,
-        "lightweight": 14000,
+        "volumeCapacity": 145,
+        "lightweight": 10000,
         "fullnessCGMapping": {
           "fullnesses": [0, 0.25, 0.5, 0.75, 1],
           "cgs": [
-            [0, 0, 1],
-            [0, 0, 0.450956938],
-            [0, 0, 0.577348066],
-            [0, 0, 0.777184466],
-            [0, 0, 1]
+            [0, 0, 0.8],
+            [0, 0, 0.347013783],
+            [0, 0, 0.455846422],
+            [0, 0, 0.6195241],
+            [0, 0, 0.8]
+          ]
+        }
+      }
+    },
+    {
+      "id": "ballast",
+      "affiliations": {},
+      "boxDimensions": {
+        "length": 10.25,
+        "breadth": 9,
+        "height": 0.4
+      },
+      "capabilities": {},
+      "baseState": {
+        "fullness": 0
+      },
+      "weightInformation": {
+        "contentDensity": 1025,
+        "volumeCapacity": 35,
+        "lightweight": 5000,
+        "fullnessCGMapping": {
+          "fullnesses": [0, 0.25, 0.5, 0.75, 1],
+          "cgs": [
+            [0, 0, 0.2],
+            [0, 0, 0.070942408],
+            [0, 0, 0.10750469],
+            [0, 0, 0.152565747],
+            [0, 0, 0.2]
           ]
         }
       }
@@ -82,10 +119,40 @@
   "derivedObjects": [
     {
       "id": "Tank1",
-      "baseObject": "TankL2.1B6.13H4.3fdundefinedFundefined",
+      "baseObject": "cargo",
       "affiliations": {
+        "group": "cargo tanks",
         "Deck": "CargoDeck",
         "SFI": "102"
+      },
+      "referenceState": {
+        "xCentre": 16.875,
+        "yCentre": 0,
+        "zBase": 0.4
+      }
+    },
+    {
+      "id": "Tank2",
+      "baseObject": "cargo",
+      "affiliations": {
+        "group": "cargo tanks",
+        "Deck": "CargoDeck",
+        "SFI": "103"
+      },
+      "referenceState": {
+        "xCentre": 5.625,
+        "yCentre": 0,
+        "zBase": 0.4
+      }
+    },
+    {
+      "id": "Tank3",
+      "baseObject": "ballast",
+      
+      "affiliations": {
+        "group": "ballast tanks",
+        "Deck": "BallastDeck",
+        "SFI": "104"
       },
       "referenceState": {
         "xCentre": 16.875,
@@ -94,11 +161,12 @@
       }
     },
     {
-      "id": "Tank2",
-      "baseObject": "TankL2.1B6.13H4.3fdundefinedFundefined",
+      "id": "Tank4",
+      "baseObject": "ballast",
       "affiliations": {
-        "Deck": "CargoDeck",
-        "SFI": "103"
+        "group": "ballast tanks",
+        "Deck": "BallastDeck",
+        "SFI": "105"
       },
       "referenceState": {
         "xCentre": 5.625,
