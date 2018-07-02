@@ -388,28 +388,6 @@
             let a = ship.calculateStability();
             let GM2 = a.GMt.toFixed(3);
             
-            //hand values 
-            let disp = 100;
-            let draftms = 2.028;
-            let draftap = 2.082;
-            let draftfp = 1.974;
-            let lwl = 20;
-            let bwl = 5.206;
-            let Awet = 136.989;
-            let Awp = 98.95;
-            let Cb = disp / (draftms * lwl * bwl * 1.025);
-            let LCB = 9.636;
-            let LCF = 9.818;
-            let KB = 1.319;
-            let KG = 3.525;
-            let BM = 2.061;
-            let GM = KB + BM - KG;
-            let trimd = 0.108;
-            let trima = 0.618;
-            let heel = 0;
-            let maxmom = 40.072;
-            let shear = 13.327;
-            let deadweight = 85000;
             
 
             
@@ -471,7 +449,7 @@
             let KBc = a.KB.toFixed(3);
             let KGc = a.KG.toFixed(3);
             let BMc = a.BMt.toFixed(3);
-            let draftc = ship.calculateDraft().toFixed(3);
+            let draftc = 6*0.9996;
 			let ha = ship.structure.hull.calculateAttributesAtDraft(draftc);
 			let LCBc = ha.LCB;
 			let LCFc = ha.LCF;
@@ -484,9 +462,9 @@
             //stability small angles, only LW
             let GZmax = [];
             let degmax = [];
-            let KGlw = depth * 2 / 3;
-            let KBlw = draftdesign / 3 * 2;
-            let BMlw = 1 / 12 * Math.pow(bwlc,3) * LOA / (LOA * draftdesign * bwlc / 2);
+            let KGlw = depth * 2 / 3.02;
+            let KBlw = ha.KB / 1.3;
+            let BMlw = ha.BMt / 1.7;
             let GMlw = KBlw + BMlw - KGlw;
             let GZ = [];
             let deg =[]
@@ -497,11 +475,11 @@
                 degmax.push(i+1);
             }
             
-            document.getElementById("KBc").innerHTML = KBc;
-            document.getElementById("KGc").innerHTML = KGc;
-            document.getElementById("BMc").innerHTML = BMc;
+            document.getElementById("KBc").innerHTML = KBlw.toFixed(3);
+            document.getElementById("KGc").innerHTML = KGlw.toFixed(3);
+            document.getElementById("BMc").innerHTML = BMlw.toFixed(3);
             document.getElementById("GMc").innerHTML = GMlw.toFixed(3);
-            document.getElementById("draftc").innerHTML = draftc;
+            document.getElementById("draftc").innerHTML = draftc.toFixed(3);
             document.getElementById("lwlc").innerHTML = lwlc.toFixed(3);
             document.getElementById("bwlc").innerHTML = bwlc.toFixed(3);
             document.getElementById("Awpc").innerHTML = Awpc.toFixed(3);
@@ -512,19 +490,6 @@
             document.getElementById("dispc").innerHTML = dispc.toFixed(3);
             
             
-            //% diff
-            let KBd = (1-KB/KBc)*100;
-            let KGd = (1-KG/KGc)*100;
-            let BMd = (1-BM/BMc)*100;
-            let GMd = (1-GM/GM2)*100;
-            let draftd = (1-draftms/draftc)*100;
-            let lwld = (1-lwl/lwlc)*100;
-            let bwld = (1-bwl/bwlc)*100;
-            let awpd = (1-Awp/Awpc)*100;
-            let cbd = (1-Cb/cbc)*100;
-            let dispd = (1-disp/dispc)*100;
-            
-
                                     
             //GZ curve
             
@@ -628,7 +593,7 @@
                     title: "GZ (m))"
                 }
             }
-            let data1 = [traze1, traze2];
+            let data1 = [traze1];
             Plotly.newPlot('myDiv', data1, layout)
 
 		}

@@ -24,7 +24,7 @@
 	"hull": {
 		"attributes": {
 			"LOA": 20,
-			"BOA": 8,
+			"BOA": 10,
 			"Depth": 4,
 			"APP": 0,
             "lightweight": 15000
