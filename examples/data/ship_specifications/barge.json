@@ -42,18 +42,18 @@
   	"decks": {
       "BallastTop": {
 				"zFloor": 0.4,
-				"thickness": 0.1,
+				"thickness": 0.01,
 				"xAft": 0,
 				"xFwd": 22.5,
 				"yCentre": 0,
 				"breadth": 10,
-				"density": 1500
+				"density": 7850
 			}
     },
   	"bulkheads": {
   		"AB": {
   			"xAft": 11.25,
-  			"thickness": 0.1,
+  			"thickness": 0.01,
   			"density": 7850
   		}
   	}
