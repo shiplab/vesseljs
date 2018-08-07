@@ -168,6 +168,8 @@ Object.assign(ShipState.prototype, {
 		
 		this.objectOverrides.version = prevVer+1;
 		this.version++;
+		
+		return this;
 	},
 	//Overrides existing directives and adds new ones.
 	extend: function(spec) {

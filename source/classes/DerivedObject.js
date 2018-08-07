@@ -22,13 +22,16 @@ Object.assign(DerivedObject.prototype, {
 		}
 		this.referenceState = spec.referenceState;
 		//this.referenceStateVersion = 0;
+		this.style = spec.style || {};
+		return this;
 	},
 	getSpecification: function() {
 		let spec = {
 			id: this.id,
 			group: this.group,
 			affiliations: this.affiliations,
-			referenceState: this.referenceState
+			referenceState: this.referenceState,
+			style: this.style
 		};
 		if (this.baseObjects[this.baseObject.id] !== undefined) {
 			spec.baseObject = this.baseObject.id;

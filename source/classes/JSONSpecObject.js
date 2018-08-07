@@ -1,7 +1,7 @@
 //@EliasHasle
 
 /*Base class for objects that are constructed from 
-a literal object, (//or optionally from a JSON string).
+a literal object.
 
 Constructors can take more parameters than the specification, but the specification must be the first parameter.
 
@@ -40,6 +40,7 @@ Object.assign(JSONSpecObject.prototype, {
 	setFromSpecification: function(specification) {
 		//No sanity checking by default.
 		Object.assign(this, specification);
+		return this;
 	},
 	getSpecification: function() {
 		let spec = {};
@@ -47,10 +48,13 @@ Object.assign(JSONSpecObject.prototype, {
 			if (this.hasOwnProperty(k)) spec[k] = this[k];
 		}
 		return spec;
+	},
+	//toJSON is the standard way. Added here for testing.
+	toJSON: function() {
+		return this.getSpecification();
+	},
+	//fromJSON is added as an alternative and better name.
+	fromJSON: function(spec) {
+		this.setFromSpecification(spec);
 	}
-	// this function causes an endless loop when stringify is invoked
-	//toJSON: function() {
-		//First test:
-		//return JSON.stringify(this);
-	//}
 });

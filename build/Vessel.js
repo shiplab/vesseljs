@@ -1,4 +1,4 @@
-//Vessel.js library, built 2018-06-05 22:59:06.624672
+//Vessel.js library, built 2018-08-07 20:38:47.189488
 /*
 Import like this in HTML:
 <script src="Vessel.js"></script>
@@ -619,7 +619,7 @@ function combineWeights(array) {
 }//@EliasHasle
 
 /*Base class for objects that are constructed from 
-a literal object, (//or optionally from a JSON string).
+a literal object.
 
 Constructors can take more parameters than the specification, but the specification must be the first parameter.
 
@@ -658,6 +658,7 @@ Object.assign(JSONSpecObject.prototype, {
 	setFromSpecification: function(specification) {
 		//No sanity checking by default.
 		Object.assign(this, specification);
+		return this;
 	},
 	getSpecification: function() {
 		let spec = {};
@@ -665,12 +666,15 @@ Object.assign(JSONSpecObject.prototype, {
 			if (this.hasOwnProperty(k)) spec[k] = this[k];
 		}
 		return spec;
+	},
+	//toJSON is the standard way. Added here for testing.
+	toJSON: function() {
+		return this.getSpecification();
+	},
+	//fromJSON is added as an alternative and better name.
+	fromJSON: function(spec) {
+		this.setFromSpecification(spec);
 	}
-	// this function causes an endless loop when stringify is invoked
-	//toJSON: function() {
-		//First test:
-		//return JSON.stringify(this);
-	//}
 });//@EliasHasle
 
 /*
@@ -704,6 +708,7 @@ Object.assign(Ship.prototype, {
 		}
 		
 		this.designState = new ShipState(specification.designState);
+		return this;
 	},
 	getSpecification: function() {
 		let specification = {};
@@ -834,6 +839,8 @@ Object.assign(Structure.prototype, {
 			let bhspec = bhspecs[name];
 			bulkheads[name] = new Bulkhead(bhspec,this.ship);
 		}*/	
+		
+		return this;
 	},
 	getSpecification: function() {
 		let spec = {
@@ -919,17 +926,21 @@ function Hull(spec) {
 }
 Hull.prototype = Object.create(JSONSpecObject.prototype);
 Object.assign(Hull.prototype, {
+	constructor: Hull,
 	setFromSpecification: function(spec) {
 		this.halfBreadths = spec.halfBreadths;
 		//this.buttockHeights = spec.buttockHeights;
 		this.attributes = spec.attributes; //this could/should include LOA, BOA, Depth
 		this.levelsNeedUpdate = true;
+		this.style = spec.style || {};
+		return this;
 	},
 	getSpecification: function() {
 		return {
 			halfBreadths: this.halfBreadths,
 			//buttockHeights: this.buttockHeights
-			attributes: this.attributes
+			attributes: this.attributes,
+			style: this.style
 		};
 	},
 	//to facilitate economical caching, it may be best to have a few numerical parameters to this function instead of letting it depend on the whole designState. Or maybe the designState is static enough.
@@ -1427,6 +1438,7 @@ Object.assign(BaseObject.prototype, {
 		this.capabilities = spec.capabilities || {};
 		this.file3D = spec.file3D;
 		this.baseState = spec.baseState;
+		return this;
 	},
 	getSpecification: function() {
 		return {
@@ -1504,13 +1516,16 @@ Object.assign(DerivedObject.prototype, {
 		}
 		this.referenceState = spec.referenceState;
 		//this.referenceStateVersion = 0;
+		this.style = spec.style || {};
+		return this;
 	},
 	getSpecification: function() {
 		let spec = {
 			id: this.id,
 			group: this.group,
 			affiliations: this.affiliations,
-			referenceState: this.referenceState
+			referenceState: this.referenceState,
+			style: this.style
 		};
 		if (this.baseObjects[this.baseObject.id] !== undefined) {
 			spec.baseObject = this.baseObject.id;
@@ -1674,6 +1689,8 @@ Object.assign(ShipState.prototype, {
 		oo.derivedByID = soo.derivedByID || {};
 		
 		this.version++;
+		
+		return this;
 	},
 	//Overrides existing directives and adds new ones.
 	extend: function(spec) {
@@ -1831,7 +1848,8 @@ Object.assign(Vessel, {
 	downloadShip: downloadShip,
         f: {
             linearFromArrays: linearFromArrays,
-            bilinear: bilinear
+            bilinear: bilinear,
+            bisectionSearch
         },
         Vectors: Vectors
 });
