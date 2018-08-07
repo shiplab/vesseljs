@@ -26,6 +26,8 @@ Object.assign(Structure.prototype, {
 			let bhspec = bhspecs[name];
 			bulkheads[name] = new Bulkhead(bhspec,this.ship);
 		}*/	
+		
+		return this;
 	},
 	getSpecification: function() {
 		let spec = {

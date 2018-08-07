@@ -20,6 +20,7 @@ Object.assign(BaseObject.prototype, {
 		this.capabilities = spec.capabilities || {};
 		this.file3D = spec.file3D;
 		this.baseState = spec.baseState;
+		return this;
 	},
 	getSpecification: function() {
 		return {
