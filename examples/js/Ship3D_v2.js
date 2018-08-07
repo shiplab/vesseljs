@@ -133,8 +133,11 @@ function Ship3D(ship, {shipState, stlPath, deckOpacity=0.2, objectOpacity=0.5}) 
 		//DEBUG
 		//console.log("d.xFwd=%.1f, d.xAft=%.1f, 0.5*d.breadth=%.1f", d.xFwd, d.xAft, 0.5*d.breadth);
 		//console.log(pa);
-
-		let deck = new THREE.Mesh(deckGeom, deckMat);
+		let mat = deckMat;
+		if (d.style) {
+			mat = new THREE.MeshPhongMaterial({color: typeof d.style.color !== "undefined" ? d.style.color : 0xcccccc,  transparent: true, opacity: typeof d.style.opacity !== "undefined" ? d.style.opacity : deckOpacity, side: THREE.DoubleSide});
+		}
+		let deck = new THREE.Mesh(deckGeom, mat);
 		deck.name = dk;//[i];
 		deck.position.z = d.zFloor;
 		//deck.scale.set(d.xFwd-d.xAft, d.breadth, d.thickness);
@@ -147,6 +150,7 @@ function Ship3D(ship, {shipState, stlPath, deckOpacity=0.2, objectOpacity=0.5}) 
 	//Bulkheads:
 	var bulkheads = new THREE.Group();
 	bulkheads.scale.set(1, 0.5*BOA, Depth);
+	//Should have individually trimmed geometries like the decks
 	let bhGeom = new THREE.BoxBufferGeometry(1,1,1);
 	bhGeom.translate(0,0,0.5);
 	let bhMat = new THREE.MeshPhongMaterial({color: 0xcccccc/*this.randomColor()*/, transparent: true, opacity: deckOpacity, side: THREE.DoubleSide});
@@ -155,8 +159,12 @@ function Ship3D(ship, {shipState, stlPath, deckOpacity=0.2, objectOpacity=0.5}) 
 	//let bhk = Object.keys(bhs);
 	//for (let i = 0; i < bhk.length; i++) {
 	for (let bhk in bhs) {
-		let bulkhead = new THREE.Mesh(bhGeom, bhMat);
 		let bh = bhs[bhk];//bhs[bhk[i]];
+		let mat = bhMat;
+		if (bh.style) {
+			mat = new THREE.MeshPhongMaterial({color: typeof bh.style.color !== "undefined" ? bh.style.color : 0xcccccc, transparent: true, opacity: typeof bh.style.opacity !== "undefined" ? bh.style.opacity : deckOpacity, side: THREE.DoubleSide});
+		}
+		let bulkhead = new THREE.Mesh(bhGeom, mat);
 		bulkhead.name = bhk;//[i];
 		bulkhead.scale.set(bh.thickness, 1, 1);
 		bulkhead.position.set(bh.xAft, 0, 0);
