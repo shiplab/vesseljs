@@ -55,6 +55,6 @@ Object.assign(JSONSpecObject.prototype, {
 	},
 	//fromJSON is added as an alternative and better name.
 	fromJSON: function(spec) {
-		this.setFromSpecification(spec);
+		return this.setFromSpecification(spec);
 	}
 });
