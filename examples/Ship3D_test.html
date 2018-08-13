@@ -11,17 +11,18 @@
 	<script src="../build/Vessel.js"></script>
 	
 	<script src="js/libs/three.js"></script>
-	<!--<script src="js/libs/dat.gui.js"></script>-->
+	<script src="js/libs/dat.gui.js"></script>
 	<script src="js/libs/STLLoader.js"></script>
 	<script src="js/libs/OrbitControls.js"></script>
 	<script src="js/libs/d3_v4.9.1.js"></script>
 	<script src="js/Ship3D_v2.js"></script>
+	<script src="js/ObjectMenu.js"></script>
 	
     <script>
 "use strict";
 
 var renderer, scene, camera;
-var ship3D;
+var ship3D, objectMenu;
 
 //This runs automatically:
 (function main() {
@@ -74,6 +75,8 @@ var ship3D;
 		let LOA = ship.structure.hull.attributes.LOA;
 		camera.position.set(0.7*LOA, 0.7*LOA, 0.7*LOA);
 		controls.update();
+		
+		objectMenu = new ObjectMenu({ship, ship3D});
 		
 		//Add grid (as reference for draft and sizes):
 		/*scene.add(function(){

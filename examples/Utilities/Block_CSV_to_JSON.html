@@ -7,9 +7,8 @@ to a format that can be copy-pasted into the vessel specification.
 <html>
 <head></head>
 <body>
-<!--<script src="../libs/three.js"></script>-->
-<script src="../libs/d3_v4.9.1.js"></script>
-<script src="../libs/browse_files_Elias_Hasle.js"></script>
+<script src="../js/libs/d3_v4.9.1.js"></script>
+<script src="../js/libs/browse_files_Elias_Hasle.js"></script>
 
 <a id="importantLink" href="#" onclick="onClick()">Click here!</a>
 
@@ -25,6 +24,8 @@ function onClick() {
 			function stripName(s) {
 				return s.replace(/[\d\s]/g, "");
 			}
+			//This function generates an identifying string for a baseObject, to enable grouping of
+			//derivedObjects by common baseObject
 			function hash(bo) {
 				let bd = bo.boxDimensions;
 				return stripName(bo.id) + "L" + bd.length + "B" + bd.breadth + "H" + bd.height + "fd" + bo.weightInformation.fluidDensity + "F" + bo.file3D;
@@ -99,9 +100,19 @@ function onClick() {
 						SFI: e.Classification
 					},
 					referenceState: {
-						xCentre: 0.5*(e.xAft+e.xFwd),
+						/*xCentre: 0.5*(e.xAft+e.xFwd),
 						yCentre: e.yCentre,
-						zBase: e.zBase
+						zBase: e.zBase,*/
+						position: {
+							xCentre: 0.5*(e.xAft+e.xFwd),
+							yCentre: e.yCentre,
+							zBase: e.zBase
+						},
+						/*rotation: {
+							x: 0,
+							y: 0,
+							z: 0
+						}*/
 					}
 				};
 			});

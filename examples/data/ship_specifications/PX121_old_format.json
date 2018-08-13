@@ -581,7 +581,7 @@
 			"fullness": 0.5
 		},
 		"weightInformation": {
-			"contentDensity": 1000,
+			"contentDensity": 850,
 			"volumeCapacity": 131.122223379204,
 			"lightweight": 1669.5,
 			"fullnessCGMapping": {
@@ -609,7 +609,7 @@
 			"fullness": 0.5
 		},
 		"weightInformation": {
-			"contentDensity": 1000,
+			"contentDensity": 850,
 			"volumeCapacity": 484.98336589792433,
 			"lightweight": 6175,
 			"fullnessCGMapping": {
@@ -2261,11 +2261,13 @@
 			"SFI": "101"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 1.05,
-				"yCentre": 2.9,
-				"zBase": 1
-			}
+			"xCentre": 1.05,
+			"yCentre": 2.9,
+			"zBase": 1
+		},
+		"style": {
+			"color": "#aabbcc",
+			"opacity": 0.8
 		}
 	}, {
 		"id": "Tank2",
@@ -2275,11 +2277,9 @@
 			"SFI": "102"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 1.05,
-				"yCentre": -2.9,
-				"zBase": 1
-			}
+			"xCentre": 1.05,
+			"yCentre": -2.9,
+			"zBase": 1
 		}
 	}, {
 		"id": "Tank3",
@@ -2289,11 +2289,9 @@
 			"SFI": "103"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 4.2,
-				"yCentre": 3.25,
-				"zBase": 1
-			}
+			"xCentre": 4.2,
+			"yCentre": 3.25,
+			"zBase": 1
 		}
 	}, {
 		"id": "Tank4",
@@ -2303,11 +2301,9 @@
 			"SFI": "104"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 4.2,
-				"yCentre": -3.25,
-				"zBase": 1
-			}
+			"xCentre": 4.2,
+			"yCentre": -3.25,
+			"zBase": 1
 		}
 	}, {
 		"id": "Tank5",
@@ -2317,11 +2313,9 @@
 			"SFI": "105"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 8.75,
-				"yCentre": 4,
-				"zBase": 1
-			}
+			"xCentre": 8.75,
+			"yCentre": 4,
+			"zBase": 1
 		}
 	}, {
 		"id": "Tank6",
@@ -2331,11 +2325,9 @@
 			"SFI": "106"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 8.75,
-				"yCentre": -4,
-				"zBase": 1
-			}
+			"xCentre": 8.75,
+			"yCentre": -4,
+			"zBase": 1
 		}
 	}, {
 		"id": "Tank7",
@@ -2345,11 +2337,9 @@
 			"SFI": "107"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 14.549999999999999,
-				"yCentre": 5.25,
-				"zBase": 1
-			}
+			"xCentre": 14.549999999999999,
+			"yCentre": 5.25,
+			"zBase": 1
 		}
 	}, {
 		"id": "Tank8",
@@ -2359,11 +2349,9 @@
 			"SFI": "108"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 14.549999999999999,
-				"yCentre": -5.25,
-				"zBase": 1
-			}
+			"xCentre": 14.549999999999999,
+			"yCentre": -5.25,
+			"zBase": 1
 		}
 	}, {
 		"id": "Propulsion room",
@@ -2373,11 +2361,9 @@
 			"SFI": "109"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 13.25,
-				"yCentre": 0,
-				"zBase": 1
-			}
+			"xCentre": 13.25,
+			"yCentre": 0,
+			"zBase": 1
 		}
 	}, {
 		"id": "Tank9",
@@ -2387,11 +2373,9 @@
 			"SFI": "110"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 20,
-				"yCentre": 6.25,
-				"zBase": 1
-			}
+			"xCentre": 20,
+			"yCentre": 6.25,
+			"zBase": 1
 		}
 	}, {
 		"id": "Tank10",
@@ -2401,11 +2385,9 @@
 			"SFI": "111"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 20,
-				"yCentre": -6.25,
-				"zBase": 1
-			}
+			"xCentre": 20,
+			"yCentre": -6.25,
+			"zBase": 1
 		}
 	}, {
 		"id": "DryBulk1",
@@ -2415,11 +2397,9 @@
 			"SFI": "112"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 20.35,
-				"yCentre": 3.25,
-				"zBase": 1
-			}
+			"xCentre": 20.35,
+			"yCentre": 3.25,
+			"zBase": 1
 		}
 	}, {
 		"id": "DryBulk2",
@@ -2429,11 +2409,9 @@
 			"SFI": "113"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 20.35,
-				"yCentre": -3,
-				"zBase": 1
-			}
+			"xCentre": 20.35,
+			"yCentre": -3,
+			"zBase": 1
 		}
 	}, {
 		"id": "DryBulk3",
@@ -2443,11 +2421,9 @@
 			"SFI": "114"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 24.05,
-				"yCentre": 4.75,
-				"zBase": 1
-			}
+			"xCentre": 24.05,
+			"yCentre": 4.75,
+			"zBase": 1
 		}
 	}, {
 		"id": "DryBulk4",
@@ -2457,11 +2433,9 @@
 			"SFI": "115"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 24.05,
-				"yCentre": -4.75,
-				"zBase": 1
-			}
+			"xCentre": 24.05,
+			"yCentre": -4.75,
+			"zBase": 1
 		}
 	}, {
 		"id": "FOOverFlow1",
@@ -2471,11 +2445,9 @@
 			"SFI": "116"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 24.25,
-				"yCentre": 0,
-				"zBase": 1
-			}
+			"xCentre": 24.25,
+			"yCentre": 0,
+			"zBase": 1
 		}
 	}, {
 		"id": "MudBrineOroSlop1",
@@ -2485,11 +2457,9 @@
 			"SFI": "117"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 29.25,
-				"yCentre": 3.75,
-				"zBase": 1
-			}
+			"xCentre": 29.25,
+			"yCentre": 3.75,
+			"zBase": 1
 		}
 	}, {
 		"id": "MudBrineOroSlop2",
@@ -2499,11 +2469,9 @@
 			"SFI": "118"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 29.25,
-				"yCentre": -3.75,
-				"zBase": 1
-			}
+			"xCentre": 29.25,
+			"yCentre": -3.75,
+			"zBase": 1
 		}
 	}, {
 		"id": "MudBrineOroSlop3",
@@ -2513,11 +2481,9 @@
 			"SFI": "119"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 33.25,
-				"yCentre": 3.75,
-				"zBase": 1
-			}
+			"xCentre": 33.25,
+			"yCentre": 3.75,
+			"zBase": 1
 		}
 	}, {
 		"id": "MudBrineOroSlop4",
@@ -2527,11 +2493,9 @@
 			"SFI": "120"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 33.25,
-				"yCentre": -3.75,
-				"zBase": 1
-			}
+			"xCentre": 33.25,
+			"yCentre": -3.75,
+			"zBase": 1
 		}
 	}, {
 		"id": "MudBrineOroSlop5",
@@ -2541,11 +2505,9 @@
 			"SFI": "121"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 37.25,
-				"yCentre": 3.75,
-				"zBase": 1
-			}
+			"xCentre": 37.25,
+			"yCentre": 3.75,
+			"zBase": 1
 		}
 	}, {
 		"id": "MudBrineOroSlop6",
@@ -2555,11 +2517,9 @@
 			"SFI": "122"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 37.25,
-				"yCentre": -3.75,
-				"zBase": 1
-			}
+			"xCentre": 37.25,
+			"yCentre": -3.75,
+			"zBase": 1
 		}
 	}, {
 		"id": "MudBrineOroSlop7",
@@ -2569,11 +2529,9 @@
 			"SFI": "123"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 41.25,
-				"yCentre": 3.75,
-				"zBase": 1
-			}
+			"xCentre": 41.25,
+			"yCentre": 3.75,
+			"zBase": 1
 		}
 	}, {
 		"id": "MudBrineOroSlop8",
@@ -2583,11 +2541,9 @@
 			"SFI": "124"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 41.25,
-				"yCentre": -3.75,
-				"zBase": 1
-			}
+			"xCentre": 41.25,
+			"yCentre": -3.75,
+			"zBase": 1
 		}
 	}, {
 		"id": "MudBrineOroSlop9",
@@ -2597,11 +2553,9 @@
 			"SFI": "125"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 45.25,
-				"yCentre": 3.75,
-				"zBase": 1
-			}
+			"xCentre": 45.25,
+			"yCentre": 3.75,
+			"zBase": 1
 		}
 	}, {
 		"id": "MudBrineOroSlop10",
@@ -2611,11 +2565,9 @@
 			"SFI": "126"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 45.25,
-				"yCentre": -3.75,
-				"zBase": 1
-			}
+			"xCentre": 45.25,
+			"yCentre": -3.75,
+			"zBase": 1
 		}
 	}, {
 		"id": "Tank11",
@@ -2625,11 +2577,9 @@
 			"SFI": "127"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 29.25,
-				"yCentre": 7.5,
-				"zBase": 1
-			}
+			"xCentre": 29.25,
+			"yCentre": 7.5,
+			"zBase": 1
 		}
 	}, {
 		"id": "Tank12",
@@ -2639,11 +2589,9 @@
 			"SFI": "128"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 29.25,
-				"yCentre": -7.5,
-				"zBase": 1
-			}
+			"xCentre": 29.25,
+			"yCentre": -7.5,
+			"zBase": 1
 		}
 	}, {
 		"id": "Tank13",
@@ -2653,11 +2601,9 @@
 			"SFI": "129"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 35.75,
-				"yCentre": 7.5,
-				"zBase": 1
-			}
+			"xCentre": 35.75,
+			"yCentre": 7.5,
+			"zBase": 1
 		}
 	}, {
 		"id": "Tank14",
@@ -2667,11 +2613,9 @@
 			"SFI": "130"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 35.75,
-				"yCentre": -7.5,
-				"zBase": 1
-			}
+			"xCentre": 35.75,
+			"yCentre": -7.5,
+			"zBase": 1
 		}
 	}, {
 		"id": "Tank15",
@@ -2681,11 +2625,9 @@
 			"SFI": "131"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 42.25,
-				"yCentre": 7.5,
-				"zBase": 1
-			}
+			"xCentre": 42.25,
+			"yCentre": 7.5,
+			"zBase": 1
 		}
 	}, {
 		"id": "Tank16",
@@ -2695,11 +2637,9 @@
 			"SFI": "132"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 42.25,
-				"yCentre": -7.5,
-				"zBase": 1
-			}
+			"xCentre": 42.25,
+			"yCentre": -7.5,
+			"zBase": 1
 		}
 	}, {
 		"id": "Tank17",
@@ -2709,11 +2649,9 @@
 			"SFI": "133"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 51.75,
-				"yCentre": 5.75,
-				"zBase": 1.4
-			}
+			"xCentre": 51.75,
+			"yCentre": 5.75,
+			"zBase": 1.4
 		}
 	}, {
 		"id": "Tank18",
@@ -2723,11 +2661,9 @@
 			"SFI": "134"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 51.75,
-				"yCentre": -5.75,
-				"zBase": 1.4
-			}
+			"xCentre": 51.75,
+			"yCentre": -5.75,
+			"zBase": 1.4
 		}
 	}, {
 		"id": "Tank18",
@@ -2737,11 +2673,9 @@
 			"SFI": "135"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 54,
-				"yCentre": 5.75,
-				"zBase": 1.4
-			}
+			"xCentre": 54,
+			"yCentre": 5.75,
+			"zBase": 1.4
 		}
 	}, {
 		"id": "Tank19",
@@ -2751,11 +2685,9 @@
 			"SFI": "136"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 55,
-				"yCentre": 5.75,
-				"zBase": 1.4
-			}
+			"xCentre": 55,
+			"yCentre": 5.75,
+			"zBase": 1.4
 		}
 	}, {
 		"id": "Sewage1",
@@ -2765,11 +2697,9 @@
 			"SFI": "137"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 57.25,
-				"yCentre": 5.75,
-				"zBase": 1.4
-			}
+			"xCentre": 57.25,
+			"yCentre": 5.75,
+			"zBase": 1.4
 		}
 	}, {
 		"id": "Tank20",
@@ -2779,11 +2709,9 @@
 			"SFI": "138"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 62,
-				"yCentre": 5,
-				"zBase": 1.4
-			}
+			"xCentre": 62,
+			"yCentre": 5,
+			"zBase": 1.4
 		}
 	}, {
 		"id": "Tank21",
@@ -2793,11 +2721,9 @@
 			"SFI": "139"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 62,
-				"yCentre": -5,
-				"zBase": 1.4
-			}
+			"xCentre": 62,
+			"yCentre": -5,
+			"zBase": 1.4
 		}
 	}, {
 		"id": "Tank122",
@@ -2807,11 +2733,9 @@
 			"SFI": "140"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 54,
-				"yCentre": -5.75,
-				"zBase": 1.4
-			}
+			"xCentre": 54,
+			"yCentre": -5.75,
+			"zBase": 1.4
 		}
 	}, {
 		"id": "Tank22",
@@ -2821,11 +2745,9 @@
 			"SFI": "141"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 55,
-				"yCentre": -5.75,
-				"zBase": 1.4
-			}
+			"xCentre": 55,
+			"yCentre": -5.75,
+			"zBase": 1.4
 		}
 	}, {
 		"id": "Tank23",
@@ -2835,53 +2757,48 @@
 			"SFI": "142"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 57.25,
-				"yCentre": -5.25,
-				"zBase": 1.4
-			}
+			"xCentre": 57.25,
+			"yCentre": -5.25,
+			"zBase": 1.4
 		}
 	}, {
 		"id": "Tank24",
+		"group": "fuel tanks",
 		"baseObject": "TankL10.5B3H5.3fdundefinedFtank11.stl",
 		"affiliations": {
 			"Deck": "TankTop",
-			"SFI": "143"
+			"SFI": "70X.XXX.01"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 70.25,
-				"yCentre": 3,
-				"zBase": 1.4
-			}
+			"xCentre": 70.25,
+			"yCentre": 3,
+			"zBase": 1.4
 		}
 	}, {
 		"id": "Tank25",
+		"group": "fuel tanks",
 		"baseObject": "TankL10.5B3H5.3fdundefinedFtank11.stl",
 		"affiliations": {
 			"Deck": "TankTop",
-			"SFI": "144"
+			"SFI": "70X.XXX.02"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 70.25,
-				"yCentre": -3,
-				"zBase": 1.4
-			}
+			"xCentre": 70.25,
+			"yCentre": -3,
+			"zBase": 1.4
 		}
 	}, {
 		"id": "Tank26",
+		"group": "fuel tanks",
 		"baseObject": "TankL6.5B10H9.5fdundefinedFtank12.stl",
 		"affiliations": {
 			"Deck": "TankTop",
-			"SFI": "145"
+			"SFI": "70X.XXX.03"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 78.75,
-				"yCentre": 0,
-				"zBase": 1.4
-			}
+			"xCentre": 78.75,
+			"yCentre": 0,
+			"zBase": 1.4
 		}
 	}, {
 		"id": "EngineRoomLower1",
@@ -2891,11 +2808,9 @@
 			"SFI": "146"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 56,
-				"yCentre": 0,
-				"zBase": 1.4
-			}
+			"xCentre": 56,
+			"yCentre": 0,
+			"zBase": 1.4
 		}
 	}, {
 		"id": "BowThrusterRoom1",
@@ -2905,11 +2820,9 @@
 			"SFI": "147"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 68,
-				"yCentre": 0,
-				"zBase": 1.4
-			}
+			"xCentre": 68,
+			"yCentre": 0,
+			"zBase": 1.4
 		}
 	}, {
 		"id": "Tank27",
@@ -2919,11 +2832,9 @@
 			"SFI": "201"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 1.5,
-				"yCentre": 4.5,
-				"zBase": 5.3
-			}
+			"xCentre": 1.5,
+			"yCentre": 4.5,
+			"zBase": 5.3
 		}
 	}, {
 		"id": "Tank28",
@@ -2933,11 +2844,9 @@
 			"SFI": "202"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 1.5,
-				"yCentre": -4.5,
-				"zBase": 5.3
-			}
+			"xCentre": 1.5,
+			"yCentre": -4.5,
+			"zBase": 5.3
 		}
 	}, {
 		"id": "Tank28",
@@ -2947,11 +2856,9 @@
 			"SFI": "203"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 5,
-				"yCentre": 7.5,
-				"zBase": 5.3
-			}
+			"xCentre": 5,
+			"yCentre": 7.5,
+			"zBase": 5.3
 		}
 	}, {
 		"id": "Tank29",
@@ -2961,11 +2868,9 @@
 			"SFI": "204"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 5,
-				"yCentre": -7.5,
-				"zBase": 5.3
-			}
+			"xCentre": 5,
+			"yCentre": -7.5,
+			"zBase": 5.3
 		}
 	}, {
 		"id": "MotorLeft1",
@@ -2975,11 +2880,9 @@
 			"SFI": "205"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 6,
-				"yCentre": 4,
-				"zBase": 5.3
-			}
+			"xCentre": 6,
+			"yCentre": 4,
+			"zBase": 5.3
 		}
 	}, {
 		"id": "MotorRight1",
@@ -2989,11 +2892,9 @@
 			"SFI": "206"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 6,
-				"yCentre": -4,
-				"zBase": 5.3
-			}
+			"xCentre": 6,
+			"yCentre": -4,
+			"zBase": 5.3
 		}
 	}, {
 		"id": "PropulsionRoomUpper",
@@ -3003,11 +2904,9 @@
 			"SFI": "207"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 6,
-				"yCentre": 0,
-				"zBase": 5.3
-			}
+			"xCentre": 6,
+			"yCentre": 0,
+			"zBase": 5.3
 		}
 	}, {
 		"id": "Tank30",
@@ -3017,11 +2916,9 @@
 			"SFI": "208"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 10.5,
-				"yCentre": 0,
-				"zBase": 5.3
-			}
+			"xCentre": 10.5,
+			"yCentre": 0,
+			"zBase": 5.3
 		}
 	}, {
 		"id": "Tank31",
@@ -3031,11 +2928,9 @@
 			"SFI": "209"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 14.75,
-				"yCentre": 4.5,
-				"zBase": 5.3
-			}
+			"xCentre": 14.75,
+			"yCentre": 4.5,
+			"zBase": 5.3
 		}
 	}, {
 		"id": "Tank32",
@@ -3045,11 +2940,9 @@
 			"SFI": "210"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 14.75,
-				"yCentre": -4.5,
-				"zBase": 5.3
-			}
+			"xCentre": 14.75,
+			"yCentre": -4.5,
+			"zBase": 5.3
 		}
 	}, {
 		"id": "Tank33",
@@ -3059,11 +2952,9 @@
 			"SFI": "211"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 15,
-				"yCentre": 8.5,
-				"zBase": 5.3
-			}
+			"xCentre": 15,
+			"yCentre": 8.5,
+			"zBase": 5.3
 		}
 	}, {
 		"id": "Tank34",
@@ -3073,11 +2964,9 @@
 			"SFI": "212"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 15,
-				"yCentre": -8.5,
-				"zBase": 5.3
-			}
+			"xCentre": 15,
+			"yCentre": -8.5,
+			"zBase": 5.3
 		}
 	}, {
 		"id": "SwitchBoardRoom1",
@@ -3087,11 +2976,9 @@
 			"SFI": "213"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 51.75,
-				"yCentre": 0,
-				"zBase": 5.3
-			}
+			"xCentre": 51.75,
+			"yCentre": 0,
+			"zBase": 5.3
 		}
 	}, {
 		"id": "EngineRoomUpper1",
@@ -3101,11 +2988,9 @@
 			"SFI": "214"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 57.75,
-				"yCentre": 0,
-				"zBase": 5.3
-			}
+			"xCentre": 57.75,
+			"yCentre": 0,
+			"zBase": 5.3
 		}
 	}, {
 		"id": "BowThrusterRoom2",
@@ -3115,11 +3000,9 @@
 			"SFI": "215"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 68,
-				"yCentre": 0,
-				"zBase": 5.3
-			}
+			"xCentre": 68,
+			"yCentre": 0,
+			"zBase": 5.3
 		}
 	}, {
 		"id": "WorkShop1",
@@ -3129,11 +3012,9 @@
 			"SFI": "216"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 63.5,
-				"yCentre": -2.5,
-				"zBase": 5.3
-			}
+			"xCentre": 63.5,
+			"yCentre": -2.5,
+			"zBase": 5.3
 		}
 	}, {
 		"id": "ChainTank1",
@@ -3143,11 +3024,9 @@
 			"SFI": "217"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 74.75,
-				"yCentre": 0.75,
-				"zBase": 5.3
-			}
+			"xCentre": 74.75,
+			"yCentre": 0.75,
+			"zBase": 5.3
 		}
 	}, {
 		"id": "ChainTank2",
@@ -3157,11 +3036,9 @@
 			"SFI": "218"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 74.75,
-				"yCentre": -0.75,
-				"zBase": 5.3
-			}
+			"xCentre": 74.75,
+			"yCentre": -0.75,
+			"zBase": 5.3
 		}
 	}, {
 		"id": "Cover1",
@@ -3171,11 +3048,9 @@
 			"SFI": "301"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 27,
-				"yCentre": 0,
-				"zBase": 8
-			}
+			"xCentre": 27,
+			"yCentre": 0,
+			"zBase": 8
 		}
 	}, {
 		"id": "Tank35",
@@ -3185,11 +3060,9 @@
 			"SFI": "302"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 30.5,
-				"yCentre": 8.25,
-				"zBase": 8
-			}
+			"xCentre": 30.5,
+			"yCentre": 8.25,
+			"zBase": 8
 		}
 	}, {
 		"id": "Tank36",
@@ -3199,11 +3072,9 @@
 			"SFI": "303"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 30.5,
-				"yCentre": -8.25,
-				"zBase": 8
-			}
+			"xCentre": 30.5,
+			"yCentre": -8.25,
+			"zBase": 8
 		}
 	}, {
 		"id": "Tank37",
@@ -3213,11 +3084,9 @@
 			"SFI": "304"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 37.5,
-				"yCentre": 8.25,
-				"zBase": 8
-			}
+			"xCentre": 37.5,
+			"yCentre": 8.25,
+			"zBase": 8
 		}
 	}, {
 		"id": "Tank38",
@@ -3227,11 +3096,9 @@
 			"SFI": "305"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 37.5,
-				"yCentre": -8.25,
-				"zBase": 8
-			}
+			"xCentre": 37.5,
+			"yCentre": -8.25,
+			"zBase": 8
 		}
 	}, {
 		"id": "Tank39",
@@ -3241,11 +3108,9 @@
 			"SFI": "306"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 54,
-				"yCentre": 0,
-				"zBase": 8
-			}
+			"xCentre": 54,
+			"yCentre": 0,
+			"zBase": 8
 		}
 	}, {
 		"id": "FiremStore",
@@ -3255,11 +3120,9 @@
 			"SFI": "307"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 58.25,
-				"yCentre": 8.25,
-				"zBase": 8
-			}
+			"xCentre": 58.25,
+			"yCentre": 8.25,
+			"zBase": 8
 		}
 	}, {
 		"id": "DeckWorkshop",
@@ -3269,11 +3132,9 @@
 			"SFI": "308"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 58.25,
-				"yCentre": 5.75,
-				"zBase": 8
-			}
+			"xCentre": 58.25,
+			"yCentre": 5.75,
+			"zBase": 8
 		}
 	}, {
 		"id": "Tank40",
@@ -3283,11 +3144,9 @@
 			"SFI": "309"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 58.5,
-				"yCentre": 3.25,
-				"zBase": 8
-			}
+			"xCentre": 58.5,
+			"yCentre": 3.25,
+			"zBase": 8
 		}
 	}, {
 		"id": "Store1",
@@ -3297,11 +3156,9 @@
 			"SFI": "310"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 58.5,
-				"yCentre": 1.5,
-				"zBase": 8
-			}
+			"xCentre": 58.5,
+			"yCentre": 1.5,
+			"zBase": 8
 		}
 	}, {
 		"id": "Tank40",
@@ -3311,11 +3168,9 @@
 			"SFI": "311"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 58.5,
-				"yCentre": -3.25,
-				"zBase": 8
-			}
+			"xCentre": 58.5,
+			"yCentre": -3.25,
+			"zBase": 8
 		}
 	}, {
 		"id": "Chem",
@@ -3325,11 +3180,9 @@
 			"SFI": "312"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 58.25,
-				"yCentre": -8.25,
-				"zBase": 8
-			}
+			"xCentre": 58.25,
+			"yCentre": -8.25,
+			"zBase": 8
 		}
 	}, {
 		"id": "Paint",
@@ -3339,11 +3192,9 @@
 			"SFI": "313"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 58.25,
-				"yCentre": -6.75,
-				"zBase": 8
-			}
+			"xCentre": 58.25,
+			"yCentre": -6.75,
+			"zBase": 8
 		}
 	}, {
 		"id": "Inc&GarbRoom",
@@ -3353,11 +3204,9 @@
 			"SFI": "314"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 62,
-				"yCentre": 6.25,
-				"zBase": 8
-			}
+			"xCentre": 62,
+			"yCentre": 6.25,
+			"zBase": 8
 		}
 	}, {
 		"id": "Room1",
@@ -3367,11 +3216,9 @@
 			"SFI": "315"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 61.25,
-				"yCentre": 1.75,
-				"zBase": 8
-			}
+			"xCentre": 61.25,
+			"yCentre": 1.75,
+			"zBase": 8
 		}
 	}, {
 		"id": "Room2",
@@ -3381,11 +3228,9 @@
 			"SFI": "316"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 61.25,
-				"yCentre": -5,
-				"zBase": 8
-			}
+			"xCentre": 61.25,
+			"yCentre": -5,
+			"zBase": 8
 		}
 	}, {
 		"id": "Room3",
@@ -3395,11 +3240,9 @@
 			"SFI": "317"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 63.75,
-				"yCentre": 1.75,
-				"zBase": 8
-			}
+			"xCentre": 63.75,
+			"yCentre": 1.75,
+			"zBase": 8
 		}
 	}, {
 		"id": "Room4",
@@ -3409,11 +3252,9 @@
 			"SFI": "318"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 65,
-				"yCentre": -3,
-				"zBase": 8
-			}
+			"xCentre": 65,
+			"yCentre": -3,
+			"zBase": 8
 		}
 	}, {
 		"id": "Room5",
@@ -3423,11 +3264,9 @@
 			"SFI": "319"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 65,
-				"yCentre": -5.5,
-				"zBase": 8
-			}
+			"xCentre": 65,
+			"yCentre": -5.5,
+			"zBase": 8
 		}
 	}, {
 		"id": "Room6",
@@ -3437,11 +3276,9 @@
 			"SFI": "320"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 68.75,
-				"yCentre": -4.75,
-				"zBase": 8
-			}
+			"xCentre": 68.75,
+			"yCentre": -4.75,
+			"zBase": 8
 		}
 	}, {
 		"id": "Room7",
@@ -3451,11 +3288,9 @@
 			"SFI": "321"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 72.25,
-				"yCentre": -3,
-				"zBase": 8
-			}
+			"xCentre": 72.25,
+			"yCentre": -3,
+			"zBase": 8
 		}
 	}, {
 		"id": "Tank41",
@@ -3465,11 +3300,9 @@
 			"SFI": "322"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 74.75,
-				"yCentre": 3.75,
-				"zBase": 8
-			}
+			"xCentre": 74.75,
+			"yCentre": 3.75,
+			"zBase": 8
 		}
 	}, {
 		"id": "Tank42",
@@ -3479,11 +3312,9 @@
 			"SFI": "323"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 74.75,
-				"yCentre": -3.75,
-				"zBase": 8
-			}
+			"xCentre": 74.75,
+			"yCentre": -3.75,
+			"zBase": 8
 		}
 	}, {
 		"id": "Room8",
@@ -3493,11 +3324,9 @@
 			"SFI": "324"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 68,
-				"yCentre": 5,
-				"zBase": 8
-			}
+			"xCentre": 68,
+			"yCentre": 5,
+			"zBase": 8
 		}
 	}, {
 		"id": "Stairs1",
@@ -3507,11 +3336,9 @@
 			"SFI": "325"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 67.5,
-				"yCentre": 1,
-				"zBase": 8
-			}
+			"xCentre": 67.5,
+			"yCentre": 1,
+			"zBase": 8
 		}
 	}, {
 		"id": "Toilets1",
@@ -3521,11 +3348,9 @@
 			"SFI": "326"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 71,
-				"yCentre": 1.25,
-				"zBase": 8
-			}
+			"xCentre": 71,
+			"yCentre": 1.25,
+			"zBase": 8
 		}
 	}, {
 		"id": "DeckOffice1",
@@ -3535,11 +3360,9 @@
 			"SFI": "327"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 72.75,
-				"yCentre": 3.25,
-				"zBase": 8
-			}
+			"xCentre": 72.75,
+			"yCentre": 3.25,
+			"zBase": 8
 		}
 	}, {
 		"id": "Cover2",
@@ -3549,11 +3372,9 @@
 			"SFI": "401"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 26.75,
-				"yCentre": 0,
-				"zBase": 10.9
-			}
+			"xCentre": 26.75,
+			"yCentre": 0,
+			"zBase": 10.9
 		}
 	}, {
 		"id": "StabTank1",
@@ -3563,11 +3384,9 @@
 			"SFI": "402"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 55.25,
-				"yCentre": 0,
-				"zBase": 10.9
-			}
+			"xCentre": 55.25,
+			"yCentre": 0,
+			"zBase": 10.9
 		}
 	}, {
 		"id": "Freezer1",
@@ -3577,11 +3396,9 @@
 			"SFI": "403"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 58.75,
-				"yCentre": 8,
-				"zBase": 10.9
-			}
+			"xCentre": 58.75,
+			"yCentre": 8,
+			"zBase": 10.9
 		}
 	}, {
 		"id": "Fridge1",
@@ -3591,11 +3408,9 @@
 			"SFI": "404"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 62.5,
-				"yCentre": 8,
-				"zBase": 10.9
-			}
+			"xCentre": 62.5,
+			"yCentre": 8,
+			"zBase": 10.9
 		}
 	}, {
 		"id": "DryRoom1",
@@ -3605,11 +3420,9 @@
 			"SFI": "405"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 60.75,
-				"yCentre": 5.5,
-				"zBase": 10.9
-			}
+			"xCentre": 60.75,
+			"yCentre": 5.5,
+			"zBase": 10.9
 		}
 	}, {
 		"id": "Room9",
@@ -3619,11 +3432,9 @@
 			"SFI": "406"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 58.25,
-				"yCentre": 0,
-				"zBase": 10.9
-			}
+			"xCentre": 58.25,
+			"yCentre": 0,
+			"zBase": 10.9
 		}
 	}, {
 		"id": "ACRoom1",
@@ -3633,11 +3444,9 @@
 			"SFI": "407"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 60.75,
-				"yCentre": -6.5,
-				"zBase": 10.9
-			}
+			"xCentre": 60.75,
+			"yCentre": -6.5,
+			"zBase": 10.9
 		}
 	}, {
 		"id": "Room10",
@@ -3647,11 +3456,9 @@
 			"SFI": "408"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 62,
-				"yCentre": 1.5,
-				"zBase": 10.9
-			}
+			"xCentre": 62,
+			"yCentre": 1.5,
+			"zBase": 10.9
 		}
 	}, {
 		"id": "CL1",
@@ -3661,11 +3468,9 @@
 			"SFI": "409"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 60.75,
-				"yCentre": -3,
-				"zBase": 10.9
-			}
+			"xCentre": 60.75,
+			"yCentre": -3,
+			"zBase": 10.9
 		}
 	}, {
 		"id": "Toilets2",
@@ -3675,11 +3480,9 @@
 			"SFI": "410"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 63.25,
-				"yCentre": -3,
-				"zBase": 10.9
-			}
+			"xCentre": 63.25,
+			"yCentre": -3,
+			"zBase": 10.9
 		}
 	}, {
 		"id": "Gallery1",
@@ -3689,11 +3492,9 @@
 			"SFI": "411"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 67.25,
-				"yCentre": 5.25,
-				"zBase": 10.9
-			}
+			"xCentre": 67.25,
+			"yCentre": 5.25,
+			"zBase": 10.9
 		}
 	}, {
 		"id": "Stairs2",
@@ -3703,11 +3504,9 @@
 			"SFI": "412"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 67.25,
-				"yCentre": 0.75,
-				"zBase": 10.9
-			}
+			"xCentre": 67.25,
+			"yCentre": 0.75,
+			"zBase": 10.9
 		}
 	}, {
 		"id": "DayRoom1",
@@ -3717,11 +3516,9 @@
 			"SFI": "413"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 67.25,
-				"yCentre": -5,
-				"zBase": 10.9
-			}
+			"xCentre": 67.25,
+			"yCentre": -5,
+			"zBase": 10.9
 		}
 	}, {
 		"id": "MessRoom1",
@@ -3731,11 +3528,9 @@
 			"SFI": "414"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 72,
-				"yCentre": 0,
-				"zBase": 10.9
-			}
+			"xCentre": 72,
+			"yCentre": 0,
+			"zBase": 10.9
 		}
 	}, {
 		"id": "RopeBin1",
@@ -3745,11 +3540,9 @@
 			"SFI": "415"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 74.75,
-				"yCentre": 0,
-				"zBase": 10.9
-			}
+			"xCentre": 74.75,
+			"yCentre": 0,
+			"zBase": 10.9
 		}
 	}, {
 		"id": "Store2",
@@ -3759,11 +3552,9 @@
 			"SFI": "416"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 74.75,
-				"yCentre": 3.5,
-				"zBase": 10.9
-			}
+			"xCentre": 74.75,
+			"yCentre": 3.5,
+			"zBase": 10.9
 		}
 	}, {
 		"id": "Store3",
@@ -3773,11 +3564,9 @@
 			"SFI": "417"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 74.75,
-				"yCentre": -3.5,
-				"zBase": 10.9
-			}
+			"xCentre": 74.75,
+			"yCentre": -3.5,
+			"zBase": 10.9
 		}
 	}, {
 		"id": "Store4",
@@ -3787,11 +3576,9 @@
 			"SFI": "418"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 78.75,
-				"yCentre": 0,
-				"zBase": 10.9
-			}
+			"xCentre": 78.75,
+			"yCentre": 0,
+			"zBase": 10.9
 		}
 	}, {
 		"id": "SafetyBoat1",
@@ -3801,11 +3588,9 @@
 			"SFI": "501"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 47.25,
-				"yCentre": 7.5,
-				"zBase": 13.8
-			}
+			"xCentre": 47.25,
+			"yCentre": 7.5,
+			"zBase": 13.8
 		}
 	}, {
 		"id": "SafetyBoat2",
@@ -3815,11 +3600,9 @@
 			"SFI": "502"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 56.75,
-				"yCentre": 7.5,
-				"zBase": 13.8
-			}
+			"xCentre": 56.75,
+			"yCentre": 7.5,
+			"zBase": 13.8
 		}
 	}, {
 		"id": "HoistBase1",
@@ -3829,11 +3612,9 @@
 			"SFI": "503"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 54,
-				"yCentre": -6.5,
-				"zBase": 13.8
-			}
+			"xCentre": 54,
+			"yCentre": -6.5,
+			"zBase": 13.8
 		}
 	}, {
 		"id": "Stairs3",
@@ -3843,11 +3624,9 @@
 			"SFI": "504"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 67.25,
-				"yCentre": 0.75,
-				"zBase": 13.8
-			}
+			"xCentre": 67.25,
+			"yCentre": 0.75,
+			"zBase": 13.8
 		}
 	}, {
 		"id": "CableRoom1",
@@ -3857,11 +3636,9 @@
 			"SFI": "505"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 76.75,
-				"yCentre": 0,
-				"zBase": 13.8
-			}
+			"xCentre": 76.75,
+			"yCentre": 0,
+			"zBase": 13.8
 		}
 	}, {
 		"id": "Cabin3",
@@ -3871,11 +3648,9 @@
 			"SFI": "506"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 70.25,
-				"yCentre": 6,
-				"zBase": 13.8
-			}
+			"xCentre": 70.25,
+			"yCentre": 6,
+			"zBase": 13.8
 		}
 	}, {
 		"id": "Cabin2",
@@ -3885,11 +3660,9 @@
 			"SFI": "507"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 67.75,
-				"yCentre": 6,
-				"zBase": 13.8
-			}
+			"xCentre": 67.75,
+			"yCentre": 6,
+			"zBase": 13.8
 		}
 	}, {
 		"id": "Cabin1",
@@ -3899,11 +3672,9 @@
 			"SFI": "508"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 64.25,
-				"yCentre": 6.5,
-				"zBase": 13.8
-			}
+			"xCentre": 64.25,
+			"yCentre": 6.5,
+			"zBase": 13.8
 		}
 	}, {
 		"id": "Tank43",
@@ -3913,11 +3684,9 @@
 			"SFI": "509"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 61.75,
-				"yCentre": 2,
-				"zBase": 13.8
-			}
+			"xCentre": 61.75,
+			"yCentre": 2,
+			"zBase": 13.8
 		}
 	}, {
 		"id": "Room11",
@@ -3927,11 +3696,9 @@
 			"SFI": "510"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 56.75,
-				"yCentre": 0,
-				"zBase": 13.8
-			}
+			"xCentre": 56.75,
+			"yCentre": 0,
+			"zBase": 13.8
 		}
 	}, {
 		"id": "Cabin4",
@@ -3941,11 +3708,9 @@
 			"SFI": "511"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 59,
-				"yCentre": -6.25,
-				"zBase": 13.8
-			}
+			"xCentre": 59,
+			"yCentre": -6.25,
+			"zBase": 13.8
 		}
 	}, {
 		"id": "Cabin5",
@@ -3955,11 +3720,9 @@
 			"SFI": "512"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 64,
-				"yCentre": -5.25,
-				"zBase": 13.8
-			}
+			"xCentre": 64,
+			"yCentre": -5.25,
+			"zBase": 13.8
 		}
 	}, {
 		"id": "Cabin5",
@@ -3969,11 +3732,9 @@
 			"SFI": "513"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 70.25,
-				"yCentre": -4.5,
-				"zBase": 13.8
-			}
+			"xCentre": 70.25,
+			"yCentre": -4.5,
+			"zBase": 13.8
 		}
 	}, {
 		"id": "Cabin6",
@@ -3983,11 +3744,9 @@
 			"SFI": "514"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 67.75,
-				"yCentre": -4.5,
-				"zBase": 13.8
-			}
+			"xCentre": 67.75,
+			"yCentre": -4.5,
+			"zBase": 13.8
 		}
 	}, {
 		"id": "CorridorExt1",
@@ -3997,11 +3756,9 @@
 			"SFI": "601"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 57.25,
-				"yCentre": -2.25,
-				"zBase": 16.5
-			}
+			"xCentre": 57.25,
+			"yCentre": -2.25,
+			"zBase": 16.5
 		}
 	}, {
 		"id": "InstrumentRoom1",
@@ -4011,11 +3768,9 @@
 			"SFI": "602"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 61.75,
-				"yCentre": -1.75,
-				"zBase": 16.5
-			}
+			"xCentre": 61.75,
+			"yCentre": -1.75,
+			"zBase": 16.5
 		}
 	}, {
 		"id": "CaptainCabin1",
@@ -4025,11 +3780,9 @@
 			"SFI": "603"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 62,
-				"yCentre": -6.5,
-				"zBase": 16.5
-			}
+			"xCentre": 62,
+			"yCentre": -6.5,
+			"zBase": 16.5
 		}
 	}, {
 		"id": "ChiefOfficerCabin1",
@@ -4039,11 +3792,9 @@
 			"SFI": "604"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 66.5,
-				"yCentre": -6,
-				"zBase": 16.5
-			}
+			"xCentre": 66.5,
+			"yCentre": -6,
+			"zBase": 16.5
 		}
 	}, {
 		"id": "FirstOfficerCabin1",
@@ -4053,11 +3804,9 @@
 			"SFI": "605"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 69.5,
-				"yCentre": -6,
-				"zBase": 16.5
-			}
+			"xCentre": 69.5,
+			"yCentre": -6,
+			"zBase": 16.5
 		}
 	}, {
 		"id": "ChiefStewardCabin1",
@@ -4067,11 +3816,9 @@
 			"SFI": "606"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 74,
-				"yCentre": -3,
-				"zBase": 16.5
-			}
+			"xCentre": 74,
+			"yCentre": -3,
+			"zBase": 16.5
 		}
 	}, {
 		"id": "ElectricianCabin1",
@@ -4081,11 +3828,9 @@
 			"SFI": "607"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 74,
-				"yCentre": 3,
-				"zBase": 16.5
-			}
+			"xCentre": 74,
+			"yCentre": 3,
+			"zBase": 16.5
 		}
 	}, {
 		"id": "Stairs4",
@@ -4095,11 +3840,9 @@
 			"SFI": "608"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 66.75,
-				"yCentre": 0.5,
-				"zBase": 16.5
-			}
+			"xCentre": 66.75,
+			"yCentre": 0.5,
+			"zBase": 16.5
 		}
 	}, {
 		"id": "CleanLocker1",
@@ -4109,11 +3852,9 @@
 			"SFI": "609"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 65.25,
-				"yCentre": -2,
-				"zBase": 16.5
-			}
+			"xCentre": 65.25,
+			"yCentre": -2,
+			"zBase": 16.5
 		}
 	}, {
 		"id": "BondStore1",
@@ -4123,11 +3864,9 @@
 			"SFI": "610"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 66.75,
-				"yCentre": -2,
-				"zBase": 16.5
-			}
+			"xCentre": 66.75,
+			"yCentre": -2,
+			"zBase": 16.5
 		}
 	}, {
 		"id": "Linen1",
@@ -4137,11 +3876,9 @@
 			"SFI": "611"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 68.25,
-				"yCentre": -2,
-				"zBase": 16.5
-			}
+			"xCentre": 68.25,
+			"yCentre": -2,
+			"zBase": 16.5
 		}
 	}, {
 		"id": "ChiefCabin1",
@@ -4151,11 +3888,9 @@
 			"SFI": "612"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 63.5,
-				"yCentre": 6.5,
-				"zBase": 16.5
-			}
+			"xCentre": 63.5,
+			"yCentre": 6.5,
+			"zBase": 16.5
 		}
 	}, {
 		"id": "FirstEngineerCabin1",
@@ -4165,11 +3900,9 @@
 			"SFI": "613"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 67.75,
-				"yCentre": 6,
-				"zBase": 16.5
-			}
+			"xCentre": 67.75,
+			"yCentre": 6,
+			"zBase": 16.5
 		}
 	}, {
 		"id": "SecondEngineerCabin1",
@@ -4179,11 +3912,9 @@
 			"SFI": "614"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 70,
-				"yCentre": 5.75,
-				"zBase": 16.5
-			}
+			"xCentre": 70,
+			"yCentre": 5.75,
+			"zBase": 16.5
 		}
 	}, {
 		"id": "Hoist1",
@@ -4193,11 +3924,9 @@
 			"SFI": "701"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 54,
-				"yCentre": -0.5,
-				"zBase": 19.2
-			}
+			"xCentre": 54,
+			"yCentre": -0.5,
+			"zBase": 19.2
 		}
 	}, {
 		"id": "AccessStairs1",
@@ -4207,11 +3936,9 @@
 			"SFI": "702"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 61,
-				"yCentre": 6.5,
-				"zBase": 19.2
-			}
+			"xCentre": 61,
+			"yCentre": 6.5,
+			"zBase": 19.2
 		}
 	}, {
 		"id": "AccessStairs2",
@@ -4221,11 +3948,9 @@
 			"SFI": "703"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 61,
-				"yCentre": -6.5,
-				"zBase": 19.2
-			}
+			"xCentre": 61,
+			"yCentre": -6.5,
+			"zBase": 19.2
 		}
 	}, {
 		"id": "ShipHanding1",
@@ -4235,11 +3960,9 @@
 			"SFI": "704"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 59.5,
-				"yCentre": 0,
-				"zBase": 19.2
-			}
+			"xCentre": 59.5,
+			"yCentre": 0,
+			"zBase": 19.2
 		}
 	}, {
 		"id": "MainRoom1",
@@ -4249,11 +3972,9 @@
 			"SFI": "705"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 67,
-				"yCentre": 0,
-				"zBase": 19.2
-			}
+			"xCentre": 67,
+			"yCentre": 0,
+			"zBase": 19.2
 		}
 	}, {
 		"id": "NavigationRoom1",
@@ -4263,11 +3984,9 @@
 			"SFI": "706"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 75.5,
-				"yCentre": 0,
-				"zBase": 19.2
-			}
+			"xCentre": 75.5,
+			"yCentre": 0,
+			"zBase": 19.2
 		}
 	}, {
 		"id": "EmGenRoom1",
@@ -4277,11 +3996,9 @@
 			"SFI": "801"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 68.5,
-				"yCentre": -1.5,
-				"zBase": 23.35
-			}
+			"xCentre": 68.5,
+			"yCentre": -1.5,
+			"zBase": 23.35
 		}
 	}, {
 		"id": "Communication1",
@@ -4291,11 +4008,9 @@
 			"SFI": "802"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 68.5,
-				"yCentre": 3,
-				"zBase": 23.35
-			}
+			"xCentre": 68.5,
+			"yCentre": 3,
+			"zBase": 23.35
 		}
 	}, {
 		"id": "Aerial1",
@@ -4305,11 +4020,9 @@
 			"SFI": "803"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 63.75,
-				"yCentre": 3.75,
-				"zBase": 28.35
-			}
+			"xCentre": 63.75,
+			"yCentre": 3.75,
+			"zBase": 28.35
 		}
 	}, {
 		"id": "Aerial2",
@@ -4319,11 +4032,9 @@
 			"SFI": "804"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 64.75,
-				"yCentre": 3.75,
-				"zBase": 28.35
-			}
+			"xCentre": 64.75,
+			"yCentre": 3.75,
+			"zBase": 28.35
 		}
 	}, {
 		"id": "Aerial3",
@@ -4333,11 +4044,9 @@
 			"SFI": "805"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 63.75,
-				"yCentre": 2.5,
-				"zBase": 28.35
-			}
+			"xCentre": 63.75,
+			"yCentre": 2.5,
+			"zBase": 28.35
 		}
 	}, {
 		"id": "Aerial4",
@@ -4347,11 +4056,10 @@
 			"SFI": "806"
 		},
 		"referenceState": {
-			"position": {
-				"xCentre": 64.75,
-				"yCentre": 2.5,
-				"zBase": 28.35
-			}
+			"xCentre": 64.75,
+			"yCentre": 2.5,
+			"zBase": 28.35
 		}
 	}]
+
 }
