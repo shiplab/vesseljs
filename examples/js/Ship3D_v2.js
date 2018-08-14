@@ -220,9 +220,17 @@ Object.assign(Ship3D.prototype, {
 		
 		//Position
 		let s = this.ship.designState.getObjectState(object);
-		let x = s.xCentre;
+		/*let x = s.xCentre;
 		let y = s.yCentre;
-		let z = s.zBase;
+		let z = s.zBase;*/
+		let p = s.position;
+		let x = p.xCentre;
+		let y = p.yCentre;
+		let z = p.zBase;
+		let r = s.rotation;
+		let rx = r.x;
+		let ry = r.y;
+		let rz = r.z;
 		
 		//Scale
 		let d = bo.boxDimensions;
@@ -243,6 +251,7 @@ Object.assign(Ship3D.prototype, {
 					geometry.translate(-0.5,-0.5,0);
 					let m = new THREE.Mesh(geometry, mat);
 					m.position.set(x, y, z);
+					m.rotation.set(rx,ry,rz);
 					m.scale.set(d.length, d.breadth, d.height);
 					m.name = object.id;
 					self.blocks.add(m);
@@ -252,6 +261,7 @@ Object.assign(Ship3D.prototype, {
 					console.warn("Specified file " + e.File + " not found. Falling back on placeholder.");
 					let m = new THREE.Mesh(this.boxGeom, mat);
 					m.position.set(x, y, z);
+					m.rotation.set(rx,ry,rz);
 					m.scale.set(d.length, d.breadth, d.height);
 					m.name = object.id;
 					this.blocks.add(m);
@@ -261,6 +271,7 @@ Object.assign(Ship3D.prototype, {
 			//Placeholder:
 			let m = new THREE.Mesh(this.boxGeom, mat);
 			m.position.set(x, y, z);
+			m.rotation.set(rx,ry,rz);
 			m.scale.set(d.length, d.breadth, d.height);
 			m.name = object.id;
 			this.blocks.add(m);

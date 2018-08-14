@@ -14,7 +14,7 @@ Assignments of subsequent types override assignments of previous types.
 */
 
 /*
-The caching and version control is clumsy (and incomplete). I (Elias) have done some separate testing of ways to do it properly. This must be implemented later.
+The caching and version control is clumsy (and incomplete (and DISABLED)). I (Elias) have done some separate testing of ways to do it properly. This must be implemented later.
 */
 
 /*
@@ -22,7 +22,7 @@ ShipState now mainly accounts for load state, by which I mean the states of obje
 */
 
 function ShipState(specification) {
-	this.version = 0;
+	//this.version = 0;
 	this.objectCache = {};
 	this.shipCache = {
 		state: {},
@@ -34,7 +34,7 @@ ShipState.prototype = Object.create(JSONSpecObject.prototype);
 Object.assign(ShipState.prototype, {
 	constructor: ShipState,
 	getSpecification: function() {
-		if (this.cachedVersion !== this.version) {
+		//if (this.cachedVersion !== this.version) {
 			var spec = {
 				calculationParameters: this.calculationParameters,
 				objectOverrides: this.objectOverrides//{}
@@ -43,27 +43,28 @@ Object.assign(ShipState.prototype, {
 			//Sketchy, but versatile:
 			spec = JSON.parse(JSON.stringify(spec));		
 			
-			this.specCache = spec;
-			this.cachedVersion = this.version;
-		}
-		return this.specCache;
+			return spec; //disabled caching
+			//this.specCache = spec;
+			//this.cachedVersion = this.version;
+		//}
+		//return this.specCache;
 	},
 	clone: function() {
 		return new ShipState(this.getSpecification());
 	},
 	getObjectState: function(o) {
-		if (this.objectCache[o.id] !== undefined) {
+		/*if (this.objectCache[o.id] !== undefined) {
 			let c = this.objectCache[o.id];
 			if (c.thisStateVer === this.version
-				/*&& c.baseStateVer === o.baseObject.baseStateVersion
-				&& c.refStateVer === o.referenceStateVersion*/) {
-				console.log("ShipState.getObjectState: Using cache.");
+				&& c.baseStateVer === o.baseObject.baseStateVersion
+				&& c.refStateVer === o.referenceStateVersion) {
+				//console.log("ShipState.getObjectState: Using cache.");
 				return c.state;	
 			}				
-		}
-		console.log("ShipState.getObjectState: Not using cache.");
+		}*/
+		//console.log("ShipState.getObjectState: Not using cache.");
 		
-		let state = {};
+		let state = {position: {xCentre:0,yCentre:0,zBase:0}, rotation: {x:0,y:0,z:0}};
 		Object.assign(state, o.baseObject.baseState);
 		Object.assign(state, o.referenceState);
 		let oo = this.objectOverrides;
@@ -80,12 +81,12 @@ Object.assign(ShipState.prototype, {
 			}
 		}
 		
-		this.objectCache[o.id] = {
+		/*this.objectCache[o.id] = {
 			thisStateVer: this.version,
-			/*baseStateVer: o.baseObject.baseStateVersion,
-			refStateVer: o.referenceStateVersion,*/
+			baseStateVer: o.baseObject.baseStateVersion,
+			refStateVer: o.referenceStateVersion,
 			state: state
-		};
+		};*/
 		
 		return state;
 	},
@@ -127,7 +128,7 @@ Object.assign(ShipState.prototype, {
 		oo.derivedByGroup = soo.derivedByGroup || {};
 		oo.derivedByID = soo.derivedByID || {};
 		
-		this.version++;
+		//this.version++;
 		
 		return this;
 	},
@@ -152,7 +153,7 @@ Object.assign(ShipState.prototype, {
 			}
 		}
 
-		this.version++;
+		//this.version++;
 	},
 	//Applies only directives of spec that have a corresponding directive in this.
 	override: function(spec) {
@@ -193,6 +194,6 @@ Object.assign(ShipState.prototype, {
 			}
 		}
 
-		this.version++;
+		//this.version++;
 	}
 });

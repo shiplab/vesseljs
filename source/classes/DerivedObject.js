@@ -22,6 +22,7 @@ Object.assign(DerivedObject.prototype, {
 		}
 		this.referenceState = spec.referenceState;
 		//this.referenceStateVersion = 0;
+		this.scale = spec.scale;
 		this.style = spec.style || {};
 		return this;
 	},
@@ -50,14 +51,25 @@ Object.assign(DerivedObject.prototype, {
 		}
 		
 		let p = {
-			x: oState.xCentre,
-			y: oState.yCentre,
-			z: oState.zBase
+			x: oState.position.xCentre,
+			y: oState.position.yCentre,
+			z: oState.position.zBase
 		};
-
+		
 		let w = this.baseObject.getWeight(oState.fullness);
 		let m = w.mass;
-		let cg = Vectors.add(p, w.cg);
+		
+		//Will hold cg in vessel coordinates
+		let cg = Vectors.clone(w.cg);
+		
+		if (this.scale)
+			cg = Vectors.mulComponents(w.cg, this.scale);
+		
+		//THIS IGNORES (BREAKS) fullness-CG mapping:
+		if (oState.rotation)
+			cg = Vectors.rotateTaitBryanExtrinsicXYZ(cg, oState.rotation);
+		
+		cg = Vectors.add(p, cg);
 		
 		if (isNaN(cg.x+cg.y+cg.z)) {
 			console.error("DerivedObject.getWeight: returning NaN values.");

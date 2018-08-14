@@ -1,4 +1,4 @@
-//Vessel.js library, built 2018-08-07 20:38:47.189488
+//Vessel.js library, built 2018-08-13 19:39:01.730727
 /*
 Import like this in HTML:
 <script src="Vessel.js"></script>
@@ -16,6 +16,10 @@ var Vessel = {};
 //A vector is simply defined as an object with properties x,y,z.
 
 var Vectors = {
+	clone: function(v) {
+		return {x:v.x, y:v.y, z:v.z};
+	},
+	
 	scale: function(v, s) {
 		return {x: s*v.x, y: s*v.y, z: s*v.z};
 	},
@@ -70,6 +74,48 @@ var Vectors = {
 			y: u.z*v.x-u.x*v.z,
 			z: u.x*v.y-u.y*v.x
 		};
+	},
+	
+	mulComponents: function(u,v) {
+		return {
+			x: u.x*v.x,
+			y: u.y*v.y,
+			z: u.z*v.z
+		};
+	},
+	
+	//Return the result of rotating the vector v by angles r={x,y,z} in radians.
+	rotateTaitBryanExtrinsicXYZ: function(v, r) {
+		let c,s;
+
+		//Rotate around x axis
+		c = Math.cos(r.x);
+		s = Math.sin(r.x);
+		v = {
+			x: v.x,
+			y: v.y*c-v.z*s,
+			z: v.y*s+v.z*c
+		};
+		
+		//Then around y axis
+		c = Math.cos(r.y);
+		s = Math.sin(r.y);
+		v = {
+			x: v.z*s+v.x*c,
+			y: v.y,
+			z: v.z*c-v.x*s
+		};
+		
+		//Then around z axis
+		c = Math.cos(r.z);
+		s = Math.sin(r.z);
+		v = {
+			x: v.x*c-v.y*s,
+			y: v.x*s+v.y*c,
+			z: v.z
+		};
+		
+		return v;
 	}
 }//@EliasHasle
 
@@ -673,7 +719,7 @@ Object.assign(JSONSpecObject.prototype, {
 	},
 	//fromJSON is added as an alternative and better name.
 	fromJSON: function(spec) {
-		this.setFromSpecification(spec);
+		return this.setFromSpecification(spec);
 	}
 });//@EliasHasle
 
@@ -1516,6 +1562,7 @@ Object.assign(DerivedObject.prototype, {
 		}
 		this.referenceState = spec.referenceState;
 		//this.referenceStateVersion = 0;
+		this.scale = spec.scale;
 		this.style = spec.style || {};
 		return this;
 	},
@@ -1544,14 +1591,25 @@ Object.assign(DerivedObject.prototype, {
 		}
 		
 		let p = {
-			x: oState.xCentre,
-			y: oState.yCentre,
-			z: oState.zBase
+			x: oState.position.xCentre,
+			y: oState.position.yCentre,
+			z: oState.position.zBase
 		};
-
+		
 		let w = this.baseObject.getWeight(oState.fullness);
 		let m = w.mass;
-		let cg = Vectors.add(p, w.cg);
+		
+		//Will hold cg in vessel coordinates
+		let cg = Vectors.clone(w.cg);
+		
+		if (this.scale)
+			cg = Vectors.mulComponents(w.cg, this.scale);
+		
+		//THIS IGNORES (BREAKS) fullness-CG mapping:
+		if (oState.rotation)
+			cg = Vectors.rotateTaitBryanExtrinsicXYZ(cg, oState.rotation);
+		
+		cg = Vectors.add(p, cg);
 		
 		if (isNaN(cg.x+cg.y+cg.z)) {
 			console.error("DerivedObject.getWeight: returning NaN values.");
@@ -1575,7 +1633,7 @@ Assignments of subsequent types override assignments of previous types.
 */
 
 /*
-The caching and version control is clumsy (and incomplete). I (Elias) have done some separate testing of ways to do it properly. This must be implemented later.
+The caching and version control is clumsy (and incomplete (and DISABLED)). I (Elias) have done some separate testing of ways to do it properly. This must be implemented later.
 */
 
 /*
@@ -1583,7 +1641,7 @@ ShipState now mainly accounts for load state, by which I mean the states of obje
 */
 
 function ShipState(specification) {
-	this.version = 0;
+	//this.version = 0;
 	this.objectCache = {};
 	this.shipCache = {
 		state: {},
@@ -1595,7 +1653,7 @@ ShipState.prototype = Object.create(JSONSpecObject.prototype);
 Object.assign(ShipState.prototype, {
 	constructor: ShipState,
 	getSpecification: function() {
-		if (this.cachedVersion !== this.version) {
+		//if (this.cachedVersion !== this.version) {
 			var spec = {
 				calculationParameters: this.calculationParameters,
 				objectOverrides: this.objectOverrides//{}
@@ -1604,27 +1662,28 @@ Object.assign(ShipState.prototype, {
 			//Sketchy, but versatile:
 			spec = JSON.parse(JSON.stringify(spec));		
 			
-			this.specCache = spec;
-			this.cachedVersion = this.version;
-		}
-		return this.specCache;
+			return spec; //disabled caching
+			//this.specCache = spec;
+			//this.cachedVersion = this.version;
+		//}
+		//return this.specCache;
 	},
 	clone: function() {
 		return new ShipState(this.getSpecification());
 	},
 	getObjectState: function(o) {
-		if (this.objectCache[o.id] !== undefined) {
+		/*if (this.objectCache[o.id] !== undefined) {
 			let c = this.objectCache[o.id];
 			if (c.thisStateVer === this.version
-				/*&& c.baseStateVer === o.baseObject.baseStateVersion
-				&& c.refStateVer === o.referenceStateVersion*/) {
-				console.log("ShipState.getObjectState: Using cache.");
+				&& c.baseStateVer === o.baseObject.baseStateVersion
+				&& c.refStateVer === o.referenceStateVersion) {
+				//console.log("ShipState.getObjectState: Using cache.");
 				return c.state;	
 			}				
-		}
-		console.log("ShipState.getObjectState: Not using cache.");
+		}*/
+		//console.log("ShipState.getObjectState: Not using cache.");
 		
-		let state = {};
+		let state = {position: {xCentre:0,yCentre:0,zBase:0}, rotation: {x:0,y:0,z:0}};
 		Object.assign(state, o.baseObject.baseState);
 		Object.assign(state, o.referenceState);
 		let oo = this.objectOverrides;
@@ -1641,12 +1700,12 @@ Object.assign(ShipState.prototype, {
 			}
 		}
 		
-		this.objectCache[o.id] = {
+		/*this.objectCache[o.id] = {
 			thisStateVer: this.version,
-			/*baseStateVer: o.baseObject.baseStateVersion,
-			refStateVer: o.referenceStateVersion,*/
+			baseStateVer: o.baseObject.baseStateVersion,
+			refStateVer: o.referenceStateVersion,
 			state: state
-		};
+		};*/
 		
 		return state;
 	},
@@ -1688,7 +1747,7 @@ Object.assign(ShipState.prototype, {
 		oo.derivedByGroup = soo.derivedByGroup || {};
 		oo.derivedByID = soo.derivedByID || {};
 		
-		this.version++;
+		//this.version++;
 		
 		return this;
 	},
@@ -1713,7 +1772,7 @@ Object.assign(ShipState.prototype, {
 			}
 		}
 
-		this.version++;
+		//this.version++;
 	},
 	//Applies only directives of spec that have a corresponding directive in this.
 	override: function(spec) {
@@ -1754,7 +1813,7 @@ Object.assign(ShipState.prototype, {
 			}
 		}
 
-		this.version++;
+		//this.version++;
 	}
 });//@EliasHasle
 
