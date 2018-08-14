@@ -1,0 +1,178 @@
+{
+  "attributes": {},
+  "designState": {
+  	"calculationParameters": {
+  		"LWL_design": 25,
+  		"Draft_design": 2,
+  		"Cb_design": 0.5,
+  		"speed": 12,
+      "crew" : 20,
+  		"K" : 0.032,
+  		"MCR" : 10000,
+  		"SFC" : 0.000215,
+  		"Co" : 0.3, 
+  		"tripDuration": 40
+  	},
+  	"objectOverrides": {
+      "derivedByGroup": {
+        "cargo tanks": {
+          "fullness": 0
+        },
+        "ballast tanks": {
+          "fullness": 1
+        }
+      }
+    }
+  },
+  "structure": {
+  	"hull": {
+  		"attributes": {
+  			"LOA": 22.5,
+  			"BOA": 10,
+  			"Depth": 2.5,
+  			"APP": 0
+  		},
+  		"halfBreadths": {
+  			"waterlines": [0, 0, 1],
+  			"stations": [0, 1],
+  			"table": [[0, 0], [1, 1], [1, 1]]
+  		},
+  		"buttockHeights": {}
+  	},
+  	"decks": {
+      "BallastTop": {
+				"zFloor": 0.4,
+				"thickness": 0.01,
+				"xAft": 0,
+				"xFwd": 22.5,
+				"yCentre": 0,
+				"breadth": 10,
+				"density": 7850
+			}
+    },
+  	"bulkheads": {
+  		"AB": {
+  			"xAft": 11.25,
+  			"thickness": 0.01,
+  			"density": 7850
+  		}
+  	}
+  },
+  "baseObjects": [
+    {
+      "id": "cargo",
+      "affiliations": {},
+      "boxDimensions": {
+        "length": 10.25,
+        "breadth": 9,
+        "height": 1.6
+      },
+      "capabilities": {},
+      "baseState": {
+        "fullness": 0
+      },
+      "weightInformation": {
+        "contentDensity": 850,
+        "volumeCapacity": 145,
+        "lightweight": 10000,
+        "fullnessCGMapping": {
+          "fullnesses": [0, 0.25, 0.5, 0.75, 1],
+          "cgs": [
+            [0, 0, 0.8],
+            [0, 0, 0.347013783],
+            [0, 0, 0.455846422],
+            [0, 0, 0.6195241],
+            [0, 0, 0.8]
+          ]
+        }
+      }
+    },
+    {
+      "id": "ballast",
+      "affiliations": {},
+      "boxDimensions": {
+        "length": 10.25,
+        "breadth": 9,
+        "height": 0.4
+      },
+      "capabilities": {},
+      "baseState": {
+        "fullness": 0
+      },
+      "weightInformation": {
+        "contentDensity": 1025,
+        "volumeCapacity": 35,
+        "lightweight": 5000,
+        "fullnessCGMapping": {
+          "fullnesses": [0, 0.25, 0.5, 0.75, 1],
+          "cgs": [
+            [0, 0, 0.2],
+            [0, 0, 0.070942408],
+            [0, 0, 0.10750469],
+            [0, 0, 0.152565747],
+            [0, 0, 0.2]
+          ]
+        }
+      }
+    }
+  ],
+  "derivedObjects": [
+    {
+      "id": "Tank1",
+      "baseObject": "cargo",
+      "affiliations": {
+        "group": "cargo tanks",
+        "Deck": "CargoDeck",
+        "SFI": "102"
+      },
+      "referenceState": {
+        "xCentre": 16.875,
+        "yCentre": 0,
+        "zBase": 0.4
+      }
+    },
+    {
+      "id": "Tank2",
+      "baseObject": "cargo",
+      "affiliations": {
+        "group": "cargo tanks",
+        "Deck": "CargoDeck",
+        "SFI": "103"
+      },
+      "referenceState": {
+        "xCentre": 5.625,
+        "yCentre": 0,
+        "zBase": 0.4
+      }
+    },
+    {
+      "id": "Tank3",
+      "baseObject": "ballast",
+      
+      "affiliations": {
+        "group": "ballast tanks",
+        "Deck": "BallastDeck",
+        "SFI": "104"
+      },
+      "referenceState": {
+        "xCentre": 16.875,
+        "yCentre": 0,
+        "zBase": 0
+      }
+    },
+    {
+      "id": "Tank4",
+      "baseObject": "ballast",
+      "affiliations": {
+        "group": "ballast tanks",
+        "Deck": "BallastDeck",
+        "SFI": "105"
+      },
+      "referenceState": {
+        "xCentre": 5.625,
+        "yCentre": 0,
+        "zBase": 0
+      }
+    }
+  ]
+}
