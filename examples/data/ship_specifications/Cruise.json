@@ -3,28 +3,20 @@
 },
 "designState": {
 	"calculationParameters": {
-		"LWL_design": 20,
 		"Draft_design": 6,
-		"Cb_design": 0.5,
-		"speed": 17,
-	    "crew" : 20,
-		"K" : 0.032,
-		"MCR" : 10000,
-		"SFC" : 0.000215,
-		"Co" : 0.3, 
-		"tripDuration": 40
+        "speed": 17
+
 	},
 	"objectOverrides": {
 		"common": {
-			"fullness": 0.7
 		}
 	}
 },
 	"structure": {
 		"hull": {
 			"attributes": {
-				"LOA": 125,
-				"BOA": 20,
+				"LOA": 115,
+				"BOA": 18,
 				"Depth": 9,
 				"APP": 2,
 				"bulb": true,
@@ -76,46 +68,46 @@
 			"deck3": {
 				"zFloor": 3,
 				"thickness": 0.3,
-				"xAft": 125,
+				"xAft": 115,
 				"xFwd": 0,
 				"yCentre": 0,
-				"breadth": 20,
+				"breadth": 18,
 				"density": 1500
 			},
             "deck6": {
 				"zFloor": 6,
 				"thickness": 0.3,
-				"xAft": 125,
+				"xAft": 115,
 				"xFwd": 0,
 				"yCentre": 0,
-				"breadth": 20,
+				"breadth": 18,
 				"density": 1500
 			},
             "deck9": {
 				"zFloor": 9,
 				"thickness": 0.3,
-				"xAft": 125,
+				"xAft": 115,
 				"xFwd": 0,
 				"yCentre": 0,
-				"breadth": 20,
+				"breadth": 18,
 				"density": 1500
 			},
             "deck12": {
 				"zFloor": 12,
 				"thickness": 0.3,
-				"xAft": 125,
+				"xAft": 115,
 				"xFwd": 0,
 				"yCentre": 0,
-				"breadth": 20,
+				"breadth": 18,
 				"density": 1500
 			},
             "deck15": {
-				"zFloor": 15,
+				"zFloor": 14,
 				"thickness": 0.3,
-				"xAft": 125,
+				"xAft": 115,
 				"xFwd": 0,
 				"yCentre": 0,
-				"breadth": 20,
+				"breadth": 18,
 				"density": 1500
 			}
 			
@@ -129,13 +121,13 @@
 		"id": "TankL2.1B6.13H4.3fdundefinedFtank1.stl",
 		"affiliations": {},
 		"boxDimensions": {
-			"length": 50,
-			"breadth": 17,
-			"height": 3
+			"length": 16,
+			"breadth": 14,
+			"height": 6
 		},
 		"file3D": "tank1.stl",
 		"weightInformation": {
-			"lightweight": 2000000,
+			"lightweight": 500000,
             "cg": [0, 0, 1.5]
 
 		}
@@ -145,7 +137,7 @@
 		"affiliations": {},
 		"boxDimensions": {
 			"length": 10,
-			"breadth": 17,
+			"breadth": 16,
 			"height": 6
 		},
 		"file3D": "tank2.stl",
@@ -160,7 +152,7 @@
 		"affiliations": {},
 		"boxDimensions": {
 			"length": 15,
-			"breadth": 17,
+			"breadth": 16,
 			"height": 6
 		},
 		"file3D": "tank3.stl",
@@ -175,7 +167,7 @@
 		"affiliations": {},
 		"boxDimensions": {
 			"length": 5,
-			"breadth": 17,
+			"breadth": 12,
 			"height": 3
 		},
 		"file3D": "tank4.stl",
@@ -190,7 +182,7 @@
 		"affiliations": {},
 		"boxDimensions": {
 			"length": 18,
-			"breadth": 10,
+			"breadth": 8,
 			"height": 6
 		},
 		"file3D": "tank6.stl",
@@ -205,7 +197,7 @@
 		"affiliations": {},
 		"boxDimensions": {
 			"length": 18,
-			"breadth": 10,
+			"breadth": 8,
 			"height": 6
 		},
 		"file3D": "tank6.stl",
@@ -219,8 +211,8 @@
 		"id": "TankL6B3H5.3fdundefinedFtank10.stl",
 		"affiliations": {},
 		"boxDimensions": {
-			"length": 32,
-			"breadth": 10,
+			"length": 55,
+			"breadth": 16,
 			"height": 3
 		},
 		"file3D": "tank10.stl",
@@ -234,8 +226,8 @@
 		"id": "TankL3.5B1.5H5.3fdundefinedFtank9.stl",
 		"affiliations": {},
 		"boxDimensions": {
-			"length": 32,
-			"breadth": 10,
+			"length": 55,
+			"breadth": 16,
 			"height": 3
 		},
 		"file3D": "tank10.stl",
@@ -479,7 +471,7 @@
 		"affiliations": {
 		},
 		"referenceState": {
-			"xCentre": 25,
+			"xCentre": 8,
 			"yCentre": 0,
 			"zBase": 6
 		}
@@ -490,7 +482,7 @@
 		"affiliations": {
 		},
 		"referenceState": {
-			"xCentre": 55,
+			"xCentre": 13,
 			"yCentre": 0,
 			"zBase": 6
 		}
@@ -501,7 +493,7 @@
 		"affiliations": {
 		},
 		"referenceState": {
-			"xCentre": 67.5,
+			"xCentre": 25.5,
 			"yCentre": 0,
 			"zBase": 6
 		}
@@ -512,7 +504,7 @@
 		"affiliations": {
 		},
 		"referenceState": {
-			"xCentre": 52.5,
+			"xCentre": 30,
 			"yCentre": 0,
 			"zBase": 3
 		}
@@ -523,7 +515,7 @@
 		"affiliations": {
 		},
 		"referenceState": {
-			"xCentre": 84,
+			"xCentre": 42,
 			"yCentre": 5,
 			"zBase": 6
 		}
@@ -534,7 +526,7 @@
 		"affiliations": {
 		},
 		"referenceState": {
-			"xCentre": 84,
+			"xCentre": 42,
 			"yCentre": -5,
 			"zBase": 6
 		}
@@ -545,7 +537,7 @@
 		"affiliations": {
 		},
 		"referenceState": {
-			"xCentre": 109,
+			"xCentre": 80,
 			"yCentre": 0,
 			"zBase": 6
 		}
@@ -556,7 +548,7 @@
 		"affiliations": {
 		},
 		"referenceState": {
-			"xCentre": 109,
+			"xCentre": 80,
 			"yCentre": 0,
 			"zBase": 9
 		}
@@ -567,9 +559,9 @@
 		"affiliations": {
 		},
 		"referenceState": {
-			"xCentre": 120,
+			"xCentre": 110,
 			"yCentre": 0,
-			"zBase": 12
+			"zBase": 15
 		}
 	},
     {
@@ -578,9 +570,9 @@
 		"affiliations": {
 		},
 		"referenceState": {
-			"xCentre": 110,
+			"xCentre": 100,
 			"yCentre": 0,
-			"zBase": 12
+			"zBase": 15
 		}
 	},
     {
@@ -611,7 +603,7 @@
 		"affiliations": {
 		},
 		"referenceState": {
-			"xCentre": 120.5,
+			"xCentre": 90.5,
 			"yCentre": 0,
 			"zBase": 15
 		}
@@ -622,7 +614,7 @@
 		"affiliations": {
 		},
 		"referenceState": {
-			"xCentre": 113.5,
+			"xCentre": 83.5,
 			"yCentre": 5,
 			"zBase": 15
 		}
@@ -633,7 +625,7 @@
 		"affiliations": {
 		},
 		"referenceState": {
-			"xCentre": 113.5,
+			"xCentre": 83.5,
 			"yCentre": -5,
 			"zBase": 15
 		}
@@ -644,7 +636,7 @@
 		"affiliations": {
 		},
 		"referenceState": {
-			"xCentre": 102,
+			"xCentre": 72,
 			"yCentre": 0,
 			"zBase": 15
 		}
@@ -655,7 +647,7 @@
 		"affiliations": {
 		},
 		"referenceState": {
-			"xCentre": 85,
+			"xCentre": 55,
 			"yCentre": 5,
 			"zBase": 15
 		}
@@ -666,7 +658,7 @@
 		"affiliations": {
 		},
 		"referenceState": {
-			"xCentre": 56.5,
+			"xCentre": 26.5,
 			"yCentre": 0,
 			"zBase": 15
 		}
@@ -677,7 +669,7 @@
 		"affiliations": {
 		},
 		"referenceState": {
-			"xCentre": 47,
+			"xCentre": 17,
 			"yCentre": 0,
 			"zBase": 15
 		}
@@ -699,7 +691,7 @@
 		"affiliations": {
 		},
 		"referenceState": {
-			"xCentre": 68.5,
+			"xCentre": 38.5,
 			"yCentre": 5,
 			"zBase": 15
 		}
@@ -710,7 +702,7 @@
 		"affiliations": {
 		},
 		"referenceState": {
-			"xCentre": 68.5,
+			"xCentre": 38.5,
 			"yCentre": -5,
 			"zBase": 15
 		}
@@ -721,7 +713,7 @@
 		"affiliations": {
 		},
 		"referenceState": {
-			"xCentre": 85,
+			"xCentre": 55,
 			"yCentre": -5,
 			"zBase": 15
 		}

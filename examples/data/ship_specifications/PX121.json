@@ -69,6 +69,11 @@
 					[null, null, null, null, null, null, null, null, null, null, 0.3263157894736842]
 				]
 			},
+			"style": {
+				"upperColor": "pink",
+				"lowerColor": "grey",
+				"opacity": 0.6
+			},
 			"buttockHeights": {}
 		},
 		"decks": {
@@ -2259,6 +2264,10 @@
 			"xCentre": 1.05,
 			"yCentre": 2.9,
 			"zBase": 1
+		},
+		"style": {
+			"color": "#aabbcc",
+			"opacity": 0.8
 		}
 	}, {
 		"id": "Tank2",
