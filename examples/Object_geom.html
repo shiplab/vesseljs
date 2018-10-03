@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Object Visualization</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- jQuery Version 1.11.1 -->
+    <script src="js/libs/jquery.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="js/libs/bootstrap.min.js"></script> 
+	
+	<!-- Three script -->
+    <script src="js/libs/three.js"></script>
+	<script src="js/libs/STLLoader.js"></script>
+    <script src='js/libs/OrbitControls.js'></script>
+
+	<!--Import library-->
+	<script src="../build/Vessel.js"></script>
+	
+	<!--Ship3D class for three.js-->
+	<script src="js/Ship3D.js"></script>
+
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-inverse">
+        <div class="container">
+            <!-- Add  the <div>[Something]</div> structure for each header in the navbar-->
+            <div class="navbar-header">               
+                <a class="navbar-brand" href="https://github.com/shiplab/vesseljs">Github project page</a>
+            </div>
+            <!-- This is for the right part of the navbar. Reserved for Shiplab logo-->
+            <div class="nav navbar-nav navbar-right">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="http://www.shiplab.hials.org/"><img src="images/barquinho.png" alt="Shiplab logo" style="height:150%"> 
+                    </a>                    
+                </div>
+            </div>
+        </div>
+    </nav>
+            
+    <!-- Container creates the space -->
+    <div class="container">
+        
+        <!-- Row creates horizontal groups of columns -->
+        <div class="row">
+            
+            <!-- No divisions in page. Only 1 column. -->
+             <div class="col-md-12 text-center">
+                <h2>Object Visualization</h2>
+            </div>  
+            
+			<div class="col-md-12 text-center">
+                <p>Define and visualize a tank object. <a href="https://github.com/shiplab/vesseljs/tree/master/examples/Object_geom.html">View source.</a></p>
+            </div>
+            
+            <div class="col-md-12 text-left">
+<p>First, create an empty BaseObject to store basic properties:<br>
+<pre><code class="javascript">objectTemplate = new Vessel.BaseObject();</code></pre></p>
+
+<p>Fill it with the identification tag and geometric data:<br>
+<pre><code class="javascript">objectTemplate.id = "First Object";
+objectTemplate.boxDimensions = {
+    "length": 10,
+    "breadth": 4,
+    "height": 2
+};</code></pre></p>
+
+<p>Create now an empty DerivedObject:<br>
+<pre><code class="javascript">myObject = new Vessel.DerivedObject();</code></pre></p>
+
+<p>Link it to the respective BaseObject and fill it with position (in relation to the vessel):<br>
+<pre><code class="javascript">myObject.id = "Tank1";
+myObject.baseObject = objectTemplate;
+myObject.referenceState = {
+    "xCentre": 0,
+    "yCentre": 0,
+    "zBase": 0
+};
+myObject.affiliations = {};
+</code></pre></p>
+
+<p>Now that the derived object (myObject) was created, we will plot its 3D Visualization. 
+    However this can only be done with the tank as part of a ship object, so we need to generate a minimal ship specification:
+    <pre><code class="javascript">emptySpec = {
+    "designState": {
+        "calculationParameters": {
+            "Draft_design": 2
+        }
+    },
+    "structure": {
+        "hull": {
+            "attributes": {
+                "LOA": 20
+            },
+            "halfBreadths": {
+                "waterlines": [],
+                "stations": [],
+                "table": []
+            }
+        },
+        "decks": {},
+        "bulkheads": {}
+    },
+    "baseObjects": [],
+    "derivedObjects": []
+};
+</code></pre></p>
+
+<p>Then, create a Ship object from that specification and populate it with the base and derived objects:
+<pre><code class="javascript">ship = new Vessel.Ship(emptySpec);
+ship.baseObjects[objectTemplate.id] = objectTemplate;
+ship.derivedObjects[myObject.id] = myObject;
+</code></pre></p>
+
+<p>The visualization is created with an interface built to transform the Ship object above in a <a href="https://threejs.org/" target="_blank">Three.js</a> render. The result can be seen below:</p>
+
+			</div>
+			<div id="3d" class="col-md-12 text-left" style="min-height: 40vh">
+            </div>
+        </div>
+    </div>
+        
+    <script>
+		"use strict";
+
+        var objectTemplate, myObject, emptySpec, ship, renderer, scene, camera, controls, ship3D;
+
+        objectTemplate = new Vessel.BaseObject();
+
+        objectTemplate.id = "First Object";
+        objectTemplate.boxDimensions = {
+            "length": 10,
+            "breadth": 4,
+            "height": 2
+        };
+
+        myObject = new Vessel.DerivedObject();
+
+        myObject.id = "Tank1";
+        myObject.baseObject = objectTemplate;
+        myObject.referenceState = {
+            "xCentre": 10,
+            "yCentre": 0,
+            "zBase": 0
+        };
+        myObject.affiliations = {};
+
+        emptySpec = {
+            "designState": {
+                "calculationParameters": {
+                    "Draft_design": 2
+                }
+            },
+            "structure": {
+                "hull": {
+                    "attributes": {
+                        "LOA": 20
+                    },
+                    "halfBreadths": {
+                        "waterlines": [],
+                        "stations": [],
+                        "table": []
+                    }
+                },
+                "decks": {},
+                "bulkheads": {}
+            },
+            "baseObjects": [],
+            "derivedObjects": []
+        };
+
+        var ship = new Vessel.Ship(emptySpec);
+        ship.baseObjects[objectTemplate.id] = objectTemplate;
+        ship.derivedObjects[myObject.id] = myObject;
+		
+		//Ready renderer and scene
+        (function (){
+			renderer = new THREE.WebGLRenderer({antialias: true});
+			renderer.setPixelRatio(window.devicePixelRatio);
+			renderer.setClearColor(0xA9CCE3, 1);
+
+			// get the div that will hold the renderer
+			var container = document.getElementById('3d');
+			container.appendChild(renderer.domElement);
+			
+			scene = new THREE.Scene();
+			
+			//Camera and controls:
+			camera = new THREE.PerspectiveCamera(30);
+			camera.up.set(0,0,1);
+			scene.add(camera);
+			controls = new THREE.OrbitControls(camera, renderer.domElement);
+			
+			//Respond to window resize:
+			function onResize() {
+				renderer.setSize(container.clientWidth, container.clientHeight);
+				camera.aspect = container.clientWidth / container.clientHeight;
+				camera.updateProjectionMatrix();
+			}
+			window.addEventListener("resize", onResize);
+			onResize(); //Ensure the initial setup is good too
+	
+			//Add lights:
+			scene.add(new THREE.AmbientLight(0xffffff,0.3));
+			scene.add(function() {
+				let sun = new THREE.DirectionalLight(0xffffff,1);
+				sun.position.set(1,1,1);
+				return sun;
+			}());
+			
+        })();
+ 
+		ship3D = new Ship3D(ship, "stl/");
+		scene.add(ship3D);
+			
+		let LOA = ship.structure.hull.attributes.LOA;
+		camera.position.set(0.7*LOA, 0.7*LOA, 0.7*LOA);
+		controls.target = new THREE.Vector3(LOA/2,0,0);
+		controls.update();
+		animate();
+
+		function animate() {
+			requestAnimationFrame(animate);			
+			renderer.render(scene, camera);
+		}
+    </script>
+
+</body>
+
+</html>
