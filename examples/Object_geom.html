@@ -126,8 +126,67 @@ ship.baseObjects[objectTemplate.id] = objectTemplate;
 ship.derivedObjects[myObject.id] = myObject;
 </code></pre></p>
 
-<p>The visualization is created with an interface built to transform the Ship object above in a <a href="https://threejs.org/" target="_blank">Three.js</a> render. The result can be seen below:</p>
+<p>The visualization is created with an interface built to transform the Ship object above in a <a href="https://threejs.org/" target="_blank">Three.js</a> render.
+    The rendering environment can be prepared by copying and pasting the following script:
+<pre><code class="javascript">//Ready renderer and scene
+(function (){
+    renderer = new THREE.WebGLRenderer({antialias: true});
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setClearColor(0xA9CCE3, 1);
 
+    // get the div that will hold the renderer
+    var container = document.getElementById('3d');
+    container.appendChild(renderer.domElement);
+    
+    scene = new THREE.Scene();
+    
+    //Camera and controls:
+    camera = new THREE.PerspectiveCamera(30);
+    camera.up.set(0,0,1);
+    scene.add(camera);
+    controls = new THREE.OrbitControls(camera, renderer.domElement);
+    
+    //Respond to window resize:
+    function onResize() {
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        camera.aspect = container.clientWidth / container.clientHeight;
+        camera.updateProjectionMatrix();
+    }
+    window.addEventListener("resize", onResize);
+    onResize(); //Ensure the initial setup is good too
+
+    //Add lights:
+    scene.add(new THREE.AmbientLight(0xffffff,0.3));
+    scene.add(function() {
+        let sun = new THREE.DirectionalLight(0xffffff,1);
+        sun.position.set(1,1,1);
+        return sun;
+    }());
+})();
+</code></pre></p>
+
+<p>Once the rendering environment is created, a 3D model of the ship object (which in this particular case contains only one object and no hull or structure) can be generated:
+<pre><code class="javascript">ship3D = new Ship3D(ship, "stl/");</code></pre></p>
+
+<p>The "stl/" path points to the folder where the STL 3D files are stored.
+    If no related file is specified inside the base object, as is the case here, the function will automatically create a cuboid with the specified dimensions.</p>
+    
+<p>Now the 3D render can be added to the scene with the relevant configurations of camera position and control target:
+<pre><code class="javascript"></code>scene.add(ship3D);
+
+let LOA = ship.structure.hull.attributes.LOA;
+camera.position.set(0.7*LOA, 0.7*LOA, 0.7*LOA);
+controls.target = new THREE.Vector3(LOA/2,0,0);
+controls.update();
+animate();
+
+function animate() {
+    requestAnimationFrame(animate);			
+    renderer.render(scene, camera);
+}
+</code></pre></p>
+
+<p>The result is:</p>
 			</div>
 			<div id="3d" class="col-md-12 text-left" style="min-height: 40vh">
             </div>
