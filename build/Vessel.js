@@ -34,7 +34,7 @@ var Vectors = {
 	},
 
 	/*Adds two or more vectors given as individual parameters,
-	and returns a new vector that is the component-wise 
+	and returns a new vector that is the component-wise
 	sum of the input vectors.*/
 	add: function(u,v, ...rest) {
 		if (rest.length > 0) return Vectors.sum([u,v]+rest);
@@ -114,7 +114,40 @@ function lerp(a, b, mu=0.5) {
 function linearFromArrays(xx, yy, x) {
 	let {index, mu} = bisectionSearch(xx, x);
 	if (index === undefined || mu === undefined) return 0;
-	return lerp(yy[index], yy[index+1], mu);	
+	return lerp(yy[index], yy[index+1], mu);
+}
+
+//Souce: https://en.wikipedia.org/wiki/Secant_method
+// Secant Method to Find out where is the zero point
+// Used to find out the Draft but can be generalized
+function secantMethod(a, t, VT, epsilon, hull){
+	let V1 = 0-VT;
+	let V2 = VT; //Just inserting V2 an ordinary value to not have to calculate it twice
+	let n = 0;
+
+	while (Math.abs(t-a) > epsilon){
+		V2 = hull.calculateAttributesAtDraft(t)["Vs"]-VT;
+		let dx = (V2-V1)/(t-a);
+
+		if(dx > 0.1 || dx < -0.1){
+			a = t;
+			V1 = V2;
+			t = t - V2/dx;
+			//In case the derived of function is close to 0 we can follow the Bisection method
+			//Source: https://en.wikipedia.org/wiki/Bisection_method
+		} else {
+			let ts = 0.5*(a+t); //intermediate point
+			let Vs = this.calculateAttributesAtDraft(ts)["Vs"]-VT; //this values must be calculated twice, see better example
+			if (Vs>0){
+				t = ts;
+				V2 = Vs;
+			} else {
+				a = ts;
+				V1 = Vs;
+			}
+		}
+	}
+	return t
 }
 
 //Source: https://en.wikipedia.org/wiki/Bilinear_interpolation
@@ -137,12 +170,12 @@ function bilinearUnitSquare(z00, z01, z10, z11, mux, muy) {
 function bilinearCoeffs(x1, x2, y1, y2, z00, z01, z10, z11) {
 	let X = (x2-x1);
 	let Y = (y2-y1);
-	
+
 	if (X===0 || Y=== 0) {
 		//console.warn("bilinearCoeffs: Zero base area. Setting coefficients to zero.");
 		return [0,0,0,0];
 	}
-	
+
 	let Ainv = 1/(X*Y);
 
 	//constant coeff:
@@ -153,7 +186,7 @@ function bilinearCoeffs(x1, x2, y1, y2, z00, z01, z10, z11) {
 	let b01 = Ainv*(-z00*x2 + z10*x1 + z01*x2 -z11*x1);
 	//xy coeff:
 	let b11 = Ainv*(z00-z10-z01+z11);
-	
+
 	return [b00,b10,b01,b11];
 }
 
@@ -161,7 +194,7 @@ function bilinearCoeffs(x1, x2, y1, y2, z00, z01, z10, z11) {
 //But then I have to be sure what the z values and coefficients mean.
 //I have apparently not documented this well.
 function bilinear(x1, x2, y1, y2, z11, z12, z21, z22, x, y) {
-	let [b00, b10, b01, b11] = 
+	let [b00, b10, b01, b11] =
 		bilinearCoeffs(x1, x2, y1, y2, z11, z12, z21, z22);
 	let fromCoeffs = b00 + b10*x + b01*y + b11*x*y;
 
@@ -169,9 +202,9 @@ function bilinear(x1, x2, y1, y2, z11, z12, z21, z22, x, y) {
 	/*let mux = (x-x1)/(x2-x1);
 	let muy = (y-y1)/(y2-y1);
 	let fromUnitSquare = bilinearUnitSquare(z11, z12, z21, z22, mux, muy);
-	
+
 	console.log("fromCoeffs=", fromCoeffs, ", fromUnitSquare=", fromUnitSquare);*/
-	
+
 	return fromCoeffs;
 }
 //@EliasHasle
@@ -209,12 +242,12 @@ function trapezoidCalculation(xbase0, xbase1, xtop0, xtop1, ybase, ytop) {
 	let Iy = steiner(Iyrt1, Art1, xcrt1, xc)
 		+ steiner(Iyrec, Arec, xcrec, xc)
 		+ steiner(Iyrt2, Art2, xcrt2, xc);
-	
+
 	let maxX = Math.max.apply(null, [xbase0, xbase1, xtop0, xtop1]);
 	let minX = Math.min.apply(null, [xbase0, xbase1, xtop0, xtop1]);
 	let maxY = Math.max(ybase, ytop);
 	let minY = Math.min(ybase, ytop);
-	
+
 	return {A: A, xc: xc, yc: yc, Ix: Ix, Iy: Iy, maxX: maxX, minX: minX, maxY: maxY, minY: minY};
 }
 
@@ -240,7 +273,7 @@ function combineAreas(array) {
 	}
 	let Ix = 0;
 	let Iy = 0;
-	
+
 	if (A!==0) {
 		xc /= A;
 		yc /= A;
@@ -256,7 +289,7 @@ function combineAreas(array) {
 		Ix += steiner(e.Ix, e.A, e.yc, yc);
 		Iy += steiner(e.Iy, e.A, e.xc, xc);
 	}
-	
+
 	return {A: A, xc: xc, yc: yc, Ix: Ix, Iy: Iy, maxX: maxX, minX: minX, maxY: maxY, minY: minY};
 }
 
@@ -273,10 +306,10 @@ function sectionCalculation({xs, ymins, ymaxs}) {
 		let ybase1 = ymaxs[i] || 0;
 		let ytop0 = ymins[i+1] || 0;
 		let ytop1 = ymaxs[i+1] || 0;
-		
+
 		calculations.push(trapezoidCalculation(ybase0, ybase1, ytop0, ytop1, xbase, xtop));
 	}
-	
+
 	let C = combineAreas(calculations); //Might be zero areas!
 
 	let output = {A: C.A, maxX: C.maxY, minX: C.minY, maxY: C.maxX, minY: C.minX, xc: C.yc, yc: C.xc, Ix: C.Iy, Iy: C.Ix, Abb: (C.maxY-C.minY)*(C.maxX-C.minX)};
@@ -300,9 +333,9 @@ function bilinearArea(x1, x2, y1, y2, z11, z12, z21, z22, segs=5) {
 	Then:
 	Tx X Ty = (-(b10+b11*y), -(b01+b11*x), 1)
 	|Tx X Ty| = sqrt((b10+b11*y)^2 + (b01+b11*x)^2 + 1)
-	
+
 	Now, to get the area I need to integrate |Tx X Ty| over X,Y.
-	
+
 	Wolfram Alpha gave me this for the inner integral using x (indefinite):
 	integral sqrt((b01 + b11 x)^2 + 1 + (b10+b11*y)^2) dx = ((b01 + b11*x) sqrt((b01 + b11*x)^2 + 1 + (b10+b11*y)^2) + (1 + (b10+b11*y)^2)*ln(sqrt((b01 + b11*x)^2 + 1 + (b10+b11*y)^2) + b01 + b11*x))/(2*b11) + constant
 	That means this for the definite integral:
@@ -317,16 +350,16 @@ function bilinearArea(x1, x2, y1, y2, z11, z12, z21, z22, segs=5) {
 	- (b01 + b11*x1)*sqrt((b01 + b11*x1)^2 + 1 + (b10+b11*y)^2)/(2*b11)
 	+(1 + (b10+b11*y)^2)*ln(sqrt((b01 + b11*x2)^2 + 1 + (b10+b11*y)^2) + b01 + b11*x2)/(2*b11))
 	- (1 + (b10+b11*y)^2)*ln(sqrt((b01 + b11*x1)^2 + 1 + (b10+b11*y)^2) + b01 + b11*x1)/(2*b11)
-	
+
 	The two first integrals are similar, and the two last are also similar. With A=+-(b01 + b11*xi)/(2*b11), B=(b01 + b11*xi)^2+1, C=b10 and D=b11 (where xi represents either x1 or x2, and +- represents + for x2 and - for x1), I can calculate the integral of sqrt(B+(C+D*y)^2) and multiply by A. That integral is on the same form as the first one.
-	
+
 	The two last integrals can be represented by setting A=+-1/(2*b11), B=(b01 + b11*xi)^2+1, C=b01+b11*xi, D=b10, E=b11, and calculating the integral of (1+(D+E*y)^2)*ln(sqrt(B+(D+E*y)^2)+C), and multiplying by A.
 	Here is the integration result from Wolfram Alpha:
 	integral(1 + (D + E y)^2) log(sqrt(B + (D + E y)^2) + C) dy = (-(6 (B^2 - 2 B C^2 - 3 B + C^4 + 3 C^2) tan^(-1)((D + E y)/sqrt(B - C^2)))/sqrt(B - C^2) + (6 (B^2 - 2 B C^2 - 3 B + C^4 + 3 C^2) tan^(-1)((C (D + E y))/(sqrt(B - C^2) sqrt(B + (D + E y)^2))))/sqrt(B - C^2) + 6 (B - C^2 - 3) (D + E y) + 3 C (-3 B + 2 C^2 + 6) log(sqrt(B + (D + E y)^2) + D + E y) + 3 C (D + E y) sqrt(B + (D + E y)^2) + 6 ((D + E y)^2 + 3) (D + E y) log(sqrt(B + (D + E y)^2) + C) - 2 (D + E y)^3)/(18 E) + constant
 
 	I am glad I did not try to do this by hand. But combining these formulae, we can get an exact integral of the area of a bilinear patch. Later. Bilinear patches are not an exact representation anyway. We may opt for something else.
 	*/
-	
+
 	//Simple numerical calculation of double integral:
 	let A = 0;
 	let X = x2-x1, Y = y2-y1;
@@ -339,7 +372,7 @@ function bilinearArea(x1, x2, y1, y2, z11, z12, z21, z22, segs=5) {
 		}
 	}
 	A *= X*Y/(N*M); //dx dy
-	
+
 	return A;
 }
 
@@ -386,13 +419,13 @@ function patchColumnCalculation(x1, x2, y1, y2, z00, z01, z10, z11) {
 
 	//CENTER OF VOLUME
 	 let zc = 0.5*zAvg;
-	 
+
 	//Very approximate center of volume
 	//(does not account for different signs on z values,
 	//but that should be OK for hull offsets)
 	//let xc = (x1*(z00+z01)+x2*(z10+z11))/((z00+z01+z10+z11) || 1);
 	//let yc = (y1*(z00+z10)+y2*(z01+z11))/((z00+z01+z10+z11) || 1);
-	
+
 	// /*
 	// To find xc properly, I need to integrate x*z over the unit square, divide by zAvg(?) and scale and translate to ship coordinates afterwards:
 	// INT[x from 0 to 1, INT[y from 0 to 1, x*(a00 + a10*x + a01*y + a11*x*y) dy] dx] =
@@ -408,9 +441,9 @@ function patchColumnCalculation(x1, x2, y1, y2, z00, z01, z10, z11) {
 	//Similar for yc (modified symmetrically)
 	let yc = y1+Y*(((1/12)*z00 + (1/12)*z10 + (1/6)*z01 + (1/6)*z11) / (zAvg || 1));
 	let [a00, a10, a01, a11] = bilinearUnitSquareCoeffs(z00, z01, z10, z11);
-	
+
 	//console.log("Patch column Cv = (%.2f, %.2f, %.2f)", xc,yc,zc);
-	
+
 	//AREA
 	//These two methods give very similar results, within about 1% difference for the fishing boat hull (used in PX121.json).
 	//Simple triangle average approximation for area (works)
@@ -421,7 +454,7 @@ function patchColumnCalculation(x1, x2, y1, y2, z00, z01, z10, z11) {
 		{x: x2, y: y2, z: z11});*/
 	//Bilinear area calculation. Works too, but is currently numerical, and quite complex (which means it is bug-prone and hard to maintain). But it is more exact, even with just a few segments for numerical integration (the last, optional, parameter)
 	let As = Math.abs(bilinearArea(x1, x2, y1, y2, z00, z01, z10, z11));
-	
+
 	return {Ab: Ab, As: As, V: V, Cv: {x: xc, y: yc, z: zc}};
 }
 
@@ -441,9 +474,9 @@ function combineVolumes(array) {
 		Cv = Vectors.add(Cv, Vectors.scale(e.Cv, e.V));
 	}
 	Cv = Vectors.scale(Cv, 1/(V || L || 1));
-	
+
 	//console.info("combineVolumes: Combined Cv is (" + Cv.x + ", " + Cv.y + ", " + Cv.z + ").");
-	
+
 	return {V,As,Cv};//{V: V, As: As, Cv: Cv};
 }
 //@MrEranwe
@@ -473,20 +506,20 @@ function combineVolumes(array) {
 //
 // Return
 // It returns an object on the format {mass:1234, cg: {x:4,y:3,z:2}}, where the unit of mass is unclear, and x,y,z is in meters from aft,center,bottom, respectively.
-	 
+
  function parametricWeightHull(K, L, B, T, D, CB, Fn){
-	 
+
 	 // Calculates estimated structural weight
 	 // E is the Lloyd’s Equipment Numeral
-	 let E = L * (B + T) + 0.85 * L * (D - T); 
-	 // CbCorrected is the estimated corrected block coefficient 
+	 let E = L * (B + T) + 0.85 * L * (D - T);
+	 // CbCorrected is the estimated corrected block coefficient
 	 let CBCorrected = CB + (1 - CB) * ((0.8 * D - T) / (3 * T));
 	 // W is the estimated structural weight
 	 let W = K * Math.pow(E, 1.36) * (1 + 0.5 * (CBCorrected - 0.7));
-	 
-	 // Calculates LCG and VCG	 
+
+	 // Calculates LCG and VCG
 	 // VCGHull is the Vertical Center of Gravity of the hull
-	 let VCGHull = 0; 
+	 let VCGHull = 0;
 	 if (L < 120){
 		 VCGHull = 0.01 * D * (46.6 + 0.135 * (0.81 - CB) * Math.pow(L / D, 2)) + 0.008 * D * (L / D - 6.5);
 	 }
@@ -497,9 +530,9 @@ function combineVolumes(array) {
      let LCB = Fn ? (L*0.5 + 9.7 - 45 * Fn) : L * 0.516;
 	 // LCGHull is the Longitudinal Center of Gravity of the hull
 	 let LCGHull = LCB - 0.15;
-	 
+
 	 // Returns the object
-	 
+
 	 return {mass: W, cg: {x: LCGHull, y: 0, z: VCGHull}};
 	 }
 
@@ -513,9 +546,9 @@ function combineVolumes(array) {
 //
 // Return
 // It returns an object with the properties mass.
-	 
+
  function parametricWeightDeadweight(SFR, MCR, speed, person, day){
-	 
+
 	 // Calculates estimated  weight
 	 let Wfo = SFR * MCR * speed * 1.1;  // Fuel oil Weight
      let Wlo = 0;                        // Lube oil Weight
@@ -529,17 +562,17 @@ function combineVolumes(array) {
      let Wce = 0.17 * person;            // Weight of crew and effects
      let Wpr = 0.01 * person * day;      // Weight of provisions and stores
      let W = Wfo + Wlo + Wfw + Wce + Wpr; // Total weigth
-     
-     
+
+
      // VCGOut is the Vertical Center of Gravity of the Deadweight. Depends on designer
 	 // LCGOut is the Longitudinal Center of Gravity of the Deadweight. Depends on designer
-	      
+
 	 // Returns the object
-	 
+
 	 return {mass: W};
 	 }
 
-// This function estimates the structural weight of the machinery, main engine(s) and the remainder of the machinery weight. 
+// This function estimates the structural weight of the machinery, main engine(s) and the remainder of the machinery weight.
 //
 //
 // Inputs
@@ -552,27 +585,27 @@ function combineVolumes(array) {
 //
 // Return
 // It returns an object with the properties mass and the VCG.
-	 
+
  function parametricWeightMachinery(MCR, hdb, Der, B, T, L, test){
 	 // Calculates estimated machinery weight
 	 let W = 0.72 * Math.pow(MCR, 0.78);
-	 // Calculates LCG and VCG	 
-     
+	 // Calculates LCG and VCG
+
      // req1 and req2 are the Coast Guard requirements for the hdb
      let req1 = (32 * B + 190 * Math.sqrt(T)) / 1000;
      let req2 = (45.7 + 0.417 * L) / 100;
      let reqmax = Math.max(req1, req2, hdb);
-     
+
      // VCGMach is the Vertical Center of Gravity of the machinery
-	 let VCGMach = hdb + 0.35 * (Der - hdb); 
-     
+	 let VCGMach = hdb + 0.35 * (Der - hdb);
+
 	 // LCGMach is the Longitudinal Center of Gravity of the machinery. Depends on designer
-	      
+
 	 // Returns the object
-	 
+
 	 return {mass: W, VCG: VCGMach};
 	 }
-	 
+
 
 // This function estimates the remainder of the Light Ship Weight. It includes outfit: electrical plant, distributive auxiliary systems and hull engineering: bits, chocks, hatch covers...
 //
@@ -584,12 +617,12 @@ function combineVolumes(array) {
 //
 // Return
 // It returns an object with the properties mass and VCG.
-	 
+
  function parametricWeightOutfit(Co, LBP, D){
-	 
+
 	 // Calculates estimated  weight
 	 let W = Co * LBP;
-     
+
      // VCGOut is the Vertical Center of Gravity of the outfits
      let VCGOut = 0;
      if (LBP < 125){
@@ -601,11 +634,11 @@ function combineVolumes(array) {
      else {
          VCGOut = D + 2.5
      }
-     
+
 	 // LCGOut is the Longitudinal Center of Gravity of the Outfits. Depends on designer
-	      
+
 	 // Returns the object
-	 
+
 	 return {mass: W, VCG: VCGOut};
 	 }//@EliasHasle
 
@@ -614,11 +647,11 @@ function combineWeights(array) {
 	let M = array.reduce((sum,e)=>sum+e.mass,0);
 	let cgms = array.map(e=>Vectors.scale(e.cg, e.mass));
 	let CG = Vectors.scale(Vectors.sum(cgms), 1/M);
-	
+
 	return {mass: M, cg: CG};
 }//@EliasHasle
 
-/*Base class for objects that are constructed from 
+/*Base class for objects that are constructed from
 a literal object, (//or optionally from a JSON string).
 
 Constructors can take more parameters than the specification, but the specification must be the first parameter.
@@ -696,13 +729,13 @@ Object.assign(Ship.prototype, {
 			let os = specification.baseObjects[i];
 			this.baseObjects[os.id] = new BaseObject(os);
 		}
-		
+
 		this.derivedObjects = {};
 		for (let i = 0; i < specification.derivedObjects.length; i++) {
 			let os = specification.derivedObjects[i];
 			this.derivedObjects[os.id] = new DerivedObject(os, this.baseObjects);
 		}
-		
+
 		this.designState = new ShipState(specification.designState);
 	},
 	getSpecification: function() {
@@ -723,11 +756,11 @@ Object.assign(Ship.prototype, {
 		shipState = shipState || this.designState;
 
 		let components = [];
-		
+
 		components.push(
 			this.structure.getWeight(this.designState)
 		);
-		
+
 		//DEBUG
 		//console.log(components);
 
@@ -833,7 +866,7 @@ Object.assign(Structure.prototype, {
 			let name = bhnames[i];
 			let bhspec = bhspecs[name];
 			bulkheads[name] = new Bulkhead(bhspec,this.ship);
-		}*/	
+		}*/
 	},
 	getSpecification: function() {
 		let spec = {
@@ -841,21 +874,21 @@ Object.assign(Structure.prototype, {
 			decks: this.decks,
 			bulkheads: this.bulkheads
 		};/*{decks: {}, bulkheads: {}};
-		
+
 		spec.hull = this.hull.getSpecification();
-		
+
 		let sd = spec.decks;
 		let dk = Object.keys(this.decks);
 		for (let i = 0; i < dk.length; i++) {
 			sd[dk[i]] = this.decks[dk[i]].getSpecification();
 		}
-		
+
 		let sbh = spec.bulkheads;
 		let bhk = Object.keys(this.bulkheads);
 		for (let i = 0; i < bhk.length; i++) {
 			sbh[bhk[i]] = this.bulkheads[bhk[i]].getSpecification();
 		}*/
-		
+
 		return spec;
 	},
 	//This is all dummy calculations
@@ -863,7 +896,7 @@ Object.assign(Structure.prototype, {
 		let components = [];
 		//Hull
 		components.push(this.hull.getWeight(designState));
-		
+
 		//structure:
 		let decks = Object.values(this.decks);
 		for (let i=0; i < decks.length; i++) {
@@ -882,7 +915,7 @@ Object.assign(Structure.prototype, {
 				}
 			});
 		}
-		
+
 		let bulkheads = Object.values(this.bulkheads);
 		for (let i=0; i < bulkheads.length; i++) {
 			let bh = bulkheads[i];
@@ -896,9 +929,9 @@ Object.assign(Structure.prototype, {
 					y: sc.yc,
 					z: sc.zc
 				}
-			});	
+			});
 		}
-		
+
 		let output = combineWeights(components);
 		//console.info("Total structural weight: ", output);
 		return output;
@@ -944,21 +977,21 @@ Object.assign(Hull.prototype, {
 		let Cb = cp.Cb_design;
 		let vsm = 0.514444*cp.speed; // Convert the design speed from knots to m/s
 		let Fn = vsm / Math.pow(9.81 * L, 0.5); // Calculates Froude number
-		
+
 		//This is not a good way to estimate the hull weight.
 		let parsons = parametricWeightHull(K, L, B, T, D, Cb, Fn);
 		parsons.mass *= 1000; //ad hoc conversion to kg, because the example K value is aimed at ending with tonnes.
-		
+
 		let output = parsons;
 		//console.info("Hull weight:", output);
 		return output;
 	},
 	/*
 	Testing new version without nanCorrectionMode parameter, that defaults to setting lower NaNs to 0 and extrapolating highest data entry for upper NaNs (if existant, else set to 0). Inner NaNs will also be set to zero.
-	
+
 	Input:
 	z: level from bottom of ship (absolute value in meters)
-	
+
 	Output:
 	Array representing waterline offsets for a given height from the keel (typically a draft).
 	*/
@@ -986,7 +1019,7 @@ Object.assign(Hull.prototype, {
 					mu = 1;
 				}
 			}
-			
+
 			//Try to do linear interpolation between closest data waterlines, but handle null values well:
 			let wl = new Array(sts.length);
 			for (let j = 0; j < wl.length; j++) {
@@ -994,7 +1027,7 @@ Object.assign(Hull.prototype, {
 				let b = a;
 				//Find lower value for interpolation
 				if (tab[b][j]!==null && !isNaN(tab[b][j])) {
-					lower = tab[b][j];					
+					lower = tab[b][j];
 				} else {
 					b = a+1;
 					while(b < wls.length && (isNaN(tab[b][j]) || tab[b][j]===null)) {
@@ -1086,17 +1119,17 @@ Object.assign(Hull.prototype, {
 
 		//console.group/*Collapsed*/("waterlineCalculation.");
 		//console.info("Arguments: z=", z, " Boundaries: ", arguments[1]);
-		
+
 		let wl = this.getWaterline(z);
 		//console.info("wl: ", wl); //DEBUG
 
 		let LOA = this.attributes.LOA;
-		
+
 		let sts = this.halfBreadths.stations.slice();
 		for (let i=0; i < sts.length; i++) {
 			sts[i] *= LOA;
 		}
-		
+
 		let hasMinX = (minX !== undefined) && minX!==sts[0];
 		let hasMaxX = (maxX !== undefined) && maxX!==sts[sts.length-1];
 		if (hasMinX || hasMaxX) {
@@ -1126,7 +1159,7 @@ Object.assign(Hull.prototype, {
 					wlsuff = lerp(lower || 0, upper || 0, mul);
 				}
 			}
-			
+
 			//Add virtual entries according to specified boundaries:
 			sts = sts.slice(first+1, last+1);
 			wl = wl.slice(first+1, last+1);
@@ -1151,10 +1184,10 @@ Object.assign(Hull.prototype, {
 				port[i] = Math.min(wl[i], maxY||wl[i]);
 			}
 		}
-		
+
 		//DEBUG
 		//console.info("Arguments to sectionCalculation:", sts, star, port);
-		
+
 		//sectionCalculation can potentially be served some nulls.
 		let sc = sectionCalculation({xs: sts, ymins: star, ymaxs: port});
 		let LWL = sc.maxX-sc.minX;
@@ -1163,7 +1196,7 @@ Object.assign(Hull.prototype, {
 		let APP = this.attributes.APP || sc.minX;
 		let FPP = this.attributes.FPP || sc.maxX;
 		let LBP = FPP-APP;
-		
+
 		let output = {
 			z: z,
 			xc: sc.xc,
@@ -1237,7 +1270,7 @@ Object.assign(Hull.prototype, {
 				Ap: 0,
 				Cv: {x:0, y:0, z:0}
 			}) {
-			
+
 			let wlc = hull.waterlineCalculation(z,{});
 			let lev = {};
 			Object.assign(lev, wlc);
@@ -1254,31 +1287,31 @@ Object.assign(Hull.prototype, {
 			//	+ trapezoidCalculation(prev.prMinY, prev.prMaxY, lev.prMinY, lev.prMaxY, prev.z, z)["A"];
 			//DEBUG END
 
-			
+
 			//level bounds are for the bounding box of the submerged part of the hull
-			if (wlc.minX!==null && !isNaN(wlc.minX) && wlc.minX<=prev.minX) 
+			if (wlc.minX!==null && !isNaN(wlc.minX) && wlc.minX<=prev.minX)
 				lev.minX = wlc.minX;
 			else
 				lev.minX = prev.minX;
-			if (wlc.maxX!==null && !isNaN(wlc.maxX) && wlc.maxX>=prev.maxX) 
+			if (wlc.maxX!==null && !isNaN(wlc.maxX) && wlc.maxX>=prev.maxX)
 				lev.maxX = wlc.maxX;
 			else
 				lev.maxX = prev.maxX;
-			if (wlc.minY!==null && !isNaN(wlc.minY) && wlc.minY<=prev.minY) 
+			if (wlc.minY!==null && !isNaN(wlc.minY) && wlc.minY<=prev.minY)
 				lev.minY = wlc.minY;
 			else
 				lev.minY = prev.minY;
-			if (wlc.maxY!==null && !isNaN(wlc.maxY) && wlc.maxY>=prev.maxY) 
+			if (wlc.maxY!==null && !isNaN(wlc.maxY) && wlc.maxY>=prev.maxY)
 				lev.maxY = wlc.maxY;
 			else
 				lev.maxY = prev.maxY;
-			
+
 			lev.Vbb = (lev.maxX-lev.minX)*(lev.maxY-lev.minY)*z;
-			
+
 			//Keep level maxX and minX for finding end cap areas:
 			lev.maxXwp = wlc.maxX;
 			lev.minXwp = wlc.minX;
-			
+
 			//Find bilinear patches in the slice, and combine them.
 			//Many possibilities for getting the coordinate systems wrong.
 			let calculations = [];
@@ -1286,7 +1319,7 @@ Object.assign(Hull.prototype, {
 			let wl = hull.getWaterline(z);
 			let prwl = hull.getWaterline(prev.z);
 			for (let j = 0; j < sts.length-1; j++) {
-				let port = 
+				let port =
 					patchColumnCalculation(sts[j], sts[j+1], prev.z, z, -prwl[j], -wl[j], -prwl[j+1], -wl[j+1]);
 				calculations.push(port);
 				let star =
@@ -1298,7 +1331,7 @@ Object.assign(Hull.prototype, {
 			//Cv of slice. Note that switching of yz must
 			//be done before combining with previous level
 			let Cv = {x: C.Cv.x, y: C.Cv.z, z: C.Cv.y};
-			
+
 			lev.Vs = prev.Vs + C.V; //hull volume below z
 			lev.As = prev.As + C.As; //outside surface below z
 
@@ -1307,19 +1340,19 @@ Object.assign(Hull.prototype, {
 				lev.As += hull.stationCalculation(lev.minXwp, z)["A"];
 			if (lev.maxXwp >= sts[sts.length-1])
 				lev.As += hull.stationCalculation(lev.maxXwp, z)["A"];
-			
+
 			//center of volume below z (some potential for accumulated rounding error when calculating an accumulated average like this):
 			lev.Cv = Vectors.scale(Vectors.add(
 						Vectors.scale(prev.Cv,prev.Vs),
 						Vectors.scale(Cv,C.V)
 					), 1/(lev.Vs || 2));
-			
+
 			lev.Cb = lev.Vs/lev.Vbb;
 			lev.Cp = lev.Vs/(lev.Ap*(lev.maxX-lev.minX));
-			
+
 			return lev;
 		}
-		
+
 		//Here is the returned function calculateAttributesAtDraft(T):
 		return function(T) {
 			if (T===null || isNaN(T)) {
@@ -1328,15 +1361,15 @@ Object.assign(Hull.prototype, {
 			} else if (T<0 || T>this.attributes.Depth) {
 				console.error("Hull.prototype.calculateAttributesAtDraft(T): Draft parameter " + T + "outside valid range of [0,Depth]. Returning undefined.");
 			}
-			
+
 			let wls = this.halfBreadths.waterlines.map(wl=>this.attributes.Depth*wl);
-			
+
 			//This is the part that can be reused as long as the geometry remains unchanged:
 			if (this.levelsNeedUpdate) {
 				this.levels = [];
 				for (let i = 0; i < wls.length; i++) {
 					let z = wls[i];
-					let lev = levelCalculation(this, z, this.levels[i-1]);			
+					let lev = levelCalculation(this, z, this.levels[i-1]);
 					//Bottom cap, only on the lowest level:
 					if (i === 0) {
 						lev.As += lev.Awp;
@@ -1345,16 +1378,16 @@ Object.assign(Hull.prototype, {
 				}
 				this.levelsNeedUpdate = false;
 			}
-			
+
 			//Find highest data waterline below or at water level:
 			let {index, mu} = bisectionSearch(wls, T);
-			
+
 			//console.info("Highest data waterline below or at water level: " + index);
 			//console.log(this.levels);
 			let lc;
 			if (mu===0) lc = this.levels[index];
 			else lc = levelCalculation(this, T, this.levels[index]);
-			
+
 			//Filter and rename for output
 			return {
 				xcwp: lc.xc, //water plane values
@@ -1393,16 +1426,19 @@ Object.assign(Hull.prototype, {
 		let VT = M/rho; //Target submerged volume (1025=rho_seawater)
 		//Interpolation:
 		let a = 0;
-		let b = this.attributes.Depth;             //depth is not draft ¿?                                                                                                                                                                                                                                                              
-		let t = 0.5*b;
-		while (b-a>epsilon) {
-			t = 0.5*(a+b);
-			let V = this.calculateAttributesAtDraft(t)["Vs"];
-			//console.log(V); //DEBUG
-			if (V>VT) b = t;
-			else a = t;
-		}
-		//console.info("Calculated draft: %.2f", t);
+		let b = this.attributes.Depth;             //depth is not draft ¿?
+		// let t = 0.5*b; Not Necessary anymore with secant values
+		let t = secantMethod(a, b, VT, epsilon, this); //@ferrari212
+		// This is part of the code can be deleted after the Bisection Method
+		// Code calculated by the new method and have an convergence with less interation
+		// while (b-a>epsilon) {
+		// 	t = 0.5*(a+b);
+		// 	let V = this.calculateAttributesAtDraft(t)["Vs"];
+		// 	// console.log(t); //DEBUG
+		// 	if (V>VT) b = t;
+		// 	else a = t;
+		// }
+		console.info("Calculated draft: %.2f", t);
 		return t;
 	}
 });//@EliasHasle
@@ -1451,7 +1487,7 @@ Object.assign(BaseObject.prototype, {
 		let d = wi.contentDensity || 0;
 		let v = wi.volumeCapacity || 0;
 		//Maybe we should have another handling of cargo (with variable density)
-		
+
 		let m = wi.lightweight + d*v*fullness;
 		let cg;
 		if (wi.fullnessCGMapping !== undefined) {
@@ -1517,17 +1553,17 @@ Object.assign(DerivedObject.prototype, {
 		} else {
 			spec.baseObject = this.baseObject.getSpecification();
 		}
-		
+
 		return spec;
 	},
 	getWeight: function(state) {
 		let oState = state.getObjectState(this);
-		
+
 		//Support disabled objects:
 		if (oState.exists === false) {
 			return {mass: 0, cg: {x:0, y:0, z:0}};
 		}
-		
+
 		let p = {
 			x: oState.xCentre,
 			y: oState.yCentre,
@@ -1537,7 +1573,7 @@ Object.assign(DerivedObject.prototype, {
 		let w = this.baseObject.getWeight(oState.fullness);
 		let m = w.mass;
 		let cg = Vectors.add(p, w.cg);
-		
+
 		if (isNaN(cg.x+cg.y+cg.z)) {
 			console.error("DerivedObject.getWeight: returning NaN values.");
 		}
@@ -1585,10 +1621,10 @@ Object.assign(ShipState.prototype, {
 				calculationParameters: this.calculationParameters,
 				objectOverrides: this.objectOverrides//{}
 			};
-			
+
 			//Sketchy, but versatile:
-			spec = JSON.parse(JSON.stringify(spec));		
-			
+			spec = JSON.parse(JSON.stringify(spec));
+
 			this.specCache = spec;
 			this.cachedVersion = this.version;
 		}
@@ -1604,11 +1640,11 @@ Object.assign(ShipState.prototype, {
 				/*&& c.baseStateVer === o.baseObject.baseStateVersion
 				&& c.refStateVer === o.referenceStateVersion*/) {
 				console.log("ShipState.getObjectState: Using cache.");
-				return c.state;	
-			}				
+				return c.state;
+			}
 		}
 		console.log("ShipState.getObjectState: Not using cache.");
-		
+
 		let state = {};
 		Object.assign(state, o.baseObject.baseState);
 		Object.assign(state, o.referenceState);
@@ -1625,14 +1661,14 @@ Object.assign(ShipState.prototype, {
 				}
 			}
 		}
-		
+
 		this.objectCache[o.id] = {
 			thisStateVer: this.version,
 			/*baseStateVer: o.baseObject.baseStateVersion,
 			refStateVer: o.referenceStateVersion,*/
 			state: state
 		};
-		
+
 		return state;
 	},
 	//o is an object, k is a key to a single state property
@@ -1672,7 +1708,7 @@ Object.assign(ShipState.prototype, {
 		oo.baseByID = soo.baseByID || {};
 		oo.derivedByGroup = soo.derivedByGroup || {};
 		oo.derivedByID = soo.derivedByID || {};
-		
+
 		this.version++;
 	},
 	//Overrides existing directives and adds new ones.
@@ -1702,7 +1738,7 @@ Object.assign(ShipState.prototype, {
 	override: function(spec) {
 		let oo = this.objectOverrides;
 		let soo = spec.objectOverrides;
-		
+
 		let sources = [spec.calculationParameters, soo.common];
 		let targets = [this.calculationParameters, oo.common];
 		for (let i = 0; i < sources.length; i++) {
@@ -1717,7 +1753,7 @@ Object.assign(ShipState.prototype, {
 
 		sources = [soo.common, soo.baseByID, soo.derivedByGroup, soo.derivedByID];
 		targets = [oo.common, oo.baseByID, oo.derivedByGroup, oo.derivedByID];
-		
+
 		for (let i = 0; i < sources.length; i++) {
 			if (!sources[i]) continue;
 			let specKeys = Object.keys(sources[i]);
