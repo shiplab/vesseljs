@@ -68,9 +68,12 @@
     <pre id="parameters"></pre></p>
 
 <p>The stability parameters can be calculated with:
-<pre><code class="javascript">stability = ship.calculateStability();</code></pre></p>
+<pre><code class="javascript">// create a state object to store the data
+state = new Vessel.ShipState();
 
-<p>As no ShipState object was provided as argument to the method, the loading condition of the vessel will be taken as defined in the designState property.</p>
+stability = ship.calculateStability(state);</code></pre></p>
+
+<p>As an empty state object was used, all tanks are half loaded by default.</p>
 
 <p>This yields as results:
     <pre id="stability"></pre>
@@ -81,17 +84,19 @@
     <script>
 		"use strict";
 
-        var filePath, parameters, stability;
+        var filePath, parameters, state, stability;
 
         // define  path of the file in the server
-        filePath = "data/ship_specifications/PX121.json"
+        filePath = "data/ship_specifications/PX121.json";
 
         Vessel.loadShip(filePath, function(ship) {
             // ship loaded in the local scope
             parameters = JSON.stringify(ship.designState.calculationParameters, null, 4);
             document.getElementById("parameters").innerHTML = parameters;
 
-            stability = ship.calculateStability();
+            // create a state object to store the data
+            state = new Vessel.ShipState();
+            stability = ship.calculateStability(state);
 
             document.getElementById("stability").innerHTML = JSON.stringify(stability, null, 4);
         });
