@@ -2763,9 +2763,9 @@
 		}
 	}, {
 		"id": "Tank24",
-		"group": "fuel tanks",
 		"baseObject": "TankL10.5B3H5.3fdundefinedFtank11.stl",
 		"affiliations": {
+			"group": "fuel tanks",
 			"Deck": "TankTop",
 			"SFI": "70X.XXX.01"
 		},
@@ -2776,9 +2776,9 @@
 		}
 	}, {
 		"id": "Tank25",
-		"group": "fuel tanks",
 		"baseObject": "TankL10.5B3H5.3fdundefinedFtank11.stl",
 		"affiliations": {
+			"group": "fuel tanks",
 			"Deck": "TankTop",
 			"SFI": "70X.XXX.02"
 		},
@@ -2789,9 +2789,9 @@
 		}
 	}, {
 		"id": "Tank26",
-		"group": "fuel tanks",
 		"baseObject": "TankL6.5B10H9.5fdundefinedFtank12.stl",
 		"affiliations": {
+			"group": "fuel tanks",
 			"Deck": "TankTop",
 			"SFI": "70X.XXX.03"
 		},
