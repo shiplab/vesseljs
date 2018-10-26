@@ -31,6 +31,7 @@ Object.assign(Ship.prototype, {
 		}
 		
 		this.designState = new ShipState(specification.designState);
+		return this;
 	},
 	getSpecification: function() {
 		let specification = {};

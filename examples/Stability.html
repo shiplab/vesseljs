@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>Stability</title>
+
+    <!-- Bootstrap Core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- jQuery Version 1.11.1 -->
+    <script src="js/libs/jquery.js"></script>
+
+    <!-- Bootstrap Core JavaScript -->
+    <script src="js/libs/bootstrap.min.js"></script> 
+
+	<!--Import library-->
+	<script src="../build/Vessel.js"></script>
+
+</head>
+
+<body>
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-inverse">
+        <div class="container">
+            <!-- Add  the <div>[Something]</div> structure for each header in the navbar-->
+            <div class="navbar-header">               
+                <a class="navbar-brand" href="https://github.com/shiplab/vesseljs">Github project page</a>
+            </div>
+            <!-- This is for the right part of the navbar. Reserved for Shiplab logo-->
+            <div class="nav navbar-nav navbar-right">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="http://www.shiplab.hials.org/"><img src="images/barquinho.png" alt="Shiplab logo" style="height:150%"> 
+                    </a>                    
+                </div>
+            </div>
+        </div>
+    </nav>
+            
+    <!-- Container creates the space -->
+    <div class="container">
+        
+        <!-- Row creates horizontal groups of columns -->
+        <div class="row">
+            
+            <!-- No divisions in page. Only 1 column. -->
+             <div class="col-md-12 text-center">
+                <h2>Stability</h2>
+            </div>  
+            
+			<div class="col-md-12 text-center">
+                <p>Calculate static stability of a vessel. <a href="https://github.com/shiplab/vesseljs/tree/master/examples/Stability.html">View source.</a></p>
+            </div>
+            
+            <div class="col-md-12 text-left">
+
+<p>A Ship object provides a calculateStability method to calculate stability parameters.
+    The structural weight is estimated with a top-down approach following an empirical formula.
+    The parameters used in the estimation are stored in designState.calculationParameters.
+    For example, for the <a href="https://github.com/shiplab/vesseljs/blob/master/examples/data/ship_specifications/PX121.json">PX121.json</a> specification, they read:
+    <pre id="parameters"></pre></p>
+
+<p>The stability parameters can be calculated with:
+<pre><code class="javascript">stability = ship.calculateStability();</code></pre></p>
+
+<p>As no ShipState object was provided as argument to the method, the loading condition of the vessel will be taken as defined in the designState property.</p>
+
+<p>This yields as results:
+    <pre id="stability"></pre>
+</p>
+        </div>
+    </div>
+        
+    <script>
+		"use strict";
+
+        var filePath, parameters, stability;
+
+        // define  path of the file in the server
+        filePath = "data/ship_specifications/PX121.json"
+
+        Vessel.loadShip(filePath, function(ship) {
+            // ship loaded in the local scope
+            parameters = JSON.stringify(ship.designState.calculationParameters, null, 4);
+            document.getElementById("parameters").innerHTML = parameters;
+
+            stability = ship.calculateStability();
+
+            document.getElementById("stability").innerHTML = JSON.stringify(stability, null, 4);
+        });
+    </script>
+
+</body>
+
+</html>

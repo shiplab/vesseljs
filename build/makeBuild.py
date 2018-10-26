@@ -46,7 +46,8 @@ Object.assign(Vessel, {
 	downloadShip: downloadShip,
         f: {
             linearFromArrays: linearFromArrays,
-            bilinear: bilinear
+            bilinear: bilinear,
+            bisectionSearch
         },
         Vectors: Vectors
 });

@@ -14,17 +14,21 @@ function Hull(spec) {
 }
 Hull.prototype = Object.create(JSONSpecObject.prototype);
 Object.assign(Hull.prototype, {
+	constructor: Hull,
 	setFromSpecification: function(spec) {
 		this.halfBreadths = spec.halfBreadths;
 		//this.buttockHeights = spec.buttockHeights;
 		this.attributes = spec.attributes; //this could/should include LOA, BOA, Depth
 		this.levelsNeedUpdate = true;
+		this.style = spec.style || {};
+		return this;
 	},
 	getSpecification: function() {
 		return {
 			halfBreadths: this.halfBreadths,
 			//buttockHeights: this.buttockHeights
-			attributes: this.attributes
+			attributes: this.attributes,
+			style: this.style
 		};
 	},
 	//to facilitate economical caching, it may be best to have a few numerical parameters to this function instead of letting it depend on the whole designState. Or maybe the designState is static enough.
