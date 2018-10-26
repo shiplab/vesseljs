@@ -518,6 +518,7 @@ function combineVolumes(array) {
 	 let W = K * Math.pow(E, 1.36) * (1 + 0.5 * (CBCorrected - 0.7));
 
 	 // Calculates LCG and VCG
+	 // Those centers are calculated related to the Amidship @ferrari212
 	 // VCGHull is the Vertical Center of Gravity of the hull
 	 let VCGHull = 0;
 	 if (L < 120){
@@ -981,9 +982,10 @@ Object.assign(Hull.prototype, {
 		//This is not a good way to estimate the hull weight.
 		let parsons = parametricWeightHull(K, L, B, T, D, Cb, Fn);
 		parsons.mass *= 1000; //ad hoc conversion to kg, because the example K value is aimed at ending with tonnes.
+		parsons.cg.x += L/2; //adjusting to after perpendicular coordinate system
 
 		let output = parsons;
-		//console.info("Hull weight:", output);
+		// console.info("Hull weight:", output);
 		return output;
 	},
 	/*
@@ -1503,11 +1505,11 @@ Object.assign(BaseObject.prototype, {
 					//Linear interpolation between closest entries:
 					c = lerp(cgs[i][j], cgs[i+1][j], mu);
 				else c = cgs[i][j];
-				//if (c===null || isNaN(c)) console.error("BaseObject.getWeight: Invalid value found after interpolation.");
+				// if (c===null || isNaN(c)) console.error("BaseObject.getWeight: Invalid value found after interpolation.");
 				cg.push(c);
 			}
 		} else if (wi.cg !== undefined) {
-			//console.log("BaseObject.getWeight: Using specified cg.");
+			// console.log("BaseObject.getWeight: Using specified cg.");
 			cg = wi.cg;
 		} else {
 			console.warn("BaseObject.getWeight: No cg or fullnessCGMapping supplied. Defaults to center of bounding box.");

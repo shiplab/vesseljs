@@ -176,14 +176,14 @@
                         <tr>
                            <td>Draft at FP (m)</td>
                            <td><span id = "draftfp"></span></td>
-                           <td></td>
+                           <td><span id = "draftfph"></td>
                            <td></td>
                            <td></td>
                         </tr>
                         <tr>
                            <td>Draft AP (m)</td>
                            <td><span id = "draftap"></span></td>
-                           <td></td>
+                           <td><span id = "draftaph"></td>
                            <td></td>
                            <td></td>
                         </tr>
@@ -212,8 +212,8 @@
                            <td>Wetted area (m2)</td>
                            <td><span id = "Awet"></span></td>
                            <td><span id = "Aweth"></span></td>
-                           <td></td>
-                           <td></td>
+                           <td><span id = "Awetc"></td>
+                           <td><span id = "awetd"></td>
                         </tr>
                         <tr>
                            <td>Waterplane Area (m2)</td>
@@ -268,42 +268,42 @@
                            <td>GM (m)</td>
                            <td><span id = "GM"></span></td>
                            <td><span id = "GMh"></span></td>
-                           <td><span id = "GM2"></span><td>
+                           <td><span id = "GM2"></span></td>
                            <td><span id = "GMd"></span></td>
                         </tr>
                         <tr>
                            <td>Trim (m)</td>
                            <td><span id = "trimd"></span></td>
-                           <td><span></span><td>
-                           <td><span></span><td>
+                           <td><span></span></td>
+                           <td><span></span></td>
                            <td><span></span></td>
                         </tr>
                         <tr>
                            <td>Trim (º)</td>
                            <td><span id = "trima"></span></td>
-                           <td><span></span><td>
-                           <td><span></span><td>
+                           <td><span></span></td>
+                           <td><span></span></td>
                            <td><span></span></td>
                         </tr>
                         <tr>
                            <td>Heel (m)</td>
                            <td><span id = "heel"></span></td>
-                           <td><span></span><td>
-                           <td><span></span><td>
+                           <td><span></span></td>
+                           <td><span></span></td>
                            <td><span></span></td>
                         </tr>
                         <tr>
                            <td>Maximum moment (ton m)</td>
                            <td><span id = "maxmom"></span></td>
-                           <td><span></span><td>
-                           <td><span></span><td>
+                           <td><span></span></td>
+                           <td><span></span></td>
                            <td><span></span></td>
                         </tr>
                         <tr>
                            <td>Shear  (t)</td>
                            <td><span id = "shear"></span></td>
-                           <td><span></span><td>
-                           <td><span></span><td>
+                           <td><span></span></td>
+                           <td><span></span></td>
                            <td><span></span></td>
                         </tr>
 
@@ -380,7 +380,47 @@
                 <div id="myDiv" style="width: 480px; height: 400px;">
 			</div>
         </div>
+        <button onclick="hide()" name="button">Click to read the explanation of the method</button><br><br><br><br>
+        <div id="hide">
+          <div class="col-md-12 text-center">
+            <p>The method presented above aims to validate the calculation method
+              presented by Vessel.js file. The main idea is to use a simple hull
+              geometry (presented here by a triangular hull) and compare it with two
+              other calculation methods: analical formulation and numerical method
+              using maxsurf/hidromax software. The explanation of the steps followed
+              by the <a href="https://github.com/shiplab/vesseljs/blob/master/examples/blockCase_compare.html">
+              open code</a> are presented bellow.</p>
+          <div>
+        </div>
     </div>
+    <ol>
+      <h2><li>Use the library and Vessel.js to calculate hydristatics</li></h2>
+      <ul>
+        <h4><li>Get all compartments informations and calculate centers of gravity</li></h4>
+          <p><code>THREE.FileLoader().load("data/ship_specifications/blockCase.json", useFileData);</code></p>
+          <p><code>let block0 = ship.baseObjects[Object.keys(ship.baseObjects)[0]];</code></p>
+          <p><code>let block0 = ship.baseObjects[Object.keys(ship.baseObjects)[1]];</code></p>
+          <p><code>let block0 = ship.baseObjects[Object.keys(ship.baseObjects)[2]];</code></p>
+        <h4><li>Calculate draft from deadweight</li></h4>
+          <p><code>let a = ship.calculateStability();</code></p>
+          <p><code>let draftc = a.T.toFixed(3);</code></p>
+        <h4><li>Use the draft to calculate hydrostatics</li></h4>
+          <p><code>let ha = ship.structure.hull.calculateAttributesAtDraft(draftc);</code></p>
+        <h4><li>List all the calculated values under "Calculated value" column</li></h4>
+      </ul>
+      <br>
+      <h2><li>Reproduce all values by analytical calculations method</li></h2>
+      <ul>
+        <h4><li>Get the same draft outputed from the Vessel.js</li></h4>
+          <p><code>let draftms = a.T;</code></p>
+        <h4><li>Calculate hidrostatics and list values under "Hand value" column</li></h4>
+      </ul>
+      <br>
+      <h2><li>Insert data in the maxsurf program</li></h2>
+      <ul>
+        <h4><li>Calculate hidrostatics and list values under "	Calculated on Hidromax" column</li></h4>
+      </ul>
+    </ol>
 
     <script>
 		"use strict";
@@ -472,111 +512,12 @@
             document.getElementById("LOA").innerHTML = LOA;
             document.getElementById("BOA").innerHTML = BOA;
             document.getElementById("depth").innerHTML = depth;
-            document.getElementById("draftdesign").innerHTML = draftdesign;
+            document.getElementById("draftdesign").innerHTML = draftdesign; //this part does not makes sense
             document.getElementById("speeddesign").innerHTML = speeddesign;
 
             //calculate stability
-            let a = ship.calculateStability();
-            let GM2 = a.GMt.toFixed(3);
-            document.getElementById("GM2").innerHTML = GM2;
-
-            //hand values
-            // The above elements are the calculated one that were in the previous code @ferrari212
-            // let disp = 100;
-            // let draftms = 2.028;
-            // let draftap = 2.082;
-            // let draftfp = 1.974;
-            // let lwl = 20;
-            // let bwl = 5.206;
-            // let Awet = 136.989;
-            // let Awp = 98.95;
-            // let Cb = disp / (draftms * lwl * bwl * 1.025);
-            // let LCB = 9.636;
-            // let LCF = 9.818;
-            // let KB = 1.319;
-            // let KG = 3.525;
-            // let BM = 2.061;
-            // let GM = KB + BM - KG;
-            // let trimd = 0.108;
-            // let trima = 0.618;
-            // let heel = 0;
-            // let maxmom = 40.072;
-            // let shear = 13.327;
-            // let deadweight = 85000;
-
-            //The following data are calculated from LOA, BOA, depth, and draft @ferrari212
-            let disp = 1.025*LOA*(BOA/depth)*draftdesign*draftdesign/2;
-            let draftms = 2.000; //This value I used as parameter for calculation
-            let draftap = 2.082; //Calculation of the trim I did not made
-            let draftfp = 1.974; //Calculation of the trim I did not made
-            let lwl = LOA;
-            let bwl = (BOA/depth)*draftdesign;
-            let Awet = 2*LOA*Math.sqrt(Math.pow(bwl/2,2)+Math.pow(draftdesign,2))+bwl*draftdesign;
-            let Awp = LOA*bwl;
-            let Cb = disp / (draftms * lwl * bwl * 1.025);
-            let LCB = LOA/2;
-            let LCF = LOA/2;
-            let KB = 2*draftdesign/3;
-            let KG = 3.525;
-            let BM = LOA*Math.pow(bwl,3)*1.025/(12*disp);
-            let GM = KB + BM - KG;
-            let trimd = 0.108;
-            let trima = 0.618;
-            let heel = 0;
-            let maxmom = 40.072;
-            let shear = 13.327;
-            let deadweight = 85000;
-
-            document.getElementById("disp").innerHTML = disp.toFixed(3);
-            document.getElementById("draftms").innerHTML = draftms.toFixed(3);
-            document.getElementById("draftfp").innerHTML = draftfp.toFixed(3);
-            document.getElementById("draftap").innerHTML = draftap.toFixed(3);
-            document.getElementById("lwl").innerHTML = lwl.toFixed(3);
-            document.getElementById("bwl").innerHTML = bwl.toFixed(3);
-            document.getElementById("Awet").innerHTML = Awet.toFixed(3);
-            document.getElementById("Awp").innerHTML = Awp.toFixed(3);
-            document.getElementById("Cb").innerHTML = Cb.toFixed(3);
-            document.getElementById("LCB").innerHTML = LCB.toFixed(3);
-            document.getElementById("LCF").innerHTML = LCF.toFixed(3);
-            document.getElementById("KB").innerHTML = KB.toFixed(3);
-            document.getElementById("KG").innerHTML = KG.toFixed(3);
-            document.getElementById("BM").innerHTML = BM.toFixed(3);
-            document.getElementById("GM").innerHTML = GM.toFixed(3);
-            document.getElementById("trimd").innerHTML = trimd.toFixed(3);
-            document.getElementById("trima").innerHTML = trima.toFixed(3);
-            document.getElementById("heel").innerHTML = heel.toFixed(3);
-            document.getElementById("maxmom").innerHTML = maxmom.toFixed(3);
-            document.getElementById("shear").innerHTML = shear.toFixed(3);
-            document.getElementById("deadweight").innerHTML = deadweight.toFixed(3);
-
-            //Insertion of the hidromax values @ferrari212
-            let disph = 102.5;
-            let drafth = 2.000;
-            let lwlh = 20;
-            let bwlh = 5;
-            let Aweth = 138.062;
-            let Awph = 100.00;
-            let Cbh = 0.5
-            let LCBh = 10;
-            let LCFh = 10;
-            let KBh = 1.333;
-            let KGh = 3.525;
-            let BMh = 2.083;
-            let GMh = KBh + BMh - KGh;
-
-            document.getElementById("disph").innerHTML = disph.toFixed(3);
-            document.getElementById("drafth").innerHTML = drafth.toFixed(3);
-            document.getElementById("lwlh").innerHTML = lwlh.toFixed(3);
-            document.getElementById("bwlh").innerHTML = bwlh.toFixed(3);
-            document.getElementById("Aweth").innerHTML = Aweth.toFixed(3);
-            document.getElementById("Awph").innerHTML = Awph.toFixed(3);
-            document.getElementById("Cbh").innerHTML = Cbh.toFixed(3);
-            document.getElementById("LCBh").innerHTML = LCBh.toFixed(3);
-            document.getElementById("LCFh").innerHTML = LCFh.toFixed(3);
-            document.getElementById("KBh").innerHTML = KBh.toFixed(3);
-            document.getElementById("KGh").innerHTML = KGh.toFixed(3);
-            document.getElementById("BMh").innerHTML = BMh.toFixed(3);
-            document.getElementById("GMh").innerHTML = GMh.toFixed(3);
+            //1. Make all calculations with library
+            // 1.1 Does all blocks calculations
 
             //baseObjects
             let lightweight = ship.structure.hull.attributes.lightweight;
@@ -632,19 +573,159 @@
 
 			//Elias comments: calculated stability values a uses a calculated draft, whereas the other values below are calculated from a given "design draft".
             //calculated values
-            let KBc = a.KB.toFixed(3);
+            // 1.2 Calculate draft from deadweight:
+            let a = ship.calculateStability();
+            let weight = a.w;
+            console.log(weight.cg.x);
+            console.log(weight.cg.z);
             let KGc = a.KG.toFixed(3);
-            let BMc = a.BMt.toFixed(3);
-            //let draftc = ship.calculateDraft().toFixed(3); // Insert the same draft @ferrari212
-            let draftc = draftms;
+            let draftc = a.T.toFixed(3);
+
+            // 1.3 Then use the draft to calculate hydrostatics:
 			      let ha = ship.structure.hull.calculateAttributesAtDraft(draftc);
-			      let LCBc = ha.LCB;
+
+            let KBc = ha.KB.toFixed(3);
+            let BMc = ha.BMt.toFixed(3);
+            let GM2 = a.GMt.toFixed(3);
+            let LCBc = ha.LCB;
 			      let LCFc = ha.LCF;
             let lwlc = ha.LWL;
             let bwlc = ha.BWL;
+            let Awetc = ha.As;
             let Awpc = ha.Awp;
             let cbc = ha.Cb;
-            let dispc = lwlc * bwlc * cbc * draftc;
+            //Not sure if the values are also considering water density
+            let dispc = lwlc * bwlc * cbc * draftc * 1.025; //considering 1.025 t/m³ the water density
+
+            // 1.4 list all the calculated values under "Calculated value" column
+            document.getElementById("KBc").innerHTML = KBc;
+            document.getElementById("KGc").innerHTML = KGc;
+            document.getElementById("BMc").innerHTML = BMc;
+            document.getElementById("GM2").innerHTML = GM2; //To use in same draft
+            document.getElementById("draftc").innerHTML = draftc;
+            document.getElementById("lwlc").innerHTML = lwlc.toFixed(3);
+            document.getElementById("bwlc").innerHTML = bwlc.toFixed(3);
+            document.getElementById("Awetc").innerHTML = Awetc.toFixed(3);
+            document.getElementById("Awpc").innerHTML = Awpc.toFixed(3);
+            document.getElementById("cbc").innerHTML = cbc.toFixed(3);
+            document.getElementById("LCBc").innerHTML = LCBc.toFixed(3);
+            document.getElementById("LCFc").innerHTML = LCFc.toFixed(3);
+            document.getElementById("lightweight").innerHTML = lightweight.toFixed(3);
+            document.getElementById("deadweightc").innerHTML = deadweightc.toFixed(3);
+            document.getElementById("dispc").innerHTML = dispc.toFixed(3);
+
+
+            // The elements bellow are the calculated one that were in the previous code @ferrari212
+            // let disp = 100;
+            // let draftms = 2.028;
+            // let draftap = 2.082;
+            // let draftfp = 1.974;
+            // let lwl = 20;
+            // let bwl = 5.206;
+            // let Awet = 136.989;
+            // let Awp = 98.95;
+            // let Cb = disp / (draftms * lwl * bwl * 1.025);
+            // let LCB = 9.636;
+            // let LCF = 9.818;
+            // let KB = 1.319;
+            // let KG = 3.525;
+            // let BM = 2.061;
+            // let GM = KB + BM - KG;
+            // let trimd = 0.108;
+            // let trima = 0.618;
+            // let heel = 0;
+            // let maxmom = 40.072;
+            // let shear = 13.327;
+            // let deadweight = 85000;
+
+            // 2. Reproduce all values by hand calculations
+            // The following data are calculated from LOA, BOA, depth, and draft
+            // calculated in the above steps @ferrari212
+            let draftms = a.T; //Comparing same drafts
+            let disp = 1.025*LOA*(BOA/depth)*draftms*draftms/2;
+            let lwl = LOA;
+            let bwl = (BOA/depth)*draftms;
+            let Awet = 2*LOA*Math.sqrt(Math.pow(bwl/2,2)+Math.pow(draftms,2))+bwl*draftms;
+            let Awp = LOA*bwl;
+            let Cb = disp / (draftms * lwl * bwl * 1.025);
+            let LCB = LOA/2;
+            let LCF = LOA/2;
+            let KB = 2*draftms/3;
+            let KG = a.KG;
+            let BM = LOA*Math.pow(bwl,3)*1.025/(12*disp);
+            let GM = KB + BM - KG;
+            let BMl = bwl*Math.pow(LOA,3)*1.025/(12*disp);
+            let GMl = KB + BMl - KG;
+
+            // avaiable just for small angles < 3°
+            // this calculation can be incorporated to Vessesl.js with no problem
+            let trima = (LCB-weight.cg.x)/GMl;
+            let draftfp = draftms-(LOA-LCF)*trima;
+            let draftap = draftms+(LCF)*trima;
+            //change the trim for angles
+            trima = Math.atan(trima)*180/Math.PI;
+            let trimd = draftfp - draftap;
+            let heel = weight.cg.y/GM;
+            let maxmom = 40.072;
+            let shear = 13.327;
+            let deadweight = 85000;
+
+            document.getElementById("draftms").innerHTML = draftms.toFixed(3);
+            document.getElementById("disp").innerHTML = disp.toFixed(3);
+            document.getElementById("draftfp").innerHTML = draftfp.toFixed(3);
+            document.getElementById("draftap").innerHTML = draftap.toFixed(3);
+            document.getElementById("lwl").innerHTML = lwl.toFixed(3);
+            document.getElementById("bwl").innerHTML = bwl.toFixed(3);
+            document.getElementById("Awet").innerHTML = Awet.toFixed(3);
+            document.getElementById("Awp").innerHTML = Awp.toFixed(3);
+            document.getElementById("Cb").innerHTML = Cb.toFixed(3);
+            document.getElementById("LCB").innerHTML = LCB.toFixed(3);
+            document.getElementById("LCF").innerHTML = LCF.toFixed(3);
+            document.getElementById("KB").innerHTML = KB.toFixed(3);
+            document.getElementById("KG").innerHTML = KG.toFixed(3);
+            document.getElementById("BM").innerHTML = BM.toFixed(3);
+            document.getElementById("GM").innerHTML = GM.toFixed(3);
+            document.getElementById("trimd").innerHTML = trimd.toFixed(3);
+            document.getElementById("trima").innerHTML = trima.toFixed(3);
+            document.getElementById("heel").innerHTML = heel.toFixed(3);
+            document.getElementById("maxmom").innerHTML = maxmom.toFixed(3);
+            document.getElementById("shear").innerHTML = shear.toFixed(3);
+            document.getElementById("deadweight").innerHTML = deadweight.toFixed(3);
+
+            // 3. Reproduce the calculations using Maxsurf
+            let disph = 282.8;
+            let drafth = 3.322;
+            let draftfph = 3.352;
+            let draftaph = 3.292;
+            let lwlh = 20;
+            let bwlh = 8.305;
+            let Aweth = 240.301;
+            let Awph = 166.100;
+            let Cbh = 0.500
+            let LCBh = 10.000;
+            let LCFh = 10.000;
+            let KBh = 2.215;
+            let KGh = 3.525;
+            let BMh = 3.460;
+            let GMh = KBh + BMh - KGh;
+
+            document.getElementById("disph").innerHTML = disph.toFixed(3);
+            document.getElementById("drafth").innerHTML = drafth.toFixed(3);
+            document.getElementById("draftfph").innerHTML = draftfph.toFixed(3);
+            document.getElementById("draftaph").innerHTML = draftaph.toFixed(3);
+            document.getElementById("lwlh").innerHTML = lwlh.toFixed(3);
+            document.getElementById("bwlh").innerHTML = bwlh.toFixed(3);
+            document.getElementById("Aweth").innerHTML = Aweth.toFixed(3);
+            document.getElementById("Awph").innerHTML = Awph.toFixed(3);
+            document.getElementById("Cbh").innerHTML = Cbh.toFixed(3);
+            document.getElementById("LCBh").innerHTML = LCBh.toFixed(3);
+            document.getElementById("LCFh").innerHTML = LCFh.toFixed(3);
+            document.getElementById("KBh").innerHTML = KBh.toFixed(3);
+            document.getElementById("KGh").innerHTML = KGh.toFixed(3);
+            document.getElementById("BMh").innerHTML = BMh.toFixed(3);
+            document.getElementById("GMh").innerHTML = GMh.toFixed(3);
+
+
 
             //stability small angles, only LW
             let GZmax = [];
@@ -659,26 +740,11 @@
             // Not sure if the way of calculation is right. GM vary because we
             // do not have parallel sides. The formula is rigth for small variation in GM
             // and they may be applied up to 3 degree
-            for (let i = 0; i < 10; i++){
+            for (let i = 0; i < 3; i++){
                 let ideg = Math.sin(i / 180 * Math.PI) ;
                 GZmax.push(GMlw * ideg);
                 degmax.push(i+1);
             }
-
-            document.getElementById("KBc").innerHTML = KBc;
-            document.getElementById("KGc").innerHTML = KGc;
-            document.getElementById("BMc").innerHTML = BMc;
-            document.getElementById("draftc").innerHTML = draftc;
-            document.getElementById("lwlc").innerHTML = lwlc.toFixed(3);
-            document.getElementById("bwlc").innerHTML = bwlc.toFixed(3);
-            document.getElementById("Awpc").innerHTML = Awpc.toFixed(3);
-            document.getElementById("cbc").innerHTML = cbc.toFixed(3);
-            document.getElementById("LCBc").innerHTML = LCBc.toFixed(3);
-            document.getElementById("LCFc").innerHTML = LCFc.toFixed(3);
-            document.getElementById("lightweight").innerHTML = lightweight.toFixed(3);
-            document.getElementById("deadweightc").innerHTML = deadweightc.toFixed(3);
-            document.getElementById("dispc").innerHTML = dispc.toFixed(3);
-
 
             //% diff
             let KBd = (1-KB/KBc)*100;
@@ -688,6 +754,7 @@
             let draftd = (1-draftms/draftc)*100;
             let lwld = (1-lwl/lwlc)*100;
             let bwld = (1-bwl/bwlc)*100;
+            let awetd = (1-Awet/Awetc)*100;
             let awpd = (1-Awp/Awpc)*100;
             let cbd = (1-Cb/cbc)*100;
             let dispd = (1-disp/dispc)*100;
@@ -699,6 +766,7 @@
             document.getElementById("draftd").innerHTML = draftd.toFixed(3);
             document.getElementById("lwld").innerHTML = lwld.toFixed(3);
             document.getElementById("bwld").innerHTML = bwld.toFixed(3);
+            document.getElementById("awetd").innerHTML = awpd.toFixed(3);
             document.getElementById("awpd").innerHTML = awpd.toFixed(3);
             document.getElementById("cbd").innerHTML = cbd.toFixed(3);
             document.getElementById("dispd").innerHTML = dispd.toFixed(3);
@@ -714,7 +782,6 @@
             //it is necessary to let volumes equal @ferrari212 to keep up
             // the total displacement of the ship
             let aini = bwl*draftdesign/2; //inicial area
-            console.log('Inicial area = ' + aini);
             //the loop is not valid for values above 95°
             for (let i = 0; i < 85; i += 1){
                 //loop for moving the wl through the model
@@ -778,7 +845,6 @@
                     if (Math.abs(comp) <= 0.01){
                       let py = 0;
                       let px = 0;
-                      console.log('Comp = ' + comp);
                         //calculate perpendicular line
                         let ppmwl = - 1 / mwl;
                         //  I can not understand the results by ppbwl @ferrari212
@@ -819,8 +885,7 @@
             for (var ii = 10; ii< 110; ii+= 10){
                 let rad = (ii / 180) * Math.PI;
                 let ideg2 = Math.sin(rad);
-                let KN = [0.601, 1.296, 2.274, 2.984, 3.413, 3.644, 3.621, 3.412, 3.069, 2.618, 2.081] //This was the calculated in hydromax by @ferrari212, no divergence at all
-                // let KN = [0.612, 1.312, 2.285, 2.974, 3.390, 3.616, 3.598, 3.395, 3.057, 2.612];
+                let KN = [0.993, 1.608, 2.013, 2.313, 2.525, 2.652, 2.695, 2.656, 2.539, 2.353, 2.110] //This was the calculated in hydromax by @ferrari212
                 let a = (ii / 10) - 1;
                 let kgsin = KGlw * ideg2
                 GZmax.push(KN[a] - kgsin);
@@ -857,6 +922,21 @@
 			requestAnimationFrame(animate);
 			renderer.render(scene, camera);
 		}
+
+    //Activates the hide button
+    function hide() {
+            var div = document.getElementById('hide');
+            if (div.style.display == 'none') {
+              var finalPage = $(document).height()
+                div.style.display="";
+                $("html, body").animate({ scrollTop: finalPage },'slow');
+              }
+              else {
+                div.style.display = 'none';
+              }
+            }
+
+            document.onload = hide();
 
         // display pretty JSON
         function displayContents(jsonData) {
