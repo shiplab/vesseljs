@@ -45,10 +45,11 @@
 	 else {
 		  VCGHull = 0.01 * D * (46.6 + 0.135 * (0.81 - CB) * Math.pow(L / D, 2));
 	 }
-     // LCB is the longitudinal Center of Buoyancy
-     let LCB = Fn ? L*0.5 + ((9.7 - 45 * Fn)*L/100) : L * 0.516;
+     // LCB is the longitudinal Center of Buoyancy in percentage plus forward of amidships
+     let LCB = Fn ? (9.7 - 45 * Fn) : 1.6;
 	 // LCGHull is the Longitudinal Center of Gravity of the hull
-	 let LCGHull = L*(LCB/L - 0.15);
+	 // converted from percentage plus forward of amidships to meters from aft
+	 let LCGHull = (LCB - 0.15)*L/100 + L*0.5;
 
 	 // Returns the object
 
