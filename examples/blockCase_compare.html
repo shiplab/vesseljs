@@ -174,20 +174,6 @@
                            <td><span id = "draftd"></span></td>
                         </tr>
                         <tr>
-                           <td>Draft at FP (m)</td>
-                           <td><span id = "draftfp"></span></td>
-                           <td><span id = "draftfph"></td>
-                           <td></td>
-                           <td></td>
-                        </tr>
-                        <tr>
-                           <td>Draft AP (m)</td>
-                           <td><span id = "draftap"></span></td>
-                           <td><span id = "draftaph"></td>
-                           <td></td>
-                           <td></td>
-                        </tr>
-                        <tr>
                            <td>Displacement (t)</td>
                            <td><span id = "disp"></span></td>
                            <td><span id = "disph"></span></td>
@@ -234,14 +220,14 @@
                            <td><span id = "LCB"></span></td>
                            <td><span id = "LCBh"></span></td>
                            <td><span id = "LCBc"></span></td>
-                           <td></td>
+                           <td><span id = "LCBd"></span></td>
                         </tr>
                         <tr>
                            <td>LCF (m)</td>
                            <td><span id = "LCF"></span></td>
                            <td><span id = "LCFh"></span></td>
                            <td><span id = "LCFc"></span></td>
-                           <td></td>
+                           <td><span id = "LCFd"></span></td>
                         </tr>
                         <tr>
                            <td>KB (m)</td>
@@ -275,21 +261,35 @@
                            <td>Trim (m)</td>
                            <td><span id = "trimd"></span></td>
                            <td><span></span></td>
-                           <td><span></span></td>
-                           <td><span></span></td>
+                           <td><span id = "trimdc"></span></td>
+                           <td><span id = "trimdd"></span></td>
                         </tr>
                         <tr>
                            <td>Trim (º)</td>
                            <td><span id = "trima"></span></td>
                            <td><span></span></td>
-                           <td><span></span></td>
-                           <td><span></span></td>
+                           <td><span id = "trimac"></span></td>
+                           <td><span id = "trimad"></span></td>
+                        </tr>
+                        <tr>
+                           <td>Draft at FP (m)</td>
+                           <td><span id = "draftfp"></span></td>
+                           <td><span id = "draftfph"></td>
+                           <td><span id = "draftfpc"></span></td>
+                           <td><span id = "draftfpd"></span></td>
+                        </tr>
+                        <tr>
+                           <td>Draft AP (m)</td>
+                           <td><span id = "draftap"></span></td>
+                           <td><span id = "draftaph"></span></td>
+                           <td><span id = "draftapc"></span></td>
+                           <td><span id = "draftapd"></span></td>
                         </tr>
                         <tr>
                            <td>Heel (m)</td>
                            <td><span id = "heel"></span></td>
                            <td><span></span></td>
-                           <td><span></span></td>
+                           <td><span id = "heelc"></span></td>
                            <td><span></span></td>
                         </tr>
                         <tr>
@@ -383,18 +383,20 @@
         <button onclick="hide()" name="button">Click to read the explanation of the method</button><br><br><br><br>
         <div id="hide">
           <div class="col-md-12 text-center">
-            <p>The method presented above aims to validate the calculation method
+            <p>The method above aims to validate the calculation method
               presented by Vessel.js file. The main idea is to use a simple hull
               geometry (presented here by a triangular hull) and compare it with two
               other calculation methods: analical formulation and numerical method
-              using maxsurf/hidromax software. The explanation of the steps followed
-              by the <a href="https://github.com/shiplab/vesseljs/blob/master/examples/blockCase_compare.html">
+              using maxsurf/hidromax software. The hand and Hidromax calculation
+              is specifical for the triangular geometry described in blockCase.json
+              and it may not work fine for other types of geometry. The explanation
+              of the steps followed by the <a href="https://github.com/shiplab/vesseljs/blob/master/examples/blockCase_compare.html">
               open code</a> are presented bellow.</p>
           <div>
         </div>
     </div>
     <ol>
-      <h2><li>Use the library and Vessel.js to calculate hydristatics</li></h2>
+      <h2><li>Use the library and Vessel.js to calculate hydrostatics</li></h2>
       <ul>
         <h4><li>Get all compartments informations and calculate centers of gravity</li></h4>
           <p><code>THREE.FileLoader().load("data/ship_specifications/blockCase.json", useFileData);</code></p>
@@ -576,10 +578,13 @@
             // 1.2 Calculate draft from deadweight:
             let a = ship.calculateStability();
             let weight = a.w;
-            console.log(weight.cg.x);
-            console.log(weight.cg.z);
             let KGc = a.KG.toFixed(3);
             let draftc = a.T.toFixed(3);
+            let trimac = a.trim.toFixed(3);
+            let draftfpc = a.draftfp.toFixed(3);
+            let draftapc = a.draftap.toFixed(3);
+            let trimdc = a.trimd.toFixed(3);
+            let heelc = a.heel.toFixed(3);
 
             // 1.3 Then use the draft to calculate hydrostatics:
 			      let ha = ship.structure.hull.calculateAttributesAtDraft(draftc);
@@ -603,6 +608,11 @@
             document.getElementById("BMc").innerHTML = BMc;
             document.getElementById("GM2").innerHTML = GM2; //To use in same draft
             document.getElementById("draftc").innerHTML = draftc;
+            document.getElementById("draftfpc").innerHTML = draftfpc;
+            document.getElementById("draftapc").innerHTML = draftapc;
+            document.getElementById("trimdc").innerHTML = trimdc;
+            document.getElementById("trimac").innerHTML = trimac;
+            document.getElementById("heelc").innerHTML = heelc;
             document.getElementById("lwlc").innerHTML = lwlc.toFixed(3);
             document.getElementById("bwlc").innerHTML = bwlc.toFixed(3);
             document.getElementById("Awetc").innerHTML = Awetc.toFixed(3);
@@ -660,12 +670,25 @@
             // avaiable just for small angles < 3°
             // this calculation can be incorporated to Vessesl.js with no problem
             let trima = (LCB-weight.cg.x)/GMl;
-            let draftfp = draftms-(LOA-LCF)*trima;
-            let draftap = draftms+(LCF)*trima;
+            let draftfp = 0;
+            let draftap = 0;
+            let trimd = 0;
+
+            if (trima < Math.tan(3*Math.PI/180)) {
+              draftfp = draftms-(LOA-LCF)*trima;
+              draftap = draftms+(LCF)*trima;
+              trimd = draftfp - draftap;
+            } else {
+              draftfp = null;
+              draftap = null;
+              trimd = null;
+            }
+
             //change the trim for angles
             trima = Math.atan(trima)*180/Math.PI;
-            let trimd = draftfp - draftap;
             let heel = weight.cg.y/GM;
+            //change the hell for meters
+            heel *= BOA;
             let maxmom = 40.072;
             let shear = 13.327;
             let deadweight = 85000;
@@ -751,24 +774,36 @@
             let KGd = (1-KG/KGc)*100;
             let BMd = (1-BM/BMc)*100;
             let GMd = (1-GM/GM2)*100;
+            let trimdd = (1-trimd/trimdc)*100;
+            let trimad = (1-trima/trimac)*100;
             let draftd = (1-draftms/draftc)*100;
+            let draftfpd = (1-draftfp/draftfpc)*100;
+            let draftapd = (1-draftap/draftapc)*100;
             let lwld = (1-lwl/lwlc)*100;
             let bwld = (1-bwl/bwlc)*100;
             let awetd = (1-Awet/Awetc)*100;
             let awpd = (1-Awp/Awpc)*100;
             let cbd = (1-Cb/cbc)*100;
+            let LCBd = (1-LCB/LCBc)*100;
+            let LCFd = (1-LCF/LCFc)*100;
             let dispd = (1-disp/dispc)*100;
 
             document.getElementById("KBd").innerHTML = KBd.toFixed(3);
             document.getElementById("KGd").innerHTML = KGd.toFixed(3);
             document.getElementById("BMd").innerHTML = BMd.toFixed(3);
             document.getElementById("GMd").innerHTML = GMd.toFixed(3);
+            document.getElementById("trimdd").innerHTML = trimdd.toFixed(3);
+            document.getElementById("trimad").innerHTML = trimad.toFixed(3);
             document.getElementById("draftd").innerHTML = draftd.toFixed(3);
+            document.getElementById("draftfpd").innerHTML = draftfpd.toFixed(3);
+            document.getElementById("draftapd").innerHTML = draftapd.toFixed(3);
             document.getElementById("lwld").innerHTML = lwld.toFixed(3);
             document.getElementById("bwld").innerHTML = bwld.toFixed(3);
             document.getElementById("awetd").innerHTML = awpd.toFixed(3);
             document.getElementById("awpd").innerHTML = awpd.toFixed(3);
             document.getElementById("cbd").innerHTML = cbd.toFixed(3);
+            document.getElementById("LCBd").innerHTML = LCBd.toFixed(3);
+            document.getElementById("LCFd").innerHTML = LCFd.toFixed(3);
             document.getElementById("dispd").innerHTML = dispd.toFixed(3);
 
             //GZ curve
@@ -781,11 +816,11 @@
             //To let the areas equal is not enought because the draft is changing
             //it is necessary to let volumes equal @ferrari212 to keep up
             // the total displacement of the ship
-            let aini = bwl*draftdesign/2; //inicial area
+            let aini = bwl*draftms/2; //inicial area
             //the loop is not valid for values above 95°
             for (let i = 0; i < 85; i += 1){
                 //loop for moving the wl through the model
-                for (let ii = -0.5; ii <  2; ii += 0.001){ /*proper value 0.00001*/
+                for (let ii = -1.5; ii <  2; ii += 0.001){ /*proper value 0.00001*/
                     //right line of the hull mr = slope and br = b from y=mx+b
                     //Why do not use br = 0 if the coordinate system is on keel @ferrari212?
                     let mr = (ship.structure.hull.attributes.Depth / (ship.structure.hull.attributes.BOA / 2));
@@ -799,7 +834,7 @@
                     let mwl = Math.tan(i * Math.PI /180);
                     // Consider that ii will change through z axis the draft of the ship @ferarri212
                     // let bwl = ship.designState.calculationParameters.Draft_design - mwl * ii ;
-                    let bwl = (ship.designState.calculationParameters.Draft_design - ii);
+                    let bwl = (draftms - ii);
 
                     //intersection betwen waterline and right hull line
                     let answer1xr = (bwl - br) / (mr - mwl);
@@ -822,25 +857,27 @@
 
 
                     //measure areas
-                    let al = Math.abs ((answer1yl - ship.designState.calculationParameters.Draft_design) * (basestartl) / 2);
-
+                    let al = 0;
                     let ar = 0;
+                    let arest = 0;
                     let topb = 0;
                     let at = basestartr*bwl; // Area of new draft @ferrari212
                     let at2 = BOA*depth/2;
+                    let comp = 10;
 
                     if (answerdx < ship.structure.hull.attributes.BOA / 2){
-                        topb = (ship.structure.hull.attributes.BOA / 2) - answerdx;
-                        ar = (ship.structure.hull.attributes.Depth - ship.designState.calculationParameters.Draft_design) * (topb + basestartr) / 2;
+                        arest = (answerdx+BOA/2)*(depth-answer1yl)/2;
+                        comp = aini - at2 + arest;
                     }
                     else {
-
-                        ar = Math.abs ((answer1yr - ship.designState.calculationParameters.Draft_design) * (basestartr) / 2);
+                        al = Math.abs ((answer1yl - draftms) * (basestartl) / 2);
+                        ar = Math.abs ((answer1yr - draftms) * (basestartr) / 2);
+                        comp = aini - ar + al - at;
                     }
 
                     //compare areas
                     // let comp = (ar.toFixed(3) - al.toFixed(3));
-                    let comp = aini - ar + al - at;
+
 
                     if (Math.abs(comp) <= 0.01){
                       let py = 0;
@@ -854,9 +891,8 @@
                         // Center of gravity from each value calculated by https://formulas.tutorvista.com/math/centroid-formula.html
                         if (answerdx < ship.structure.hull.attributes.BOA / 2){
 
-                            let arest = (answerdx+BOA/2)*(depth-answer1yl)/2;
                             px = (((-BOA/2+answer1xl+answerdx)/3)*(-arest))/(-arest+at2);
-                            py = ((answer1yl+2*(depth-answer1yl)/3)*(-arest)+(2*depth/3)*at2)/(-arest+at2);
+                            py = (((answer1yl+2*depth)/3)*(-arest)+(2*depth/3)*at2)/(-arest+at2);
                             // console.log('Mr = '+ 180*Math.atan(mwl)/Math.PI +' Bwl = '+ bwl);
                             // console.log('This is the ordinate pair: x = %.1f ; y = %.1f ; n = 2', px, py);
 
