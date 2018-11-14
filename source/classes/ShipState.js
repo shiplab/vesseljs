@@ -28,6 +28,8 @@ function ShipState(specification) {
 		state: {},
 		thisStateVer: 0
 	};
+	this.continuous = {};
+	this.discrete = {};
 	JSONSpecObject.call(this, specification);
 }
 ShipState.prototype = Object.create(JSONSpecObject.prototype);
