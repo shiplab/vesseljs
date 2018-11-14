@@ -96,14 +96,16 @@ Object.defineProperties(WaveMotion.prototype, {
 
 		var Breadth_draft_ratio0 = this.shipState.BWL/this.shipState.T;
 		var a0, b0, d0;
-		if (Breadth_draft_ratio0 > 3){ //3 <= B/T <= 6//
+		if ((3 <= Breadth_draft_ratio0) && (Breadth_draft_ratio0 <= 6)){
 			a0 = 0.256*Breadth_draft_ratio0 - 0.286;
 			b0 = -0.11*Breadth_draft_ratio0 - 2.55;
 			d0 = 0.033*Breadth_draft_ratio0 - 1.419;
-		} else { //1 <= B/T <= 3//
+		} else if ((1 <= Breadth_draft_ratio0) && (Breadth_draft_ratio0 < 3)) {
 			a0 = -3.94*Breadth_draft_ratio0 + 13.69;
 			b0 = -2.12*Breadth_draft_ratio0 - 1.89;
 			d0 = 1.16*Breadth_draft_ratio0 - 7.97;
+		} else {
+			console.error("The B/T relation is not being respected for the roll formula. It should be 1 <= B/T < 6, not" + " " + (this.shipState.BWL/this.shipState.T).toFixed(2) + ".");
 		}
 		var b_44_0 = this.rho*A_0*Math.pow(this.shipState.BWL,2)*a0*Math.exp(b0*Math.pow(this.coefficients.encounter_frequency,-1.3))*Math.pow(this.coefficients.encounter_frequency,d0)/
 		(Math.sqrt(this.shipState.BWL/(2*this.g)));
@@ -112,14 +114,16 @@ Object.defineProperties(WaveMotion.prototype, {
 		var B_1 = breadth_ratio * this.shipState.BWL;
 		var Breadth_draft_ratio1 = B_1/this.shipState.T;
 		var a1, b1, d1;
-		if (Breadth_draft_ratio1 > 3) { //3 <= B/T <= 6//
+		if ((3 <= Breadth_draft_ratio1) && (Breadth_draft_ratio1 <= 6)){
 			a1 = 0.256*Breadth_draft_ratio1 - 0.286;
 			b1 = -0.11*Breadth_draft_ratio1 - 2.55;
 			d1 = 0.033*Breadth_draft_ratio1 - 1.419;
-		} else { //1 <= B/T <= 3//
+		} else if ((1 <= Breadth_draft_ratio1) && (Breadth_draft_ratio1 < 3)) {
 			a1 = -3.94*Breadth_draft_ratio1 + 13.69;
 			b1 = -2.12*Breadth_draft_ratio1 - 1.89;
 			d1 = 1.16*Breadth_draft_ratio1 - 7.97;
+		} else {
+			console.error("The vessel dimensions are out of range for the roll formula.");
 		}
 		var b_44_1 = this.rho*A_1*Math.pow(B_1,2)*a1*Math.exp(b1*Math.pow(this.coefficients.encounter_frequency,-1.3))*Math.pow(this.coefficients.encounter_frequency,d1)/
 		(Math.sqrt(B_1/(2*this.g)));
