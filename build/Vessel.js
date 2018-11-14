@@ -1,4 +1,4 @@
-//Vessel.js library, built 2018-08-07 20:38:47.189488
+//Vessel.js library, built 2018-11-12 15:28:31.504884
 /*
 Import like this in HTML:
 <script src="Vessel.js"></script>
@@ -708,7 +708,7 @@ Object.assign(JSONSpecObject.prototype, {
 	},
 	//fromJSON is added as an alternative and better name.
 	fromJSON: function(spec) {
-		this.setFromSpecification(spec);
+		return this.setFromSpecification(spec);
 	}
 });//@EliasHasle
 
@@ -798,12 +798,12 @@ Object.assign(Ship.prototype, {
 	getFuelMass: function(shipState) {
 		shipState = shipState || this.designState;
 
-		var fuelMass = {};
+		let fuelMass = {};
 		fuelMass.totalMass = 0;
 		fuelMass.tankMass = {};
 		fuelMass.tankStates = {};
 		for (let o of Object.values(this.derivedObjects)) {
-			if (o.group === "fuel tanks") {
+			if (o.affiliations.group === "fuel tanks") {
 				fuelMass.tankStates[o.id] = shipState.getObjectState(o);
 				fuelMass.tankMass[o.id] = o.baseObject.weightInformation.contentDensity * o.baseObject.weightInformation.volumeCapacity * fuelMass.tankStates[o.id].fullness;
 				fuelMass.totalMass += fuelMass.tankMass[o.id];
@@ -814,31 +814,31 @@ Object.assign(Ship.prototype, {
 	subtractFuelMass: function(mass, shipState) {
 		shipState = shipState || this.designState;
 
-		var tankMass = Object.entries(this.getFuelMass(shipState).tankMass);
-		var tk = 0;
-		var tkId = tankMass[tk][0];
-		var tkMass = tankMass[tk][1];
+		var fuelMass = this.getFuelMass(shipState);
+		var totalFuel = fuelMass.totalMass;
+		var tankEntr = Object.entries(fuelMass.tankMass);
 
-		while (0 < mass) {
-			// check if tank has necessary fuel
-			if (mass <= tkMass) { // if yes, subtract mass
-				shipState.objectCache[tkId].state.fullness -= mass/(this.derivedObjects[tkId].baseObject.weightInformation.volumeCapacity * this.derivedObjects[tkId].baseObject.weightInformation.contentDensity);
-				mass = 0;
-				//console.log("Vessel is sailing on fuel from " + tkId + ".");
-			} else { // if not, make tank empty
-				mass -= tkMass;
-				shipState.objectCache[tkId].state.fullness = 0;
-				console.warn(tkId + " is empty.");
-				if  (tankMass[tk+1] === undefined) { // if vessel does not have other tank, exit loop
-					console.error("Vessel ran out of fuel before " + mass.toFixed(2) + " tons were subtracted.");
-					break;
-				}
-				// if it has, proceed to it
-				tk++;
-				tkId = tankMass[tk][0];
-				tkMass = tankMass[tk][1];
-			}
+		var fuelCap = 0;
+		for (var tk = 0; tk < tankEntr.length; tk++) {
+			var tkId = tankEntr[tk][0];
+			fuelCap += this.derivedObjects[tkId].baseObject.weightInformation.volumeCapacity * this.derivedObjects[tkId].baseObject.weightInformation.contentDensity;
 		}
+
+		// check if tanks have necessary fuel
+		if (mass <= totalFuel) { // if yes, subtract mass in the same proportion
+			for (var tk = 0; tk < tankEntr.length; tk++) {
+				var tkId = tankEntr[tk][0];
+				shipState.objectCache[tkId].state.fullness -= mass/fuelCap;
+			}
+		} else { // if not, make tanks empty
+			mass -= totalFuel;
+			for (var tk = 0; tk < tankEntr.length; tk++) {
+				var tkId = tankEntr[tk][0];
+				shipState.objectCache[tkId].state.fullness = 0;
+			}
+			console.error("Vessel ran out of fuel before " + mass.toFixed(2) + " tons were subtracted.");
+		}
+
 		// update related states. In the future, make this consistent with improved caching system
 		for (var prop in shipState.objectCache) {
 			shipState.objectCache[prop].thisStateVer++;
@@ -1629,6 +1629,8 @@ function ShipState(specification) {
 		state: {},
 		thisStateVer: 0
 	};
+	this.continuous = {};
+	this.discrete = {};
 	JSONSpecObject.call(this, specification);
 }
 ShipState.prototype = Object.create(JSONSpecObject.prototype);
@@ -1796,7 +1798,383 @@ Object.assign(ShipState.prototype, {
 
 		this.version++;
 	}
-});//@EliasHasle
+});/*in the future, when this class gathers more methods, change code style to that 
+of https://github.com/shiplab/vesseljs/blob/master/source/classes/JSONSpecObject.js */
+
+function StateModule(ship, states) {
+	this.ship = ship;
+	this.states = states;
+	this.shipState = states.shipCache.state;
+}
+
+Object.assign(StateModule.prototype, {
+	// return getters listed on an output array inside the simulation object
+	returnOutput: function() {
+		let resObj = {};
+		for (let i = 0; i < this.output.length; i++) {
+			let output = this[this.output[i]];
+			if (typeof output === "number") {
+				resObj[this.output[i]] = output;
+			} else if (typeof output === "object") {
+				Object.assign(resObj, output);
+			}
+		}
+		return resObj;
+	},
+	// write getter output to shipState
+	writeOutput: function() {
+		for (let i = 0; i < this.output.length; i++) {
+			let output = this[this.output[i]];
+			if (typeof output === "number") {
+				this.states.shipCache.state[this.output[i]] = output;
+			} else if (typeof output === "object") {
+				Object.assign(this.states.shipCache.state, output);
+			}
+		}
+		this.states.shipCache.thisStateVer++;
+
+		let stateName = this.constructor.name;
+		if (this.states.discrete[stateName] === undefined) {
+			this.states.discrete[stateName] = {
+				state: {},
+				thisStateVer: 0
+			};
+		}
+		for (let i = 0; i < this.output.length; i++) {
+			let output = this[this.output[i]];
+			if (typeof output === "number") {
+				this.states.discrete[stateName].state[this.output[i]] = output;
+			} else if (typeof output === "object") {
+				Object.assign(this.states.discrete[stateName].state, output);
+			}
+		}
+		this.states.discrete[stateName].thisStateVer++;
+	},
+	// write mass related states to vesselStates
+	setMass: function() {
+		//this.states.shipCache.state.weight = {};
+		let massCalc = this.ship.getWeight(this.states);
+		//Object.assign(this.states.shipCache.state.weight, massCalc);
+		this.states.shipCache.state.mass = massCalc.mass;
+		this.states.shipCache.state.cg = massCalc.cg;
+		this.states.shipCache.thisStateVer++;
+
+		if (this.states.discrete.Weight === undefined) {
+			this.states.discrete.Weight = {
+				state: {},
+				thisStateVer: 0
+			};
+		}
+		this.states.discrete.Weight.state.mass = massCalc.mass;
+		this.states.discrete.Weight.state.cg = massCalc.cg;
+		this.states.discrete.Weight.thisStateVer++;
+	},
+	// write draft related states to vesselStates
+	setDraft: function() {
+		//this.states.shipCache.state.hydStab = {};
+		let draft = this.ship.calculateDraft(this.states);
+		// as of v0.13-alpha, Vessel.js does not yet support trim calculations, so draft is taken as the same for vessel fore and aft
+		Object.assign(this.states.shipCache.state, this.ship.structure.hull.calculateAttributesAtDraft(draft));
+		Object.assign(this.states.shipCache.state, this.ship.calculateStability(this.states));
+		this.states.shipCache.state.Tfore = this.states.shipCache.state.T;
+		this.states.shipCache.state.Taft = this.states.shipCache.state.T;
+		this.states.shipCache.thisStateVer++;
+
+		if (this.states.discrete.FloatingCondition === undefined) {
+			this.states.discrete.FloatingCondition = {
+				state: {},
+				thisStateVer: 0
+			};
+		}
+		Object.assign(this.states.discrete.FloatingCondition.state, this.ship.structure.hull.calculateAttributesAtDraft(draft));
+		Object.assign(this.states.discrete.FloatingCondition.state, this.ship.calculateStability(this.states));
+		this.states.discrete.FloatingCondition.state.Tfore = this.states.shipCache.state.T;
+		this.states.discrete.FloatingCondition.state.Taft = this.states.shipCache.state.T;
+		this.states.discrete.FloatingCondition.thisStateVer++;
+	},
+	// write argument speed to vessel state. If undefined, use vessel's design speed
+	setSpeed: function(speed) {
+		if (typeof speed === "undefined" && typeof this.ship.designState.calculationParameters.speed !== "undefined") {
+			speed = this.ship.designState.calculationParameters.speed;
+		}
+		this.states.shipCache.state.speed = speed; // knots
+		this.states.shipCache.thisStateVer++;
+
+		if (this.states.discrete.Speed === undefined) {
+			this.states.discrete.Speed = {
+				state: {},
+				thisStateVer: 0
+			};
+		}
+		if (typeof speed === "undefined" && typeof this.ship.designState.calculationParameters.speed !== "undefined") {
+			speed = this.ship.designState.calculationParameters.speed;
+		}
+		this.states.discrete.Speed.state.speed = speed; // knots
+		this.states.discrete.Speed.thisStateVer++;
+	},
+	// write argument heading angle to vessel state. if undefined, use 0 degrees
+	// 0 degrees corresponds to vessel pointing to north. clockwise orientation.
+	setHeading: function(angle) {
+		if (typeof angle === "undefined") {
+			angle = 0;
+		}
+		this.states.shipCache.state.heading = angle; // knots
+		this.states.shipCache.thisStateVer++;
+
+		if (this.states.discrete.Heading === undefined) {
+			this.states.discrete.Heading = {
+				state: {},
+				thisStateVer: 0
+			};
+		}
+		if (typeof angle === "undefined") {
+			angle = 0;
+		}
+		this.states.discrete.Heading.state.heading = angle; // knots
+		this.states.discrete.Heading.thisStateVer++;
+	},
+	// cache memoization pattern adapted from http://b-studios.de/blog/2013/11/18/lazy-attributes-in-ecmascript-5/
+	// in the future, expand version comparison also to parameters stored inside each constructor
+	memoized: function(init, cacheName) {
+		return {
+			enumerable: true,
+			configurable: false,
+			get: function cache() {
+				if (this.wavCre !== undefined) { // if state module uses a wave creation object
+					if (this.cache[cacheName] === undefined) {
+						this.cache[cacheName] = {
+							shipStateVersion: 0,
+							waveStateVersion: 0
+						};
+					}
+					if (this.cache[cacheName].shipStateVersion === this.states.shipCache.thisStateVer && this.cache[cacheName].waveStateVersion === this.wavCre.version) {
+						return this.cache[cacheName].value;
+					}
+					this.cache[cacheName].value = init.call(this);
+					this.cache[cacheName].shipStateVersion = this.states.shipCache.thisStateVer;
+					this.cache[cacheName].waveStateVersion = this.wavCre.version;
+					return this.cache[cacheName].value;
+
+/* 					if (cache.hasOwnProperty("value") && cache.shipStateVersion === this.states.shipCache.thisStateVer && cache.waveStateVersion === this.wavCre.version) {
+						return cache.value;
+					}
+					cache.value = init.call(this);
+					cache.shipStateVersion = this.states.shipCache.thisStateVer;
+					cache.waveStateVersion = this.wavCre.version;
+					return cache.value; */
+				}
+				// if it has only a ship module
+				if (this.cache[cacheName] !== undefined) {
+					this.cache[cacheName] = {
+						shipStateVersion: 0
+					};
+				}
+				if (this.cache[cacheName].shipStateVersion === this.states.shipCache.thisStateVer) {
+					return this.cache[cacheName].value;
+				}
+				this.cache[cacheName].value = init.call(this);
+				this.cache[cacheName].shipStateVersion = this.states.shipCache.thisStateVer;
+				return this.cache[cacheName].value;
+
+/* 				if (cache.hasOwnProperty("value") && cache.shipStateVersion === this.states.shipCache.thisStateVer) {
+					return cache.value;
+				}
+				cache.value = init.call(this);
+				cache.shipStateVersion = this.states.shipCache.thisStateVer;
+				return cache.value; */
+			}
+		};
+	}
+});
+// simple function to output regular wave pattern
+function WaveCreator(defList, waveDuration = 3600) { // wave creator constructor
+	this.waveDef = {}; // store wave definition
+	this.version = 0; // version counter for memorisation pattern
+	// set a regular wave definition
+	this.setWaveDef = function(freq, amp, head) {
+		var newWaveDef;
+		newWaveDef = {
+			waveFreq: freq, // angular frequency
+			waveAmplitude: amp,
+			heading: head // 0 to 360. 180 corresponds to head seas
+		};
+		if (JSON.stringify(this.waveDef) !== JSON.stringify(newWaveDef)) {
+			this.waveDef = newWaveDef;
+			this.version++;
+		}
+	};
+	this.defList = defList || [ // list wave definitions
+			[0.6, 2.25, 180],
+			[1.1, 1.75, 150]
+		];
+	this.setRandom = function() { // set a wave definition randomly
+		var rand = this.defList[Math.floor(Math.random() * this.defList.length)];
+		this.setWaveDef(rand[0], rand[1], rand[2]);
+	};
+	this.setTime = function(time) {
+		// change wave definition along time
+		var noSpans = time/waveDuration;
+		var coord = Math.floor(noSpans % this.defList.length);
+
+		this.setWaveDef(this.defList[coord][0], this.defList[coord][1], this.defList[coord][2]);
+	};
+}
+// adapted from http://www.shiplab.ntnu.co/app/shipmotion/
+
+function WaveMotion(ship, states, wavCre, position = 0, critDampPercentage = 20, g = 9.81, rho = 1025) {
+	StateModule.call(this, ship, states);
+	if (this.shipState.mass === undefined) {
+		this.setMass();
+	}
+	if (this.shipState.T === undefined) {
+		this.setDraft();
+	}
+	if (this.shipState.speed === undefined) { // if vessel does not have a speed state
+		this.setSpeed(); // use its design speed
+	}
+	if (this.shipState.heading === undefined) {
+		this.shipState.heading = 0;
+		this.setHeading();
+	}
+	this.wavCre = wavCre;
+	this.position = position; // measured position in % of LOA
+	this.g = g;
+	this.rho = rho;
+	this.critical_damping_percentage = critDampPercentage; // this parameter is used to take into account the water viscosity
+	this.delta = this.ship.structure.hull.attributes.prismaticLengthRatio; // length ratio of two prismatic bodies that represent the ship
+	this.output = ["verticalMotion"];
+	this.cache = {};
+}
+
+WaveMotion.prototype = Object.create(StateModule.prototype);
+
+Object.assign(WaveMotion.prototype, {
+	constructor: WaveMotion
+});
+
+Object.defineProperties(WaveMotion.prototype, {
+	coefficients: StateModule.prototype.memoized(function() {
+		var bethaDeg = Math.abs(this.wavCre.waveDef.heading - this.shipState.heading);
+		var betha = bethaDeg * Math.PI/180;
+		var speedSI = 0.514444*this.shipState.speed;
+		var Froude_N = speedSI/Math.sqrt(this.g * this.shipState.LWL);
+		//var wave_period = 2*Math.PI/this.wavCre.waveDef.waveFreq;
+		var wave_number = Math.pow(this.wavCre.waveDef.waveFreq,2)/this.g;
+		var eff_wave_number = Math.abs(wave_number*Math.cos(betha));
+		var smith_factor = Math.exp(-wave_number*this.shipState.T);
+		var alpha = 1-Froude_N*Math.sqrt(wave_number*this.shipState.LWL)*Math.cos(betha);
+		var encounter_frequency = this.wavCre.waveDef.waveFreq * alpha;
+
+		return {betha: betha, Froude_N: Froude_N, wave_number: wave_number, eff_wave_number: eff_wave_number, smith_factor: smith_factor, alpha: alpha, encounter_frequency: encounter_frequency};
+	}, "coefficients"),
+	verticalMotion: StateModule.prototype.memoized(function() {
+		var Breadth = this.shipState.BWL*this.shipState.Cb;
+		var cgDistance = this.position/100 * this.ship.structure.hull.attributes.LOA - this.shipState.cg.x;
+		var sectional_hydro_damping = 2*Math.sin(0.5*this.coefficients.wave_number*Breadth*Math.pow(this.coefficients.alpha,2))*Math.exp(-this.coefficients.wave_number*
+			this.shipState.T*Math.pow(this.coefficients.alpha,2));
+
+		var a, b;
+		a = Math.pow(1-this.coefficients.wave_number*this.shipState.T,2);
+		b = Math.pow((Math.pow(sectional_hydro_damping,2)/(this.coefficients.wave_number*Breadth*Math.pow(this.coefficients.alpha,3))),2);
+		var f = Math.sqrt(a+b);
+		var eta = 1/(Math.sqrt(Math.pow((1-2*this.coefficients.wave_number*this.shipState.T*Math.pow(this.coefficients.alpha,2)),2) + Math.pow(Math.pow(sectional_hydro_damping,2)/
+			(this.coefficients.wave_number*Breadth*Math.pow(this.coefficients.alpha,2)),2)));
+
+		var F = this.coefficients.smith_factor*f*(2/(this.coefficients.eff_wave_number*this.shipState.LWL))*Math.sin(this.coefficients.eff_wave_number*this.shipState.LWL/2);
+		var FRF_Heave = this.wavCre.waveDef.waveAmplitude*eta*F;
+
+		var G = this.coefficients.smith_factor*f*(24/(Math.pow(this.coefficients.eff_wave_number*this.shipState.LWL,2)*this.shipState.LWL))*(Math.sin(this.coefficients.eff_wave_number*
+			this.shipState.LWL/2)-(this.coefficients.eff_wave_number*this.shipState.LWL/2)*Math.cos(this.coefficients.eff_wave_number*this.shipState.LWL/2));
+		var FRF_Pitch =  this.wavCre.waveDef.waveAmplitude*eta*G;
+
+		var Pitch_Movement = Math.abs(FRF_Pitch * cgDistance);
+		var Pitch_Acceleration = Math.pow(this.coefficients.encounter_frequency,2)*Pitch_Movement;
+
+		var Heave_Movement = Math.abs(FRF_Heave);
+		var Heave_Acceleration = Math.pow(this.coefficients.encounter_frequency,2)*Math.abs(FRF_Heave);
+
+		var Vertical_Movement = Math.sqrt(Math.pow(Heave_Movement,2) + Math.pow(Pitch_Movement,2));
+		var Vertical_Acceleration = Math.pow(this.coefficients.encounter_frequency,2)*Vertical_Movement;
+
+		return {pitchAmp: FRF_Pitch, pitchMov: Pitch_Movement, pitchAcc: Pitch_Acceleration, heaveMov: Heave_Movement, heaveAcc: Heave_Acceleration, 
+			verticalMov: Vertical_Movement, verticalAcc: Vertical_Acceleration};
+	}, "verticalMotion"),
+	bendingMoment: StateModule.prototype.memoized(function() {
+		var Cb_mom = Math.max(0.6,this.shipState.Cb);
+		var phi = 2.5*(1-Cb_mom);
+		var F_Cb = Math.pow(1-phi,2) + 0.6 * this.coefficients.alpha * (2-phi);
+		var F_v = 1 + 3 * Math.pow(this.coefficients.Froude_N,2);
+		return this.wavCre.waveDef.waveAmplitude*(this.coefficients.smith_factor*((1-this.coefficients.wave_number*this.shipState.T)/(Math.pow(this.shipState.LWL*this.coefficients.eff_wave_number,2)))*
+			(1-Math.cos(this.coefficients.eff_wave_number*this.shipState.LWL/2)-(this.coefficients.eff_wave_number*this.shipState.LWL/4)*Math.sin(this.coefficients.eff_wave_number*this.shipState.LWL/2))*
+			F_v*F_Cb*Math.pow(Math.abs(Math.cos(this.coefficients.betha)),1/3))*this.rho*this.g*this.shipState.BWL*Math.pow(this.shipState.LWL,2)/1000000;
+	}, "bendingMoment"),
+	rollMovement: StateModule.prototype.memoized(function() {
+		// estimate natural roll period
+		var naturalPeriod = (2 * this.shipState.BWL * Math.PI * (0.35 + 0.45)/2)/Math.pow(this.g * this.shipState.GMt, 0.5);
+
+		var breadth_ratio = (this.shipState.Cwp - this.delta)/(1 - this.delta);
+		var A_0 = this.shipState.Cb * this.shipState.BWL * this.shipState.T/(this.delta + breadth_ratio*(1-this.delta));
+
+		var Breadth_draft_ratio0 = this.shipState.BWL/this.shipState.T;
+		var a0, b0, d0;
+		if (Breadth_draft_ratio0 > 3){ //3 <= B/T <= 6//
+			a0 = 0.256*Breadth_draft_ratio0 - 0.286;
+			b0 = -0.11*Breadth_draft_ratio0 - 2.55;
+			d0 = 0.033*Breadth_draft_ratio0 - 1.419;
+		} else { //1 <= B/T <= 3//
+			a0 = -3.94*Breadth_draft_ratio0 + 13.69;
+			b0 = -2.12*Breadth_draft_ratio0 - 1.89;
+			d0 = 1.16*Breadth_draft_ratio0 - 7.97;
+		}
+		var b_44_0 = this.rho*A_0*Math.pow(this.shipState.BWL,2)*a0*Math.exp(b0*Math.pow(this.coefficients.encounter_frequency,-1.3))*Math.pow(this.coefficients.encounter_frequency,d0)/
+		(Math.sqrt(this.shipState.BWL/(2*this.g)));
+
+		var A_1 = breadth_ratio * A_0;
+		var B_1 = breadth_ratio * this.shipState.BWL;
+		var Breadth_draft_ratio1 = B_1/this.shipState.T;
+		var a1, b1, d1;
+		if (Breadth_draft_ratio1 > 3) { //3 <= B/T <= 6//
+			a1 = 0.256*Breadth_draft_ratio1 - 0.286;
+			b1 = -0.11*Breadth_draft_ratio1 - 2.55;
+			d1 = 0.033*Breadth_draft_ratio1 - 1.419;
+		} else { //1 <= B/T <= 3//
+			a1 = -3.94*Breadth_draft_ratio1 + 13.69;
+			b1 = -2.12*Breadth_draft_ratio1 - 1.89;
+			d1 = 1.16*Breadth_draft_ratio1 - 7.97;
+		}
+		var b_44_1 = this.rho*A_1*Math.pow(B_1,2)*a1*Math.exp(b1*Math.pow(this.coefficients.encounter_frequency,-1.3))*Math.pow(this.coefficients.encounter_frequency,d1)/
+		(Math.sqrt(B_1/(2*this.g)));
+
+		var b_44 = this.shipState.LWL*b_44_0*(this.delta + b_44_1*(1-this.delta)/b_44_0);
+		var critical_damping_frac = this.critical_damping_percentage/100;
+		var restoring_moment_coeff = this.g*this.rho*this.shipState.Cb*this.shipState.LWL*this.shipState.BWL*this.shipState.T*this.shipState.GMt;
+		var add_damping = restoring_moment_coeff*naturalPeriod/Math.PI;
+
+		var damping_ratio = Math.sqrt(b_44_1/b_44_0);
+		var roll_hydro_damping = b_44 + add_damping*critical_damping_frac;
+
+		var excitation_frequency, A, B, C, D;
+
+		if (this.wavCre.waveDef.heading == 90 || this.wavCre.waveDef.heading == 270) {
+			excitation_frequency = Math.sqrt(this.rho*Math.pow(this.g,2)*b_44_0/this.coefficients.encounter_frequency)*(this.delta+damping_ratio*
+				(1-this.delta))*this.shipState.LWL;
+		} else {
+			A = Math.abs(Math.sin(this.coefficients.betha))*Math.sqrt(this.rho*Math.pow(this.g, 2)/this.coefficients.encounter_frequency) * Math.sqrt(b_44_0)*2/this.coefficients.eff_wave_number;
+			B = Math.pow(Math.sin(0.5*this.delta*this.shipState.LWL*this.coefficients.eff_wave_number),2);
+			C = Math.pow(damping_ratio*Math.sin(0.5*(1-this.delta)*this.shipState.LWL*this.coefficients.eff_wave_number), 2);
+			D = 2*damping_ratio*Math.sin(0.5*this.delta*this.shipState.LWL*this.coefficients.eff_wave_number)*Math.sin(0.5*(1-this.delta)*
+				this.shipState.LWL*this.coefficients.eff_wave_number)*Math.cos(0.5*this.shipState.LWL*this.coefficients.eff_wave_number);
+			excitation_frequency = A*Math.sqrt(B+C+D);
+		}
+
+		A = Math.pow(-Math.pow(this.coefficients.encounter_frequency*naturalPeriod/(2*Math.PI), 2)+1, 2);
+		B = Math.pow(restoring_moment_coeff, 2);
+		C = Math.pow(this.coefficients.encounter_frequency*roll_hydro_damping, 2);
+
+		return this.wavCre.waveDef.waveAmplitude*excitation_frequency/(Math.sqrt(A*B+C));
+	}, "rollMovement")
+});
+//@EliasHasle
 
 //Depends on Ship and the other core classes.
 
@@ -1883,6 +2261,9 @@ Object.assign(Vessel, {
 	BaseObject: BaseObject,
 	DerivedObject: DerivedObject,
 	ShipState: ShipState,
+	StateModule: StateModule,
+	WaveCreator: WaveCreator,
+	WaveMotion: WaveMotion,
 	browseShip: browseShip,
 	loadShip: loadShip,
 	downloadShip: downloadShip,

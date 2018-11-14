@@ -111,12 +111,12 @@ Object.assign(Ship.prototype, {
 	getFuelMass: function(shipState) {
 		shipState = shipState || this.designState;
 
-		var fuelMass = {};
+		let fuelMass = {};
 		fuelMass.totalMass = 0;
 		fuelMass.tankMass = {};
 		fuelMass.tankStates = {};
 		for (let o of Object.values(this.derivedObjects)) {
-			if (o.group === "fuel tanks") {
+			if (o.affiliations.group === "fuel tanks") {
 				fuelMass.tankStates[o.id] = shipState.getObjectState(o);
 				fuelMass.tankMass[o.id] = o.baseObject.weightInformation.contentDensity * o.baseObject.weightInformation.volumeCapacity * fuelMass.tankStates[o.id].fullness;
 				fuelMass.totalMass += fuelMass.tankMass[o.id];
@@ -127,31 +127,31 @@ Object.assign(Ship.prototype, {
 	subtractFuelMass: function(mass, shipState) {
 		shipState = shipState || this.designState;
 
-		var tankMass = Object.entries(this.getFuelMass(shipState).tankMass);
-		var tk = 0;
-		var tkId = tankMass[tk][0];
-		var tkMass = tankMass[tk][1];
+		var fuelMass = this.getFuelMass(shipState);
+		var totalFuel = fuelMass.totalMass;
+		var tankEntr = Object.entries(fuelMass.tankMass);
 
-		while (0 < mass) {
-			// check if tank has necessary fuel
-			if (mass <= tkMass) { // if yes, subtract mass
-				shipState.objectCache[tkId].state.fullness -= mass/(this.derivedObjects[tkId].baseObject.weightInformation.volumeCapacity * this.derivedObjects[tkId].baseObject.weightInformation.contentDensity);
-				mass = 0;
-				//console.log("Vessel is sailing on fuel from " + tkId + ".");
-			} else { // if not, make tank empty
-				mass -= tkMass;
-				shipState.objectCache[tkId].state.fullness = 0;
-				console.warn(tkId + " is empty.");
-				if  (tankMass[tk+1] === undefined) { // if vessel does not have other tank, exit loop
-					console.error("Vessel ran out of fuel before " + mass.toFixed(2) + " tons were subtracted.");
-					break;
-				}
-				// if it has, proceed to it
-				tk++;
-				tkId = tankMass[tk][0];
-				tkMass = tankMass[tk][1];
-			}
+		var fuelCap = 0;
+		for (var tk = 0; tk < tankEntr.length; tk++) {
+			var tkId = tankEntr[tk][0];
+			fuelCap += this.derivedObjects[tkId].baseObject.weightInformation.volumeCapacity * this.derivedObjects[tkId].baseObject.weightInformation.contentDensity;
 		}
+
+		// check if tanks have necessary fuel
+		if (mass <= totalFuel) { // if yes, subtract mass in the same proportion
+			for (var tk = 0; tk < tankEntr.length; tk++) {
+				var tkId = tankEntr[tk][0];
+				shipState.objectCache[tkId].state.fullness -= mass/fuelCap;
+			}
+		} else { // if not, make tanks empty
+			mass -= totalFuel;
+			for (var tk = 0; tk < tankEntr.length; tk++) {
+				var tkId = tankEntr[tk][0];
+				shipState.objectCache[tkId].state.fullness = 0;
+			}
+			console.error("Vessel ran out of fuel before " + mass.toFixed(2) + " tons were subtracted.");
+		}
+
 		// update related states. In the future, make this consistent with improved caching system
 		for (var prop in shipState.objectCache) {
 			shipState.objectCache[prop].thisStateVer++;

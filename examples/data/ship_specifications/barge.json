@@ -148,7 +148,6 @@
     {
       "id": "Tank3",
       "baseObject": "ballast",
-      
       "affiliations": {
         "group": "ballast tanks",
         "Deck": "BallastDeck",
