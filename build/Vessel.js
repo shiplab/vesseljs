@@ -1,4 +1,4 @@
-//Vessel.js library, built 2018-11-15 21:50:12.721581
+//Vessel.js library, built 2018-11-15 22:57:51.299791
 /*
 Import like this in HTML:
 <script src="Vessel.js"></script>
@@ -787,8 +787,9 @@ Object.assign(Ship.prototype, {
 	calculateStability: function(shipState){
 		let w = this.getWeight(shipState);
 		let KG = w.cg.z;
+		let LCG = w.cg.x;
 		let T = this.structure.hull.calculateDraftAtMass(w.mass);
-		let {BMt,BMl,KB} = this.structure.hull.calculateAttributesAtDraft(T);
+		let {BMt,BMl,KB,LCB,LWL,BWL} = this.structure.hull.calculateAttributesAtDraft(T);
 		let GMt = KB + BMt - KG;
 		let GMl = KB + BMl - KG;
 
