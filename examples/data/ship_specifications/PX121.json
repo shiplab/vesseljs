@@ -13,11 +13,11 @@
 		},
 		"objectOverrides": {
 			"common": {
-				"fullness": 0.7
+				"fullness": 0.5
 			}
 		}
 	},
-    "data":{     
+    "data":{
     },
 	"structure": {
 		"hull": {
