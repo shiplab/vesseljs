@@ -23,13 +23,13 @@ Object.assign(Ship.prototype, {
 			let os = specification.baseObjects[i];
 			this.baseObjects[os.id] = new BaseObject(os);
 		}
-		
+
 		this.derivedObjects = {};
 		for (let i = 0; i < specification.derivedObjects.length; i++) {
 			let os = specification.derivedObjects[i];
 			this.derivedObjects[os.id] = new DerivedObject(os, this.baseObjects);
 		}
-		
+
 		this.designState = new ShipState(specification.designState);
 		return this;
 	},
@@ -51,11 +51,11 @@ Object.assign(Ship.prototype, {
 		shipState = shipState || this.designState;
 
 		let components = [];
-		
+
 		components.push(
 			this.structure.getWeight(this.designState)
 		);
-		
+
 		//DEBUG
 		//console.log(components);
 
@@ -81,7 +81,32 @@ Object.assign(Ship.prototype, {
 		let {BMt,BMl,KB} = this.structure.hull.calculateAttributesAtDraft(T);
 		let GMt = KB + BMt - KG;
 		let GMl = KB + BMl - KG;
-		return {w, T, GMt, GMl, KB, BMt, BMl, KG};
+
+		// avaiable just for small angles < 3°
+		// this calculation can be incorporated to Vessesl.js with no problem
+		let trim = (LCB-LCG)/GMl;
+		let draftfp = 0;
+		let draftap = 0;
+		let trimd = 0;
+
+		if (trim < Math.tan(3*Math.PI/180)) {
+			draftfp = T-(LWL-LCF)*trim;
+			draftap = T+(LCF)*trim;
+			trimd = draftfp - draftap;
+		} else {
+			draftfp = null;
+			draftap = null;
+			trimd = null;
+		}
+		//change the trim for angles
+		trim = Math.atan(trim)*180/Math.PI;
+		console.log(trimd);
+
+		let heel = w.cg.y/GMt;
+		//change the hell for meters
+		heel *= BWL;
+
+		return {w, T, GMt, GMl, KB, BMt, BMl, KG, trim, draftfp, draftap, trimd, heel};
 	},
 	getFuelMass: function(shipState) {
 		shipState = shipState || this.designState;

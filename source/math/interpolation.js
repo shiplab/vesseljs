@@ -41,7 +41,38 @@ function lerp(a, b, mu=0.5) {
 function linearFromArrays(xx, yy, x) {
 	let {index, mu} = bisectionSearch(xx, x);
 	if (index === undefined || mu === undefined) return 0;
-	return lerp(yy[index], yy[index+1], mu);	
+	return lerp(yy[index], yy[index+1], mu);
+}
+
+//Souce: https://en.wikipedia.org/wiki/Secant_method
+// Secant Method to Find out where is the zero point
+// Used to find out the Draft but can be generalized
+function secantMethod(a, t, VT, epsilon, hull){
+	let V1 = 0-VT;
+	let V2 = VT; //Just inserting V2 an ordinary value to not have to calculate it twice
+	let n = 0;
+ 	while (Math.abs(t-a) > epsilon){
+		V2 = hull.calculateAttributesAtDraft(t)["Vs"]-VT;
+		let dx = (V2-V1)/(t-a);
+ 		if(dx > 0.1 || dx < -0.1){
+			a = t;
+			V1 = V2;
+			t = t - V2/dx;
+			//In case the derived of function is close to 0 we can follow the Bisection method
+			//Source: https://en.wikipedia.org/wiki/Bisection_method
+		} else {
+			let ts = 0.5*(a+t); //intermediate point
+			let Vs = this.calculateAttributesAtDraft(ts)["Vs"]-VT; //this values must be calculated twice, see better example
+			if (Vs>0){
+				t = ts;
+				V2 = Vs;
+			} else {
+				a = ts;
+				V1 = Vs;
+			}
+		}
+	}
+	return t
 }
 
 //Source: https://en.wikipedia.org/wiki/Bilinear_interpolation
@@ -64,12 +95,12 @@ function bilinearUnitSquare(z00, z01, z10, z11, mux, muy) {
 function bilinearCoeffs(x1, x2, y1, y2, z00, z01, z10, z11) {
 	let X = (x2-x1);
 	let Y = (y2-y1);
-	
+
 	if (X===0 || Y=== 0) {
 		//console.warn("bilinearCoeffs: Zero base area. Setting coefficients to zero.");
 		return [0,0,0,0];
 	}
-	
+
 	let Ainv = 1/(X*Y);
 
 	//constant coeff:
@@ -80,7 +111,7 @@ function bilinearCoeffs(x1, x2, y1, y2, z00, z01, z10, z11) {
 	let b01 = Ainv*(-z00*x2 + z10*x1 + z01*x2 -z11*x1);
 	//xy coeff:
 	let b11 = Ainv*(z00-z10-z01+z11);
-	
+
 	return [b00,b10,b01,b11];
 }
 
@@ -88,7 +119,7 @@ function bilinearCoeffs(x1, x2, y1, y2, z00, z01, z10, z11) {
 //But then I have to be sure what the z values and coefficients mean.
 //I have apparently not documented this well.
 function bilinear(x1, x2, y1, y2, z11, z12, z21, z22, x, y) {
-	let [b00, b10, b01, b11] = 
+	let [b00, b10, b01, b11] =
 		bilinearCoeffs(x1, x2, y1, y2, z11, z12, z21, z22);
 	let fromCoeffs = b00 + b10*x + b01*y + b11*x*y;
 
@@ -96,8 +127,8 @@ function bilinear(x1, x2, y1, y2, z11, z12, z21, z22, x, y) {
 	/*let mux = (x-x1)/(x2-x1);
 	let muy = (y-y1)/(y2-y1);
 	let fromUnitSquare = bilinearUnitSquare(z11, z12, z21, z22, mux, muy);
-	
+
 	console.log("fromCoeffs=", fromCoeffs, ", fromUnitSquare=", fromUnitSquare);*/
-	
+
 	return fromCoeffs;
 }
