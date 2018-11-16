@@ -76,7 +76,7 @@
             
             <!-- No divisions in page. Only 1 column. -->
              <div class="col-md-12 text-center">
-                <h2>Ship as object</h2>
+                <h2>Ship visualization with specification</h2>
             </div>  
             
 			<div class="col-md-12 text-center">
@@ -103,12 +103,6 @@
 			</div>
 			<div id="3d" class="col-md-12 text-left" style="min-height: 80vh">
             </div>
-            
-            <div class="col-md-12 text-left">
-                <h2>Calculations</h2>
-                <h3>GM : <span id="GM"></span>m.</h3>
-                
-			</div>
         </div>
     </div>
         
@@ -191,12 +185,6 @@
 			controls.target = new THREE.Vector3(LOA/2,0,0);
 			controls.update();
 			animate();
-            
-            //calculate stability
-            let a = ship.calculateStability();
-            let GM = a.GM.toFixed(3);
-            document.getElementById("GM").innerHTML = GM;
-            
 		}
 		
 		function animate() {
