@@ -1,4 +1,4 @@
-//Vessel.js library, built 2018-11-12 15:28:31.504884
+//Vessel.js library, built 2018-11-16 11:18:16.967566
 /*
 Import like this in HTML:
 <script src="Vessel.js"></script>
@@ -34,7 +34,7 @@ var Vectors = {
 	},
 
 	/*Adds two or more vectors given as individual parameters,
-	and returns a new vector that is the component-wise
+	and returns a new vector that is the component-wise 
 	sum of the input vectors.*/
 	add: function(u,v, ...rest) {
 		if (rest.length > 0) return Vectors.sum([u,v]+rest);
@@ -124,12 +124,10 @@ function secantMethod(a, t, VT, epsilon, hull){
 	let V1 = 0-VT;
 	let V2 = VT; //Just inserting V2 an ordinary value to not have to calculate it twice
 	let n = 0;
-
-	while (Math.abs(t-a) > epsilon){
+ 	while (Math.abs(t-a) > epsilon){
 		V2 = hull.calculateAttributesAtDraft(t)["Vs"]-VT;
 		let dx = (V2-V1)/(t-a);
-
-		if(dx > 0.1 || dx < -0.1){
+ 		if(dx > 0.1 || dx < -0.1){
 			a = t;
 			V1 = V2;
 			t = t - V2/dx;
@@ -242,12 +240,12 @@ function trapezoidCalculation(xbase0, xbase1, xtop0, xtop1, ybase, ytop) {
 	let Iy = steiner(Iyrt1, Art1, xcrt1, xc)
 		+ steiner(Iyrec, Arec, xcrec, xc)
 		+ steiner(Iyrt2, Art2, xcrt2, xc);
-
+	
 	let maxX = Math.max.apply(null, [xbase0, xbase1, xtop0, xtop1]);
 	let minX = Math.min.apply(null, [xbase0, xbase1, xtop0, xtop1]);
 	let maxY = Math.max(ybase, ytop);
 	let minY = Math.min(ybase, ytop);
-
+	
 	return {A: A, xc: xc, yc: yc, Ix: Ix, Iy: Iy, maxX: maxX, minX: minX, maxY: maxY, minY: minY};
 }
 
@@ -273,7 +271,7 @@ function combineAreas(array) {
 	}
 	let Ix = 0;
 	let Iy = 0;
-
+	
 	if (A!==0) {
 		xc /= A;
 		yc /= A;
@@ -289,7 +287,7 @@ function combineAreas(array) {
 		Ix += steiner(e.Ix, e.A, e.yc, yc);
 		Iy += steiner(e.Iy, e.A, e.xc, xc);
 	}
-
+	
 	return {A: A, xc: xc, yc: yc, Ix: Ix, Iy: Iy, maxX: maxX, minX: minX, maxY: maxY, minY: minY};
 }
 
@@ -306,10 +304,10 @@ function sectionCalculation({xs, ymins, ymaxs}) {
 		let ybase1 = ymaxs[i] || 0;
 		let ytop0 = ymins[i+1] || 0;
 		let ytop1 = ymaxs[i+1] || 0;
-
+		
 		calculations.push(trapezoidCalculation(ybase0, ybase1, ytop0, ytop1, xbase, xtop));
 	}
-
+	
 	let C = combineAreas(calculations); //Might be zero areas!
 
 	let output = {A: C.A, maxX: C.maxY, minX: C.minY, maxY: C.maxX, minY: C.minX, xc: C.yc, yc: C.xc, Ix: C.Iy, Iy: C.Ix, Abb: (C.maxY-C.minY)*(C.maxX-C.minX)};
@@ -333,9 +331,9 @@ function bilinearArea(x1, x2, y1, y2, z11, z12, z21, z22, segs=5) {
 	Then:
 	Tx X Ty = (-(b10+b11*y), -(b01+b11*x), 1)
 	|Tx X Ty| = sqrt((b10+b11*y)^2 + (b01+b11*x)^2 + 1)
-
+	
 	Now, to get the area I need to integrate |Tx X Ty| over X,Y.
-
+	
 	Wolfram Alpha gave me this for the inner integral using x (indefinite):
 	integral sqrt((b01 + b11 x)^2 + 1 + (b10+b11*y)^2) dx = ((b01 + b11*x) sqrt((b01 + b11*x)^2 + 1 + (b10+b11*y)^2) + (1 + (b10+b11*y)^2)*ln(sqrt((b01 + b11*x)^2 + 1 + (b10+b11*y)^2) + b01 + b11*x))/(2*b11) + constant
 	That means this for the definite integral:
@@ -350,16 +348,16 @@ function bilinearArea(x1, x2, y1, y2, z11, z12, z21, z22, segs=5) {
 	- (b01 + b11*x1)*sqrt((b01 + b11*x1)^2 + 1 + (b10+b11*y)^2)/(2*b11)
 	+(1 + (b10+b11*y)^2)*ln(sqrt((b01 + b11*x2)^2 + 1 + (b10+b11*y)^2) + b01 + b11*x2)/(2*b11))
 	- (1 + (b10+b11*y)^2)*ln(sqrt((b01 + b11*x1)^2 + 1 + (b10+b11*y)^2) + b01 + b11*x1)/(2*b11)
-
+	
 	The two first integrals are similar, and the two last are also similar. With A=+-(b01 + b11*xi)/(2*b11), B=(b01 + b11*xi)^2+1, C=b10 and D=b11 (where xi represents either x1 or x2, and +- represents + for x2 and - for x1), I can calculate the integral of sqrt(B+(C+D*y)^2) and multiply by A. That integral is on the same form as the first one.
-
+	
 	The two last integrals can be represented by setting A=+-1/(2*b11), B=(b01 + b11*xi)^2+1, C=b01+b11*xi, D=b10, E=b11, and calculating the integral of (1+(D+E*y)^2)*ln(sqrt(B+(D+E*y)^2)+C), and multiplying by A.
 	Here is the integration result from Wolfram Alpha:
 	integral(1 + (D + E y)^2) log(sqrt(B + (D + E y)^2) + C) dy = (-(6 (B^2 - 2 B C^2 - 3 B + C^4 + 3 C^2) tan^(-1)((D + E y)/sqrt(B - C^2)))/sqrt(B - C^2) + (6 (B^2 - 2 B C^2 - 3 B + C^4 + 3 C^2) tan^(-1)((C (D + E y))/(sqrt(B - C^2) sqrt(B + (D + E y)^2))))/sqrt(B - C^2) + 6 (B - C^2 - 3) (D + E y) + 3 C (-3 B + 2 C^2 + 6) log(sqrt(B + (D + E y)^2) + D + E y) + 3 C (D + E y) sqrt(B + (D + E y)^2) + 6 ((D + E y)^2 + 3) (D + E y) log(sqrt(B + (D + E y)^2) + C) - 2 (D + E y)^3)/(18 E) + constant
 
 	I am glad I did not try to do this by hand. But combining these formulae, we can get an exact integral of the area of a bilinear patch. Later. Bilinear patches are not an exact representation anyway. We may opt for something else.
 	*/
-
+	
 	//Simple numerical calculation of double integral:
 	let A = 0;
 	let X = x2-x1, Y = y2-y1;
@@ -372,7 +370,7 @@ function bilinearArea(x1, x2, y1, y2, z11, z12, z21, z22, segs=5) {
 		}
 	}
 	A *= X*Y/(N*M); //dx dy
-
+	
 	return A;
 }
 
@@ -419,13 +417,13 @@ function patchColumnCalculation(x1, x2, y1, y2, z00, z01, z10, z11) {
 
 	//CENTER OF VOLUME
 	 let zc = 0.5*zAvg;
-
+	 
 	//Very approximate center of volume
 	//(does not account for different signs on z values,
 	//but that should be OK for hull offsets)
 	//let xc = (x1*(z00+z01)+x2*(z10+z11))/((z00+z01+z10+z11) || 1);
 	//let yc = (y1*(z00+z10)+y2*(z01+z11))/((z00+z01+z10+z11) || 1);
-
+	
 	// /*
 	// To find xc properly, I need to integrate x*z over the unit square, divide by zAvg(?) and scale and translate to ship coordinates afterwards:
 	// INT[x from 0 to 1, INT[y from 0 to 1, x*(a00 + a10*x + a01*y + a11*x*y) dy] dx] =
@@ -441,9 +439,9 @@ function patchColumnCalculation(x1, x2, y1, y2, z00, z01, z10, z11) {
 	//Similar for yc (modified symmetrically)
 	let yc = y1+Y*(((1/12)*z00 + (1/12)*z10 + (1/6)*z01 + (1/6)*z11) / (zAvg || 1));
 	let [a00, a10, a01, a11] = bilinearUnitSquareCoeffs(z00, z01, z10, z11);
-
+	
 	//console.log("Patch column Cv = (%.2f, %.2f, %.2f)", xc,yc,zc);
-
+	
 	//AREA
 	//These two methods give very similar results, within about 1% difference for the fishing boat hull (used in PX121.json).
 	//Simple triangle average approximation for area (works)
@@ -454,7 +452,7 @@ function patchColumnCalculation(x1, x2, y1, y2, z00, z01, z10, z11) {
 		{x: x2, y: y2, z: z11});*/
 	//Bilinear area calculation. Works too, but is currently numerical, and quite complex (which means it is bug-prone and hard to maintain). But it is more exact, even with just a few segments for numerical integration (the last, optional, parameter)
 	let As = Math.abs(bilinearArea(x1, x2, y1, y2, z00, z01, z10, z11));
-
+	
 	return {Ab: Ab, As: As, V: V, Cv: {x: xc, y: yc, z: zc}};
 }
 
@@ -474,9 +472,9 @@ function combineVolumes(array) {
 		Cv = Vectors.add(Cv, Vectors.scale(e.Cv, e.V));
 	}
 	Cv = Vectors.scale(Cv, 1/(V || L || 1));
-
+	
 	//console.info("combineVolumes: Combined Cv is (" + Cv.x + ", " + Cv.y + ", " + Cv.z + ").");
-
+	
 	return {V,As,Cv};//{V: V, As: As, Cv: Cv};
 }
 //@MrEranwe
@@ -518,7 +516,6 @@ function combineVolumes(array) {
 	 let W = K * Math.pow(E, 1.36) * (1 + 0.5 * (CBCorrected - 0.7));
 
 	 // Calculates LCG and VCG
-	 // Those centers are calculated related to the Amidship @ferrari212
 	 // VCGHull is the Vertical Center of Gravity of the hull
 	 let VCGHull = 0;
 	 if (L < 120){
@@ -527,10 +524,11 @@ function combineVolumes(array) {
 	 else {
 		  VCGHull = 0.01 * D * (46.6 + 0.135 * (0.81 - CB) * Math.pow(L / D, 2));
 	 }
-     // LCB is the longitudinal Center of Buoyancy
-     let LCB = Fn ? (L*0.5 + 9.7 - 45 * Fn) : L * 0.516;
-	 // LCGHull is the Longitudinal Center of Gravity of the hull
-	 let LCGHull = LCB - 0.15;
+     // LCB is the longitudinal Center of Buoyancy converted from
+     // percentage plus forward of amidships to meters from aft
+     let LCB = Fn ? 0.5*L + (9.7 - 45 * Fn)*L/100 : L*0.516;
+	 // LCGHull is the Longitudinal Center of Gravity of the hull in meters from aft
+	 let LCGHull = LCB - 0.15*L/100;
 
 	 // Returns the object
 
@@ -641,17 +639,17 @@ function combineVolumes(array) {
 	 // Returns the object
 
 	 return {mass: W, VCG: VCGOut};
-	 }//@EliasHasle
+	 }
+//@EliasHasle
 
 //Very unoptimized for now.
 function combineWeights(array) {
 	let M = array.reduce((sum,e)=>sum+e.mass,0);
 	let cgms = array.map(e=>Vectors.scale(e.cg, e.mass));
 	let CG = Vectors.scale(Vectors.sum(cgms), 1/M);
-
+	
 	return {mass: M, cg: CG};
 }//@EliasHasle
-
 
 /*Base class for objects that are constructed from 
 a literal object.
@@ -789,11 +787,37 @@ Object.assign(Ship.prototype, {
 	calculateStability: function(shipState){
 		let w = this.getWeight(shipState);
 		let KG = w.cg.z;
+		let LCG = w.cg.x;
 		let T = this.structure.hull.calculateDraftAtMass(w.mass);
-		let {BMt,BMl,KB} = this.structure.hull.calculateAttributesAtDraft(T);
+		let {BMt,BMl,KB,LCB,LCF,LWL,BWL} = this.structure.hull.calculateAttributesAtDraft(T);
 		let GMt = KB + BMt - KG;
 		let GMl = KB + BMl - KG;
-		return {w, T, GMt, GMl, KB, BMt, BMl, KG};
+
+		// avaiable just for small angles < 3°
+		// this calculation can be incorporated to Vessesl.js with no problem
+		let trim = (LCB-LCG)/GMl;
+		let draftfp = 0;
+		let draftap = 0;
+		let trimd = 0;
+
+		if (trim < Math.tan(3*Math.PI/180)) {
+			draftfp = T-(LWL-LCF)*trim;
+			draftap = T+(LCF)*trim;
+			trimd = draftfp - draftap;
+		} else {
+			draftfp = null;
+			draftap = null;
+			trimd = null;
+		}
+		//change the trim for angles
+		trim = Math.atan(trim)*180/Math.PI;
+		console.log(trimd);
+
+		let heel = w.cg.y/GMt;
+		//change the hell for meters
+		heel *= BWL;
+
+		return {w, T, GMt, GMl, KB, BMt, BMl, KG, trim, draftfp, draftap, trimd, heel};
 	},
 	getFuelMass: function(shipState) {
 		shipState = shipState || this.designState;
@@ -873,7 +897,6 @@ Object.assign(Structure.prototype, {
 			let name = bhnames[i];
 			let bhspec = bhspecs[name];
 			bulkheads[name] = new Bulkhead(bhspec,this.ship);
-
 		}*/	
 		
 		return this;
@@ -884,21 +907,21 @@ Object.assign(Structure.prototype, {
 			decks: this.decks,
 			bulkheads: this.bulkheads
 		};/*{decks: {}, bulkheads: {}};
-
+		
 		spec.hull = this.hull.getSpecification();
-
+		
 		let sd = spec.decks;
 		let dk = Object.keys(this.decks);
 		for (let i = 0; i < dk.length; i++) {
 			sd[dk[i]] = this.decks[dk[i]].getSpecification();
 		}
-
+		
 		let sbh = spec.bulkheads;
 		let bhk = Object.keys(this.bulkheads);
 		for (let i = 0; i < bhk.length; i++) {
 			sbh[bhk[i]] = this.bulkheads[bhk[i]].getSpecification();
 		}*/
-
+		
 		return spec;
 	},
 	//This is all dummy calculations
@@ -906,7 +929,7 @@ Object.assign(Structure.prototype, {
 		let components = [];
 		//Hull
 		components.push(this.hull.getWeight(designState));
-
+		
 		//structure:
 		let decks = Object.values(this.decks);
 		for (let i=0; i < decks.length; i++) {
@@ -925,7 +948,7 @@ Object.assign(Structure.prototype, {
 				}
 			});
 		}
-
+		
 		let bulkheads = Object.values(this.bulkheads);
 		for (let i=0; i < bulkheads.length; i++) {
 			let bh = bulkheads[i];
@@ -939,9 +962,9 @@ Object.assign(Structure.prototype, {
 					y: sc.yc,
 					z: sc.zc
 				}
-			});
+			});	
 		}
-
+		
 		let output = combineWeights(components);
 		//console.info("Total structural weight: ", output);
 		return output;
@@ -995,10 +1018,9 @@ Object.assign(Hull.prototype, {
 		//This is not a good way to estimate the hull weight.
 		let parsons = parametricWeightHull(K, L, B, T, D, Cb, Fn);
 		parsons.mass *= 1000; //ad hoc conversion to kg, because the example K value is aimed at ending with tonnes.
-		parsons.cg.x += L/2; //adjusting to after perpendicular coordinate system
 
 		let output = parsons;
-		// console.info("Hull weight:", output);
+		//console.info("Hull weight:", output);
 		return output;
 	},
 	/*
@@ -1442,21 +1464,19 @@ Object.assign(Hull.prototype, {
 		//Interpolation:
 		let a = 0;
 		let b = this.attributes.Depth;             //depth is not draft ¿?
-		// let t = 0.5*b; Not Necessary anymore with secant values
-		let t = secantMethod(a, b, VT, epsilon, this); //@ferrari212
-		// This is part of the code can be deleted after the Bisection Method
-		// Code calculated by the new method and have an convergence with less interation
-		// while (b-a>epsilon) {
-		// 	t = 0.5*(a+b);
-		// 	let V = this.calculateAttributesAtDraft(t)["Vs"];
-		// 	// console.log(t); //DEBUG
-		// 	if (V>VT) b = t;
-		// 	else a = t;
-		// }
-		console.info("Calculated draft: %.2f", t);
+		let t = 0.5*b;
+		while (b-a>epsilon) {
+			t = 0.5*(a+b);
+			let V = this.calculateAttributesAtDraft(t)["Vs"];
+			//console.log(V); //DEBUG
+			if (V>VT) b = t;
+			else a = t;
+		}
+		//console.info("Calculated draft: %.2f", t);
 		return t;
 	}
-});//@EliasHasle
+});
+//@EliasHasle
 
 /*
 Depends on JSONSpecObject.js
@@ -1503,7 +1523,7 @@ Object.assign(BaseObject.prototype, {
 		let d = wi.contentDensity || 0;
 		let v = wi.volumeCapacity || 0;
 		//Maybe we should have another handling of cargo (with variable density)
-
+		
 		let m = wi.lightweight + d*v*fullness;
 		let cg;
 		if (wi.fullnessCGMapping !== undefined) {
@@ -1519,11 +1539,11 @@ Object.assign(BaseObject.prototype, {
 					//Linear interpolation between closest entries:
 					c = lerp(cgs[i][j], cgs[i+1][j], mu);
 				else c = cgs[i][j];
-				// if (c===null || isNaN(c)) console.error("BaseObject.getWeight: Invalid value found after interpolation.");
+				//if (c===null || isNaN(c)) console.error("BaseObject.getWeight: Invalid value found after interpolation.");
 				cg.push(c);
 			}
 		} else if (wi.cg !== undefined) {
-			// console.log("BaseObject.getWeight: Using specified cg.");
+			//console.log("BaseObject.getWeight: Using specified cg.");
 			cg = wi.cg;
 		} else {
 			console.warn("BaseObject.getWeight: No cg or fullnessCGMapping supplied. Defaults to center of bounding box.");
@@ -1572,17 +1592,17 @@ Object.assign(DerivedObject.prototype, {
 		} else {
 			spec.baseObject = this.baseObject.getSpecification();
 		}
-
+		
 		return spec;
 	},
 	getWeight: function(state) {
 		let oState = state.getObjectState(this);
-
+		
 		//Support disabled objects:
 		if (oState.exists === false) {
 			return {mass: 0, cg: {x:0, y:0, z:0}};
 		}
-
+		
 		let p = {
 			x: oState.xCentre,
 			y: oState.yCentre,
@@ -1592,7 +1612,7 @@ Object.assign(DerivedObject.prototype, {
 		let w = this.baseObject.getWeight(oState.fullness);
 		let m = w.mass;
 		let cg = Vectors.add(p, w.cg);
-
+		
 		if (isNaN(cg.x+cg.y+cg.z)) {
 			console.error("DerivedObject.getWeight: returning NaN values.");
 		}
@@ -1642,10 +1662,10 @@ Object.assign(ShipState.prototype, {
 				calculationParameters: this.calculationParameters,
 				objectOverrides: this.objectOverrides//{}
 			};
-
+			
 			//Sketchy, but versatile:
-			spec = JSON.parse(JSON.stringify(spec));
-
+			spec = JSON.parse(JSON.stringify(spec));		
+			
 			this.specCache = spec;
 			this.cachedVersion = this.version;
 		}
@@ -1661,11 +1681,11 @@ Object.assign(ShipState.prototype, {
 				/*&& c.baseStateVer === o.baseObject.baseStateVersion
 				&& c.refStateVer === o.referenceStateVersion*/) {
 				console.log("ShipState.getObjectState: Using cache.");
-				return c.state;
-			}
+				return c.state;	
+			}				
 		}
 		console.log("ShipState.getObjectState: Not using cache.");
-
+		
 		let state = {};
 		Object.assign(state, o.baseObject.baseState);
 		Object.assign(state, o.referenceState);
@@ -1682,14 +1702,14 @@ Object.assign(ShipState.prototype, {
 				}
 			}
 		}
-
+		
 		this.objectCache[o.id] = {
 			thisStateVer: this.version,
 			/*baseStateVer: o.baseObject.baseStateVersion,
 			refStateVer: o.referenceStateVersion,*/
 			state: state
 		};
-
+		
 		return state;
 	},
 	//o is an object, k is a key to a single state property
@@ -1729,7 +1749,7 @@ Object.assign(ShipState.prototype, {
 		oo.baseByID = soo.baseByID || {};
 		oo.derivedByGroup = soo.derivedByGroup || {};
 		oo.derivedByID = soo.derivedByID || {};
-
+		
 		this.version++;
 		
 		return this;
@@ -1761,7 +1781,7 @@ Object.assign(ShipState.prototype, {
 	override: function(spec) {
 		let oo = this.objectOverrides;
 		let soo = spec.objectOverrides;
-
+		
 		let sources = [spec.calculationParameters, soo.common];
 		let targets = [this.calculationParameters, oo.common];
 		for (let i = 0; i < sources.length; i++) {
@@ -1776,7 +1796,7 @@ Object.assign(ShipState.prototype, {
 
 		sources = [soo.common, soo.baseByID, soo.derivedByGroup, soo.derivedByID];
 		targets = [oo.common, oo.baseByID, oo.derivedByGroup, oo.derivedByID];
-
+		
 		for (let i = 0; i < sources.length; i++) {
 			if (!sources[i]) continue;
 			let specKeys = Object.keys(sources[i]);
@@ -2117,14 +2137,16 @@ Object.defineProperties(WaveMotion.prototype, {
 
 		var Breadth_draft_ratio0 = this.shipState.BWL/this.shipState.T;
 		var a0, b0, d0;
-		if (Breadth_draft_ratio0 > 3){ //3 <= B/T <= 6//
+		if ((3 <= Breadth_draft_ratio0) && (Breadth_draft_ratio0 <= 6)){
 			a0 = 0.256*Breadth_draft_ratio0 - 0.286;
 			b0 = -0.11*Breadth_draft_ratio0 - 2.55;
 			d0 = 0.033*Breadth_draft_ratio0 - 1.419;
-		} else { //1 <= B/T <= 3//
+		} else if ((1 <= Breadth_draft_ratio0) && (Breadth_draft_ratio0 < 3)) {
 			a0 = -3.94*Breadth_draft_ratio0 + 13.69;
 			b0 = -2.12*Breadth_draft_ratio0 - 1.89;
 			d0 = 1.16*Breadth_draft_ratio0 - 7.97;
+		} else {
+			console.error("The B/T relation is not being respected for the roll formula. It should be 1 <= B/T < 6, not" + " " + (this.shipState.BWL/this.shipState.T).toFixed(2) + ".");
 		}
 		var b_44_0 = this.rho*A_0*Math.pow(this.shipState.BWL,2)*a0*Math.exp(b0*Math.pow(this.coefficients.encounter_frequency,-1.3))*Math.pow(this.coefficients.encounter_frequency,d0)/
 		(Math.sqrt(this.shipState.BWL/(2*this.g)));
@@ -2133,14 +2155,16 @@ Object.defineProperties(WaveMotion.prototype, {
 		var B_1 = breadth_ratio * this.shipState.BWL;
 		var Breadth_draft_ratio1 = B_1/this.shipState.T;
 		var a1, b1, d1;
-		if (Breadth_draft_ratio1 > 3) { //3 <= B/T <= 6//
+		if ((3 <= Breadth_draft_ratio1) && (Breadth_draft_ratio1 <= 6)){
 			a1 = 0.256*Breadth_draft_ratio1 - 0.286;
 			b1 = -0.11*Breadth_draft_ratio1 - 2.55;
 			d1 = 0.033*Breadth_draft_ratio1 - 1.419;
-		} else { //1 <= B/T <= 3//
+		} else if ((1 <= Breadth_draft_ratio1) && (Breadth_draft_ratio1 < 3)) {
 			a1 = -3.94*Breadth_draft_ratio1 + 13.69;
 			b1 = -2.12*Breadth_draft_ratio1 - 1.89;
 			d1 = 1.16*Breadth_draft_ratio1 - 7.97;
+		} else {
+			console.error("The vessel dimensions are out of range for the roll formula.");
 		}
 		var b_44_1 = this.rho*A_1*Math.pow(B_1,2)*a1*Math.exp(b1*Math.pow(this.coefficients.encounter_frequency,-1.3))*Math.pow(this.coefficients.encounter_frequency,d1)/
 		(Math.sqrt(B_1/(2*this.g)));
