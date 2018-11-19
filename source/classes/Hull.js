@@ -496,14 +496,20 @@ Object.assign(Hull.prototype, {
 		let t = 0.5*b;
 		//Souce: https://en.wikipedia.org/wiki/Secant_method
 		// Secant Method to Find out where is the zero point
+		// Used to find out the Draft but can be generalized
+			let V1 = 0-VT;
+			let V2 = VT; //Just inserting V2 an ordinary value to not have to calculate it twice
+			let n = 0;
+		 	while (Math.abs(t-a) > epsilon){
+				//This following condition force just receive draft from [0;Depth]
+				if (t > b) {
+					t = b;
+				}
 
-		let V1 = 0-VT;
-		let V2 = VT; //Just inserting V2 an ordinary value to not have to calculate it twice
-		let n = 0;
-			while (Math.abs(t-a) > epsilon){
-				V2 = hull.calculateAttributesAtDraft(t)["Vs"]-VT;
+				V2 = this.calculateAttributesAtDraft(t)["Vs"]-VT;
+				// debugger
 				let dx = (V2-V1)/(t-a);
-				if(dx > 0.1 || dx < -0.1){
+		 		if(dx > 0.1 || dx < -0.1){
 					a = t;
 					V1 = V2;
 					t = t - V2/dx;
