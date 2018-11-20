@@ -1,4 +1,4 @@
-//Vessel.js library, built 2018-11-20 16:49:21.221558
+//Vessel.js library, built 2018-11-20 17:07:30.385750
 /*
 Import like this in HTML:
 <script src="Vessel.js"></script>
@@ -1468,6 +1468,7 @@ Object.assign(Hull.prototype, {
 				}
 			}
 			return t
+		 }
 		});
 		//@EliasHasle
 //@EliasHasle

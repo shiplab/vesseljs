@@ -528,5 +528,6 @@ Object.assign(Hull.prototype, {
 				}
 			}
 			return t
+		 }
 		});
 		//@EliasHasle
