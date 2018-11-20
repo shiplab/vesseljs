@@ -494,14 +494,39 @@ Object.assign(Hull.prototype, {
 		let a = 0;
 		let b = this.attributes.Depth;             //depth is not draft ¿?
 		let t = 0.5*b;
-		while (b-a>epsilon) {
-			t = 0.5*(a+b);
-			let V = this.calculateAttributesAtDraft(t)["Vs"];
-			//console.log(V); //DEBUG
-			if (V>VT) b = t;
-			else a = t;
-		}
-		//console.info("Calculated draft: %.2f", t);
-		return t;
-	}
-});
+		//Souce: https://en.wikipedia.org/wiki/Secant_method
+		// Secant Method to Find out where is the zero point
+		// Used to find out the Draft but can be generalized
+			let V1 = 0-VT;
+			let V2 = VT; //Just inserting V2 an ordinary value to not have to calculate it twice
+			let n = 0;
+		 	while (Math.abs(t-a) > epsilon){
+				//This following condition force just receive draft from [0;Depth]
+				if (t > b) {
+					t = b;
+				}
+
+				V2 = this.calculateAttributesAtDraft(t)["Vs"]-VT;
+				// debugger
+				let dx = (V2-V1)/(t-a);
+		 		if(dx > 0.1 || dx < -0.1){
+					a = t;
+					V1 = V2;
+					t = t - V2/dx;
+					//In case the derived of function is close to 0 we can follow the Bisection method
+					//Source: https://en.wikipedia.org/wiki/Bisection_method
+				} else {
+					let ts = 0.5*(a+t); //intermediate point
+					let Vs = this.calculateAttributesAtDraft(ts)["Vs"]-VT; //this values must be calculated twice, see better example
+					if (Vs>0){
+						t = ts;
+						V2 = Vs;
+					} else {
+						a = ts;
+						V1 = Vs;
+					}
+				}
+			}
+			return t
+		});
+		//@EliasHasle
