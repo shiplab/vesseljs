@@ -1,4 +1,4 @@
-//Vessel.js library, built 2018-11-16 11:18:16.967566
+//Vessel.js library, built 2018-11-21 16:45:36.141347
 /*
 Import like this in HTML:
 <script src="Vessel.js"></script>
@@ -1893,11 +1893,8 @@ Object.assign(StateModule.prototype, {
 	setDraft: function() {
 		//this.states.shipCache.state.hydStab = {};
 		let draft = this.ship.calculateDraft(this.states);
-		// as of v0.13-alpha, Vessel.js does not yet support trim calculations, so draft is taken as the same for vessel fore and aft
 		Object.assign(this.states.shipCache.state, this.ship.structure.hull.calculateAttributesAtDraft(draft));
 		Object.assign(this.states.shipCache.state, this.ship.calculateStability(this.states));
-		this.states.shipCache.state.Tfore = this.states.shipCache.state.T;
-		this.states.shipCache.state.Taft = this.states.shipCache.state.T;
 		this.states.shipCache.thisStateVer++;
 
 		if (this.states.discrete.FloatingCondition === undefined) {
@@ -1908,8 +1905,6 @@ Object.assign(StateModule.prototype, {
 		}
 		Object.assign(this.states.discrete.FloatingCondition.state, this.ship.structure.hull.calculateAttributesAtDraft(draft));
 		Object.assign(this.states.discrete.FloatingCondition.state, this.ship.calculateStability(this.states));
-		this.states.discrete.FloatingCondition.state.Tfore = this.states.shipCache.state.T;
-		this.states.discrete.FloatingCondition.state.Taft = this.states.shipCache.state.T;
 		this.states.discrete.FloatingCondition.thisStateVer++;
 	},
 	// write argument speed to vessel state. If undefined, use vessel's design speed
@@ -1984,7 +1979,7 @@ Object.assign(StateModule.prototype, {
 					return cache.value; */
 				}
 				// if it has only a ship module
-				if (this.cache[cacheName] !== undefined) {
+				if (this.cache[cacheName] === undefined) {
 					this.cache[cacheName] = {
 						shipStateVersion: 0
 					};
@@ -2085,7 +2080,7 @@ Object.defineProperties(WaveMotion.prototype, {
 		var alpha = 1-Froude_N*Math.sqrt(wave_number*this.shipState.LWL)*Math.cos(betha);
 		var encounter_frequency = this.wavCre.waveDef.waveFreq * alpha;
 
-		return {betha: betha, Froude_N: Froude_N, wave_number: wave_number, eff_wave_number: eff_wave_number, smith_factor: smith_factor, alpha: alpha, encounter_frequency: encounter_frequency};
+		return {betha, Froude_N, wave_number, eff_wave_number, smith_factor, alpha, encounter_frequency};
 	}, "coefficients"),
 	verticalMotion: StateModule.prototype.memoized(function() {
 		var Breadth = this.shipState.BWL*this.shipState.Cb;
@@ -2110,13 +2105,13 @@ Object.defineProperties(WaveMotion.prototype, {
 		var Pitch_Movement = Math.abs(FRF_Pitch * cgDistance);
 		var Pitch_Acceleration = Math.pow(this.coefficients.encounter_frequency,2)*Pitch_Movement;
 
-		var Heave_Movement = Math.abs(FRF_Heave);
+		var Heave_Amplitude = Math.abs(FRF_Heave);
 		var Heave_Acceleration = Math.pow(this.coefficients.encounter_frequency,2)*Math.abs(FRF_Heave);
 
-		var Vertical_Movement = Math.sqrt(Math.pow(Heave_Movement,2) + Math.pow(Pitch_Movement,2));
+		var Vertical_Movement = Math.sqrt(Math.pow(Heave_Amplitude,2) + Math.pow(Pitch_Movement,2));
 		var Vertical_Acceleration = Math.pow(this.coefficients.encounter_frequency,2)*Vertical_Movement;
 
-		return {pitchAmp: FRF_Pitch, pitchMov: Pitch_Movement, pitchAcc: Pitch_Acceleration, heaveMov: Heave_Movement, heaveAcc: Heave_Acceleration, 
+		return {pitchAmp: FRF_Pitch, pitchMov: Pitch_Movement, pitchAcc: Pitch_Acceleration, heaveAmp: Heave_Amplitude, heaveAcc: Heave_Acceleration, 
 			verticalMov: Vertical_Movement, verticalAcc: Vertical_Acceleration};
 	}, "verticalMotion"),
 	bendingMoment: StateModule.prototype.memoized(function() {

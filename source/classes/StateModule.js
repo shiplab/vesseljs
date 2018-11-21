@@ -73,11 +73,8 @@ Object.assign(StateModule.prototype, {
 	setDraft: function() {
 		//this.states.shipCache.state.hydStab = {};
 		let draft = this.ship.calculateDraft(this.states);
-		// as of v0.13-alpha, Vessel.js does not yet support trim calculations, so draft is taken as the same for vessel fore and aft
 		Object.assign(this.states.shipCache.state, this.ship.structure.hull.calculateAttributesAtDraft(draft));
 		Object.assign(this.states.shipCache.state, this.ship.calculateStability(this.states));
-		this.states.shipCache.state.Tfore = this.states.shipCache.state.T;
-		this.states.shipCache.state.Taft = this.states.shipCache.state.T;
 		this.states.shipCache.thisStateVer++;
 
 		if (this.states.discrete.FloatingCondition === undefined) {
@@ -88,8 +85,6 @@ Object.assign(StateModule.prototype, {
 		}
 		Object.assign(this.states.discrete.FloatingCondition.state, this.ship.structure.hull.calculateAttributesAtDraft(draft));
 		Object.assign(this.states.discrete.FloatingCondition.state, this.ship.calculateStability(this.states));
-		this.states.discrete.FloatingCondition.state.Tfore = this.states.shipCache.state.T;
-		this.states.discrete.FloatingCondition.state.Taft = this.states.shipCache.state.T;
 		this.states.discrete.FloatingCondition.thisStateVer++;
 	},
 	// write argument speed to vessel state. If undefined, use vessel's design speed
@@ -164,7 +159,7 @@ Object.assign(StateModule.prototype, {
 					return cache.value; */
 				}
 				// if it has only a ship module
-				if (this.cache[cacheName] !== undefined) {
+				if (this.cache[cacheName] === undefined) {
 					this.cache[cacheName] = {
 						shipStateVersion: 0
 					};
