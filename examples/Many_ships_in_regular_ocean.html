@@ -136,6 +136,17 @@ var wavMo, states;
 		ships.add(ship3D);
 		ship3D.position.x = (Math.random()-0.5)*oSize;
 		ship3D.position.y = (Math.random()-0.5)*oSize;
+		// This part of the code avoid overlaying of the ship
+		var deleteLength = ship.structure.hull.attributes.LOA;
+		if (ships.children.length > 1) {
+			for (var i = 0; i < ships.children.length-1; i++) {
+				var test = ships.children[i]
+				if (Math.pow( Math.pow(ship3D.position.x-test.position.x,2)+Math.pow(ship3D.position.y-test.position.y,2), 0.5) < deleteLength) {
+					ships.remove(ships.children[ships.children.length-1]);
+					addShip();
+				}
+			}
+		}
 
 		let headAng = 2*Math.random()*Math.PI; // from 0 to 2 PI
 		ship3D.rotation.z = headAng;
@@ -203,7 +214,7 @@ var wavMo, states;
 		}
 	}
 	correctNum(o.numShips);
-	gui.add(o,"numShips",1,100).step(1).onChange(correctNum);	
+	gui.add(o,"numShips",1,50).step(1).onChange(correctNum);
 	gui.add({addFromFile: function() {
 		o.numShips++;
 		Vessel.browseShip(callback);
