@@ -162,7 +162,7 @@ var wavMo, states;
 			//motion formula
 			let omega = wavCre.waveDef.waveFreq;
 			let k = 2*Math.PI/ocean.waves["0"].L; // wave number
-			ship3D.heave = states[noShips].shipCache.state.heaveMov*Math.cos(omega*t-ocean.waves["0"].phi-k*projMag);
+			ship3D.heave = states[noShips].shipCache.state.heaveAmp*Math.cos(omega*t-ocean.waves["0"].phi-k*projMag);
 
 			// a 90 degrees phase difference of pitch in relation to the wave makes the motion appear more natural
 			ship3D.pitch = states[noShips].shipCache.state.pitchAmp*Math.cos(omega*t-ocean.waves["0"].phi-k*projMag+90*Math.PI/180);
