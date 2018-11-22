@@ -50,28 +50,7 @@ Object.assign(StateModule.prototype, {
 		}
 		this.states.discrete[stateName].thisStateVer++;
 	},
-	// write mass related states to vesselStates
-	setMass: function() {
-		//this.states.shipCache.state.weight = {};
-		let massCalc = this.ship.getWeight(this.states);
-		//Object.assign(this.states.shipCache.state.weight, massCalc);
-		this.states.shipCache.state.mass = massCalc.mass;
-		this.states.shipCache.state.cg = massCalc.cg;
-		this.states.shipCache.thisStateVer++;
-
-		if (this.states.discrete.Weight === undefined) {
-			this.states.discrete.Weight = {
-				state: {},
-				thisStateVer: 0
-			};
-		}
-		this.states.discrete.Weight.state.mass = massCalc.mass;
-		this.states.discrete.Weight.state.cg = massCalc.cg;
-		this.states.discrete.Weight.thisStateVer++;
-	},
-	// write draft related states to vesselStates
 	setDraft: function() {
-		//this.states.shipCache.state.hydStab = {};
 		let draft = this.ship.calculateDraft(this.states);
 		Object.assign(this.states.shipCache.state, this.ship.structure.hull.calculateAttributesAtDraft(draft));
 		Object.assign(this.states.shipCache.state, this.ship.calculateStability(this.states));
