@@ -84,8 +84,8 @@ function Ship3D(ship, {shipState, stlPath, deckOpacity=0.2, objectOpacity=0.5}) 
 	//console.log("LOA:%.1f, BOA:%.1f, Depth:%.1f",LOA,BOA,Depth);
 	let {w: {cg,mass}, T, GMt, GMl} = ship.calculateStability(this.shipState);
 	
-	this.cmContainer.position.set(-cg.x, -cg.y, -cg.z-GMt);
-	this.normalizer.position.z = cg.z+GMt;
+	this.cmContainer.position.set(-cg.x, -cg.y, -cg.z);
+	this.normalizer.position.z = cg.z;
 	this.position.z = -T;
 	
 	let designDraft = ship.designState.calculationParameters.Draft_design;
