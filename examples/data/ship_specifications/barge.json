@@ -3,14 +3,15 @@
   "designState": {
   	"calculationParameters": {
   		"LWL_design": 25,
+  		"BWL": 25,
   		"Draft_design": 2,
-  		"Cb_design": 0.5,
+  		"Cb_design": 1,
   		"speed": 12,
       "crew" : 20,
   		"K" : 0.032,
   		"MCR" : 10000,
   		"SFC" : 0.000215,
-  		"Co" : 0.3, 
+  		"Co" : 0.3,
   		"tripDuration": 40
   	},
   	"objectOverrides": {
