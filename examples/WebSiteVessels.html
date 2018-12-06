@@ -1,0 +1,263 @@
+<!-- @MrEranwe @EliasHasle -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <title>Ship visualization with specification</title>
+
+  <!-- Bootstrap Core CSS -->
+  <link href="css/bootstrap.min.css" rel="stylesheet">
+
+  <!-- jQuery Version 1.11.1 -->
+  <script src="js/libs/jquery.js"></script>
+
+  <!-- Bootstrap Core JavaScript -->
+  <script src="js/libs/bootstrap.min.js"></script>
+
+  <!--Import library-->
+  <script src="../build/Vessel.js"></script>
+
+  <!-- Prettyprinting of JSON data -->
+  <script type="text/javascript" src="js/libs/renderjson.js"></script>
+
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+  <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/js/libs/html5shiv/3.7.0/html5shiv.js"></script>
+        <script src="https://oss.maxcdn.com/js/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+  <!-- Navigation -->
+  <nav class="navbar navbar-inverse">
+    <div class="container">
+      <!-- Add  the <div>[Something]</div> structure for each header in the navbar-->
+      <div class="navbar-header">
+        <a class="navbar-brand" href="https://github.com/shiplab/vesseljs/wiki/Examples">Examples</a>
+        <a class="navbar-brand" href="https://github.com/shiplab/vesseljs/wiki">Documentation</a>
+        <a class="navbar-brand" href="https://github.com/shiplab/vesseljs">Source</a>
+      </div>
+      <!-- This is for the right part of the navbar. Reserved for Shiplab logo-->
+      <div class="nav navbar-nav navbar-right">
+        <div class="navbar-header">
+          <a class="navbar-brand" href="http://www.shiplab.hials.org/"><img src="images/barquinho.png" alt="Shiplab logo" style="height:150%">
+          </a>
+        </div>
+      </div>
+    </div>
+  </nav>
+  <style media="screen">
+    html {
+      font: 16px/1.5em "Helvetica Neue", Helvetica, sans-serif;
+      min-width: 1040px;
+      margin: 0;
+      -ms-text-size-adjust: 100%;
+      -webkit-text-size-adjust: 100%;
+      text-indent: 20px;
+    }
+
+    h1 {
+      margin-block-start: 1em;
+    }
+
+    pre,
+    code {
+      font-family: "Menlo", monospace;
+      -webkit-text-size-adjust: 100%;
+    }
+
+    code {
+      line-height: 1em;
+    }
+
+    pre {
+      border-left: solid 2px #ccc;
+      padding-left: 18px;
+      margin: 2em 0 2em -20px;
+    }
+
+    .html .string,
+    .javascript .string,
+    .javascript .regexp {
+      color: #756bb1;
+    }
+
+    .html .tag,
+    .css .tag,
+    .javascript .keyword {
+      color: #3182bd;
+    }
+
+    .comment {
+      color: #636363;
+    }
+
+    .html .doctype,
+    .javascript .number {
+      color: #31a354;
+    }
+
+    .html .attr,
+    .css .attr,
+    .javascript .class,
+    .javascript .special {
+      color: #e6550d;
+    }
+  </style>
+</head>
+<div class="container">
+  <div class="row">
+    <div class="col-md-6 col-md-offset-3 text-center">
+      <h1>
+        <svg width="96" height="91" style="position:relative;top:22px;">
+          <defs>
+            <linearGradient id="MyGradient">
+              <stop offset="5%" stop-color="blue" />
+              <stop offset="95%" stop-color="black" />
+            </linearGradient>
+          </defs>
+
+          <rect fill="url(#MyGradient)" x="0" y="0" width="100" height="100" />
+        </svg>
+        Vesseljs
+      </h1>
+    </div>
+  </div>
+</div>
+<br>
+<canvas id="example-deep"></canvas>
+
+<div class="container">
+  <div class="row">
+    <div class="col-md-10 col-md-offset-1">
+      <h1>Introduction</h1>
+      <p><b>Vessel.js</b> is a JavaScript library for conceptual ship design with an
+        object-oriented paradigm. Vessel.js represents the vessel as an object, which
+        is used to simulate different functionalities and behaviors. Currently, the
+        library includes methods for hydrostatic and stability calculations.</p>
+
+      <p>The library is developed by <b>Ship Design and Operation Lab</b> at Norwegian
+        University of Science and Technology (<b>NTNU</b>) in Ålesund.</p>
+
+      <p>Dowload the latest version here:</p>
+      <ul>
+        <li>
+          <a href="https://github.com/shiplab/vesseljs/archive/master.zip">vesseljs.zip</a>
+        </li>
+      </ul>
+
+      <p>Import Vessel.js in html by using the following script:</p>
+      <pre><code class="html hljs xml"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"Vessel.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></code></pre>
+
+      <h1>Contributing</h1>
+      <p>When contributing, fork the repository and send pull requests with your
+        commits. If your modifications are only to files related to examples
+        and you have pull request authorization, you can approve them by
+        yourself. If not, then wait for review and approval by the development
+        team.</p>
+      <p>You are also welcome to create <a href="https://github.com/shiplab/vesseljs/issues">
+          issues</a> reporting bugs or suggesting
+        improvements and features for development.</p>
+
+      <h1>Contents</h1>
+      <ul>
+        <li><a href="https://github.com/shiplab/vesseljs/wiki/API-Reference">API Reference</a></li>
+        <li><a href="https://github.com/shiplab/vesseljs/releases">Release Notes</a></li>
+        <li><a href="https://github.com/shiplab/vesseljs/wiki/Examples">Examples</a></li>
+        <li><a href="https://github.com/shiplab/vesseljs/wiki/Resources">Resources</a></li>
+      </ul>
+
+      <h1>Credited Libraries</h1>
+      <ul>
+        <li>Bootstrap: <a href="http://getbootstrap.com/">http://getbootstrap.com/</a></li>
+        <li>jQuery: <a href="https://jquery.com/">https://jquery.com/</a></li>
+        <li>three.js: <a href="https://threejs.org/">https://threejs.org/</a></li>
+        <li>dat.gui: <a href="https://github.com/dataarts/dat.gui/">https://github.com/dataarts/dat.gui/</a></li>
+        <li>renderjson: <a href="https://github.com/caldwell/renderjson">https://github.com/caldwell/renderjson</a></li>
+        <li>D3.js: <a href="https://d3js.org/">https://d3js.org/</a></li>
+      </ul>
+
+      <h1>References</h1>
+      <p>Vessel.js:</p>
+      <ul>
+        <li>Gaspar, H. M. <a href="https://github.com/shiplab/vesseljs/wiki/files/IMDC_preprint.pdf">
+            Vessel.js: An open and collaborative ship design object-oriented library</a>
+          . IMDC, 2018, Helsinki, Finland.
+        </li>
+      </ul>
+      <p>Simulation with Vessel.js:</p>
+      <ul>
+        <li>Fonseca, Í. A.; Gaspar, H. M.; Ryan, C. F.; Thomas, G. A.
+          <a href="https://github.com/shiplab/vesseljs/wiki/files/IMDC_preprint.pdf">
+            <i>An Open and Collaborative Object-Oriented Taxonomy for Simulation of Marine Operations</i>
+            . COMPIT, 2018. Pavone, Italy.</a>
+          . IMDC, 2018, Helsinki, Finland.
+        </li>
+      </ul>
+      <br>
+    </div>
+  </div>
+</div>
+
+<body>
+
+
+  <!-- Container creates the space -->
+  <div class="container">
+
+    <!-- Row creates horizontal groups of columns -->
+    <div class="row">
+
+      <script>
+        "use strict";
+
+        window.onload = function() {
+          var canvas = document.getElementById('example-deep');
+          var context = canvas.getContext('2d');
+          make_base();
+
+          function make_base(distX,distY) {
+            var base_image = new Image();
+            base_image.src = 'images/background.png';
+            var r = 1030 / 1920;
+            base_image.onload = function() {
+              canvas.width = document.body.clientWidth;
+              canvas.height = window.innerHeight * 0.75;
+              var imageX = canvas.width + 50 * r;
+              var imageY = imageX * r;
+              if (distY) {
+                var ry = distY/canvas.height;
+              } else {
+                var ry = 0;
+              }
+              context.drawImage(base_image, -(imageX - canvas.width) / 2, -(imageY - canvas.height)*ry, imageX, imageY);
+            }
+          }
+
+          $('#example-deep').mousemove(function(event) {
+            var $distTop = $('#example-deep').offset().top;
+            var distX = event.pageX;
+            var distY = event.pageY - $distTop;
+            make_base(distX,distY);
+          });
+
+          window.onresize = make_base;
+
+        }
+      </script>
+      <!-- /.container -->
+
+
+
+      <!-- Insert own scripts here -->
+
+
+</body>
+
+</html>
