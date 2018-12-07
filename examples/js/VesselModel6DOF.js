@@ -115,7 +115,7 @@ function DinamicalMovement(ship, states, userParameters, Ini, dt){
         AA = numeric.add(MM,ADD_mass);                 // System's total inertia tensor
 
         //Dynamic Equations
-        BB = [[0,0,0,0,0,0],[0,B_22,0,0,0,0],[0,0,B_33,0,0,0],[0,0,0,userParameters.B_44,0,0],[0,0,0,0,0,0],[0,0,0,0,0,0]];   // Damping Matrix
+        BB = [[0,0,0,0,0,0],[0,B_22,0,0,0,0],[0,0,B_33,0,0,0],[0,0,0,userParameters.B_44,0,0],[0,0,0,0,userParameters.B_55,0],[0,0,0,0,0,0]];   // Damping Matrix
         CC = [[0,0,0,0,0,0],[0,0,0,0,0,0],[0,0,C_33,0,-C_35,0],[0,0,0,C_44,0,0],[0,0,C_53,0,C_55,0],[0,0,0,0,0,0]];      // Restoring Matrix
 
         // Solver
