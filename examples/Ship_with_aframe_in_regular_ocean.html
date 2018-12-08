@@ -43,7 +43,8 @@
 //Globals
 var renderer, camera, controls, gui, stats, scene,
 zUpCont, playback, bodies, ocean, tprev, ship3D,
-states, wavMo, scale, updateMotion;
+states, wavMo, scale, updateMotion, inity, zLever, zDiff, 
+yLever, yDiff;
 
 (function main() {
 	//Renderer setup
@@ -159,7 +160,10 @@ states, wavMo, scale, updateMotion;
 		var deckHeight = 12.9;
 
 		var initx = -10;
-		var inity = 6.5;
+
+		var yCL = 6.5;
+		inity = yCL - states.discrete.FloatingCondition.state.w.cg.y;
+
 		var initzf = deckHeight - states.discrete.FloatingCondition.state.KG;
 		aFrame3D.applyMatrix( new THREE.Matrix4().makeTranslation(initx, inity, initzf) );
 		aFrame3D.rotation.z = Math.PI/2;
@@ -174,6 +178,11 @@ states, wavMo, scale, updateMotion;
 		var loadGroup = new THREE.Group();
 
 		var initzt = deckHeight + aFrame.height - states.discrete.FloatingCondition.state.T - 2*aFrame.radiusVert;
+
+		zLever = deckHeight + aFrame.height - states.discrete.FloatingCondition.state.w.cg.z - 2*aFrame.radiusVert;
+		zDiff = states.discrete.FloatingCondition.state.w.cg.z - states.discrete.FloatingCondition.state.T;
+
+		yLever = yCL - states.discrete.FloatingCondition.state.w.cg.y;
 
 		var geometry = new THREE.CylinderGeometry(0.05, 0.05, L, 32);
 		var material = new THREE.MeshBasicMaterial( {color: "black"} );
@@ -201,7 +210,7 @@ states, wavMo, scale, updateMotion;
 		playback.add(function(t) {
 			//motion formula
 			let omega = wavCre.waveDef.waveFreq;
-			//ship3D.heave = states.shipCache.state.heaveAmp*Math.cos(omega*t-ocean.waves["0"].phi);
+			ship3D.heave = states.shipCache.state.heaveAmp*Math.cos(omega*t-ocean.waves["0"].phi);
 
 			// // a 90 degrees phase difference of pitch in relation to the wave makes the motion appear more natural
 			// ship3D.pitch = states.shipCache.state.pitchAmp*Math.cos(omega*t-ocean.waves["0"].phi+90*Math.PI/180);
@@ -217,17 +226,16 @@ states, wavMo, scale, updateMotion;
 
 			let dt = t - tprev;
 
-			loadGroup.position.y = inity - initzt * ship3D.roll;
-			loadGroup.position.z = initzt /*+ ship3D.heave*/ + (inity - states.discrete.FloatingCondition.state.w.cg.y) * ship3D.roll;
+			loadGroup.position.z = ship3D.heave + zDiff + zLever * Math.cos(ship3D.roll) + yLever * Math.sin(ship3D.roll);
+			loadGroup.position.y = - zLever * Math.sin(ship3D.roll) + yLever * Math.cos(ship3D.roll);
 
 			if (dt !== 0){
 				// solve the pendulum ODE:
 				pend.movePendulum(tprev, dt);
 			}
-
 			tprev = t;
 
-			//loadGroup.rotation.x = states.shipCache.state.theta[0];
+			loadGroup.rotation.x = states.shipCache.state.theta[0];
 		});
 
 		scale = gui.addFolder("Ship");
