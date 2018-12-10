@@ -132,7 +132,7 @@ yLever, yDiff;
 			//console.log(states.shipCache.thisStateVer);
 
 			wavMo = new Vessel.WaveMotion(movShip, states, wavCre);
-			wavMo.output.push("rollMovement");
+			wavMo.output.push("rollAmp");
 			//debugger;
 			wavMo.writeOutput();
 		}
@@ -219,7 +219,7 @@ yLever, yDiff;
 			// 	ship3D.pitch = -ship3D.pitch;
 			// }
 
-			ship3D.roll = states.shipCache.state.rollMovement*Math.cos(omega*t-ocean.waves["0"].phi);
+			ship3D.roll = states.shipCache.state.rollAmp*Math.cos(omega*t-ocean.waves["0"].phi);
 			if (wavCre.waveDef.heading < 180) {
 				ship3D.roll = -ship3D.roll;
 			}
@@ -235,7 +235,7 @@ yLever, yDiff;
 			}
 			tprev = t;
 
-			loadGroup.rotation.x = states.shipCache.state.theta[0];
+			loadGroup.rotation.x = states.continuous.theta[0];
 		});
 
 		scale = gui.addFolder("Ship");

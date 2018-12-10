@@ -84,7 +84,7 @@ Object.defineProperties(WaveMotion.prototype, {
 			(1-Math.cos(this.coefficients.eff_wave_number*this.shipState.LWL/2)-(this.coefficients.eff_wave_number*this.shipState.LWL/4)*Math.sin(this.coefficients.eff_wave_number*this.shipState.LWL/2))*
 			F_v*F_Cb*Math.pow(Math.abs(Math.cos(this.coefficients.betha)),1/3))*this.rho*this.g*this.shipState.BWL*Math.pow(this.shipState.LWL,2)/1000000;
 	}, "bendingMoment"),
-	rollMovement: StateModule.prototype.memoized(function() {
+	rollAmp: StateModule.prototype.memoized(function() {
 		// estimate natural roll period
 		var naturalPeriod = (2 * this.shipState.BWL * Math.PI * (0.35 + 0.45)/2)/Math.pow(this.g * this.shipState.GMt, 0.5);
 
@@ -152,5 +152,5 @@ Object.defineProperties(WaveMotion.prototype, {
 		C = Math.pow(this.coefficients.encounter_frequency*roll_hydro_damping, 2);
 
 		return this.wavCre.waveDef.waveAmplitude*excitation_frequency/(Math.sqrt(A*B+C));
-	}, "rollMovement")
+	}, "rollAmp")
 });

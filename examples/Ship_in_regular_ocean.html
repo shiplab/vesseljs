@@ -122,7 +122,7 @@ var ship3D, states, wavMo, scale, updateMotion;
 			//console.log(states.shipCache.thisStateVer);
 
 			wavMo = new Vessel.WaveMotion(movShip, states, wavCre);
-			wavMo.output.push("rollMovement");
+			wavMo.output.push("rollAmp");
 			//debugger;
 			wavMo.writeOutput();
 		}
@@ -150,7 +150,7 @@ var ship3D, states, wavMo, scale, updateMotion;
 				ship3D.pitch = -ship3D.pitch;
 			}
 
-			ship3D.roll = states.shipCache.state.rollMovement*Math.cos(omega*t-ocean.waves["0"].phi);
+			ship3D.roll = states.shipCache.state.rollAmp*Math.cos(omega*t-ocean.waves["0"].phi);
 			if (wavCre.waveDef.heading < 180) {
 				ship3D.roll = -ship3D.roll;
 			}
