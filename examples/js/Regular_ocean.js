@@ -9,11 +9,11 @@ var wavCre = new Vessel.WaveCreator();
 
 var Wave = function() {
 	var waveCount = 0;
-	
+
 	return function(waveType) {
 		this.waveId = waveCount;
 		waveCount++;
-		
+
 		this.waveType = waveType;
 	}
 }();
@@ -54,7 +54,7 @@ function DirectionalCosine(params) {
 	this.theta = typeof params.theta !== "undefined" ? params.theta : 0;
 	//phase shift
 	this.phi = typeof params.phi !== "undefined" ? params.phi : 0;
-	
+
 	this.updateWavelength();
 }
 Object.assign(DirectionalCosine.prototype, {
@@ -82,7 +82,7 @@ function Ocean(params) {
 	params = params || {};
 	this.size = params.size || 2048;
 	this.segments = params.segments || 127;
-	
+
 	/*
 	The WaterShader is from the THREE examples.
 	The mirror effect does not account for geometry, and there is no self-mirroring. But it mostly looks OK anyway. On tall waves, one can see that the rendered texture is stretched.
@@ -100,8 +100,8 @@ function Ocean(params) {
 			waterColor: 0x001e0f,
 			distortionScale: 50.0
 		} );
-		
-		THREE.Mesh.call(this, 
+
+		THREE.Mesh.call(this,
 			new THREE.PlaneBufferGeometry(this.size, this.size, this.segments, this.segments),
 			/*new THREE.MeshPhongMaterial({
 				color: 0x041020,
@@ -111,7 +111,7 @@ function Ocean(params) {
 
 		this.add(this.water);
 	} catch (e) {
-		THREE.Mesh.call(this, 
+		THREE.Mesh.call(this,
 			new THREE.PlaneBufferGeometry(this.size, this.size, this.segments, this.segments),
 			new THREE.MeshPhongMaterial({
 				color: 0x041020,
@@ -125,14 +125,14 @@ function Ocean(params) {
 		//Axes:
 		this.add(new THREE.AxisHelper(600));
 	}
-	
+
 	this.waves = [];
 	let scope = this;
-	
+
 	if (params.parentGUI) {
 		this.conf = params.parentGUI.addFolder("Ocean");
 		this.conf.open();
-		
+
 		//Cos menu
 		this.currentCos = new DirectionalCosine();//{A:NaN,T:NaN,theta:NaN,phi:NaN}); //dummy object
 		let pcos = new Proxy(/*ptarget*/{}, {
@@ -169,12 +169,12 @@ Object.assign(Ocean.prototype, {
 		wavCre.setWaveDef(2*Math.PI/w["T"], w["A"], 180/Math.PI*w["theta"]);
 
 		this.currentCos = w;
-		
+
 		if (this.conf) {
 			this.conf.updateDisplay();
 			this.conf.open();
 		}
-		
+
 		return w;
 	},
 	calculateZ: function(x,y,t) {
@@ -188,10 +188,10 @@ Object.assign(Ocean.prototype, {
 	//I fixed it, but am not sure how it was wrong.
 	update: function(t) {
 		let pos = this.geometry.getAttribute("position");
-		
+
 		let size = this.size;
 		let segs = this.segments;
-		
+
 		//REGULAR GRID:
 		let vSize = segs+1
 		for (let j = 0; j < vSize; j++) {
@@ -202,10 +202,10 @@ Object.assign(Ocean.prototype, {
 				pos.setZ(j*vSize+i, z);
 			}
 		}
-		
+
 		pos.needsUpdate = true;
 		this.geometry.computeVertexNormals();
-		
+
 		this.water.material.uniforms.time.value = t;
 	}
 });

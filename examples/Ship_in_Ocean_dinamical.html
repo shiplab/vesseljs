@@ -32,7 +32,7 @@
 	<script src="js/LoadsInertia.js"></script>
 	<script src="js/MatrixTransformation.js"></script>
 	<script src="js/Solver.js"></script>
-	<script src="js/Coriolis.js"></script>
+	<script src="js/WaveForce.js"></script>
 	<script src="js/libs/numeric-1.2.6.min.js"></script>
 </head>
 
@@ -43,7 +43,7 @@
 //Globals
 var renderer, camera, controls, gui, stats;
 var scene, zUpCont, playback, bodies, ocean, ship3D, statMod;
-var RG_system, g, m_system, AA, BB, CC, waveForce, C_D, B_44, B_55;
+var RG_system, g, m_system, AA, A_33, BB, B_33, B_44, B_55, CC, waveForce, C_D;
 var wavMo, states, scale;
 
 // Damping
@@ -127,7 +127,7 @@ var userParameters = {C_D, B_44, B_55};
 	//zUpCont.add(new THREE.AxisHelper(1000));
 	zUpCont.add(new THREE.HemisphereLight(0xccccff, 0x666688, 1));
 
-	ocean = new Ocean({parentGUI: null, //remenber to insert
+	ocean = new Ocean({parentGUI: gui, //remenber to insert back to see the waves
 						sunDir: sun.position.clone().normalize(),
 						size: oSize, segments: 127});
 	playback.add(ocean);
@@ -137,10 +137,10 @@ var userParameters = {C_D, B_44, B_55};
 	states = [];
 
 
-	Vessel.loadShip("data/ship_specifications/barge.json", function (ship) {
+	Vessel.loadShip("data/ship_specifications/mississipiBarge.json", function (ship) {
 		 	states = ship.designState.clone();
-			states.objectOverrides.derivedByGroup["ballast tanks"].fullness = 0.0;
-			states.objectOverrides.derivedByGroup["cargo tanks"].fullness = 0.0;
+			states.objectOverrides.derivedByGroup["ballast tanks"].fullness = 0.6;
+			states.objectOverrides.derivedByGroup["cargo tanks"].fullness = 0.6;
 			console.log(states.objectCache);
 			statMod = new Vessel.StateModule(ship, states);
 			statMod.setDraft();
@@ -173,19 +173,6 @@ var userParameters = {C_D, B_44, B_55};
 		// ship3D.heave = states.discrete.FloatingCondition.state.T;
 		// ship3D.roll += 0.3;
 
-		function changeDraft() {
-			// states.objectCache.Tank1.state.fullness = valor do slide;
-			// states.objectCache.Tank2.state.fullness = valor do slide;
-			// states.objectCache.Tank3.state.fullness = valor do slide;
-			// states.objectCache.Tank4.state.fullness = valor do slide;
-			//
-			// states.objectOverrides.derivedByGroup["ballast tanks"] = valor do slide;
-			// states.objectOverrides.derivedByGroup["cargo tanks"] = valor do slide;
-			// states.version += 1;
-			// statMod.setDraft();
-			// ship3D.position.z = -states.discrete.FloatingCondition.state.T;
-		}
-
 		scale = gui.addFolder("Initial Movement");
 		scale.add(ship3D, "heave", -1, 1).step(0.01); // use .onChange(scaleShip) for real time change
 		scale.add(ship3D, "roll", -1, 1).step(0.01);
@@ -214,7 +201,7 @@ var userParameters = {C_D, B_44, B_55};
 			// let oCenter = ocean.calculateZ(x,y,t);
 			let dt = t - tini;
 
-			DinamicalMovement(ship, states, userParameters, Ini, dt);
+			DinamicalMovement(ship, states, userParameters, Ini, dt, t);
 			tini = t;
 
 		});

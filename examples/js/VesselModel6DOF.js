@@ -5,7 +5,7 @@
 
 /*The code will require the main ship dimensions*/
 
-function DinamicalMovement(ship, states, userParameters, Ini, dt){
+function DinamicalMovement(ship, states, userParameters, Ini, dt, t){
 
   var designDimention = ship.structure.hull.attributes;
   var calculatedParameters =  ship.designState.calculationParameters;
@@ -74,10 +74,11 @@ function DinamicalMovement(ship, states, userParameters, Ini, dt){
         // var h_mass = 1;             // Vessel depth                (m)
         // var l_mass = 1;             // Vessel length               (m)
         var rho = 1025;                // Water Density               (kg/m3)
-        g = 9.81;                  // Gravitational Acceleration  (m/s2)
+        g = 9.81;                      // Gravitational Acceleration  (m/s2)
+        var a_33 = rho*g*Breadth*Draft //
         var Draft_system = (LL[0][0]+rho*Length*Breadth*Draft*Cb)/(rho*Length*Breadth*Cb); // Draft vessel + body  (m)
         var center_reference = -Draft_system;
-        waveForce = numeric.rep([6],0);
+        waveForce = WaveForce(rho, t, a_33);
 
         // Inertia
         var m = rho*Length*Breadth*Draft_system*Cb;                             // Vessel Mass                    (kg)
@@ -109,15 +110,20 @@ function DinamicalMovement(ship, states, userParameters, Ini, dt){
 
         // Damping
         var B_22 = rho*Length*Draft*userParameters.C_D;            // Linear Sway Dampig Coeff.             (kg/s)
-        var B_33 = rho*A_WP*userParameters.C_D;                    // Linear Heave Dampig Coeff.            (kg/s)
+        // var B_33 = rho*A_WP*userParameters.C_D;                    // Linear Heave Dampig Coeff.            (kg/s)
 
-        var ADD_mass = numeric.rep([6,6],0);           // Vessel's added mass
+        var ADD_33 = a_33*Length;
+        var ADD_44 = 0.15*I_44; // Equation 6.61a
+        var ADD_mass = [[0,0,0,0,0,0],[0,0,0,0,0,0],[0,0,ADD_33,0,0,0],[0,0,0,ADD_44,0,0],[0,0,0,0,0,0],[0,0,0,0,0,0]];           // Vessel's added mass
         AA = numeric.add(MM,ADD_mass);                 // System's total inertia tensor
 
-        //Dynamic Equations
-        BB = [[0,0,0,0,0,0],[0,B_22,0,0,0,0],[0,0,B_33,0,0,0],[0,0,0,userParameters.B_44,0,0],[0,0,0,0,userParameters.B_55,0],[0,0,0,0,0,0]];   // Damping Matrix
-        CC = [[0,0,0,0,0,0],[0,0,0,0,0,0],[0,0,C_33,0,-C_35,0],[0,0,0,C_44,0,0],[0,0,C_53,0,C_55,0],[0,0,0,0,0,0]];      // Restoring Matrix
+        // Inserting the critical damping in roll (6.66) considering sigma = 10
+        B_44 += 10*2*Math.sqrt(C_44*AA[4][4]);
 
+        //Dynamic Equations
+        BB = [[0,0,0,0,0,0],[0,B_22,0,0,0,0],[0,0,B_33,0,0,0],[0,0,0,B_44,0,0],[0,0,0,0,userParameters.B_55,0],[0,0,0,0,0,0]];   // Damping Matrix
+        CC = [[0,0,0,0,0,0],[0,0,0,0,0,0],[0,0,C_33,0,-C_35,0],[0,0,0,C_44,0,0],[0,0,C_53,0,C_55,0],[0,0,0,0,0,0]];      // Restoring Matrix
+        // console.log("Natural Vibration Frequency:", (2*Math.PI)/Math.pow(C_33/AA[3][3],0.5));
         // Solver
         // dy(1:6)  = World fixed velocity
         // dy(7:12) = Body fixed acceleration
@@ -134,6 +140,7 @@ function DinamicalMovement(ship, states, userParameters, Ini, dt){
 
 
         sol = numeric.dopri(0, dt, y, RugenKuttaSolver, 1e-8,10000).at(dt);
+        console.log('Time: %.2f; Heave: %.2f; VRoll: %.2f;',t, sol[2] - ship3D.position.z, sol[9]);
 
         // Equalizing the solution
         ship3D.surge = sol[0];

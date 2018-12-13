@@ -1,0 +1,108 @@
+{
+  "attributes": {},
+  "designState": {
+  	"calculationParameters": {
+  		"LWL_design": 42,
+  		"BWL": 8,
+  		"Draft_design": 3,
+  		"Cb_design": 1,
+  		"speed": 10,
+      "crew" : 0,
+  		"K" : 0.032,
+  		"MCR" : 10000,
+  		"SFC" : 0.000215,
+  		"Co" : 0.3,
+  		"tripDuration": 40
+  	},
+  	"objectOverrides": {
+      "derivedByGroup": {
+        "cargo tanks": {
+          "fullness": 0
+        },
+        "ballast tanks": {
+          "fullness": 1
+        }
+      }
+    }
+  },
+  "structure": {
+  	"hull": {
+  		"attributes": {
+  			"LOA": 42,
+  			"BOA": 8,
+  			"Depth": 4,
+  			"APP": 0
+  		},
+  		"halfBreadths": {
+  			"waterlines": [0, 0, 1],
+  			"stations": [0, 1],
+  			"table": [[0, 0], [1, 1], [1, 1]]
+  		},
+  		"buttockHeights": {}
+  	},
+  	"decks": {
+      "BallastTop": {
+				"zFloor": 0.4,
+				"thickness": 0.01,
+				"xAft": 0,
+				"xFwd": 42,
+				"yCentre": 0,
+				"breadth": 8,
+				"density": 7850
+			}
+    },
+  	"bulkheads": {
+  		"AB": {
+  			"xAft": 1,
+  			"thickness": 0.01,
+  			"density": 7850
+  		}
+  	}
+  },
+  "baseObjects": [
+    {
+      "id": "cargo",
+      "affiliations": {},
+      "boxDimensions": {
+        "length": 40,
+        "breadth": 6,
+        "height": 5.8
+      },
+      "capabilities": {},
+      "baseState": {
+        "fullness": 0
+      },
+      "weightInformation": {
+        "contentDensity": 850,
+        "volumeCapacity": 1368,
+        "lightweight": 70000,
+        "fullnessCGMapping": {
+          "fullnesses": [0, 0.25, 0.5, 0.75, 1],
+          "cgs": [
+            [0, 0, 0.8],
+            [0, 0, 0.347013783],
+            [0, 0, 0.455846422],
+            [0, 0, 0.6195241],
+            [0, 0, 0.8]
+          ]
+        }
+      }
+    }
+  ],
+  "derivedObjects": [
+    {
+      "id": "Tank1",
+      "baseObject": "cargo",
+      "affiliations": {
+        "group": "cargo tanks",
+        "Deck": "CargoDeck",
+        "SFI": "102"
+      },
+      "referenceState": {
+        "xCentre": 21,
+        "yCentre": 0,
+        "zBase": 0.5
+      }
+    }
+  ]
+}
