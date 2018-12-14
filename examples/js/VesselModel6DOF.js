@@ -109,19 +109,21 @@ function DinamicalMovement(ship, states, userParameters, Ini, dt, t){
         var C_53 = 0;                               // Pitch-Heave Coupled Restoring Coeff.  (N)  // aproximmation to zero is valid if the water plane is symmetrical in relation to the mid section
 
         // Damping
+        var B_11 = rho*Breadth*Draft*userParameters.C_D;            // Linear Sway Dampig Coeff.             (kg/s)
         var B_22 = rho*Length*Draft*userParameters.C_D;            // Linear Sway Dampig Coeff.             (kg/s)
         // var B_33 = rho*A_WP*userParameters.C_D;                    // Linear Heave Dampig Coeff.            (kg/s)
 
         var ADD_33 = a_33*Length;
         var ADD_44 = 0.15*I_44; // Equation 6.61a
-        var ADD_mass = [[0,0,0,0,0,0],[0,0,0,0,0,0],[0,0,ADD_33,0,0,0],[0,0,0,ADD_44,0,0],[0,0,0,0,0,0],[0,0,0,0,0,0]];           // Vessel's added mass
+        var ADD_55 = a_33*Math.pow(Length,3)/12;
+        var ADD_mass = [[0,0,0,0,0,0],[0,0,0,0,0,0],[0,0,ADD_33,0,0,0],[0,0,0,ADD_44,0,0],[0,0,0,0,ADD_55,0],[0,0,0,0,0,0]];           // Vessel's added mass
         AA = numeric.add(MM,ADD_mass);                 // System's total inertia tensor
 
         // Inserting the critical damping in roll (6.66) considering sigma = 10
-        B_44 += 10*2*Math.sqrt(C_44*AA[4][4]);
+        // B_44 += 10*2*Math.sqrt(C_44*(I_44+ADD_44));
 
         //Dynamic Equations
-        BB = [[0,0,0,0,0,0],[0,B_22,0,0,0,0],[0,0,B_33,0,0,0],[0,0,0,B_44,0,0],[0,0,0,0,userParameters.B_55,0],[0,0,0,0,0,0]];   // Damping Matrix
+        BB = [[B_11,0,0,0,0,0],[0,B_22,0,0,0,0],[0,0,B_33,0,0,0],[0,0,0,B_44,0,0],[0,0,0,0,B_55,0],[0,0,0,0,0,0]];   // Damping Matrix
         CC = [[0,0,0,0,0,0],[0,0,0,0,0,0],[0,0,C_33,0,-C_35,0],[0,0,0,C_44,0,0],[0,0,C_53,0,C_55,0],[0,0,0,0,0,0]];      // Restoring Matrix
         // console.log("Natural Vibration Frequency:", (2*Math.PI)/Math.pow(C_33/AA[3][3],0.5));
         // Solver
@@ -140,7 +142,7 @@ function DinamicalMovement(ship, states, userParameters, Ini, dt, t){
 
 
         sol = numeric.dopri(0, dt, y, RugenKuttaSolver, 1e-8,10000).at(dt);
-        console.log('Time: %.2f; Heave: %.2f; VRoll: %.2f;',t, sol[2] - ship3D.position.z, sol[9]);
+        // console.log('Time: %.2f; Heave: %.2f; Roll: %.2f; Pitch: %.2f',C_44, sol[2] - ship3D.position.z, sol[3], sol[4]);
 
         // Equalizing the solution
         ship3D.surge = sol[0];

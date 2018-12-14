@@ -28,8 +28,11 @@ function WaveForce(rho, t, a_33) {
   var b_33 = rho*Math.pow(g*A,2)/(Math.pow(omega*alpha,3));
   if (a) {
     B_33 = b_33*Length;
+    B_55 = b_33*Math.pow(Length,3)/12;
+    console.log("Entering here!");
   } else {
     B_33 = rho*Length*Breadth*userParameters.C_D;
+    B_55 = userParameters.B_55;
   }
 
   var complex1, complex2, integral;
@@ -60,6 +63,7 @@ function WaveForce(rho, t, a_33) {
   var b_44 = rho*Draft*Math.pow(Breadth,3)*Math.pow(2*g/Breadth,0.5)*ra*Math.exp(rb*Math.pow(omega,-1.3))*Math.pow(omega,rd);
   if (a) {
     B_44 = b_44*Length*100000;
+    console.log("Entering also here!");
   } else {
     B_44 = userParameters.B_44;
   }
@@ -71,8 +75,13 @@ function WaveForce(rho, t, a_33) {
     var FW_44 = complex2.dot(a*Math.pow(rho*g*g*b_44/omega, 0.5)*Length*sinth).x;
   }
 
+  // Equation (6.52)
+  complex1 = new numeric.T(0, 2*(Math.sin(k*costh*Length/2)-k*costh*Length/2*Math.cos(k*costh*Length/2))/Math.pow(k*costh, 2))
+  var complex3 = new numeric.T(-a*Math.exp(-k*Draft)*(rho*g*Breadth-omega*omega*a_33,-a*Math.exp(-k*Draft)*(-omega*b_33)))
+  var FW_55 = complex1.mul(complex2).mul(complex3).x;
 
-  FW = [0,0,FW_33,FW_44,0,0];
+
+  FW = [0,0,FW_33,FW_44,FW_55,0];
   return FW;
 
 }
