@@ -25,7 +25,7 @@ TODO: Use calculated draft for position.z, and place the ship model in a motion 
 
 function Ship3D(ship, {shipState, stlPath, deckOpacity=0.2, objectOpacity=0.5}) {
 	THREE.Group.call(this);
-	
+
 	this.normalizer = new THREE.Group();
 	this.fluctCont = new THREE.Group();
 	this.fluctCont.rotation.order = "ZYX"; //right?
@@ -33,7 +33,7 @@ function Ship3D(ship, {shipState, stlPath, deckOpacity=0.2, objectOpacity=0.5}) 
 	this.fluctCont.add(this.cmContainer);
 	this.normalizer.add(this.fluctCont);
 	this.add(this.normalizer);
-	
+
 	Object.defineProperty(this, "draft", {
 		get: function() {
 			return -this.position.z;
@@ -42,6 +42,24 @@ function Ship3D(ship, {shipState, stlPath, deckOpacity=0.2, objectOpacity=0.5}) 
 			this.position.z = -value;
 		}*/
 	});
+	Object.defineProperty(this, "surge", {
+		get: function() {
+			return this.fluctCont.position.x;
+		},
+		set: function(value) {
+			this.fluctCont.position.x = value;
+			//this.shipState.motion.surge = value;
+		}
+	});
+	Object.defineProperty(this, "sway", {
+		get: function() {
+			return this.fluctCont.position.y;
+		},
+		set: function(value) {
+			this.fluctCont.position.y = value;
+			//this.shipState.motion.sway = value;
+		}
+	});
 	Object.defineProperty(this, "heave", {
 		get: function() {
 			return this.fluctCont.position.z;
@@ -49,6 +67,15 @@ function Ship3D(ship, {shipState, stlPath, deckOpacity=0.2, objectOpacity=0.5}) 
 		set: function(value) {
 			this.fluctCont.position.z = value;
 			//this.shipState.motion.heave = value;
+		}
+	});
+	Object.defineProperty(this, "yaw", {
+		get: function() {
+			return this.fluctCont.rotation.z;
+		},
+		set: function(value) {
+			this.fluctCont.rotation.z = value;
+			//this.shipState.motion.yaw = value;
 		}
 	});
 	Object.defineProperty(this, "pitch", {
@@ -68,13 +95,13 @@ function Ship3D(ship, {shipState, stlPath, deckOpacity=0.2, objectOpacity=0.5}) 
 			this.fluctCont.rotation.x = value;
 			//this.shipState.motion.roll = value;
 		}
-	});	
-	
+	});
+
 	this.objectOpacity = objectOpacity;
-	
+
 	this.ship = ship;
 	this.shipState = shipState || ship.designState.clone();
-	
+
 	let hull = ship.structure.hull;
 
 	let LOA = hull.attributes.LOA;
@@ -83,18 +110,18 @@ function Ship3D(ship, {shipState, stlPath, deckOpacity=0.2, objectOpacity=0.5}) 
 
 	//console.log("LOA:%.1f, BOA:%.1f, Depth:%.1f",LOA,BOA,Depth);
 	let {w: {cg,mass}, T, GMt, GMl} = ship.calculateStability(this.shipState);
-	
-	this.cmContainer.position.set(-cg.x, -cg.y, -cg.z-GMt);
-	this.normalizer.position.z = cg.z+GMt;
+
+	this.cmContainer.position.set(-cg.x, -cg.y, -cg.z);
+	this.normalizer.position.z = cg.z;
 	this.position.z = -T;
-	
+
 	let designDraft = ship.designState.calculationParameters.Draft_design;
 	this.hull3D = new Hull3D(hull, designDraft);
 	this.cmContainer.add(this.hull3D);
-	
+
 	//DEBUG, to show only hull:
 	//return;
-	
+
 	let stations = hull.halfBreadths.stations;
 	//Decks:
 	var decks = new THREE.Group();
@@ -108,7 +135,7 @@ function Ship3D(ship, {shipState, stlPath, deckOpacity=0.2, objectOpacity=0.5}) 
 	for (let dk in ds) {
 		//let d = ds[dk[i]]; //deck in ship structure
 		let d = ds[dk];
-		
+
 		//Will eventually use BoxBufferGeometry, but that is harder, because vertices are duplicated in the face planes.
 		let deckGeom = new THREE.PlaneBufferGeometry(1, 1, stss.length, 1);//new THREE.BoxBufferGeometry(1,1,1,sts.length,1,1);
 		//console.log("d.zFloor=%.1f", d.zFloor); //DEBUG
@@ -129,7 +156,7 @@ function Ship3D(ship, {shipState, stlPath, deckOpacity=0.2, objectOpacity=0.5}) 
 			pa[3*(stss.length+1)+3*j+1] = -y; //test
 		}
 		pos.needsUpdate = true;
-		
+
 		//DEBUG
 		//console.log("d.xFwd=%.1f, d.xAft=%.1f, 0.5*d.breadth=%.1f", d.xFwd, d.xAft, 0.5*d.breadth);
 		//console.log(pa);
@@ -146,7 +173,7 @@ function Ship3D(ship, {shipState, stlPath, deckOpacity=0.2, objectOpacity=0.5}) 
 	}
 	this.decks = decks;
 	this.cmContainer.add(decks);
-	
+
 	//Bulkheads:
 	var bulkheads = new THREE.Group();
 	bulkheads.scale.set(1, 0.5*BOA, Depth);
@@ -172,7 +199,7 @@ function Ship3D(ship, {shipState, stlPath, deckOpacity=0.2, objectOpacity=0.5}) 
 	}
 	this.bulkheads = bulkheads;
 	this.cmContainer.add(bulkheads);
-	
+
 	//Objects
 
 	this.materials = {};
@@ -189,12 +216,12 @@ function Ship3D(ship, {shipState, stlPath, deckOpacity=0.2, objectOpacity=0.5}) 
 	//Default placeholder geometry
 	this.boxGeom = new THREE.BoxBufferGeometry(1,1,1);
 	this.boxGeom.translate(0,0,0.5);
-	
-	let objects = Object.values(ship.derivedObjects);	
+
+	let objects = Object.values(ship.derivedObjects);
 	for (let i = 0; i < objects.length; i++) {
 		this.addObject(objects[i]);
 	}
-	
+
 	//console.log("Reached end of Ship3D constructor.");
 }
 Ship3D.prototype = Object.create(THREE.Group.prototype);
@@ -215,18 +242,18 @@ Object.assign(Ship3D.prototype, {
 				this.materials[name] = mat;
 			}
 		}
-		
+
 		let bo = object.baseObject;
-		
+
 		//Position
 		let s = this.ship.designState.getObjectState(object);
 		let x = s.xCentre;
 		let y = s.yCentre;
 		let z = s.zBase;
-		
+
 		//Scale
 		let d = bo.boxDimensions;
-		
+
 		if (bo.file3D) {
 			let self = this;
 			this.stlLoader.load(
@@ -236,7 +263,7 @@ Object.assign(Ship3D.prototype, {
 					geometry.computeBoundingBox();
 					let b = geometry.boundingBox;
 					geometry.translate(-b.min.x, -b.min.y, -b.min.z);
-					geometry.scale(1/(b.max.x-b.min.x), 
+					geometry.scale(1/(b.max.x-b.min.x),
 								1/(b.max.y-b.min.y),
 								1/(b.max.z-b.min.z));
 					//Align with the same coordinate system as placeholder blocks:
@@ -294,7 +321,7 @@ function HullSideGeometry(stations, waterlines, table) {
 	//Hull side, in principle Y offsets on an XZ plane:
 	//Even though a plane geometry is usually defined in terms of Z offsets on an XY plane, the order of the coordinates for each vertex is not so important. What is important is to get the topology right. This is ensured by working with the right order of the vertices.
 	THREE.PlaneBufferGeometry.call(this, undefined, undefined, this.N-1,this.M-1);
-	
+
 	this.update();
 }
 
@@ -306,7 +333,7 @@ Object.assign(HullSideGeometry.prototype, {
 
 		const N = this.N;
 		const M = this.M;
-		
+
 		//loop1:
 		//zs
 		let c = 0;
@@ -328,7 +355,7 @@ Object.assign(HullSideGeometry.prototype, {
 			}
 		}
 		//console.error("c-pa.length = %d", c-pa.length); //OK, sets all cells
-			
+
 		//Get rid of nulls by merging their points with the closest non-null point in the same station:
 		/*I am joining some uvs too. Then an applied texture will be cropped, not distorted, where the hull is cropped.*/
 		let uv = this.getAttribute("uv");
@@ -350,11 +377,11 @@ Object.assign(HullSideGeometry.prototype, {
 					//copy vector for i,j to positions for all null cells below:
 					let c = firstNumberJ*N+i;
 					let x = pa[3*c];
-					let y = pa[3*c+1];					
+					let y = pa[3*c+1];
 					let z = pa[3*c+2];
 					let d = c;
 					while (firstNumberJ > 0) {
-						firstNumberJ--;			
+						firstNumberJ--;
 						d -= N;
 						pa[3*d] = x;
 						pa[3*d+1] = y;
@@ -366,7 +393,7 @@ Object.assign(HullSideGeometry.prototype, {
 				}
 				//console.log("null encountered.");
 			}
-			
+
 			//Continue up the hull (with same j counter), searching for upper number. This does not account for the existence of numbers above the first null encountered.
 			for (; j < M; j++) {
 				let y = this.table[j][i];
@@ -377,11 +404,11 @@ Object.assign(HullSideGeometry.prototype, {
 				//else not null:
 				lastNumberJ = j;
 			}
-			
+
 			//copy vector for i,j to positions for all null cells above:
 			let c = lastNumberJ*N+i;
 			let x = pa[3*c];
-			let y = pa[3*c+1];			
+			let y = pa[3*c+1];
 			let z = pa[3*c+2];
 			let d = c;
 			while (lastNumberJ < M-1) {
@@ -395,24 +422,24 @@ Object.assign(HullSideGeometry.prototype, {
 			}
 			//////////
 		}
-		
+
 		//console.log(pa);
-		
+
 		pos.needsUpdate = true;
 		uv.needsUpdate = true;
-		this.computeVertexNormals();	
-	}	
+		this.computeVertexNormals();
+	}
 });
 
 function Hull3D(hull, design_draft) {
 	THREE.Group.call(this);
-	
+
 	this.hull = hull;
 	this.design_draft = design_draft!==undefined ? design_draft : 0.5*hull.attributes.Depth;
 	this.upperColor = typeof hull.style.upperColor !== "undefined" ? hull.style.upperColor :  0x33aa33;
 	this.lowerColor = typeof hull.style.lowerColor !== "undefined" ? hull.style.lowerColor : 0xaa3333;
 	this.opacity = typeof hull.style.opacity !== "undefined" ? hull.style.opacity : 0.5;
-	
+
 	this.update();
 }
 Hull3D.prototype = Object.create(THREE.Group.prototype);
@@ -426,7 +453,7 @@ Object.assign(Hull3D.prototype, {
 		for (let i = 0; i < hb.waterlines.length; i++) {
 			hb.table[i].splice(index, 0, 0);
 		}
-		
+
 		this.update();
 	},
 	//Experimental addition
@@ -435,7 +462,7 @@ Object.assign(Hull3D.prototype, {
 		const {index, mu} = Vessel.f.bisectionSearch(hb.waterlines, p);
 		hb.waterlines.splice(index, 0, p);
 		hb.table.splice(index, 0, new Array(hb.stations.length).fill(0));
-		
+
 		this.update();
 	},
 	//or updateGeometries?
@@ -445,22 +472,22 @@ Object.assign(Hull3D.prototype, {
 		const lowerColor = this.lowerColor;
 		const design_draft = this.design_draft;
 		const opacity = this.opacity;
-		
+
 		let LOA = hull.attributes.LOA;
 		let BOA = hull.attributes.BOA;
 		let Depth = hull.attributes.Depth;
-		
+
 		//None of these are changed during correction of the geometry.
 		let stations = hull.halfBreadths.stations;
 		let waterlines = hull.halfBreadths.waterlines;
 		let table = hull.halfBreadths.table;
-				
+
 		if (this.hGeom) this.hGeom.dispose();
 		this.hGeom = new HullSideGeometry(stations, waterlines, table);
-		
+
 		let N = stations.length;
 		let M = waterlines.length;
-		
+
 		//Bow cap:
 		let bowPlaneOffsets = hull.getStation(LOA).map(str=>str/(0.5*BOA)); //normalized
 		if (this.bowCapG) this.bowCapG.dispose();
@@ -477,7 +504,7 @@ Object.assign(Hull3D.prototype, {
 			pa[3*(2*j+1)+2] = waterlines[j];
 		}
 		pos.needsUpdate = true;
-		
+
 		//Aft cap:
 		let aftPlaneOffsets = hull.getStation(0).map(str=>str/(0.5*BOA)); //normalized
 		if (this.aftCapG) this.aftCapG.dispose();
@@ -494,7 +521,7 @@ Object.assign(Hull3D.prototype, {
 			pa[3*(2*j+1)+2] = waterlines[j];
 		}
 		pos.needsUpdate = true;
-		
+
 		//Bottom cap:
 		let bottomPlaneOffsets = hull.getWaterline(0).map(hw=>hw/(0.5*BOA)); //normalized
 		if (this.bottomCapG) this.bottomCapG.dispose();
@@ -511,7 +538,7 @@ Object.assign(Hull3D.prototype, {
 			pa[3*(N+i)+2] = 0;
 		}
 		pos.needsUpdate = true;
-		
+
 		//Hull material
 		if (!this.hMat) {
 			let phong = THREE.ShaderLib.phong;
@@ -520,7 +547,7 @@ Object.assign(Hull3D.prototype, {
 				uniforms: THREE.UniformsUtils.merge([phong.uniforms, {
 					wlThreshold: new THREE.Uniform(0.5),
 					aboveWL: new THREE.Uniform(new THREE.Color()),
-					belowWL:  new THREE.Uniform(new THREE.Color())	
+					belowWL:  new THREE.Uniform(new THREE.Color())
 				}]),
 				vertexShader: commonDecl+phong.vertexShader.replace("main() {", "main() {\nvZ = position.z;").replace("#define PHONG", ""),
 				fragmentShader: commonDecl+phong.fragmentShader.replace("vec4 diffuseColor = vec4( diffuse, opacity );",
@@ -534,14 +561,14 @@ Object.assign(Hull3D.prototype, {
 		this.hMat.uniforms.aboveWL.value = new THREE.Color(upperColor);
 		this.hMat.uniforms.belowWL.value = new THREE.Color(lowerColor);
 		this.hMat.uniforms.opacity.value = opacity;
-		
+
 		if (this.port) this.remove(this.port);
 		this.port = new THREE.Mesh(this.hGeom, this.hMat);
 		if (this.starboard) this.remove(this.starboard);
 		this.starboard = new THREE.Mesh(this.hGeom, this.hMat);
 		this.starboard.scale.y = -1;
 		this.add(this.port, this.starboard);
-		
+
 		//Caps:
 		if (this.bowCap) this.remove(this.bowCap);
 		this.bowCap = new THREE.Mesh(this.bowCapG, this.hMat)
@@ -549,9 +576,9 @@ Object.assign(Hull3D.prototype, {
 		this.aftCap = new THREE.Mesh(this.aftCapG, this.hMat)
 		if (this.bottomCap) this.remove(this.bottomCap);
 		this.bottomCap = new THREE.Mesh(this.bottomCapG, this.hMat)
-		
+
 		this.add(this.bowCap, this.aftCap, this.bottomCap);
-		
+
 		this.scale.set(LOA,0.5*BOA,Depth);
 	}
 });
