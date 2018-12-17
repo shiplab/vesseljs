@@ -8,8 +8,8 @@ The position.xy and rotation.z of the Ship3D object plae the ship in the 3D worl
 position.z is the (negative) draft.
 fluctCont is a "fluctuations container" to be used for dynamically
 changing motions like heave, pitch, roll.
-cmContainer centers the motion on the metacenter.
-normalizer nulls out the metacenter height before the draft is applied.
+cmContainer centers the motion on the center of gravity.
+normalizer nulls out the center of gravity height before the draft is applied.
 
 
 THREE.js Object3D constructed from Vessel.js Ship object.
@@ -84,8 +84,8 @@ function Ship3D(ship, {shipState, stlPath, deckOpacity=0.2, objectOpacity=0.5}) 
 	//console.log("LOA:%.1f, BOA:%.1f, Depth:%.1f",LOA,BOA,Depth);
 	let {w: {cg,mass}, T, GMt, GMl} = ship.calculateStability(this.shipState);
 	
-	this.cmContainer.position.set(-cg.x, -cg.y, -cg.z-GMt);
-	this.normalizer.position.z = cg.z+GMt;
+	this.cmContainer.position.set(-cg.x, -cg.y, -cg.z);
+	this.normalizer.position.z = cg.z;
 	this.position.z = -T;
 	
 	let designDraft = ship.designState.calculationParameters.Draft_design;

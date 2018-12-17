@@ -121,7 +121,7 @@ var wavMo, states;
 		states.push(ship.designState.clone());
 		let noShips = states.length-1;
 		wavMo.push(new Vessel.WaveMotion(ship, states[noShips], wavCre));
-		wavMo[noShips].output.push("rollMovement");
+		wavMo[noShips].output.push("rollAmp");
 		updateMotion();
 
 		let ship3D = new Ship3D(ship, {
@@ -172,7 +172,7 @@ var wavMo, states;
 				ship3D.pitch = -ship3D.pitch;
 			}
 
-			let rollMag = states[noShips].shipCache.state.rollMovement*Math.cos(omega*t-ocean.waves["0"].phi-k*projMag);
+			let rollMag = states[noShips].shipCache.state.rollAmp*Math.cos(omega*t-ocean.waves["0"].phi-k*projMag);
 			if (wavCre.waveDef.heading > states[noShips].shipCache.state.heading) {
 				if (Math.abs(states[noShips].shipCache.state.heading - wavCre.waveDef.heading) < 180) {
 					ship3D.roll = -rollMag;
