@@ -29,7 +29,6 @@ function WaveForce(rho, t, a_33) {
   if (a) {
     B_33 = b_33*Length;
     B_55 = b_33*Math.pow(Length,3)/12;
-    console.log("Entering here!");
   } else {
     B_33 = rho*Length*Breadth*userParameters.C_D;
     B_55 = userParameters.B_55;
@@ -63,7 +62,6 @@ function WaveForce(rho, t, a_33) {
   var b_44 = rho*Draft*Math.pow(Breadth,3)*Math.pow(2*g/Breadth,0.5)*ra*Math.exp(rb*Math.pow(omega,-1.3))*Math.pow(omega,rd);
   if (a) {
     B_44 = b_44*Length*100000;
-    console.log("Entering also here!");
   } else {
     B_44 = userParameters.B_44;
   }

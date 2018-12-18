@@ -6,7 +6,7 @@ RugenKuttaSolver = function (t,y) {
   for(i = 0;i < 3;i++){
       for(f = 0;f < 3;f++){
           J11[i][f] = J1[i][f];
-          J11[3+i][3+f] = J1[i][f];
+          J11[3+i][3+f] = J2[i][f];
       }
   }
 
@@ -20,7 +20,7 @@ RugenKuttaSolver = function (t,y) {
       dy[f] = w_velocities[f];
   }
 
-  var linear_Solve = numeric.solve(AA,numeric.add(numeric.dot(numeric.transpose(J11),waveForce),numeric.neg(numeric.dot(Coriolis(AA,y.slice(6,12)),y.slice(6,12))),numeric.neg(numeric.dot(BB,y.slice(6,12))),numeric.neg(numeric.dot(numeric.dot(numeric.transpose(J11),CC),y.slice(0,6))),numeric.neg(numeric.dot(numeric.transpose(J11),gforce))));
+  var linear_Solve = numeric.solve(AA,numeric.add(numeric.dot(numeric.transpose(J11),waveForce),numeric.neg(numeric.dot(Coriolis(MM, ADD_mass,y.slice(6,12)),y.slice(6,12))),numeric.neg(numeric.dot(BB,y.slice(6,12))),numeric.neg(numeric.dot(numeric.dot(numeric.transpose(J11),CC),y.slice(0,6))),numeric.neg(numeric.dot(numeric.transpose(J11),gforce))));
 
   for(f = 6;f < 12;f++){
       dy[f] = linear_Solve[f-6];

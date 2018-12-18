@@ -87,10 +87,9 @@ function DinamicalMovement(ship, states, userParameters, Ini, dt, t){
         var I_55 = Math.pow((0.28*Length),2)*m;   // Pitching Moment of Inertia     (kgm2) //(1/12)*m*(Math.pow(L,2)+Math.pow(D,2));
         var I_66 = Math.pow((0.28*Length),2)*m;   // Yawing Moment of Inertia       (kgm2) //(1/12)*m*(Math.pow(B,2)+Math.pow(L,2));
         var M_vessel = [[m,0,0,0,m*(KG-(Depth/2)),0],[0,m,0,-m*(KG-(Depth/2)),0,0],[0,0,m,0,0,0],[0,-m*(KG-(Depth/2)),0,I_44,0,0],[m*(KG-(Depth/2)),0,0,0,I_55,0],[0,0,0,0,0,I_66]]; // Vessel's inertia tensor
-        var MM = numeric.add(M_vessel,LL);                 //Rigid body inertia tensor w.r.t vessel origin, excluding added mass.
+        MM = numeric.add(M_vessel,LL);                 //Rigid body inertia tensor w.r.t vessel origin, excluding added mass.
         m_system = MM[0][0];                           //System's total mass
         RG_system = [MM[5][1]/m,MM[3][2]/m,MM[4][0]/m]; // System's centre of gravity
-        // console.log(RG_system);
 
         // Initial Stability
         var Delta = m*g;                // Vessel Displacement                   (N)
@@ -116,7 +115,7 @@ function DinamicalMovement(ship, states, userParameters, Ini, dt, t){
         var ADD_33 = a_33*Length;
         var ADD_44 = 0.15*I_44; // Equation 6.61a
         var ADD_55 = a_33*Math.pow(Length,3)/12;
-        var ADD_mass = [[0,0,0,0,0,0],[0,0,0,0,0,0],[0,0,ADD_33,0,0,0],[0,0,0,ADD_44,0,0],[0,0,0,0,ADD_55,0],[0,0,0,0,0,0]];           // Vessel's added mass
+        ADD_mass = [[0,0,0,0,0,0],[0,0,0,0,0,0],[0,0,ADD_33,0,0,0],[0,0,0,ADD_44,0,0],[0,0,0,0,ADD_55,0],[0,0,0,0,0,0]];           // Vessel's added mass
         AA = numeric.add(MM,ADD_mass);                 // System's total inertia tensor
 
         // Inserting the critical damping in roll (6.66) considering sigma = 10
@@ -142,7 +141,7 @@ function DinamicalMovement(ship, states, userParameters, Ini, dt, t){
 
 
         sol = numeric.dopri(0, dt, y, RugenKuttaSolver, 1e-8,10000).at(dt);
-        // console.log('Time: %.2f; Heave: %.2f; Roll: %.2f; Pitch: %.2f',C_44, sol[2] - ship3D.position.z, sol[3], sol[4]);
+        // console.log('Time: %.2f; Heave: %.2f; Roll: %.2f; Pitch: %.2f',t, sol[2] - ship3D.position.z, sol[3], sol[4]);
 
         // Equalizing the solution
         ship3D.surge = sol[0];
