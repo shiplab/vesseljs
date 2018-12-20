@@ -50,34 +50,10 @@ Object.assign(StateModule.prototype, {
 		}
 		this.states.discrete[stateName].thisStateVer++;
 	},
-	// write mass related states to vesselStates
-	setMass: function() {
-		//this.states.shipCache.state.weight = {};
-		let massCalc = this.ship.getWeight(this.states);
-		//Object.assign(this.states.shipCache.state.weight, massCalc);
-		this.states.shipCache.state.mass = massCalc.mass;
-		this.states.shipCache.state.cg = massCalc.cg;
-		this.states.shipCache.thisStateVer++;
-
-		if (this.states.discrete.Weight === undefined) {
-			this.states.discrete.Weight = {
-				state: {},
-				thisStateVer: 0
-			};
-		}
-		this.states.discrete.Weight.state.mass = massCalc.mass;
-		this.states.discrete.Weight.state.cg = massCalc.cg;
-		this.states.discrete.Weight.thisStateVer++;
-	},
-	// write draft related states to vesselStates
 	setDraft: function() {
-		//this.states.shipCache.state.hydStab = {};
 		let draft = this.ship.calculateDraft(this.states);
-		// as of v0.13-alpha, Vessel.js does not yet support trim calculations, so draft is taken as the same for vessel fore and aft
 		Object.assign(this.states.shipCache.state, this.ship.structure.hull.calculateAttributesAtDraft(draft));
 		Object.assign(this.states.shipCache.state, this.ship.calculateStability(this.states));
-		this.states.shipCache.state.Tfore = this.states.shipCache.state.T;
-		this.states.shipCache.state.Taft = this.states.shipCache.state.T;
 		this.states.shipCache.thisStateVer++;
 
 		if (this.states.discrete.FloatingCondition === undefined) {
@@ -88,8 +64,6 @@ Object.assign(StateModule.prototype, {
 		}
 		Object.assign(this.states.discrete.FloatingCondition.state, this.ship.structure.hull.calculateAttributesAtDraft(draft));
 		Object.assign(this.states.discrete.FloatingCondition.state, this.ship.calculateStability(this.states));
-		this.states.discrete.FloatingCondition.state.Tfore = this.states.shipCache.state.T;
-		this.states.discrete.FloatingCondition.state.Taft = this.states.shipCache.state.T;
 		this.states.discrete.FloatingCondition.thisStateVer++;
 	},
 	// write argument speed to vessel state. If undefined, use vessel's design speed
@@ -164,7 +138,7 @@ Object.assign(StateModule.prototype, {
 					return cache.value; */
 				}
 				// if it has only a ship module
-				if (this.cache[cacheName] !== undefined) {
+				if (this.cache[cacheName] === undefined) {
 					this.cache[cacheName] = {
 						shipStateVersion: 0
 					};

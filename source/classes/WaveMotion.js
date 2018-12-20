@@ -2,9 +2,6 @@
 
 function WaveMotion(ship, states, wavCre, position = 0, critDampPercentage = 20, g = 9.81, rho = 1025) {
 	StateModule.call(this, ship, states);
-	if (this.shipState.mass === undefined) {
-		this.setMass();
-	}
 	if (this.shipState.T === undefined) {
 		this.setDraft();
 	}
@@ -44,11 +41,11 @@ Object.defineProperties(WaveMotion.prototype, {
 		var alpha = 1-Froude_N*Math.sqrt(wave_number*this.shipState.LWL)*Math.cos(betha);
 		var encounter_frequency = this.wavCre.waveDef.waveFreq * alpha;
 
-		return {betha: betha, Froude_N: Froude_N, wave_number: wave_number, eff_wave_number: eff_wave_number, smith_factor: smith_factor, alpha: alpha, encounter_frequency: encounter_frequency};
+		return {betha, Froude_N, wave_number, eff_wave_number, smith_factor, alpha, encounter_frequency};
 	}, "coefficients"),
 	verticalMotion: StateModule.prototype.memoized(function() {
 		var Breadth = this.shipState.BWL*this.shipState.Cb;
-		var cgDistance = this.position/100 * this.ship.structure.hull.attributes.LOA - this.shipState.cg.x;
+		var cgDistance = this.position/100 * this.ship.structure.hull.attributes.LOA - this.states.discrete.FloatingCondition.state.w.cg.x;
 		var sectional_hydro_damping = 2*Math.sin(0.5*this.coefficients.wave_number*Breadth*Math.pow(this.coefficients.alpha,2))*Math.exp(-this.coefficients.wave_number*
 			this.shipState.T*Math.pow(this.coefficients.alpha,2));
 
@@ -69,13 +66,13 @@ Object.defineProperties(WaveMotion.prototype, {
 		var Pitch_Movement = Math.abs(FRF_Pitch * cgDistance);
 		var Pitch_Acceleration = Math.pow(this.coefficients.encounter_frequency,2)*Pitch_Movement;
 
-		var Heave_Movement = Math.abs(FRF_Heave);
+		var Heave_Amplitude = Math.abs(FRF_Heave);
 		var Heave_Acceleration = Math.pow(this.coefficients.encounter_frequency,2)*Math.abs(FRF_Heave);
 
-		var Vertical_Movement = Math.sqrt(Math.pow(Heave_Movement,2) + Math.pow(Pitch_Movement,2));
+		var Vertical_Movement = Math.sqrt(Math.pow(Heave_Amplitude,2) + Math.pow(Pitch_Movement,2));
 		var Vertical_Acceleration = Math.pow(this.coefficients.encounter_frequency,2)*Vertical_Movement;
 
-		return {pitchAmp: FRF_Pitch, pitchMov: Pitch_Movement, pitchAcc: Pitch_Acceleration, heaveMov: Heave_Movement, heaveAcc: Heave_Acceleration, 
+		return {pitchAmp: FRF_Pitch, pitchMov: Pitch_Movement, pitchAcc: Pitch_Acceleration, heaveAmp: Heave_Amplitude, heaveAcc: Heave_Acceleration, 
 			verticalMov: Vertical_Movement, verticalAcc: Vertical_Acceleration};
 	}, "verticalMotion"),
 	bendingMoment: StateModule.prototype.memoized(function() {
@@ -87,7 +84,7 @@ Object.defineProperties(WaveMotion.prototype, {
 			(1-Math.cos(this.coefficients.eff_wave_number*this.shipState.LWL/2)-(this.coefficients.eff_wave_number*this.shipState.LWL/4)*Math.sin(this.coefficients.eff_wave_number*this.shipState.LWL/2))*
 			F_v*F_Cb*Math.pow(Math.abs(Math.cos(this.coefficients.betha)),1/3))*this.rho*this.g*this.shipState.BWL*Math.pow(this.shipState.LWL,2)/1000000;
 	}, "bendingMoment"),
-	rollMovement: StateModule.prototype.memoized(function() {
+	rollAmp: StateModule.prototype.memoized(function() {
 		// estimate natural roll period
 		var naturalPeriod = (2 * this.shipState.BWL * Math.PI * (0.35 + 0.45)/2)/Math.pow(this.g * this.shipState.GMt, 0.5);
 
@@ -155,5 +152,5 @@ Object.defineProperties(WaveMotion.prototype, {
 		C = Math.pow(this.coefficients.encounter_frequency*roll_hydro_damping, 2);
 
 		return this.wavCre.waveDef.waveAmplitude*excitation_frequency/(Math.sqrt(A*B+C));
-	}, "rollMovement")
+	}, "rollAmp")
 });
