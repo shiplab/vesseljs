@@ -92,7 +92,7 @@ Object.assign(StateModule.prototype, {
 		if (typeof angle === "undefined") {
 			angle = 0;
 		}
-		this.states.shipCache.state.heading = angle; // knots
+		this.states.shipCache.state.heading = angle;
 		this.states.shipCache.thisStateVer++;
 
 		if (this.states.discrete.Heading === undefined) {
@@ -104,7 +104,7 @@ Object.assign(StateModule.prototype, {
 		if (typeof angle === "undefined") {
 			angle = 0;
 		}
-		this.states.discrete.Heading.state.heading = angle; // knots
+		this.states.discrete.Heading.state.heading = angle;
 		this.states.discrete.Heading.thisStateVer++;
 	},
 	// cache memoization pattern adapted from http://b-studios.de/blog/2013/11/18/lazy-attributes-in-ecmascript-5/

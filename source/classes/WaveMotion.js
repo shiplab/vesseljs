@@ -9,7 +9,6 @@ function WaveMotion(ship, states, wavCre, position = 0, critDampPercentage = 20,
 		this.setSpeed(); // use its design speed
 	}
 	if (this.shipState.heading === undefined) {
-		this.shipState.heading = 0;
 		this.setHeading();
 	}
 	this.wavCre = wavCre;

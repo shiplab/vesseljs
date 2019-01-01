@@ -1,0 +1,114 @@
+function Positioning(ship, states, path) {
+	this.ship = ship;
+	this.states = states;
+	this.shipState = states.shipCache.state;
+
+	this.routeData = {};
+	this.routeData.pathVec = [];
+	this.routeData.unitPath = [];
+	this.routeData.heading = [];
+	this.routeData.totalDist = 0;
+	this.routeData.legDistance = [];
+	for (var leg = 0; leg < path.length-1; leg++) {
+		this.routeData.pathVec[leg] = path[leg+1].map((num, idx)  => num - path[leg][idx]);
+		this.routeData.legDistance[leg] = Math.sqrt(this.routeData.pathVec[leg].map((num) => Math.pow(num,2)).reduce((num1, num2) => num1 + num2));
+		this.routeData.unitPath[leg] = this.routeData.pathVec[leg].map((num) => num/this.routeData.legDistance[leg]);
+
+		// get heading in relation to North/y axis
+		var heading = Math.acos(this.routeData.pathVec[leg][1]/this.routeData.legDistance[leg]);
+		heading *= 180/Math.PI; // convert to degrees
+
+		if (this.routeData.pathVec[leg][0] < 0) {
+			heading = 360 - heading;
+		}
+		this.routeData.heading[leg] = heading;
+
+		this.routeData.totalDist += this.routeData.legDistance[leg];
+	}
+
+	// initialize vessel on path
+	this.shipState.position = path[0];
+	this.shipState.travelLegDist = 0;
+	this.shipState.travelDist = 0;
+
+	this.states.continuous.Positioning = {};
+	this.states.continuous.Positioning.position = path[0];
+	this.states.continuous.Positioning.travelLegDist = 0;
+	this.states.continuous.Positioning.travelDist = 0;
+
+	this.shipState.leg = 0;
+
+	this.states.discrete.Leg = {
+		state: {
+			leg: 0
+		},
+		thisStateVer: 1
+	};
+
+	if (this.shipState.speed === undefined) { // if vessel does not have a speed state
+		StateModule.prototype.setSpeed.call(this); // use its design speed
+	}
+	if (this.shipState.heading === undefined) {
+		StateModule.prototype.setHeading.call(this, this.routeData.heading[0]);
+	}
+
+	this.advanceShip = function(timeStep) { // calculate advanced distance during one time step
+		var remVec, remDist;
+		var advDist = timeStep*1/3600*this.states.discrete.Speed.state.speed;
+
+		while (0 < advDist) {
+			remVec = path[this.states.discrete.Leg.state.leg + 1].map((num, idx)  => num - this.states.continuous.Positioning.position[idx]);
+			remDist = Math.sqrt(remVec.map((num) => Math.pow(num,2)).reduce((num1, num2) => num1 + num2));
+			if (advDist <= remDist) {
+				this.shipState.position = this.shipState.position.map((num, idx) => num + advDist*this.routeData.unitPath[this.shipState.leg][idx]);
+
+				this.states.continuous.Positioning.position = this.states.continuous.Positioning.position.map((num, idx) => num + advDist*this.routeData.unitPath[this.states.discrete.Leg.state.leg][idx]);
+
+				// add to traveled distance
+				this.shipState.travelLegDist = this.shipState.travelLegDist + advDist;
+				this.shipState.travelDist = this.shipState.travelDist + advDist;
+
+				this.states.continuous.Positioning.travelLegDist = this.states.continuous.Positioning.travelLegDist + advDist;
+				this.states.continuous.Positioning.travelDist = this.states.continuous.Positioning.travelDist + advDist;
+
+				advDist = 0;
+			} else if (path[this.states.discrete.Leg.state.leg + 2] !== undefined) { // trip has another leg
+				// change direction and continue sailing
+				advDist -= remDist;
+				this.shipState.position = path[this.shipState.leg+1];
+
+				this.states.continuous.Positioning.position = path[this.states.discrete.Leg.state.leg + 1];
+
+				// add to traveled distance
+				this.shipState.travelLegDist = 0;
+				this.shipState.travelDist = this.shipState.travelDist + remDist;
+
+				this.states.continuous.Positioning.travelLegDist = 0;
+				this.states.continuous.Positioning.travelDist = this.states.continuous.Positioning.travelDist + remDist;
+
+				this.shipState.leg++;
+				this.states.shipCache.thisStateVer++;
+
+				this.states.discrete.Leg.state.leg++;
+				this.states.discrete.Leg.thisStateVer++;
+
+				StateModule.prototype.setHeading.call(this, this.routeData.heading[this.shipState.leg]);
+				console.log("Vessel reached pivot point in navigation and entered leg " + this.shipState.leg + ".");
+			} else {
+				this.shipState.position = this.shipState.position.map((num, idx) => num + advDist*this.routeData.unitPath[this.shipState.leg][idx]);
+
+				this.states.continuous.Positioning.position = this.states.continuous.Positioning.position.map((num, idx) => num + advDist*this.routeData.unitPath[this.states.discrete.Leg.state.leg][idx]);
+
+				// add to traveled distance
+				this.shipState.travelLegDist = this.shipState.travelLegDist + advDist;
+				this.shipState.travelDist = this.shipState.travelDist + advDist;
+
+				this.states.continuous.Positioning.travelLegDist = this.states.continuous.Positioning.travelLegDist + advDist;
+				this.states.continuous.Positioning.travelDist = this.states.continuous.Positioning.travelDist + advDist;
+
+				console.log("Vessel reached final destination.");
+				break;
+			}
+		}
+	};
+}

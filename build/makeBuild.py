@@ -2,7 +2,7 @@
 
 from datetime import datetime
 
-classes = ["JSONSpecObject.js", "Ship.js", "Structure.js", "Hull.js", "BaseObject.js", "DerivedObject.js", "ShipState.js", "StateModule.js", "WaveCreator.js", "WaveMotion.js"]
+classes = ["JSONSpecObject.js", "Ship.js", "Structure.js", "Hull.js", "BaseObject.js", "DerivedObject.js", "ShipState.js", "StateModule.js", "WaveCreator.js", "WaveMotion.js", "Positioning.js"]
 fileIO = ["browseShip.js", "loadShip.js", "downloadShip.js"]
 math = ["Vectors.js", "interpolation.js", "areaCalculations.js", "volumeCalculations.js", "parametricWeightParsons.js", "combineWeights.js"]
 filepaths = list(map((lambda filename: "../source/math/"+filename), math)) \
@@ -44,6 +44,7 @@ Object.assign(Vessel, {
 	StateModule: StateModule,
 	WaveCreator: WaveCreator,
 	WaveMotion: WaveMotion,
+	Positioning: Positioning,
 	browseShip: browseShip,
 	loadShip: loadShip,
 	downloadShip: downloadShip,
