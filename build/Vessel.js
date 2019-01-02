@@ -1,4 +1,4 @@
-//Vessel.js library, built 2019-01-01 13:20:17.190369
+//Vessel.js library, built 2019-01-01 23:11:10.413897
 /*
 Import like this in HTML:
 <script src="Vessel.js"></script>
@@ -2012,15 +2012,18 @@ function WaveCreator(defList, waveDuration = 3600) { // wave creator constructor
 
 function WaveMotion(ship, states, wavCre, position = 0, critDampPercentage = 20, g = 9.81, rho = 1025) {
 	StateModule.call(this, ship, states);
-	if (this.shipState.T === undefined) {
+	if (typeof this.states.discrete.FloatingCondition === "undefined") {
 		this.setDraft();
 	}
-	if (this.shipState.speed === undefined) { // if vessel does not have a speed state
+	if (typeof this.states.discrete.Speed === "undefined") { // if vessel does not have a speed state
 		this.setSpeed(); // use its design speed
 	}
-	if (this.shipState.heading === undefined) {
+	if (typeof this.states.discrete.Heading === "undefined") {
 		this.setHeading();
 	}
+	this.floatState = this.states.discrete.FloatingCondition.state;
+	this.speedState = this.states.discrete.Speed.state;
+	this.headingState = this.states.discrete.Heading.state;
 	this.wavCre = wavCre;
 	this.position = position; // measured position in % of LOA
 	this.g = g;
@@ -2039,37 +2042,37 @@ Object.assign(WaveMotion.prototype, {
 
 Object.defineProperties(WaveMotion.prototype, {
 	coefficients: StateModule.prototype.memoized(function() {
-		var bethaDeg = Math.abs(this.wavCre.waveDef.heading - this.shipState.heading);
+		var bethaDeg = Math.abs(this.wavCre.waveDef.heading - this.headingState.heading);
 		var betha = bethaDeg * Math.PI/180;
-		var speedSI = 0.514444*this.shipState.speed;
-		var Froude_N = speedSI/Math.sqrt(this.g * this.shipState.LWL);
+		var speedSI = 0.514444 * this.speedState.speed;
+		var Froude_N = speedSI/Math.sqrt(this.g * this.floatState.LWL);
 		//var wave_period = 2*Math.PI/this.wavCre.waveDef.waveFreq;
 		var wave_number = Math.pow(this.wavCre.waveDef.waveFreq,2)/this.g;
 		var eff_wave_number = Math.abs(wave_number*Math.cos(betha));
-		var smith_factor = Math.exp(-wave_number*this.shipState.T);
-		var alpha = 1-Froude_N*Math.sqrt(wave_number*this.shipState.LWL)*Math.cos(betha);
+		var smith_factor = Math.exp(-wave_number*this.floatState.T);
+		var alpha = 1-Froude_N*Math.sqrt(wave_number*this.floatState.LWL)*Math.cos(betha);
 		var encounter_frequency = this.wavCre.waveDef.waveFreq * alpha;
 
 		return {betha, Froude_N, wave_number, eff_wave_number, smith_factor, alpha, encounter_frequency};
 	}, "coefficients"),
 	verticalMotion: StateModule.prototype.memoized(function() {
-		var Breadth = this.shipState.BWL*this.shipState.Cb;
+		var Breadth = this.floatState.BWL*this.floatState.Cb;
 		var cgDistance = this.position/100 * this.ship.structure.hull.attributes.LOA - this.states.discrete.FloatingCondition.state.w.cg.x;
 		var sectional_hydro_damping = 2*Math.sin(0.5*this.coefficients.wave_number*Breadth*Math.pow(this.coefficients.alpha,2))*Math.exp(-this.coefficients.wave_number*
-			this.shipState.T*Math.pow(this.coefficients.alpha,2));
+			this.floatState.T*Math.pow(this.coefficients.alpha,2));
 
 		var a, b;
-		a = Math.pow(1-this.coefficients.wave_number*this.shipState.T,2);
+		a = Math.pow(1-this.coefficients.wave_number*this.floatState.T,2);
 		b = Math.pow((Math.pow(sectional_hydro_damping,2)/(this.coefficients.wave_number*Breadth*Math.pow(this.coefficients.alpha,3))),2);
 		var f = Math.sqrt(a+b);
-		var eta = 1/(Math.sqrt(Math.pow((1-2*this.coefficients.wave_number*this.shipState.T*Math.pow(this.coefficients.alpha,2)),2) + Math.pow(Math.pow(sectional_hydro_damping,2)/
+		var eta = 1/(Math.sqrt(Math.pow((1-2*this.coefficients.wave_number*this.floatState.T*Math.pow(this.coefficients.alpha,2)),2) + Math.pow(Math.pow(sectional_hydro_damping,2)/
 			(this.coefficients.wave_number*Breadth*Math.pow(this.coefficients.alpha,2)),2)));
 
-		var F = this.coefficients.smith_factor*f*(2/(this.coefficients.eff_wave_number*this.shipState.LWL))*Math.sin(this.coefficients.eff_wave_number*this.shipState.LWL/2);
+		var F = this.coefficients.smith_factor*f*(2/(this.coefficients.eff_wave_number*this.floatState.LWL))*Math.sin(this.coefficients.eff_wave_number*this.floatState.LWL/2);
 		var FRF_Heave = this.wavCre.waveDef.waveAmplitude*eta*F;
 
-		var G = this.coefficients.smith_factor*f*(24/(Math.pow(this.coefficients.eff_wave_number*this.shipState.LWL,2)*this.shipState.LWL))*(Math.sin(this.coefficients.eff_wave_number*
-			this.shipState.LWL/2)-(this.coefficients.eff_wave_number*this.shipState.LWL/2)*Math.cos(this.coefficients.eff_wave_number*this.shipState.LWL/2));
+		var G = this.coefficients.smith_factor*f*(24/(Math.pow(this.coefficients.eff_wave_number*this.floatState.LWL,2)*this.floatState.LWL))*(Math.sin(this.coefficients.eff_wave_number*
+			this.floatState.LWL/2)-(this.coefficients.eff_wave_number*this.floatState.LWL/2)*Math.cos(this.coefficients.eff_wave_number*this.floatState.LWL/2));
 		var FRF_Pitch =  this.wavCre.waveDef.waveAmplitude*eta*G;
 
 		var Pitch_Movement = Math.abs(FRF_Pitch * cgDistance);
@@ -2085,22 +2088,22 @@ Object.defineProperties(WaveMotion.prototype, {
 			verticalMov: Vertical_Movement, verticalAcc: Vertical_Acceleration};
 	}, "verticalMotion"),
 	bendingMoment: StateModule.prototype.memoized(function() {
-		var Cb_mom = Math.max(0.6,this.shipState.Cb);
+		var Cb_mom = Math.max(0.6,this.floatState.Cb);
 		var phi = 2.5*(1-Cb_mom);
 		var F_Cb = Math.pow(1-phi,2) + 0.6 * this.coefficients.alpha * (2-phi);
 		var F_v = 1 + 3 * Math.pow(this.coefficients.Froude_N,2);
-		return this.wavCre.waveDef.waveAmplitude*(this.coefficients.smith_factor*((1-this.coefficients.wave_number*this.shipState.T)/(Math.pow(this.shipState.LWL*this.coefficients.eff_wave_number,2)))*
-			(1-Math.cos(this.coefficients.eff_wave_number*this.shipState.LWL/2)-(this.coefficients.eff_wave_number*this.shipState.LWL/4)*Math.sin(this.coefficients.eff_wave_number*this.shipState.LWL/2))*
-			F_v*F_Cb*Math.pow(Math.abs(Math.cos(this.coefficients.betha)),1/3))*this.rho*this.g*this.shipState.BWL*Math.pow(this.shipState.LWL,2)/1000000;
+		return this.wavCre.waveDef.waveAmplitude*(this.coefficients.smith_factor*((1-this.coefficients.wave_number*this.floatState.T)/(Math.pow(this.floatState.LWL*this.coefficients.eff_wave_number,2)))*
+			(1-Math.cos(this.coefficients.eff_wave_number*this.floatState.LWL/2)-(this.coefficients.eff_wave_number*this.floatState.LWL/4)*Math.sin(this.coefficients.eff_wave_number*this.floatState.LWL/2))*
+			F_v*F_Cb*Math.pow(Math.abs(Math.cos(this.coefficients.betha)),1/3))*this.rho*this.g*this.floatState.BWL*Math.pow(this.floatState.LWL,2)/1000000;
 	}, "bendingMoment"),
 	rollAmp: StateModule.prototype.memoized(function() {
 		// estimate natural roll period
-		var naturalPeriod = (2 * this.shipState.BWL * Math.PI * (0.35 + 0.45)/2)/Math.pow(this.g * this.shipState.GMt, 0.5);
+		var naturalPeriod = (2 * this.floatState.BWL * Math.PI * (0.35 + 0.45)/2)/Math.pow(this.g * this.floatState.GMt, 0.5);
 
-		var breadth_ratio = (this.shipState.Cwp - this.delta)/(1 - this.delta);
-		var A_0 = this.shipState.Cb * this.shipState.BWL * this.shipState.T/(this.delta + breadth_ratio*(1-this.delta));
+		var breadth_ratio = (this.floatState.Cwp - this.delta)/(1 - this.delta);
+		var A_0 = this.floatState.Cb * this.floatState.BWL * this.floatState.T/(this.delta + breadth_ratio*(1-this.delta));
 
-		var Breadth_draft_ratio0 = this.shipState.BWL/this.shipState.T;
+		var Breadth_draft_ratio0 = this.floatState.BWL/this.floatState.T;
 		var a0, b0, d0;
 		if ((3 <= Breadth_draft_ratio0) && (Breadth_draft_ratio0 <= 6)){
 			a0 = 0.256*Breadth_draft_ratio0 - 0.286;
@@ -2111,14 +2114,14 @@ Object.defineProperties(WaveMotion.prototype, {
 			b0 = -2.12*Breadth_draft_ratio0 - 1.89;
 			d0 = 1.16*Breadth_draft_ratio0 - 7.97;
 		} else {
-			console.error("The B/T relation is not being respected for the roll formula. It should be 1 <= B/T < 6, not" + " " + (this.shipState.BWL/this.shipState.T).toFixed(2) + ".");
+			console.error("The B/T relation is not being respected for the roll formula. It should be 1 <= B/T < 6, not" + " " + (this.floatState.BWL/this.floatState.T).toFixed(2) + ".");
 		}
-		var b_44_0 = this.rho*A_0*Math.pow(this.shipState.BWL,2)*a0*Math.exp(b0*Math.pow(this.coefficients.encounter_frequency,-1.3))*Math.pow(this.coefficients.encounter_frequency,d0)/
-		(Math.sqrt(this.shipState.BWL/(2*this.g)));
+		var b_44_0 = this.rho*A_0*Math.pow(this.floatState.BWL,2)*a0*Math.exp(b0*Math.pow(this.coefficients.encounter_frequency,-1.3))*Math.pow(this.coefficients.encounter_frequency,d0)/
+		(Math.sqrt(this.floatState.BWL/(2*this.g)));
 
 		var A_1 = breadth_ratio * A_0;
-		var B_1 = breadth_ratio * this.shipState.BWL;
-		var Breadth_draft_ratio1 = B_1/this.shipState.T;
+		var B_1 = breadth_ratio * this.floatState.BWL;
+		var Breadth_draft_ratio1 = B_1/this.floatState.T;
 		var a1, b1, d1;
 		if ((3 <= Breadth_draft_ratio1) && (Breadth_draft_ratio1 <= 6)){
 			a1 = 0.256*Breadth_draft_ratio1 - 0.286;
@@ -2134,9 +2137,9 @@ Object.defineProperties(WaveMotion.prototype, {
 		var b_44_1 = this.rho*A_1*Math.pow(B_1,2)*a1*Math.exp(b1*Math.pow(this.coefficients.encounter_frequency,-1.3))*Math.pow(this.coefficients.encounter_frequency,d1)/
 		(Math.sqrt(B_1/(2*this.g)));
 
-		var b_44 = this.shipState.LWL*b_44_0*(this.delta + b_44_1*(1-this.delta)/b_44_0);
+		var b_44 = this.floatState.LWL*b_44_0*(this.delta + b_44_1*(1-this.delta)/b_44_0);
 		var critical_damping_frac = this.critical_damping_percentage/100;
-		var restoring_moment_coeff = this.g*this.rho*this.shipState.Cb*this.shipState.LWL*this.shipState.BWL*this.shipState.T*this.shipState.GMt;
+		var restoring_moment_coeff = this.g*this.rho*this.floatState.Cb*this.floatState.LWL*this.floatState.BWL*this.floatState.T*this.floatState.GMt;
 		var add_damping = restoring_moment_coeff*naturalPeriod/Math.PI;
 
 		var damping_ratio = Math.sqrt(b_44_1/b_44_0);
@@ -2146,13 +2149,13 @@ Object.defineProperties(WaveMotion.prototype, {
 
 		if (this.wavCre.waveDef.heading == 90 || this.wavCre.waveDef.heading == 270) {
 			excitation_frequency = Math.sqrt(this.rho*Math.pow(this.g,2)*b_44_0/this.coefficients.encounter_frequency)*(this.delta+damping_ratio*
-				(1-this.delta))*this.shipState.LWL;
+				(1-this.delta))*this.floatState.LWL;
 		} else {
 			A = Math.abs(Math.sin(this.coefficients.betha))*Math.sqrt(this.rho*Math.pow(this.g, 2)/this.coefficients.encounter_frequency) * Math.sqrt(b_44_0)*2/this.coefficients.eff_wave_number;
-			B = Math.pow(Math.sin(0.5*this.delta*this.shipState.LWL*this.coefficients.eff_wave_number),2);
-			C = Math.pow(damping_ratio*Math.sin(0.5*(1-this.delta)*this.shipState.LWL*this.coefficients.eff_wave_number), 2);
-			D = 2*damping_ratio*Math.sin(0.5*this.delta*this.shipState.LWL*this.coefficients.eff_wave_number)*Math.sin(0.5*(1-this.delta)*
-				this.shipState.LWL*this.coefficients.eff_wave_number)*Math.cos(0.5*this.shipState.LWL*this.coefficients.eff_wave_number);
+			B = Math.pow(Math.sin(0.5*this.delta*this.floatState.LWL*this.coefficients.eff_wave_number),2);
+			C = Math.pow(damping_ratio*Math.sin(0.5*(1-this.delta)*this.floatState.LWL*this.coefficients.eff_wave_number), 2);
+			D = 2*damping_ratio*Math.sin(0.5*this.delta*this.floatState.LWL*this.coefficients.eff_wave_number)*Math.sin(0.5*(1-this.delta)*
+				this.floatState.LWL*this.coefficients.eff_wave_number)*Math.cos(0.5*this.floatState.LWL*this.coefficients.eff_wave_number);
 			excitation_frequency = A*Math.sqrt(B+C+D);
 		}
 
@@ -2200,6 +2203,7 @@ function Positioning(ship, states, path) {
 	this.states.continuous.Positioning.position = path[0];
 	this.states.continuous.Positioning.travelLegDist = 0;
 	this.states.continuous.Positioning.travelDist = 0;
+	this.positionState = this.states.continuous.Positioning;
 
 	this.shipState.leg = 0;
 
@@ -2209,11 +2213,12 @@ function Positioning(ship, states, path) {
 		},
 		thisStateVer: 1
 	};
+	this.legState = this.states.discrete.Leg.state;
 
-	if (this.shipState.speed === undefined) { // if vessel does not have a speed state
+	if (typeof this.states.discrete.Speed === "undefined") { // if vessel does not have a speed state
 		StateModule.prototype.setSpeed.call(this); // use its design speed
 	}
-	if (this.shipState.heading === undefined) {
+	if (typeof this.states.discrete.Heading === "undefined") {
 		StateModule.prototype.setHeading.call(this, this.routeData.heading[0]);
 	}
 
@@ -2222,39 +2227,39 @@ function Positioning(ship, states, path) {
 		var advDist = timeStep*1/3600*this.states.discrete.Speed.state.speed;
 
 		while (0 < advDist) {
-			remVec = path[this.states.discrete.Leg.state.leg + 1].map((num, idx)  => num - this.states.continuous.Positioning.position[idx]);
+			remVec = path[this.legState.leg + 1].map((num, idx)  => num - this.positionState.position[idx]);
 			remDist = Math.sqrt(remVec.map((num) => Math.pow(num,2)).reduce((num1, num2) => num1 + num2));
 			if (advDist <= remDist) {
 				this.shipState.position = this.shipState.position.map((num, idx) => num + advDist*this.routeData.unitPath[this.shipState.leg][idx]);
 
-				this.states.continuous.Positioning.position = this.states.continuous.Positioning.position.map((num, idx) => num + advDist*this.routeData.unitPath[this.states.discrete.Leg.state.leg][idx]);
+				this.positionState.position = this.positionState.position.map((num, idx) => num + advDist*this.routeData.unitPath[this.legState.leg][idx]);
 
 				// add to traveled distance
 				this.shipState.travelLegDist = this.shipState.travelLegDist + advDist;
 				this.shipState.travelDist = this.shipState.travelDist + advDist;
 
-				this.states.continuous.Positioning.travelLegDist = this.states.continuous.Positioning.travelLegDist + advDist;
-				this.states.continuous.Positioning.travelDist = this.states.continuous.Positioning.travelDist + advDist;
+				this.positionState.travelLegDist = this.positionState.travelLegDist + advDist;
+				this.positionState.travelDist = this.positionState.travelDist + advDist;
 
 				advDist = 0;
-			} else if (path[this.states.discrete.Leg.state.leg + 2] !== undefined) { // trip has another leg
+			} else if (path[this.legState.leg + 2] !== undefined) { // trip has another leg
 				// change direction and continue sailing
 				advDist -= remDist;
 				this.shipState.position = path[this.shipState.leg+1];
 
-				this.states.continuous.Positioning.position = path[this.states.discrete.Leg.state.leg + 1];
+				this.positionState.position = path[this.legState.leg + 1];
 
 				// add to traveled distance
 				this.shipState.travelLegDist = 0;
 				this.shipState.travelDist = this.shipState.travelDist + remDist;
 
-				this.states.continuous.Positioning.travelLegDist = 0;
-				this.states.continuous.Positioning.travelDist = this.states.continuous.Positioning.travelDist + remDist;
+				this.positionState.travelLegDist = 0;
+				this.positionState.travelDist = this.positionState.travelDist + remDist;
 
 				this.shipState.leg++;
 				this.states.shipCache.thisStateVer++;
 
-				this.states.discrete.Leg.state.leg++;
+				this.legState.leg++;
 				this.states.discrete.Leg.thisStateVer++;
 
 				StateModule.prototype.setHeading.call(this, this.routeData.heading[this.shipState.leg]);
@@ -2262,14 +2267,14 @@ function Positioning(ship, states, path) {
 			} else {
 				this.shipState.position = this.shipState.position.map((num, idx) => num + advDist*this.routeData.unitPath[this.shipState.leg][idx]);
 
-				this.states.continuous.Positioning.position = this.states.continuous.Positioning.position.map((num, idx) => num + advDist*this.routeData.unitPath[this.states.discrete.Leg.state.leg][idx]);
+				this.positionState.position = this.positionState.position.map((num, idx) => num + advDist*this.routeData.unitPath[this.legState.leg][idx]);
 
 				// add to traveled distance
 				this.shipState.travelLegDist = this.shipState.travelLegDist + advDist;
 				this.shipState.travelDist = this.shipState.travelDist + advDist;
 
-				this.states.continuous.Positioning.travelLegDist = this.states.continuous.Positioning.travelLegDist + advDist;
-				this.states.continuous.Positioning.travelDist = this.states.continuous.Positioning.travelDist + advDist;
+				this.positionState.travelLegDist = this.positionState.travelLegDist + advDist;
+				this.positionState.travelDist = this.positionState.travelDist + advDist;
 
 				console.log("Vessel reached final destination.");
 				break;
@@ -2277,6 +2282,441 @@ function Positioning(ship, states, path) {
 		}
 	};
 }
+function FuelConsumption(ship, states, powerPlant) {
+	StateModule.call(this, ship, states);
+	this.propellerState = this.states.discrete.PropellerInteraction.state;
+
+	this.setAuxPower = function(Paux){
+		if (typeof Paux === "undefined") {
+			Paux = 0;
+		}
+		if (typeof this.states.discrete.AuxPower === "undefined") { // Ps and Paux in W each
+			this.states.discrete.AuxPower = {
+				state: {},
+				thisStateVer: 0
+			}
+		}
+		this.states.discrete.AuxPower.state.Paux = Paux;
+		this.states.discrete.AuxPower.thisStateVer++;
+	}
+	if (typeof this.states.discrete.AuxPower === "undefined") { // Ps and Paux in W each
+		this.setAuxPower(0);
+	}
+	this.auxPowerState = this.states.discrete.AuxPower.state;
+
+	this.powerPlant = powerPlant;
+	this.output = ["consumptionRate"];
+	this.cache = {};
+}
+
+FuelConsumption.prototype = Object.create(StateModule.prototype);
+
+Object.assign(FuelConsumption.prototype, {
+	constructor: FuelConsumption
+});
+
+Object.defineProperties(FuelConsumption.prototype, {
+	consumptionRate: StateModule.prototype.memoized(function() { // consumption rate in kg/s
+		// share load among engines in a system's array
+		function shareLoad(system, load) {
+			var triggerRatio = 0.8; // define loading rate at which next engine in the power system will be activated for sharing loads
+			var cons = 0;
+
+			var engCapac = [];
+			for (var i = 0; i < system.engines.length; i++) {
+				engCapac[i] = system.engines[i].MCR;
+			}
+
+			if (typeof system.etag === "number") { // diesel electrical system
+				load = load/(system.etas * system.etag);
+			} else { // diesel mechanical system
+				load = load/system.etas; // consumption rate in kg/s
+			}
+
+			// distribute loads among engines
+			var totalCapac = engCapac.reduce((a, b) => a + b, 0);
+			var partCapac = totalCapac - engCapac[engCapac.length - 1];
+			var loads = Array(engCapac.length);
+			if (load <= triggerRatio * partCapac) { // if not all engines are loaded above trigger ratio, load them according to trigger rate ceil
+				var capSum = 0;
+				loads.fill(0);
+				for (var eng = 0; eng < engCapac.length; eng++) {
+					capSum += engCapac[eng];
+					if (load <= triggerRatio * capSum) { // if engines can support load
+						for (i = 0; i <= eng; i++) { // distribute load proportionally to engines' capacities
+							loads[i] = load/capSum;
+						}
+						break;
+					}
+				}
+			} else if (triggerRatio * partCapac < load && load <= totalCapac) { // if all engines are loaded above trigger ratio, make them all have same load %
+				loads.fill(load/totalCapac);
+			} else if (load > totalCapac) {
+				console.error("Engines are overloaded. Power plant can't provide current required power.");
+				loads.fill(1);
+			}
+
+			// calculate SFOC value for each activated engine
+			var SFOC;
+			for (i = 0; i < loads.length; i++) {
+				if (loads[i] > 0) { // if engine is active
+					if (system.engines[i].polOrder === 3) {
+						SFOC = system.engines[i].a * Math.pow(loads[i], 3) + system.engines[i].b * Math.pow(loads[i], 2) + system.engines[i].c * loads[i] + system.engines[i].d;
+					} else if (system.engines[i].polOrder === 2) {
+						SFOC = system.engines[i].a * Math.pow(loads[i], 2) + system.engines[i].b * loads[i] + system.engines[i].c;
+					}
+					cons += SFOC/(1000 * 3600) * loads[i] * engCapac[i]; // consumption rate in kg/s
+				}
+			}
+			return cons;
+		}
+
+		var consumptionRate;
+		if (typeof this.powerPlant.auxiliary === "object") { // calculate results for vessels which have main and auxiliary power systems
+			consumptionRate = this.powerPlant.main.noSys * shareLoad(this.powerPlant.main, this.propellerState.Ps/(1000 * this.powerPlant.main.noSys));
+			consumptionRate += shareLoad(this.powerPlant.auxiliary, this.auxPowerState.Paux/1000);
+		} else { // calculate results for vessels which have only one power system
+			consumptionRate = shareLoad(this.powerPlant.main, (this.propellerState.Ps + this.auxPowerState.Paux)/1000);
+		}
+		return consumptionRate;
+	})
+}, "consumptionRate");
+// partially adapted from http://www.shiplab.ntnu.co/app/holtrop/
+
+function HullResistance(ship, states, propeller, wavCre, g = 9.81, rho = 1025, mi = 0.00122) {
+	StateModule.call(this, ship, states);
+	this.propeller = propeller;
+	if (typeof this.states.discrete.FloatingCondition === "undefined") {
+		this.setDraft();
+	}
+	if (typeof this.states.discrete.Speed === "undefined") { // if vessel does not have a speed state
+		this.setSpeed(); // use its design speed
+	}
+	this.speedState = this.states.discrete.Speed.state;
+	this.floatState = this.states.discrete.FloatingCondition.state;
+	this.wavCre = wavCre;
+	this.g = g;
+	this.rho = rho;
+	this.mi = mi; // dynamic viscosity
+	this.b = this.ship.structure.hull.attributes.bulb; // has a bulb? Boolean.
+	this.tr = this.ship.structure.hull.attributes.transom; // transom. Boolean.
+	this.cstern = this.ship.structure.hull.attributes.cstern; // afterbody form.
+	// Pram with Gondola = -25, V-Shaped Sections = -10, Normal Section Shape = 0, U-Shaped Sections with Hognes Stern = 10
+	this.appendices = this.ship.structure.hull.attributes.appendices; // appendices information
+	// skegRudder has coeff from 1.5 to 2.0
+	// sternRudder has coeff from 1.3 to 1.5
+	// twinScrewBalanceRudder has coeff 2.8
+	// shaftBrackets has coeff 3.0
+	// skeg has coeff from 1.5 to 2.0
+	// strutBossings has coeff 3.0
+	// hullBossings has coeff 2.0
+	// shafts have coeff from 2 to 4
+	// stabilizerFins has coeff 2.8
+	// dome has coeff 2.7
+	// bilgeKeel has coeff 1.4
+	this.output = ["totalResistance", "efficiency"];
+	this.cache = {};
+}
+
+HullResistance.prototype = Object.create(StateModule.prototype);
+
+Object.assign(HullResistance.prototype, {
+	constructor: HullResistance
+});
+
+Object.defineProperties(HullResistance.prototype, {
+	coefficients: StateModule.prototype.memoized(function() {
+		var lcb = 100*(this.floatState.LCB-(this.floatState.minXs+this.floatState.LWL/2))/this.floatState.LWL; // %
+
+		var Tfore;
+		if (this.floatState.draftfp === null) {
+			Tfore = this.floatState.T;
+		} else {
+			Tfore = this.floatState.draftfp;
+		}
+		var Taft;
+		if (this.floatState.draftap === null) {
+			Taft = this.floatState.T;
+		} else {
+			Taft = this.floatState.draftap;
+		}
+		var T = (Tfore+Taft)/2; // m, average draft
+		var hb = Tfore/2;
+		var abt = Math.PI * Math.pow(Tfore/2, 2) * this.b/7.7; // transverse sectional bulb area
+		var c3 = 0.56 * (Math.pow(abt, 1.5))/(this.floatState.BWL * T * (0.31 * Math.pow(abt, 0.5) + Tfore - hb));
+		var c2 = Math.exp(-1.89 * Math.pow(c3, 0.5));
+
+		var c4;
+		if (Tfore/this.floatState.LWL > 0.04) {
+			c4 = 0.04;
+		} else {
+			c4 = Tfore/this.floatState.LWL;
+		}
+		// correlation allowance coefficient
+		var ca = 0.006 * Math.pow(this.floatState.LWL + 100, -0.16) - 0.00205 + 0.003 * Math.pow(this.floatState.LWL/7.5, 0.5) * Math.pow(this.floatState.Cb, 4) * c2 * (0.04 - c4);
+		var wa = this.floatState.LWL * (2 * T + this.floatState.BWL) * Math.pow(this.floatState.Cm, 0.5) * (0.453 + 0.4425 * this.floatState.Cb - 0.2862 * this.floatState.Cm - 0.003467 * 
+				this.floatState.BWL/T + 0.3696 * this.floatState.Cwp) + 2.38 * abt/this.floatState.Cb; // wetted area
+
+		var lr = this.floatState.LWL*(1 - this.floatState.Cp + (0.06 * this.floatState.Cp * (lcb/100)/(4 * this.floatState.Cp - 1)));
+		var c14 = 1 + 0.011*this.cstern;
+		var k = 0.93 + (0.487118 * c14 * Math.pow(this.floatState.BWL/this.floatState.LWL, 1.06806) * Math.pow(T/this.floatState.LWL, 0.46106) * Math.pow(this.floatState.LWL/
+			lr, 0.121563) * Math.pow(Math.pow(this.floatState.LWL, 3)/this.floatState.Vs, 0.36486) * Math.pow(1 - this.floatState.Cp, -0.604247)); // form factor
+
+		var speedSI = 0.514444 * this.speedState.speed; // convert the speed from knots to m/s
+		var re = this.rho * this.floatState.LWL * speedSI/this.mi; // Reynolds number
+		var cf = 0.075/Math.pow((Math.log(re)/Math.log(10)) - 2, 2); // frictional coefficient
+
+		return {lcb, Tfore, Taft, T, hb, c2, ca, abt, wa, lr, k, speedSI, cf};
+	}, "coefficients"),
+	calmResistance: StateModule.prototype.memoized(function() { // N, total hull resistance in calm waters
+		var at = 0.95 * (this.coefficients.Taft - this.coefficients.Taft * 0.9225) * this.floatState.BWL * 0.89 * this.tr; // transom stern area
+		var c3 = 0.56 * (Math.pow(this.coefficients.abt, 1.5))/(this.floatState.BWL * this.coefficients.T * (0.31 * Math.pow(this.coefficients.abt, 0.5) + this.coefficients.Tfore - this.coefficients.hb));
+		var rf = 0.5 * this.rho * Math.pow(this.coefficients.speedSI, 2) * this.coefficients.wa * this.coefficients.cf; // frictional resistance
+
+		var fnt;
+		if (at === 0) {
+			fnt = 0;
+		} else {
+			fnt = this.coefficients.speedSI/(Math.pow(2*this.g*at/(this.floatState.BWL + this.floatState.BWL * this.floatState.Cwp), 0.5));
+		}
+		var c6;
+		if (fnt < 5) {
+			c6 = 0.2 * (1 - 0.2 * fnt);
+		} else {
+			c6 = 0;
+		}
+		var rtr = 0.5 * this.rho * Math.pow(this.coefficients.speedSI, 2) * at * c6; // stern resistance
+		var sapp = 0;
+		var mult = 0;
+		for (var prop in this.appendices) {
+			sapp += this.appendices[prop].area;
+			mult += this.appendices[prop].coeff*this.appendices[prop].area;
+		}
+
+		var k2;
+		if (sapp !== 0) {
+			k2 = mult/sapp;
+		} else {
+			k2 = 0;
+		}
+		var rapp = 0.5 * this.rho * Math.pow(this.coefficients.speedSI, 2) * sapp * k2 * this.coefficients.cf; // appendage resistance
+		var fn = this.coefficients.speedSI/Math.pow(this.g * this.floatState.LWL, 0.5); //Froude number
+
+		var c7;
+		if (this.floatState.BWL/this.floatState.LWL < 0.11){
+			c7 = 0.229577 * Math.pow(this.floatState.BWL/this.floatState.LWL, 0.33333);
+		} else if (this.floatState.BWL/this.floatState.LWL < 0.25) {
+			c7 = this.floatState.BWL/this.floatState.LWL;
+		} else {
+			c7 = 0.5 - 0.0625 * this.floatState.LWL/this.floatState.BWL;
+		}
+		// calculate the half angle of entrance
+		var ie = 1 + 89 * Math.exp(-Math.pow(this.floatState.LWL/this.floatState.BWL, 0.80856) * Math.pow(1 - this.floatState.Cwp, 0.30484) * Math.pow(1 - this.floatState.Cp - 0.0225 * 
+			(this.coefficients.lcb/100), 0.6367) * Math.pow(this.coefficients.lr/this.floatState.BWL, 0.34574) * Math.pow(100 * (this.floatState.Vs/Math.pow(this.floatState.LWL,3)), 0.16302));
+		var c1 = 2223105 * Math.pow(c7, 3.78613) * Math.pow(this.coefficients.T/this.floatState.BWL, 1.07961) * Math.pow(90 - ie, -1.37565);
+		var c5 = 1 - (0.8 * at)/(this.floatState.BWL * this.coefficients.T * this.floatState.Cm);
+
+		var c15;
+		if (Math.pow(this.floatState.LWL, 3)/this.floatState.Vs < 512) {
+			c15 = -1.69385;
+		} else if(Math.pow(this.floatState.LWL, 3)/this.floatState.Vs < 1726.91) {
+			c15 = -1.69385 + (this.floatState.LWL/Math.pow(this.floatState.Vs, 1/3) - 8)/2.36;
+		} else {
+			c15 = 0;
+		}
+
+		var c16;
+		if (this.floatState.Cp < 0.8) {
+			c16 = 8.07981 * this.floatState.Cp - 13.8673 * Math.pow(this.floatState.Cp, 2) + 6.984388 * Math.pow(this.floatState.Cp, 3);
+		} else {
+			c16 = 1.73014 - 0.7067*this.floatState.Cp;
+		}
+		var m1 = 0.0140407 * (this.floatState.LWL/this.coefficients.T) - 1.75254 * ((Math.pow(this.floatState.Vs, 1/3))/this.floatState.LWL) - 4.79323 *(this.floatState.BWL/this.floatState.LWL) - c16;
+
+		var lambda;
+		if (this.floatState.LWL/this.floatState.BWL > 12) {
+			lambda = 1.446 * this.floatState.Cp - 0.36;
+		} else {
+			lambda = 1.446 * this.floatState.Cp - 0.03 * (this.floatState.LWL/this.floatState.BWL);
+		}
+		var c17 = 6919.3 * Math.pow(this.floatState.Cm, -1.3346) * Math.pow(this.floatState.Vs/Math.pow(this.floatState.LWL, 3), 2.00977) * Math.pow(this.floatState.LWL/this.floatState.BWL - 2, 1.40692);
+		var m3 = -7.2035 * Math.pow (this.floatState.BWL/this.floatState.LWL, 0.326869) * Math.pow(this.coefficients.T/this.floatState.BWL, 0.605375);
+		var m4_0_4 = c15 * 0.4 * Math.exp(-0.034 * Math.pow(0.4, -3.29));
+		var rwa_0_4 = c1 * this.coefficients.c2 * c5 * this.floatState.Vs * this.rho * this.g * Math.exp(m1 * Math.pow(0.4, -0.9) + m4_0_4 * Math.cos(lambda * Math.pow(0.4, -2)));
+		var m4_0_55 = c15 * 0.4 * Math.exp(-0.034 * Math.pow(0.55, -3.29));
+		var rwa_0_55 = c17 * this.coefficients.c2 * c5 * this.floatState.Vs * this.rho * this.g * Math.exp(m3 * Math.pow(0.55, -0.9) + m4_0_55 * Math.cos(lambda * 
+			Math.pow(0.55, -2)));
+
+		var m4, rwa, rwb, rwab;
+		if(fn === 0) {
+			m4 = 0;
+			rwa = 0; // wave resistance for Froude < 0.4
+			rwb = 0; // wave resistance for Froude > 0.55
+			rwab = 0;
+		} else {
+			m4 = c15 * 0.4 * Math.exp(-0.034 * Math.pow(fn, -3.29));
+			rwa = c1 * this.coefficients.c2 * c5 * this.floatState.Vs * this.rho * this.g * Math.exp(m1 * Math.pow(fn, -0.9) + m4 * Math.cos(lambda * Math.pow(fn, -2)));
+			rwb = c17 * this.coefficients.c2 * c5 * this.floatState.Vs * this.rho * this.g * Math.exp(m3 * Math.pow(fn, -0.9) + m4 * Math.cos(lambda * Math.pow(fn, -2)));
+			rwab = rwa_0_4 + (10 * fn - 4) * (rwa_0_55 - rwa_0_4)/1.5;
+		}
+
+		var rw;
+		if(fn < 0.4){
+			rw = rwa;
+		} else if(fn <= 0.55) {
+			rw = rwab;
+		} else {
+			rw = rwb;
+		}
+		var fni = this.coefficients.speedSI/Math.sqrt(this.g * (this.coefficients.Tfore - this.coefficients.hb - 0.25 * Math.pow(this.coefficients.abt, 0.5)) + (0.15 * Math.pow(this.coefficients.speedSI, 2)));
+		var pb = (0.56 * Math.pow(this.coefficients.abt, 0.5))/(this.coefficients.Tfore - 1.5 * this.coefficients.hb);
+
+		var rb;
+		if(this.coefficients.abt === 0) {
+			rb = 0;
+		} else {
+			rb = (0.11 * Math.exp(-3 * Math.pow(pb, -2)) * Math.pow(fni, 3) * Math.pow(this.coefficients.abt, 1.5) * this.rho * this.g)/(1 + Math.pow(fni, 2));
+		}
+
+		var ra = 0.91 * 0.5 * this.rho * Math.pow(this.coefficients.speedSI, 2) * this.coefficients.wa * this.coefficients.ca;
+		if ((this.floatState.LWL/this.floatState.BWL <= 3.9) || (this.floatState.LWL/this.floatState.BWL >= 15)) {
+			console.error("The L/B relation is not being respected. It should be 3.9 < L/B < 15, not" + " " + (this.floatState.LWL/this.floatState.BWL).toFixed(2) + ".");
+		}
+		if ((this.floatState.BWL/this.coefficients.T <= 2.1) || (this.floatState.BWL/this.coefficients.T >= 4)) {
+			console.error("The B/T relation is not being respected. It should be 2.1 < B/T < 4, not" + " " + (this.floatState.BWL/this.coefficients.T).toFixed(2) + ".");
+		}
+		if ((this.floatState.Cp <= 0.55) || (this.floatState.Cp >= 0.85)) {
+			console.error("The prismatic coefficient is not being respected. It should be 0.55 < Cp < 0.85, not" + " " + this.floatState.Cp.toFixed(2) + ".");
+		}
+
+		var Rt = this.coefficients.k * rf + rapp + rw + rb + rtr + ra;
+
+		return Rt;
+	}, "calmResistance"),
+	totalResistance: StateModule.prototype.memoized(function() {
+		var Hw = 2*this.wavCre.waveDef.waveAmplitude; // wave height
+
+		var Rtadd; // N, total resistance including added wave resistance
+		if (Hw <= 2) { // use Kreitner formula
+			var raddw = 0.64*Math.pow(Hw*this.floatState.BWL,2)*this.floatState.Cb*this.rho*this.g/this.floatState.LWL;
+			Rtadd = this.calmResistance + raddw;
+		} else { // add 20% sea margin
+			Rtadd = 1.2 * this.calmResistance;
+		}
+
+		var Pe = this.coefficients.speedSI * Rtadd; // effective power
+
+		return {Rtadd, Pe};
+	}, "totalResistance"),
+	efficiency: StateModule.prototype.memoized(function() {
+		var c8;
+		if (this.floatState.BWL/this.coefficients.Taft<5) {
+			c8 = this.floatState.BWL*this.coefficients.wa/(this.floatState.LWL*this.propeller.D*this.coefficients.Taft);
+		} else {
+			c8 = this.coefficients.wa*(7*this.floatState.BWL/this.coefficients.Taft-25)/(this.floatState.LWL*this.propeller.D*(this.floatState.BWL/this.coefficients.Taft-3));
+		}
+
+		var c9;
+		if (c8<28) {
+			c9 = c8;
+		} else {
+			c9 = 32-16/(c8-24);
+		}
+
+		var c11;
+		if (this.coefficients.Taft/this.propeller.D<2) {
+			c11 = this.coefficients.Taft/this.propeller.D;
+		} else {
+			c11 = 0.0833333*Math.pow(this.coefficients.Taft/this.propeller.D,3)+1.33333;
+		}
+
+		var c19;
+		if (this.floatState.Cp<0.7) {
+			c19 = 0.12997/(0.95-this.floatState.Cb)-0.11056/(0.95-this.floatState.Cp);
+		} else {
+			c19 = 0.18567/(1.3571-this.floatState.Cm)-0.71276+0.38648*this.floatState.Cp;
+		}
+		var Cp1 = 1.45*this.floatState.Cp-0.315-0.0225*this.coefficients.lcb;
+		var cv = this.coefficients.k*this.coefficients.cf+this.coefficients.ca;
+		var c20 = 1+0.015*this.cstern;
+
+		var w; // wake factor
+		if (this.propeller.noProps===1) {
+			w = c9*c20*cv*this.floatState.LWL/this.coefficients.Taft*(0.050776+0.93405*c11*cv/(1-Cp1))+0.27915*c20*Math.pow(this.floatState.BWL/(this.floatState.LWL*(1-Cp1)),0.5)+c19*c20;
+		} else if (this.propeller.noProps===2) {
+			w = 0.3095*this.floatState.Cb+10*cv*this.floatState.Cb-0.23*this.propeller.D/Math.pow(this.floatState.BWL*this.coefficients.T,0.5);
+		}
+
+		var t; // thrust deduction factor
+		if (this.propeller.noProps===1) {
+			t = 0.25014*Math.pow(this.floatState.BWL/this.floatState.LWL,0.28956)*Math.pow(Math.pow(this.floatState.BWL*this.coefficients.T,0.5)/this.propeller.D,0.2624)/
+				Math.pow(1-this.floatState.Cp+0.0225*this.coefficients.lcb,0.01762)+0.0015*this.cstern;
+		} else if (this.propeller.noProps===2) {
+			t = 0.325*this.floatState.Cb-0.1885*this.propeller.D/Math.pow(this.floatState.BWL*this.coefficients.T,0.5);
+		}
+
+		var etah = (1-t)/(1-w); // hull efficiency
+
+		return {w, t, etah};
+	}, "efficiency")
+});
+// This module simulates the propeller and its interaction with hull and engine.
+
+function PropellerInteraction(ship, states, propeller, rho = 1025) {
+	StateModule.call(this, ship, states); // get resistance results in N, W from vessel state
+	this.propeller = propeller;
+	if (typeof this.states.discrete.FloatingCondition === "undefined") {
+		this.setDraft();
+	}
+	if (typeof this.states.discrete.Speed === "undefined") { // if vessel does not have a speed state
+		this.setSpeed(); // use its design speed
+	}
+	this.speedState = this.states.discrete.Speed.state;
+	this.floatState = this.states.discrete.FloatingCondition.state;
+	this.resistanceState = this.states.discrete.HullResistance.state;
+	this.rho = rho; // kg/m³
+	this.output = ["propulsion"];
+	this.cache = {};
+}
+
+PropellerInteraction.prototype = Object.create(StateModule.prototype);
+
+Object.assign(PropellerInteraction.prototype, {
+	constructor: PropellerInteraction
+});
+
+Object.defineProperties(PropellerInteraction.prototype, {
+	propulsion: StateModule.prototype.memoized(function() { 
+		// convert vessel speed from knots to m/s
+		var speedSI = 0.514444 * this.speedState.speed;
+		var lcb = 100*(this.floatState.LCB-(this.floatState.minXs+this.floatState.LWL/2))/this.floatState.LWL; // %
+		var Va = speedSI/(1-this.resistanceState.w); // m/s
+		var T = this.resistanceState.Rtadd/(this.propeller.noProps*(1-this.resistanceState.t)); // N, thrust
+
+		var acoeff = T/(this.rho*Math.pow(this.propeller.D*Va,2));
+		var bcoeff = this.propeller.beta2;
+		var ccoeff = -this.propeller.beta1;
+		var J = (-bcoeff+Math.pow(Math.pow(bcoeff,2)-4*acoeff*ccoeff,0.5))/(2*acoeff);
+		
+		var n = Va/(J*this.propeller.D); // rps
+		// var npm = 60*n;
+
+		var KT = this.propeller.beta1-this.propeller.beta2*J;
+		var KQ = this.propeller.gamma1-this.propeller.gamma2*J;
+		var eta0 = J * KT/(2 * Math.PI * KQ);
+
+		var etar;
+		if (this.propeller.noProps===1) {
+			etar = 0.9922-0.05908*this.propeller.AeAo+0.07424*(this.floatState.Cp-0.0225*lcb);
+		} else if (this.propeller.noProps===2) {
+			etar = 0.9737+0.111*(this.floatState.Cp-0.0225*lcb)-0.06325*this.propeller.P/this.propeller.D;
+		}
+		var eta = eta0*this.resistanceState.etah*etar;
+		var Ps = this.resistanceState.Pe/eta; // W, required brake power
+
+		return {eta, Ps, n};
+	}, "propulsion")
+});
 //@EliasHasle
 
 //Depends on Ship and the other core classes.
@@ -2368,6 +2808,9 @@ Object.assign(Vessel, {
 	WaveCreator: WaveCreator,
 	WaveMotion: WaveMotion,
 	Positioning: Positioning,
+	FuelConsumption: FuelConsumption,
+	HullResistance: HullResistance,
+	PropellerInteraction: PropellerInteraction,
 	browseShip: browseShip,
 	loadShip: loadShip,
 	downloadShip: downloadShip,
