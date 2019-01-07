@@ -14,6 +14,8 @@ function PropellerInteraction(ship, states, propeller, rho = 1025) {
 	this.resistanceState = this.states.discrete.HullResistance.state;
 	this.rho = rho; // kg/m³
 	this.output = ["propulsion"];
+
+	this.cacheDependence = ["FloatingCondition", "Speed"];
 	this.cache = {};
 }
 
@@ -44,9 +46,9 @@ Object.defineProperties(PropellerInteraction.prototype, {
 		var eta0 = J * KT/(2 * Math.PI * KQ);
 
 		var etar;
-		if (this.propeller.noProps===1) {
+		if (this.propeller.noProps === 1) {
 			etar = 0.9922-0.05908*this.propeller.AeAo+0.07424*(this.floatState.Cp-0.0225*lcb);
-		} else if (this.propeller.noProps===2) {
+		} else if (this.propeller.noProps === 2) {
 			etar = 0.9737+0.111*(this.floatState.Cp-0.0225*lcb)-0.06325*this.propeller.P/this.propeller.D;
 		}
 		var eta = eta0*this.resistanceState.etah*etar;

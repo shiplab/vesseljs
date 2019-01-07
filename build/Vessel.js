@@ -1,4 +1,4 @@
-//Vessel.js library, built 2019-01-01 23:11:10.413897
+//Vessel.js library, built 2019-01-07 18:37:38.176543
 /*
 Import like this in HTML:
 <script src="Vessel.js"></script>
@@ -1640,10 +1640,6 @@ ShipState now mainly accounts for load state, by which I mean the states of obje
 function ShipState(specification) {
 	this.version = 0;
 	this.objectCache = {};
-	this.shipCache = {
-		state: {},
-		thisStateVer: 0
-	};
 	this.continuous = {};
 	this.discrete = {};
 	JSONSpecObject.call(this, specification);
@@ -1813,13 +1809,9 @@ Object.assign(ShipState.prototype, {
 
 		this.version++;
 	}
-});/*in the future, when this class gathers more methods, change code style to that 
-of https://github.com/shiplab/vesseljs/blob/master/source/classes/JSONSpecObject.js */
-
-function StateModule(ship, states) {
+});function StateModule(ship, states) {
 	this.ship = ship;
 	this.states = states;
-	this.shipState = states.shipCache.state;
 }
 
 Object.assign(StateModule.prototype, {
@@ -1838,16 +1830,6 @@ Object.assign(StateModule.prototype, {
 	},
 	// write getter output to shipState
 	writeOutput: function() {
-		for (let i = 0; i < this.output.length; i++) {
-			let output = this[this.output[i]];
-			if (typeof output === "number") {
-				this.states.shipCache.state[this.output[i]] = output;
-			} else if (typeof output === "object") {
-				Object.assign(this.states.shipCache.state, output);
-			}
-		}
-		this.states.shipCache.thisStateVer++;
-
 		let stateName = this.constructor.name;
 		if (this.states.discrete[stateName] === undefined) {
 			this.states.discrete[stateName] = {
@@ -1867,10 +1849,6 @@ Object.assign(StateModule.prototype, {
 	},
 	setDraft: function() {
 		let draft = this.ship.calculateDraft(this.states);
-		Object.assign(this.states.shipCache.state, this.ship.structure.hull.calculateAttributesAtDraft(draft));
-		Object.assign(this.states.shipCache.state, this.ship.calculateStability(this.states));
-		this.states.shipCache.thisStateVer++;
-
 		if (this.states.discrete.FloatingCondition === undefined) {
 			this.states.discrete.FloatingCondition = {
 				state: {},
@@ -1883,12 +1861,6 @@ Object.assign(StateModule.prototype, {
 	},
 	// write argument speed to vessel state. If undefined, use vessel's design speed
 	setSpeed: function(speed) {
-		if (typeof speed === "undefined" && typeof this.ship.designState.calculationParameters.speed !== "undefined") {
-			speed = this.ship.designState.calculationParameters.speed;
-		}
-		this.states.shipCache.state.speed = speed; // knots
-		this.states.shipCache.thisStateVer++;
-
 		if (this.states.discrete.Speed === undefined) {
 			this.states.discrete.Speed = {
 				state: {},
@@ -1904,12 +1876,6 @@ Object.assign(StateModule.prototype, {
 	// write argument heading angle to vessel state. if undefined, use 0 degrees
 	// 0 degrees corresponds to vessel pointing to north. clockwise orientation.
 	setHeading: function(angle) {
-		if (typeof angle === "undefined") {
-			angle = 0;
-		}
-		this.states.shipCache.state.heading = angle;
-		this.states.shipCache.thisStateVer++;
-
 		if (this.states.discrete.Heading === undefined) {
 			this.states.discrete.Heading = {
 				state: {},
@@ -1929,48 +1895,50 @@ Object.assign(StateModule.prototype, {
 			enumerable: true,
 			configurable: false,
 			get: function cache() {
-				if (this.wavCre !== undefined) { // if state module uses a wave creation object
-					if (this.cache[cacheName] === undefined) {
-						this.cache[cacheName] = {
-							shipStateVersion: 0,
-							waveStateVersion: 0
-						};
-					}
-					if (this.cache[cacheName].shipStateVersion === this.states.shipCache.thisStateVer && this.cache[cacheName].waveStateVersion === this.wavCre.version) {
-						return this.cache[cacheName].value;
-					}
-					this.cache[cacheName].value = init.call(this);
-					this.cache[cacheName].shipStateVersion = this.states.shipCache.thisStateVer;
-					this.cache[cacheName].waveStateVersion = this.wavCre.version;
-					return this.cache[cacheName].value;
-
-/* 					if (cache.hasOwnProperty("value") && cache.shipStateVersion === this.states.shipCache.thisStateVer && cache.waveStateVersion === this.wavCre.version) {
-						return cache.value;
-					}
-					cache.value = init.call(this);
-					cache.shipStateVersion = this.states.shipCache.thisStateVer;
-					cache.waveStateVersion = this.wavCre.version;
-					return cache.value; */
+				// if state module uses a wave creation object
+				let hasWave;
+				if (this.wavCre !== undefined) {
+					hasWave = true;
+				} else { // if it has only a ship module
+					hasWave = false;
 				}
-				// if it has only a ship module
+
 				if (this.cache[cacheName] === undefined) {
-					this.cache[cacheName] = {
-						shipStateVersion: 0
-					};
+					this.cache[cacheName] = {};
+					for (let i = 0; i < this.cacheDependence.length; i++) {
+						let dependenceName = this.cacheDependence[i];
+						this.cache[cacheName][dependenceName + "Version"] = 0;
+					}
+					if (hasWave) {
+						this.cache[cacheName].waveStateVersion = 0;
+					}
 				}
-				if (this.cache[cacheName].shipStateVersion === this.states.shipCache.thisStateVer) {
-					return this.cache[cacheName].value;
-				}
-				this.cache[cacheName].value = init.call(this);
-				this.cache[cacheName].shipStateVersion = this.states.shipCache.thisStateVer;
-				return this.cache[cacheName].value;
 
-/* 				if (cache.hasOwnProperty("value") && cache.shipStateVersion === this.states.shipCache.thisStateVer) {
-					return cache.value;
+				let needsUpdate = false;
+				for (let i = 0; i < this.cacheDependence.length; i++) {
+					let dependenceName = this.cacheDependence[i];
+					if (this.cache[cacheName][dependenceName + "Version"] !== this.states.discrete[dependenceName].thisStateVer) {
+						needsUpdate = true;
+						break;
+					}
 				}
-				cache.value = init.call(this);
-				cache.shipStateVersion = this.states.shipCache.thisStateVer;
-				return cache.value; */
+				if (hasWave && needsUpdate === false) {
+					if (this.cache[cacheName].waveStateVersion !== this.wavCre.version) {
+						needsUpdate = true;
+					}
+				}
+
+				if (needsUpdate) {
+					this.cache[cacheName].value = init.call(this);
+					for (let i = 0; i < this.cacheDependence.length; i++) {
+						let dependenceName = this.cacheDependence[i];
+						this.cache[cacheName][dependenceName + "Version"] = this.states.discrete[dependenceName].thisStateVer;
+					}
+					if (hasWave) {
+						this.cache[cacheName].waveStateVersion = this.wavCre.version;
+					}
+				}
+				return this.cache[cacheName].value;
 			}
 		};
 	}
@@ -2031,6 +1999,8 @@ function WaveMotion(ship, states, wavCre, position = 0, critDampPercentage = 20,
 	this.critical_damping_percentage = critDampPercentage; // this parameter is used to take into account the water viscosity
 	this.delta = this.ship.structure.hull.attributes.prismaticLengthRatio; // length ratio of two prismatic bodies that represent the ship
 	this.output = ["verticalMotion"];
+
+	this.cacheDependence = ["FloatingCondition", "Speed", "Heading"];
 	this.cache = {};
 }
 
@@ -2169,7 +2139,6 @@ Object.defineProperties(WaveMotion.prototype, {
 function Positioning(ship, states, path) {
 	this.ship = ship;
 	this.states = states;
-	this.shipState = states.shipCache.state;
 
 	this.routeData = {};
 	this.routeData.pathVec = [];
@@ -2195,17 +2164,11 @@ function Positioning(ship, states, path) {
 	}
 
 	// initialize vessel on path
-	this.shipState.position = path[0];
-	this.shipState.travelLegDist = 0;
-	this.shipState.travelDist = 0;
-
 	this.states.continuous.Positioning = {};
 	this.states.continuous.Positioning.position = path[0];
 	this.states.continuous.Positioning.travelLegDist = 0;
 	this.states.continuous.Positioning.travelDist = 0;
 	this.positionState = this.states.continuous.Positioning;
-
-	this.shipState.leg = 0;
 
 	this.states.discrete.Leg = {
 		state: {
@@ -2230,14 +2193,9 @@ function Positioning(ship, states, path) {
 			remVec = path[this.legState.leg + 1].map((num, idx)  => num - this.positionState.position[idx]);
 			remDist = Math.sqrt(remVec.map((num) => Math.pow(num,2)).reduce((num1, num2) => num1 + num2));
 			if (advDist <= remDist) {
-				this.shipState.position = this.shipState.position.map((num, idx) => num + advDist*this.routeData.unitPath[this.shipState.leg][idx]);
-
 				this.positionState.position = this.positionState.position.map((num, idx) => num + advDist*this.routeData.unitPath[this.legState.leg][idx]);
 
 				// add to traveled distance
-				this.shipState.travelLegDist = this.shipState.travelLegDist + advDist;
-				this.shipState.travelDist = this.shipState.travelDist + advDist;
-
 				this.positionState.travelLegDist = this.positionState.travelLegDist + advDist;
 				this.positionState.travelDist = this.positionState.travelDist + advDist;
 
@@ -2245,34 +2203,21 @@ function Positioning(ship, states, path) {
 			} else if (path[this.legState.leg + 2] !== undefined) { // trip has another leg
 				// change direction and continue sailing
 				advDist -= remDist;
-				this.shipState.position = path[this.shipState.leg+1];
-
 				this.positionState.position = path[this.legState.leg + 1];
 
 				// add to traveled distance
-				this.shipState.travelLegDist = 0;
-				this.shipState.travelDist = this.shipState.travelDist + remDist;
-
 				this.positionState.travelLegDist = 0;
 				this.positionState.travelDist = this.positionState.travelDist + remDist;
-
-				this.shipState.leg++;
-				this.states.shipCache.thisStateVer++;
 
 				this.legState.leg++;
 				this.states.discrete.Leg.thisStateVer++;
 
-				StateModule.prototype.setHeading.call(this, this.routeData.heading[this.shipState.leg]);
-				console.log("Vessel reached pivot point in navigation and entered leg " + this.shipState.leg + ".");
+				StateModule.prototype.setHeading.call(this, this.routeData.heading[this.legState.leg]);
+				console.log("Vessel reached pivot point in navigation and entered leg " + this.legState.leg + ".");
 			} else {
-				this.shipState.position = this.shipState.position.map((num, idx) => num + advDist*this.routeData.unitPath[this.shipState.leg][idx]);
-
 				this.positionState.position = this.positionState.position.map((num, idx) => num + advDist*this.routeData.unitPath[this.legState.leg][idx]);
 
 				// add to traveled distance
-				this.shipState.travelLegDist = this.shipState.travelLegDist + advDist;
-				this.shipState.travelDist = this.shipState.travelDist + advDist;
-
 				this.positionState.travelLegDist = this.positionState.travelLegDist + advDist;
 				this.positionState.travelDist = this.positionState.travelDist + advDist;
 
@@ -2306,6 +2251,8 @@ function FuelConsumption(ship, states, powerPlant) {
 
 	this.powerPlant = powerPlant;
 	this.output = ["consumptionRate"];
+
+	this.cacheDependence = ["PropellerInteraction"];
 	this.cache = {};
 }
 
@@ -2415,6 +2362,8 @@ function HullResistance(ship, states, propeller, wavCre, g = 9.81, rho = 1025, m
 	// dome has coeff 2.7
 	// bilgeKeel has coeff 1.4
 	this.output = ["totalResistance", "efficiency"];
+
+	this.cacheDependence = ["FloatingCondition", "Speed"];
 	this.cache = {};
 }
 
@@ -2676,6 +2625,8 @@ function PropellerInteraction(ship, states, propeller, rho = 1025) {
 	this.resistanceState = this.states.discrete.HullResistance.state;
 	this.rho = rho; // kg/m³
 	this.output = ["propulsion"];
+
+	this.cacheDependence = ["FloatingCondition", "Speed"];
 	this.cache = {};
 }
 
@@ -2706,9 +2657,9 @@ Object.defineProperties(PropellerInteraction.prototype, {
 		var eta0 = J * KT/(2 * Math.PI * KQ);
 
 		var etar;
-		if (this.propeller.noProps===1) {
+		if (this.propeller.noProps === 1) {
 			etar = 0.9922-0.05908*this.propeller.AeAo+0.07424*(this.floatState.Cp-0.0225*lcb);
-		} else if (this.propeller.noProps===2) {
+		} else if (this.propeller.noProps === 2) {
 			etar = 0.9737+0.111*(this.floatState.Cp-0.0225*lcb)-0.06325*this.propeller.P/this.propeller.D;
 		}
 		var eta = eta0*this.resistanceState.etah*etar;

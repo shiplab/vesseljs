@@ -22,6 +22,8 @@ function FuelConsumption(ship, states, powerPlant) {
 
 	this.powerPlant = powerPlant;
 	this.output = ["consumptionRate"];
+
+	this.cacheDependence = ["PropellerInteraction"];
 	this.cache = {};
 }
 

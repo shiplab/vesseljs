@@ -32,6 +32,8 @@ function HullResistance(ship, states, propeller, wavCre, g = 9.81, rho = 1025, m
 	// dome has coeff 2.7
 	// bilgeKeel has coeff 1.4
 	this.output = ["totalResistance", "efficiency"];
+
+	this.cacheDependence = ["FloatingCondition", "Speed"];
 	this.cache = {};
 }
 

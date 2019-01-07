@@ -24,10 +24,6 @@ ShipState now mainly accounts for load state, by which I mean the states of obje
 function ShipState(specification) {
 	this.version = 0;
 	this.objectCache = {};
-	this.shipCache = {
-		state: {},
-		thisStateVer: 0
-	};
 	this.continuous = {};
 	this.discrete = {};
 	JSONSpecObject.call(this, specification);

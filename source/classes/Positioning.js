@@ -1,7 +1,6 @@
 function Positioning(ship, states, path) {
 	this.ship = ship;
 	this.states = states;
-	this.shipState = states.shipCache.state;
 
 	this.routeData = {};
 	this.routeData.pathVec = [];
@@ -27,17 +26,11 @@ function Positioning(ship, states, path) {
 	}
 
 	// initialize vessel on path
-	this.shipState.position = path[0];
-	this.shipState.travelLegDist = 0;
-	this.shipState.travelDist = 0;
-
 	this.states.continuous.Positioning = {};
 	this.states.continuous.Positioning.position = path[0];
 	this.states.continuous.Positioning.travelLegDist = 0;
 	this.states.continuous.Positioning.travelDist = 0;
 	this.positionState = this.states.continuous.Positioning;
-
-	this.shipState.leg = 0;
 
 	this.states.discrete.Leg = {
 		state: {
@@ -62,14 +55,9 @@ function Positioning(ship, states, path) {
 			remVec = path[this.legState.leg + 1].map((num, idx)  => num - this.positionState.position[idx]);
 			remDist = Math.sqrt(remVec.map((num) => Math.pow(num,2)).reduce((num1, num2) => num1 + num2));
 			if (advDist <= remDist) {
-				this.shipState.position = this.shipState.position.map((num, idx) => num + advDist*this.routeData.unitPath[this.shipState.leg][idx]);
-
 				this.positionState.position = this.positionState.position.map((num, idx) => num + advDist*this.routeData.unitPath[this.legState.leg][idx]);
 
 				// add to traveled distance
-				this.shipState.travelLegDist = this.shipState.travelLegDist + advDist;
-				this.shipState.travelDist = this.shipState.travelDist + advDist;
-
 				this.positionState.travelLegDist = this.positionState.travelLegDist + advDist;
 				this.positionState.travelDist = this.positionState.travelDist + advDist;
 
@@ -77,34 +65,21 @@ function Positioning(ship, states, path) {
 			} else if (path[this.legState.leg + 2] !== undefined) { // trip has another leg
 				// change direction and continue sailing
 				advDist -= remDist;
-				this.shipState.position = path[this.shipState.leg+1];
-
 				this.positionState.position = path[this.legState.leg + 1];
 
 				// add to traveled distance
-				this.shipState.travelLegDist = 0;
-				this.shipState.travelDist = this.shipState.travelDist + remDist;
-
 				this.positionState.travelLegDist = 0;
 				this.positionState.travelDist = this.positionState.travelDist + remDist;
-
-				this.shipState.leg++;
-				this.states.shipCache.thisStateVer++;
 
 				this.legState.leg++;
 				this.states.discrete.Leg.thisStateVer++;
 
-				StateModule.prototype.setHeading.call(this, this.routeData.heading[this.shipState.leg]);
-				console.log("Vessel reached pivot point in navigation and entered leg " + this.shipState.leg + ".");
+				StateModule.prototype.setHeading.call(this, this.routeData.heading[this.legState.leg]);
+				console.log("Vessel reached pivot point in navigation and entered leg " + this.legState.leg + ".");
 			} else {
-				this.shipState.position = this.shipState.position.map((num, idx) => num + advDist*this.routeData.unitPath[this.shipState.leg][idx]);
-
 				this.positionState.position = this.positionState.position.map((num, idx) => num + advDist*this.routeData.unitPath[this.legState.leg][idx]);
 
 				// add to traveled distance
-				this.shipState.travelLegDist = this.shipState.travelLegDist + advDist;
-				this.shipState.travelDist = this.shipState.travelDist + advDist;
-
 				this.positionState.travelLegDist = this.positionState.travelLegDist + advDist;
 				this.positionState.travelDist = this.positionState.travelDist + advDist;
 

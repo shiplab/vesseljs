@@ -21,6 +21,8 @@ function WaveMotion(ship, states, wavCre, position = 0, critDampPercentage = 20,
 	this.critical_damping_percentage = critDampPercentage; // this parameter is used to take into account the water viscosity
 	this.delta = this.ship.structure.hull.attributes.prismaticLengthRatio; // length ratio of two prismatic bodies that represent the ship
 	this.output = ["verticalMotion"];
+
+	this.cacheDependence = ["FloatingCondition", "Speed", "Heading"];
 	this.cache = {};
 }
 

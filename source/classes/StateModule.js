@@ -1,10 +1,6 @@
-/*in the future, when this class gathers more methods, change code style to that 
-of https://github.com/shiplab/vesseljs/blob/master/source/classes/JSONSpecObject.js */
-
 function StateModule(ship, states) {
 	this.ship = ship;
 	this.states = states;
-	this.shipState = states.shipCache.state;
 }
 
 Object.assign(StateModule.prototype, {
@@ -23,16 +19,6 @@ Object.assign(StateModule.prototype, {
 	},
 	// write getter output to shipState
 	writeOutput: function() {
-		for (let i = 0; i < this.output.length; i++) {
-			let output = this[this.output[i]];
-			if (typeof output === "number") {
-				this.states.shipCache.state[this.output[i]] = output;
-			} else if (typeof output === "object") {
-				Object.assign(this.states.shipCache.state, output);
-			}
-		}
-		this.states.shipCache.thisStateVer++;
-
 		let stateName = this.constructor.name;
 		if (this.states.discrete[stateName] === undefined) {
 			this.states.discrete[stateName] = {
@@ -52,10 +38,6 @@ Object.assign(StateModule.prototype, {
 	},
 	setDraft: function() {
 		let draft = this.ship.calculateDraft(this.states);
-		Object.assign(this.states.shipCache.state, this.ship.structure.hull.calculateAttributesAtDraft(draft));
-		Object.assign(this.states.shipCache.state, this.ship.calculateStability(this.states));
-		this.states.shipCache.thisStateVer++;
-
 		if (this.states.discrete.FloatingCondition === undefined) {
 			this.states.discrete.FloatingCondition = {
 				state: {},
@@ -68,12 +50,6 @@ Object.assign(StateModule.prototype, {
 	},
 	// write argument speed to vessel state. If undefined, use vessel's design speed
 	setSpeed: function(speed) {
-		if (typeof speed === "undefined" && typeof this.ship.designState.calculationParameters.speed !== "undefined") {
-			speed = this.ship.designState.calculationParameters.speed;
-		}
-		this.states.shipCache.state.speed = speed; // knots
-		this.states.shipCache.thisStateVer++;
-
 		if (this.states.discrete.Speed === undefined) {
 			this.states.discrete.Speed = {
 				state: {},
@@ -89,12 +65,6 @@ Object.assign(StateModule.prototype, {
 	// write argument heading angle to vessel state. if undefined, use 0 degrees
 	// 0 degrees corresponds to vessel pointing to north. clockwise orientation.
 	setHeading: function(angle) {
-		if (typeof angle === "undefined") {
-			angle = 0;
-		}
-		this.states.shipCache.state.heading = angle;
-		this.states.shipCache.thisStateVer++;
-
 		if (this.states.discrete.Heading === undefined) {
 			this.states.discrete.Heading = {
 				state: {},
@@ -114,48 +84,50 @@ Object.assign(StateModule.prototype, {
 			enumerable: true,
 			configurable: false,
 			get: function cache() {
-				if (this.wavCre !== undefined) { // if state module uses a wave creation object
-					if (this.cache[cacheName] === undefined) {
-						this.cache[cacheName] = {
-							shipStateVersion: 0,
-							waveStateVersion: 0
-						};
-					}
-					if (this.cache[cacheName].shipStateVersion === this.states.shipCache.thisStateVer && this.cache[cacheName].waveStateVersion === this.wavCre.version) {
-						return this.cache[cacheName].value;
-					}
-					this.cache[cacheName].value = init.call(this);
-					this.cache[cacheName].shipStateVersion = this.states.shipCache.thisStateVer;
-					this.cache[cacheName].waveStateVersion = this.wavCre.version;
-					return this.cache[cacheName].value;
-
-/* 					if (cache.hasOwnProperty("value") && cache.shipStateVersion === this.states.shipCache.thisStateVer && cache.waveStateVersion === this.wavCre.version) {
-						return cache.value;
-					}
-					cache.value = init.call(this);
-					cache.shipStateVersion = this.states.shipCache.thisStateVer;
-					cache.waveStateVersion = this.wavCre.version;
-					return cache.value; */
+				// if state module uses a wave creation object
+				let hasWave;
+				if (this.wavCre !== undefined) {
+					hasWave = true;
+				} else { // if it has only a ship module
+					hasWave = false;
 				}
-				// if it has only a ship module
+
 				if (this.cache[cacheName] === undefined) {
-					this.cache[cacheName] = {
-						shipStateVersion: 0
-					};
+					this.cache[cacheName] = {};
+					for (let i = 0; i < this.cacheDependence.length; i++) {
+						let dependenceName = this.cacheDependence[i];
+						this.cache[cacheName][dependenceName + "Version"] = 0;
+					}
+					if (hasWave) {
+						this.cache[cacheName].waveStateVersion = 0;
+					}
 				}
-				if (this.cache[cacheName].shipStateVersion === this.states.shipCache.thisStateVer) {
-					return this.cache[cacheName].value;
-				}
-				this.cache[cacheName].value = init.call(this);
-				this.cache[cacheName].shipStateVersion = this.states.shipCache.thisStateVer;
-				return this.cache[cacheName].value;
 
-/* 				if (cache.hasOwnProperty("value") && cache.shipStateVersion === this.states.shipCache.thisStateVer) {
-					return cache.value;
+				let needsUpdate = false;
+				for (let i = 0; i < this.cacheDependence.length; i++) {
+					let dependenceName = this.cacheDependence[i];
+					if (this.cache[cacheName][dependenceName + "Version"] !== this.states.discrete[dependenceName].thisStateVer) {
+						needsUpdate = true;
+						break;
+					}
 				}
-				cache.value = init.call(this);
-				cache.shipStateVersion = this.states.shipCache.thisStateVer;
-				return cache.value; */
+				if (hasWave && needsUpdate === false) {
+					if (this.cache[cacheName].waveStateVersion !== this.wavCre.version) {
+						needsUpdate = true;
+					}
+				}
+
+				if (needsUpdate) {
+					this.cache[cacheName].value = init.call(this);
+					for (let i = 0; i < this.cacheDependence.length; i++) {
+						let dependenceName = this.cacheDependence[i];
+						this.cache[cacheName][dependenceName + "Version"] = this.states.discrete[dependenceName].thisStateVer;
+					}
+					if (hasWave) {
+						this.cache[cacheName].waveStateVersion = this.wavCre.version;
+					}
+				}
+				return this.cache[cacheName].value;
 			}
 		};
 	}
