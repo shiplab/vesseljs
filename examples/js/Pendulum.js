@@ -13,9 +13,9 @@ function Pendulum(ship, aFrame, states, wavCre, xLever, yLever, zLever, cableLen
 	this.states.continuous.phi = phiInit;
 
 	this.f = function(t, phi) {
-		let xRotAcc = - Math.sign(states.continuous.motion.roll) * states.shipCache.state.rollAmp * Math.pow(wavCre.waveDef.waveFreq, 2) * Math.cos(wavCre.waveDef.waveFreq * t);
-		let yRotAcc = - Math.sign(states.continuous.motion.pitch) * states.shipCache.state.pitchAmp * Math.pow(wavCre.waveDef.waveFreq, 2) * Math.cos(wavCre.waveDef.waveFreq * t);
-		let zTransAcc = - states.shipCache.state.heaveAmp * Math.pow(wavCre.waveDef.waveFreq, 2) * Math.cos(wavCre.waveDef.waveFreq * t);
+		let xRotAcc = - Math.sign(states.continuous.motion.roll) * states.discrete.WaveMotion.state.rollAmp * Math.pow(wavCre.waveDef.waveFreq, 2) * Math.cos(wavCre.waveDef.waveFreq * t);
+		let yRotAcc = - Math.sign(states.continuous.motion.pitch) * states.discrete.WaveMotion.state.pitchAmp * Math.pow(wavCre.waveDef.waveFreq, 2) * Math.cos(wavCre.waveDef.waveFreq * t);
+		let zTransAcc = - states.discrete.WaveMotion.state.heaveAmp * Math.pow(wavCre.waveDef.waveFreq, 2) * Math.cos(wavCre.waveDef.waveFreq * t);
 
 		let xdotdot = zLever * yRotAcc;
 		let ydotdot = - zLever * xRotAcc;

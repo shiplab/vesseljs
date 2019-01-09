@@ -162,13 +162,13 @@ function useShipSpec(contents) {
 	var t = numeric.linspace(0,tmax,5000);
 
 	var heave = [];
-	var heaveCoeff = states.shipCache.state.heaveAmp;
+	var heaveCoeff = states.discrete.WaveMotion.state.heaveAmp;
 	for (var index = 0; index < t.length; index++) {
 		heave.push(heaveCoeff * Math.cos(wavCre.waveDef.waveFreq * t[index]));
 	}
 
 	var roll = [];
-	var rollCoeff = states.shipCache.state.rollAmp;
+	var rollCoeff = states.discrete.WaveMotion.state.rollAmp;
 	for (index = 0; index < t.length; index++) {
 		roll.push(rollCoeff * Math.cos(wavCre.waveDef.waveFreq * t[index]));
 	}
@@ -213,8 +213,8 @@ function animate() {
 	var time = clock.getElapsedTime();
 	var dt = time - tprev;
 
-	ship3D.heave = states.shipCache.state.heaveAmp * Math.cos(wavCre.waveDef.waveFreq * time);
-	ship3D.roll = - states.shipCache.state.rollAmp * Math.cos(wavCre.waveDef.waveFreq * time);
+	ship3D.heave = states.discrete.WaveMotion.state.heaveAmp * Math.cos(wavCre.waveDef.waveFreq * time);
+	ship3D.roll = - states.discrete.WaveMotion.state.rollAmp * Math.cos(wavCre.waveDef.waveFreq * time);
 
 	states.continuous.motion.heave = ship3D.heave;
 	states.continuous.motion.roll = ship3D.roll;
