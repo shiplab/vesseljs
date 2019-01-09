@@ -103,7 +103,7 @@ yLever, yDiff, xLever, loadGroup;
 	};
 	window.addEventListener('resize', onResize, false);
 	onResize();
-	camera.position.set(oSize*0.05, -oSize*0.3, oSize*0.05);
+	camera.position.set(oSize*0.02, -oSize*0.12, oSize*0.02);
 	camera.lookAt(zUpCont.position);
 	zUpCont.add(camera);
 
@@ -244,20 +244,6 @@ yLever, yDiff, xLever, loadGroup;
 			var rotAngles = new THREE.Euler(states.continuous.phi[0], states.continuous.phi[1], 0, 'XYZ');
 			loadGroup.setRotationFromEuler(rotAngles);
 		});
-
-		scale = gui.addFolder("Ship");
-		scale.add(ship3D.scale, "x", 0.9, 1.1).onFinishChange(scaleShip); // use .onChange(scaleShip) for real time change
-		scale.add(ship3D.scale, "y", 0.9, 1.1).onFinishChange(scaleShip);
-		scale.add(ship3D.scale, "z", 0.9, 1.1).onFinishChange(scaleShip);
-		scale.open();
-
-		function scaleShip() {
-			let scaledSpec = scaleShipSpec(shipSpec, ship3D.scale.x, ship3D.scale.y, ship3D.scale.z);
-			let scaledShip = new Vessel.Ship(scaledSpec);
-
-			// update visualization with motion of scaled ship
-			initMov(scaledShip);
-		}
 	});
 
 	//Initial configuration:
