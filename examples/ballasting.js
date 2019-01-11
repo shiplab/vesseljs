@@ -95,14 +95,14 @@ simulate = function() {
 	statMod.setDraft();
 
 	stateHistory[time] = {};
-	Object.assign(stateHistory[time], states.shipCache.state);
+	Object.assign(stateHistory[time], states.discrete.FloatingCondition.state);
 
 	res = {
 		"time": time,
-		"draft": states.shipCache.state.T,
+		"draft": states.discrete.FloatingCondition.state.T,
 		"fillC": states.objectCache.Tank1.state.fullness,
 		"fillB": states.objectCache.Tank3.state.fullness,
-		"gmt": states.shipCache.state.GMt
+		"gmt": states.discrete.FloatingCondition.state.GMt
 	};
 	keyResults.push(res);
 
@@ -118,7 +118,7 @@ simulate = function() {
 			cac = false;
 		}
 
-		if (states.shipCache.state.T > tDraft && (states.objectCache.Tank3.state.fullness > unfillRatio)) {
+		if (states.discrete.FloatingCondition.state.T > tDraft && (states.objectCache.Tank3.state.fullness > unfillRatio)) {
 			states.objectCache.Tank3.state.fullness -= unfillRatio;
 			states.objectCache.Tank4.state.fullness -= unfillRatio;
 			bac = true;
@@ -135,14 +135,14 @@ simulate = function() {
 		time += timeStep;
 
 		stateHistory[time] = {};
-		Object.assign(stateHistory[time], states.shipCache.state);
+		Object.assign(stateHistory[time], states.discrete.FloatingCondition.state);
 
 		res = {
 			"time": time,
-			"draft": states.shipCache.state.T,
+			"draft": states.discrete.FloatingCondition.state.T,
 			"fillC": states.objectCache.Tank1.state.fullness,
 			"fillB": states.objectCache.Tank3.state.fullness,
-			"gmt": states.shipCache.state.GMt
+			"gmt": states.discrete.FloatingCondition.state.GMt
 		};
 		keyResults.push(res);
 	}
