@@ -2,9 +2,9 @@
 
 /*Dependends on dat.gui for gui (optional).*/
 
-/*Even though this is called "Playback", the update functions are not 
-restricted to deterministic sequences. This can be used for conducting 
-a simulation too, but does not take care of interactions (that will 
+/*Even though this is called "Playback", the update functions are not
+restricted to deterministic sequences. This can be used for conducting
+a simulation too, but does not take care of interactions (that will
 have to be done within the update functions.)*/
 
 "use strict";
@@ -16,7 +16,7 @@ function Playback(params={}) {
 		this.conf.add(this, "playOrPause").name("play/pause");
 		this.conf.add(this, "stop");
 	}
-	
+
 	this.playables = [];
 }
 Object.assign(Playback.prototype, {
@@ -62,18 +62,18 @@ Object.assign(Playback.prototype, {
 	},
 	update: function() {
 		if (!this.playing) return false;
-		
+
 		let pn = 0.001*performance.now();
 		let dt = pn-this.tLast;
-		this.tLast = pn;		
+		this.tLast = pn;
 		let t = pn-this.tStart;
-		
+
 		for (let i = 0; i < this.playables.length; i++) {
 			if (typeof this.playables[i].update !== "undefined")
 				this.playables[i].update(t,dt);
 			else this.playables[i](t,dt); //assume function
 		}
-		
+
 		return true;
 	}
 });
