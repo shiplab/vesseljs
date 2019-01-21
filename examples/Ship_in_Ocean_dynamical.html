@@ -123,7 +123,7 @@ var userParameters = {C_D, B_44, B_55};
 	//zUpCont.add(new THREE.AxisHelper(1000));
 	zUpCont.add(new THREE.HemisphereLight(0xccccff, 0x666688, 1));
 
-	ocean = new Ocean({parentGUI: gui, //remenber to insert back to see the waves
+	ocean = new Ocean({parentGUI: null /* gui */, //remenber to insert back to see the waves
 						sunDir: sun.position.clone().normalize(),
 						size: oSize, segments: 127});
 	playback.add(ocean);
