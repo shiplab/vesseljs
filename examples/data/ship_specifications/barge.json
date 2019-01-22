@@ -2,8 +2,8 @@
   "attributes": {},
   "designState": {
   	"calculationParameters": {
-  		"LWL_design": 25,
-  		"BWL": 25,
+  		"LWL_design": 22.5,
+  		"BWL": 10,
   		"Draft_design": 2,
   		"Cb_design": 1,
   		"speed": 12,
