@@ -168,6 +168,15 @@ var ship3D, states, wavMo, scale, updateMotion;
 
 			// update visualization with motion of scaled ship
 			initMov(scaledShip);
+
+			// fix CG and draft for scaled 3D model
+			ship3D.cmContainer.position.set(-states.discrete.FloatingCondition.state.w.cg.x, -states.discrete.FloatingCondition.state.w.cg.y, -states.discrete.FloatingCondition.state.w.cg.z);
+			ship3D.normalizer.position.z = states.discrete.FloatingCondition.state.w.cg.z;
+			ship3D.position.z = -states.discrete.FloatingCondition.state.T;
+
+			if (states.discrete.FloatingCondition.state.GMt < 0) {
+				console.error("For this combination of ship dimensions, the GMt is negative.")
+			}
 		}
 	});
 
