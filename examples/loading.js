@@ -88,14 +88,14 @@ simulate = function() {
 	statMod.setDraft();
 
 	stateHistory[time] = {};
-	Object.assign(stateHistory[time], states.shipCache.state);
+	Object.assign(stateHistory[time], states.discrete.FloatingCondition.state);
 
 	res = {
 		"time": time,
-		"draft": states.shipCache.state.T,
-		"gmt": states.shipCache.state.GMt,
+		"draft": states.discrete.FloatingCondition.state.T,
+		"gmt": states.discrete.FloatingCondition.state.GMt,
 		"fill": states.objectCache.Tank1.state.fullness,
-		"kb": states.shipCache.state.KB
+		"kb": states.discrete.FloatingCondition.state.KB
 	};
 	keyResults.push(res);
 
@@ -109,14 +109,14 @@ simulate = function() {
 		time += timeStep;
 
 		stateHistory[time] = {};
-		Object.assign(stateHistory[time], states.shipCache.state);
+		Object.assign(stateHistory[time], states.discrete.FloatingCondition.state);
 
 		res = {
 			"time": time,
-			"draft": states.shipCache.state.T,
-			"gmt": states.shipCache.state.GMt,
+			"draft": states.discrete.FloatingCondition.state.T,
+			"gmt": states.discrete.FloatingCondition.state.GMt,
 			"fill": states.objectCache.Tank1.state.fullness,
-			"kb": states.shipCache.state.KB
+			"kb": states.discrete.FloatingCondition.state.KB
 		};
 		keyResults.push(res);
 	}
