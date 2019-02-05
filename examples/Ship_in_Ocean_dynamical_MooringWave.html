@@ -83,6 +83,15 @@
 			//GUI setup (comment out to remove gui)
 			gui = new dat.GUI();
 
+			// add report to GUI controller
+			var obj = {
+				"Click to read paper": function(){
+					window.open("https://vesseljs.org/papers/open_6_DOF.pdf");
+				}
+			};
+
+			gui.add(obj, "Click to read paper");
+
 			playback = new Playback({
 				parentGUI: gui
 			});
