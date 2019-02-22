@@ -157,9 +157,9 @@ var ship3D, states, wavMo, scale, updateMotion;
 		});
 
 		scale = gui.addFolder("Ship");
-		scale.add(ship3D.scale, "x", 0.9, 1.1).onFinishChange(scaleShip); // use .onChange(scaleShip) for real time change
-		scale.add(ship3D.scale, "y", 0.9, 1.1).onFinishChange(scaleShip);
-		scale.add(ship3D.scale, "z", 0.9, 1.1).onFinishChange(scaleShip);
+		scale.add(ship3D.scale, "x", 0.9, 1.1, 0.01).onFinishChange(scaleShip); // use .onChange(scaleShip) for real time change
+		scale.add(ship3D.scale, "y", 0.95, 1.05, 0.01).onFinishChange(scaleShip);
+		scale.add(ship3D.scale, "z", 0.9, 1.1, 0.01).onFinishChange(scaleShip);
 		scale.open();
 
 		function scaleShip() {
