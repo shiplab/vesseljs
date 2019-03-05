@@ -1,5 +1,4 @@
 <html>
-
 <head>
 	<title>Ship with A-Frame in Ocean</title>
 	<script src="../build/Vessel.js"></script>
@@ -38,268 +37,241 @@
 </head>
 
 <body>
-	<script>
-		"use strict";
+<script>
+"use strict";
 
-		//Globals
-		var renderer, camera, controls, gui, stats, scene,
-			zUpCont, playback, bodies, ocean, tprev, ship3D,
-			states, wavMo, scale, updateMotion, inity, zLever, zDiff,
-			yLever, yDiff, xLever, loadGroup;
+//Globals
+var renderer, camera, controls, gui, stats, scene,
+zUpCont, playback, bodies, ocean, tprev, ship3D,
+states, wavMo, scale, updateMotion, inity, zLever, zDiff, 
+yLever, yDiff, xLever, loadGroup;
 
-		(function main() {
-			//Renderer setup
-			//document.body.style = "overflow: hidden;";
-			document.body.style.overflow = "hidden";
-			var container = document.createElement("div");
-			//container.style = "position: absolute; top: 0; left: 0;"
-			Object.assign(container.style, {
-				position: "absolute",
-				top: 0,
-				left: 0,
-				width: "100vw",
-				height: "100vh"
-			});
-			document.body.appendChild(container);
-			renderer = new THREE.WebGLRenderer({
-				antialias: true
-			});
-			//renderer.setSize(window.innerWidth, window.innerHeight);
-			renderer.setClearColor(0x99aadd);
-			container.appendChild(renderer.domElement);
-			//stats = new Stats();
-			//document.body.appendChild(stats.domElement);
+(function main() {
+	//Renderer setup
+	//document.body.style = "overflow: hidden;";
+	document.body.style.overflow = "hidden";
+	var container = document.createElement("div");
+	//container.style = "position: absolute; top: 0; left: 0;"
+	Object.assign(container.style, {
+		position: "absolute",
+		top: 0,
+		left: 0,
+		width: "100vw",
+		height: "100vh"
+	});
+	document.body.appendChild(container);
+	renderer = new THREE.WebGLRenderer({antialias: true});
+	//renderer.setSize(window.innerWidth, window.innerHeight);
+	renderer.setClearColor(0x99aadd);
+	container.appendChild(renderer.domElement);
+	//stats = new Stats();
+	//document.body.appendChild(stats.domElement);
 
-			//GUI setup (comment out to remove gui)
-			gui = new dat.GUI();
+	//GUI setup (comment out to remove gui)
+	gui = new dat.GUI();
 
-			playback = new Playback({
-				parentGUI: gui
-			});
+	playback = new Playback({parentGUI: gui});
 
-			//Scene setup:
-			scene = new THREE.Scene();
-			let sun = new THREE.DirectionalLight(0xffffff, 2);
-			sun.position.set(-512, 246, 128);
-			scene.add(sun);
+	//Scene setup:
+	scene = new THREE.Scene();
+	let sun = new THREE.DirectionalLight(0xffffff,2);
+	sun.position.set(-512, 246, 128);
+	scene.add(sun);
 
-			//Ocean size
-			let oSize = 2048;
+	//Ocean size
+	let oSize = 2048;
 
-			scene.add(new Skybox(oSize));
+	scene.add(new Skybox(oSize));
 
-			//Use Z up from now on:
-			THREE.Object3D.DefaultUp.set(0, 0, 1);
-			zUpCont = new THREE.Group();
-			zUpCont.rotation.x = -0.5 * Math.PI;
-			scene.add(zUpCont);
+	//Use Z up from now on:
+	THREE.Object3D.DefaultUp.set(0,0,1);
+	zUpCont = new THREE.Group();
+	zUpCont.rotation.x = -0.5*Math.PI;
+	scene.add(zUpCont);
 
-			//Camera setup
-			camera = new THREE.PerspectiveCamera(26, window.innerWidth / window.innerHeight, 1, 1000000);
-			let onResize = function () {
-				let w = container.clientWidth;
-				let h = container.clientHeight;
-				renderer.setSize(w, h);
-				camera.aspect = w / h;
-				camera.updateProjectionMatrix();
-				//camera.aspect = window.innerWidth / window.innerHeight;
-				//camera.updateProjectionMatrix();
-				//renderer.setSize(window.innerWidth, window.innerHeight);
-			};
-			window.addEventListener('resize', onResize, false);
-			onResize();
-			camera.position.set(oSize * 0.02, -oSize * 0.12, oSize * 0.02);
-			camera.lookAt(zUpCont.position);
-			zUpCont.add(camera);
+	//Camera setup
+	camera = new THREE.PerspectiveCamera(26, window.innerWidth/window.innerHeight, 1, 1000000);
+	let onResize = function() {
+		let w = container.clientWidth;
+		let h = container.clientHeight;
+		renderer.setSize(w,h);
+		camera.aspect = w/h;
+		camera.updateProjectionMatrix();
+		//camera.aspect = window.innerWidth / window.innerHeight;
+		//camera.updateProjectionMatrix();
+		//renderer.setSize(window.innerWidth, window.innerHeight);
+	};
+	window.addEventListener('resize', onResize, false);
+	onResize();
+	camera.position.set(oSize*0.02, -oSize*0.12, oSize*0.02);
+	camera.lookAt(zUpCont.position);
+	zUpCont.add(camera);
 
-			controls = new THREE.OrbitControls(camera, renderer.domElement);
-			//controls.minDistance = 0;
-			controls.maxDistance = 0.5 * oSize;
-			controls.enablePan = false;
-			controls.maxPolarAngle = 0.5 * Math.PI - 0.1;
-			controls.minPolarAngle = 0.1;
+	controls = new THREE.OrbitControls(camera, renderer.domElement);
+	//controls.minDistance = 0;
+	controls.maxDistance = 0.5*oSize;
+	controls.enablePan = false;
+	controls.maxPolarAngle = 0.5*Math.PI-0.1;
+	controls.minPolarAngle = 0.1;
 
-			//zUpCont.add(new THREE.AxisHelper(1000));
-			zUpCont.add(new THREE.HemisphereLight(0xccccff, 0x666688, 1));
+	//zUpCont.add(new THREE.AxisHelper(1000));
+	zUpCont.add(new THREE.HemisphereLight(0xccccff, 0x666688, 1));
 
-			ocean = new Ocean({
-				parentGUI: gui,
-				sunDir: sun.position.clone().normalize(),
-				size: oSize,
-				segments: 127
-			});
-			playback.add(ocean);
-			zUpCont.add(ocean);
+	ocean = new Ocean({parentGUI: gui,
+						sunDir: sun.position.clone().normalize(),
+						size: oSize, segments: 127});
+	playback.add(ocean);
+	zUpCont.add(ocean);
 
-			Vessel.loadShip("data/ship_specifications/PX121.json", function (ship) {
-				let shipSpec = ship.getSpecification();
-				initMov(ship);
+	Vessel.loadShip("data/ship_specifications/PX121.json", function (ship) {
+		let shipSpec = ship.getSpecification();
+		initMov(ship);
 
-				function initMov(movShip) {
-					states = ship.designState.clone();
+		function initMov(movShip) {
+			states = ship.designState.clone();
 
-					wavMo = new Vessel.WaveMotion(movShip, states, wavCre);
-					wavMo.output.push("rollAmp");
-					wavMo.writeOutput();
-				}
-
-				ship3D = new Ship3D(ship, {
-					shipState: states,
-					stlPath: "data/STL files",
-					upperColor: 0x33aa33,
-					lowerColor: 0xaa3333,
-					hullOpacity: 1,
-					deckOpacity: 1,
-					objectOpacity: 1
-				});
-				zUpCont.add(ship3D);
-
-				var aFrame = {
-					radiusVert: 0.5,
-					radiusHor: 0.5,
-					height: 8,
-					span: 8
-				};
-
-				var aFrame3D = new AFrame3D(aFrame);
-
-				var deckHeight = 12.9;
-
-				// x measured from the aft ship
-				var xAS = 1.5;
-				// x measured from the center of gravity
-				var initx = xAS - states.discrete.FloatingCondition.state.w.cg.x;
-				xLever = initx;
-
-				// y measured from the centerline
-				var yCL = 0;
-				// y measured from the center of gravity
-				inity = yCL - states.discrete.FloatingCondition.state.w.cg.y;
-				yLever = inity;
-
-				var initzf = deckHeight - states.discrete.FloatingCondition.state.KG;
-				zLever = deckHeight + aFrame.height - states.discrete.FloatingCondition.state.w.cg.z - 2 *
-					aFrame.radiusVert;
-
-				aFrame3D.applyMatrix(new THREE.Matrix4().makeTranslation(initx, inity, initzf));
-
-				ship3D.fluctCont.add(aFrame3D);
-
-				var L = 4; // cable length
-
-				var pend = new Pendulum(ship, aFrame, states, wavCre, xLever, yLever, zLever, L);
-
-				loadGroup = new THREE.Group();
-
-				var initzt = deckHeight + aFrame.height - states.discrete.FloatingCondition.state.T - 2 *
-					aFrame.radiusVert;
-				zDiff = states.discrete.FloatingCondition.state.w.cg.z - states.discrete.FloatingCondition.state
-					.T;
-
-				var geometry = new THREE.CylinderGeometry(0.05, 0.05, L, 32);
-				var material = new THREE.MeshBasicMaterial({
-					color: "black"
-				});
-				var cable = new THREE.Mesh(geometry, material);
-
-				cable.rotation.x = Math.PI / 2;
-
-				cable.position.z = -L / 2;
-
-				loadGroup.add(cable);
-
-				var geometry = new THREE.BoxGeometry(2, 2, 2);
-				var material = new THREE.MeshBasicMaterial({
-					color: 0x00ff00
-				});
-				var load = new THREE.Mesh(geometry, material);
-
-				load.position.z = -L;
-
-				loadGroup.add(load);
-				loadGroup.applyMatrix(new THREE.Matrix4().makeTranslation(initx, inity, initzt));
-
-				zUpCont.add(loadGroup);
-
-				tprev = 0;
-
-				playback.add(function (t) {
-					//motion formula
-					states.continuous.motion = {};
-					let omega = wavCre.waveDef.waveFreq;
-					ship3D.heave = states.discrete.WaveMotion.state.heaveAmp * Math.cos(omega * t -
-						ocean.waves["0"].phi);
-					states.continuous.motion.heave = ship3D.heave;
-
-					// a 90 degrees phase difference of pitch in relation to the wave makes the motion appear more natural
-					ship3D.pitch = states.discrete.WaveMotion.state.pitchAmp * Math.cos(omega * t -
-						ocean.waves["0"].phi + 90 * Math.PI / 180);
-					// pitch and roll may be negative depending on the direction of the waves in relation to the ship
-					if ((wavCre.waveDef.heading > 90) && (wavCre.waveDef.heading < 270)) {
-						ship3D.pitch = -ship3D.pitch;
-					}
-					states.continuous.motion.pitch = ship3D.pitch;
-
-					ship3D.roll = states.discrete.WaveMotion.state.rollAmp * Math.cos(omega * t -
-						ocean.waves["0"].phi);
-					if (wavCre.waveDef.heading < 180) {
-						ship3D.roll = -ship3D.roll;
-					}
-					states.continuous.motion.roll = ship3D.roll;
-
-					let dt = t - tprev;
-
-					loadGroup.position.x = xLever * Math.cos(ship3D.pitch) + zLever * Math.sin(
-						ship3D.pitch);
-					loadGroup.position.y = -zLever * Math.sin(ship3D.roll) + yLever * Math.cos(
-						ship3D.roll);
-					loadGroup.position.z = zDiff + ship3D.heave + zLever * Math.cos(ship3D.roll) *
-						Math.cos(ship3D.pitch) + yLever * Math.sin(ship3D.roll) - xLever * Math.sin(
-							ship3D.pitch);
-
-					if (dt !== 0) {
-						// solve the pendulum ODE:
-						pend.movePendulum(tprev, dt);
-					}
-					tprev = t;
-
-					var rotAngles = new THREE.Euler(states.continuous.phi[0], states.continuous.phi[
-						1], 0, 'XYZ');
-					loadGroup.setRotationFromEuler(rotAngles);
-				});
-			});
-
-			//Initial configuration:
-			let w = ocean.addCosineWave({
-				A: 2,
-				T: 11,
-				theta: 2
-			});
-			if (w.conf) w.conf.close();
-
-			playback.play();
-
-			requestAnimationFrame(animate);
-		})();
-
-		function animate(millitime) {
-			let playing = playback.update();
-
-			//Disable this to freeze water when not playing
-			if (!playing) {
-				ocean.water.material.uniforms.time.value += 1 / 60;
-			}
-
-			ocean.water.render();
-
-			renderer.render(scene, camera);
-			requestAnimationFrame(animate);
-		}
-
-		function updateMotion() {
+			wavMo = new Vessel.WaveMotion(movShip, states, wavCre);
+			wavMo.output.push("rollAmp");
 			wavMo.writeOutput();
 		}
-	</script>
-</body>
 
+		ship3D = new Ship3D(ship, {
+			shipState: states,
+			stlPath: "data/STL files",
+			upperColor: 0x33aa33,
+			lowerColor: 0xaa3333,
+			hullOpacity: 1,
+			deckOpacity: 1,
+			objectOpacity: 1
+		});
+		zUpCont.add(ship3D);
+
+		var aFrame = {
+			radiusVert: 0.5,
+			radiusHor: 0.5,
+			height: 8,
+			span: 8
+		};
+
+		var aFrame3D = new AFrame3D(aFrame);
+
+		var deckHeight = 12.9;
+
+		// x measured from the aft ship
+		var xAS = 1.5;
+		// x measured from the center of gravity
+		var initx = xAS - states.discrete.FloatingCondition.state.w.cg.x;
+		xLever = initx;
+
+		// y measured from the centerline
+		var yCL = 0;
+		// y measured from the center of gravity
+		inity = yCL - states.discrete.FloatingCondition.state.w.cg.y;
+		yLever = inity;
+
+		var initzf = deckHeight - states.discrete.FloatingCondition.state.KG;
+		zLever = deckHeight + aFrame.height - states.discrete.FloatingCondition.state.w.cg.z - 2*aFrame.radiusVert;
+
+		aFrame3D.applyMatrix(new THREE.Matrix4().makeTranslation(initx, inity, initzf));
+
+		ship3D.fluctCont.add(aFrame3D);
+
+		var L = 4; // cable length
+
+		var pend = new Pendulum(ship, aFrame, states, wavCre, xLever, yLever, zLever, L);
+
+		loadGroup = new THREE.Group();
+
+		var initzt = deckHeight + aFrame.height - states.discrete.FloatingCondition.state.T - 2*aFrame.radiusVert;
+		zDiff = states.discrete.FloatingCondition.state.w.cg.z - states.discrete.FloatingCondition.state.T;
+
+		var geometry = new THREE.CylinderGeometry(0.05, 0.05, L, 32);
+		var material = new THREE.MeshBasicMaterial({color: "black"});
+		var cable = new THREE.Mesh(geometry, material);
+
+		cable.rotation.x = Math.PI/2;
+
+		cable.position.z = - L/2;
+
+		loadGroup.add(cable);
+
+		var geometry = new THREE.BoxGeometry(2, 2, 2);
+		var material = new THREE.MeshBasicMaterial({color: 0x00ff00});
+		var load = new THREE.Mesh(geometry, material);
+
+		load.position.z = - L;
+
+		loadGroup.add(load);
+		loadGroup.applyMatrix(new THREE.Matrix4().makeTranslation(initx, inity, initzt));
+
+		zUpCont.add(loadGroup);
+
+		tprev = 0;
+
+		playback.add(function(t) {
+			//motion formula
+			states.continuous.motion = {};
+			let omega = wavCre.waveDef.waveFreq;
+			ship3D.heave = states.discrete.WaveMotion.state.heaveAmp*Math.cos(omega*t-ocean.waves["0"].phi);
+			states.continuous.motion.heave = ship3D.heave;
+
+			// a 90 degrees phase difference of pitch in relation to the wave makes the motion appear more natural
+			ship3D.pitch = states.discrete.WaveMotion.state.pitchAmp*Math.cos(omega*t-ocean.waves["0"].phi+90*Math.PI/180);
+			// pitch and roll may be negative depending on the direction of the waves in relation to the ship
+			if ((wavCre.waveDef.heading > 90) && (wavCre.waveDef.heading < 270)) {
+				ship3D.pitch = -ship3D.pitch;
+			}
+			states.continuous.motion.pitch = ship3D.pitch;
+
+			ship3D.roll = states.discrete.WaveMotion.state.rollAmp*Math.cos(omega*t-ocean.waves["0"].phi);
+			if (wavCre.waveDef.heading < 180) {
+				ship3D.roll = -ship3D.roll;
+			}
+			states.continuous.motion.roll = ship3D.roll;
+
+			let dt = t - tprev;
+
+			loadGroup.position.x = xLever * Math.cos(ship3D.pitch) + zLever * Math.sin(ship3D.pitch);
+			loadGroup.position.y = - zLever * Math.sin(ship3D.roll) + yLever * Math.cos(ship3D.roll);
+			loadGroup.position.z = zDiff + ship3D.heave + zLever * Math.cos(ship3D.roll) * Math.cos(ship3D.pitch) + yLever * Math.sin(ship3D.roll) - xLever * Math.sin(ship3D.pitch);
+
+			if (dt !== 0){
+				// solve the pendulum ODE:
+				pend.movePendulum(tprev, dt);
+			}
+			tprev = t;
+			
+			var rotAngles = new THREE.Euler(states.continuous.phi[0], states.continuous.phi[1], 0, 'XYZ');
+			loadGroup.setRotationFromEuler(rotAngles);
+		});
+	});
+
+	//Initial configuration:
+	let w = ocean.addCosineWave({A:2, T:11, theta: 2});
+	if (w.conf) w.conf.close();
+
+	playback.play();
+
+	requestAnimationFrame(animate);
+})();
+
+function animate(millitime) {
+	let playing = playback.update();
+
+	//Disable this to freeze water when not playing
+	if (!playing) {
+		ocean.water.material.uniforms.time.value += 1/60;
+	}
+
+	ocean.water.render();
+
+	renderer.render(scene, camera);
+	requestAnimationFrame(animate);
+}
+
+function updateMotion(){
+	wavMo.writeOutput();
+}
+</script>
+</body>
 </html>

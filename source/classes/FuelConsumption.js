@@ -2,7 +2,7 @@ function FuelConsumption(ship, states, powerPlant) {
 	StateModule.call(this, ship, states);
 	this.propellerState = this.states.discrete.PropellerInteraction.state;
 
-	this.setAuxPower = function (Paux) {
+	this.setAuxPower = function(Paux){
 		if (typeof Paux === "undefined") {
 			Paux = 0;
 		}
@@ -34,7 +34,7 @@ Object.assign(FuelConsumption.prototype, {
 });
 
 Object.defineProperties(FuelConsumption.prototype, {
-	consumptionRate: StateModule.prototype.memoized(function () { // consumption rate in kg/s
+	consumptionRate: StateModule.prototype.memoized(function() { // consumption rate in kg/s
 		// share load among engines in a system's array
 		function shareLoad(system, load) {
 			var triggerRatio = 0.8; // define loading rate at which next engine in the power system will be activated for sharing loads
@@ -46,9 +46,9 @@ Object.defineProperties(FuelConsumption.prototype, {
 			}
 
 			if (typeof system.etag === "number") { // diesel electrical system
-				load = load / (system.etas * system.etag);
+				load = load/(system.etas * system.etag);
 			} else { // diesel mechanical system
-				load = load / system.etas; // consumption rate in kg/s
+				load = load/system.etas; // consumption rate in kg/s
 			}
 
 			// distribute loads among engines
@@ -62,13 +62,13 @@ Object.defineProperties(FuelConsumption.prototype, {
 					capSum += engCapac[eng];
 					if (load <= triggerRatio * capSum) { // if engines can support load
 						for (i = 0; i <= eng; i++) { // distribute load proportionally to engines' capacities
-							loads[i] = load / capSum;
+							loads[i] = load/capSum;
 						}
 						break;
 					}
 				}
 			} else if (triggerRatio * partCapac < load && load <= totalCapac) { // if all engines are loaded above trigger ratio, make them all have same load %
-				loads.fill(load / totalCapac);
+				loads.fill(load/totalCapac);
 			} else if (load > totalCapac) {
 				console.error("Engines are overloaded. Power plant can't provide current required power.");
 				loads.fill(1);
@@ -83,7 +83,7 @@ Object.defineProperties(FuelConsumption.prototype, {
 					} else if (system.engines[i].polOrder === 2) {
 						SFOC = system.engines[i].a * Math.pow(loads[i], 2) + system.engines[i].b * loads[i] + system.engines[i].c;
 					}
-					cons += SFOC / (1000 * 3600) * loads[i] * engCapac[i]; // consumption rate in kg/s
+					cons += SFOC/(1000 * 3600) * loads[i] * engCapac[i]; // consumption rate in kg/s
 				}
 			}
 			return cons;
@@ -91,10 +91,10 @@ Object.defineProperties(FuelConsumption.prototype, {
 
 		var consumptionRate;
 		if (typeof this.powerPlant.auxiliary === "object") { // calculate results for vessels which have main and auxiliary power systems
-			consumptionRate = this.powerPlant.main.noSys * shareLoad(this.powerPlant.main, this.propellerState.Ps / (1000 * this.powerPlant.main.noSys));
-			consumptionRate += shareLoad(this.powerPlant.auxiliary, this.auxPowerState.Paux / 1000);
+			consumptionRate = this.powerPlant.main.noSys * shareLoad(this.powerPlant.main, this.propellerState.Ps/(1000 * this.powerPlant.main.noSys));
+			consumptionRate += shareLoad(this.powerPlant.auxiliary, this.auxPowerState.Paux/1000);
 		} else { // calculate results for vessels which have only one power system
-			consumptionRate = shareLoad(this.powerPlant.main, (this.propellerState.Ps + this.auxPowerState.Paux) / 1000);
+			consumptionRate = shareLoad(this.powerPlant.main, (this.propellerState.Ps + this.auxPowerState.Paux)/1000);
 		}
 		return consumptionRate;
 	})

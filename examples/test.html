@@ -17,33 +17,33 @@
 
     <!-- Bootstrap Core CSS -->
     <link href="css/bootstrap.min.css" rel="stylesheet">
-
+    
     <!-- jQuery Version 1.11.1 -->
     <script src="js/libs/jquery.js"></script>
 
     <!-- Bootstrap Core JavaScript -->
-    <script src="js/libs/bootstrap.min.js"></script>
-
-    <!-- D3JavaScript -->
-    <script src="js/libs/d3_v4.9.1.js"></script>
-
-    <!-- Three script -->
+    <script src="js/libs/bootstrap.min.js"></script> 
+	
+	<!-- D3JavaScript -->
+	<script src="js/libs/d3_v4.9.1.js"></script>
+	
+	<!-- Three script -->
     <script src="js/libs/three.js"></script>
-    <script src="js/libs/STLLoader.js"></script>
+	<script src="js/libs/STLLoader.js"></script>
     <script src="js/libs/OrbitControls.js"></script>
 
-    <!--Import library-->
-    <script src="../build/Vessel.js"></script>
+	<!--Import library-->
+	<script src="../build/Vessel.js"></script>
 
-    <!-- Prettyprinting of JSON data -->
-    <script type="text/javascript" src="js/libs/renderjson.js"></script>
-
-    <!--Ship3D class for three.js-->
-    <script src="js/Ship3D.js"></script>
-
+	<!-- Prettyprinting of JSON data -->
+	<script type="text/javascript" src="js/libs/renderjson.js"></script>
+	
+	<!--Ship3D class for three.js-->
+	<script src="js/Ship3D.js"></script>
+    
     <!-- Plotly.js -->
-    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>    
+    
     <!-- alegebra.js -->
     <script src="js/libs/algebra-0.2.6.min.js"></script>
 
@@ -62,46 +62,43 @@
     <nav class="navbar navbar-inverse">
         <div class="container">
             <!-- Add  the <div>[Something]</div> structure for each header in the navbar-->
-            <div class="navbar-header">
+            <div class="navbar-header">               
                 <a class="navbar-brand" href="https://github.com/shiplab/vesseljs">Github project page</a>
             </div>
             <!-- This is for the right part of the navbar. Reserved for Shiplab logo-->
             <div class="nav navbar-nav navbar-right">
                 <div class="navbar-header">
-                    <a class="navbar-brand" href="http://www.shiplab.hials.org/"><img src="images/barquinho.png" alt="Shiplab logo"
-                            style="height:150%">
-                    </a>
+                    <a class="navbar-brand" href="http://www.shiplab.hials.org/"><img src="images/barquinho.png" alt="Shiplab logo" style="height:150%"> 
+                    </a>                    
                 </div>
             </div>
         </div>
     </nav>
-
+            
     <!-- Container creates the space -->
     <div class="container">
-
+        
         <!-- Row creates horizontal groups of columns -->
         <div class="row">
-
+            
             <!-- choose horizontal layout in https://www.w3schools.com/bootstrap/bootstrap_grid_examples.asp-->
-
+            
             <!-- No divisions in page. Only 1 column. -->
-            <div class="col-md-12 text-center">
+             <div class="col-md-12 text-center">
                 <h2>Ship as object</h2>
-            </div>
-
-            <div class="col-md-12 text-center">
-
+            </div>  
+            
+			<div class="col-md-12 text-center">
+                
                 <!-- Link the GitHub page if you have one. Add a pdf of how the project works if necessary. Just put it inside the same folder and call it how_to.pdf -->
                 <!--<h1>Ship as Object</h1>-->
-                <p>This app asks for a JSON file
-                    and gives back the pretty form of the JSON element. It also plots a 3D image of the ship. Sample
-                    data is loaded at startup.</p>
-
-                <p>Developed by: Elias Hasle, Vicente Alejandro Iváñez Encinas and Henrique M. Gaspar. Visualization
-                    made using three.js.</p>
+                <p>This app asks for a JSON file 
+                and gives back the pretty form of the JSON element. It also plots a 3D image of the ship. Sample data is loaded at startup.</p>
+				                                    
+				<p>Developed by: Elias Hasle, Vicente Alejandro Iváñez Encinas and Henrique M. Gaspar. Visualization made using three.js.</p>
 
             </div>
-
+			
             <div class="col-md-12 text-left">
                 <h2>Input</h2>
                 <input type="file" id="file-input" />
@@ -109,13 +106,13 @@
                 <pre id="file-content"></pre>
                 <br>
             </div>
-
+            
             <div class="col-md-12 text-left">
                 <h2>3D orbit view of hull and parts</h2>
+			</div>
+			<div id="3d" class="col-md-12 text-left" style="min-height: 80vh">
             </div>
-            <div id="3d" class="col-md-12 text-left" style="min-height: 80vh">
-            </div>
-
+            
             <div class="col-md-12 text-left">
                 <h2>Whole ship</h2>
                 <h3>Ship specifications</h3>
@@ -126,7 +123,6 @@
                             <th>Value</th>
                         </tr>
                     </thead>
-
                     <body>
                         <tr>
                             <td>Lenght Overall</td>
@@ -152,9 +148,9 @@
                             <td>Lightweight</td>
                             <td><span id="lightweight"></span><span> kg</span></td>
                         </tr>
-
+                        
                     </body>
-
+                
 
                 </table>
                 <h3>Calculations</h3>
@@ -162,67 +158,66 @@
                     <thead>
                         <tr>
                             <th>Variable</th>
-                            <th>Calculated value</th>
+                            <th>Calculated value</th>                      
                         </tr>
-
+                    
                     </thead>
-
                     <body>
                         <tr>
-                            <td>Draft Amidships (m)</td>
-                            <td><span id="draftc"></span></td>
+                           <td>Draft Amidships (m)</td> 
+                           <td><span id = "draftc"></span></td> 
                         </tr>
 
                         <tr>
-                            <td>Displacement (t)</td>
-                            <td><span id="dispc"></span></td>
+                           <td>Displacement (t)</td> 
+                            <td><span id = "dispc"></span></td> 
                         </tr>
                         <tr>
-                            <td>Waterline Lenght (m)</td>
-                            <td><span id="lwlc"></span></td>
+                           <td>Waterline Lenght (m)</td> 
+                           <td><span id = "lwlc"></span></td> 
                         </tr>
                         <tr>
-                            <td>Maximum Waterline Breath (m)</td>
-                            <td><span id="bwlc"></span></td>
+                           <td>Maximum Waterline Breath (m)</td> 
+                           <td><span id = "bwlc"></span></td> 
                         </tr>
 
                         <tr>
-                            <td>Waterplane Area (m2)</td>
-                            <td><span id="Awpc"></span></td>
+                           <td>Waterplane Area (m2)</td> 
+                           <td><span id = "Awpc"></span></td> 
                         </tr>
                         <tr>
-                            <td>Cb</td>
-                            <td><span id="cbc"></span></td>
+                           <td>Cb</td> 
+                           <td><span id = "cbc"></span></td> 
                         </tr>
                         <tr>
-                            <td>LCB (m)</td>
-                            <td><span id="LCBc"></span></td>
-                            <td></td>
+                           <td>LCB (m)</td> 
+                           <td><span id = "LCBc"></span></td> 
+                           <td></td> 
                         </tr>
                         <tr>
-                            <td>LCF (m)</td>
-                            <td><span id="LCFc"></span></td>
-                            <td></td>
+                           <td>LCF (m)</td> 
+                           <td><span id = "LCFc"></span></td> 
+                           <td></td> 
                         </tr>
                         <tr>
-                            <td>KB (m)</td>
-                            <td><span id="KBc"></span></td>
+                           <td>KB (m)</td> 
+                           <td><span id = "KBc"></span></td> 
                         </tr>
                         <tr>
-                            <td>KG (m)</td>
-                            <td><span id="KGc"></span></td>
+                           <td>KG (m)</td> 
+                           <td><span id = "KGc"></span></td> 
                         </tr>
                         <tr>
-                            <td>BM (m)</td>
-                            <td><span id="BMc"></span></td>
+                           <td>BM (m)</td> 
+                           <td><span id = "BMc"></span></td> 
                         </tr>
                         <tr>
-                            <td>GM (m)</td>
-                            <td><span id="GMc"></span></td>
+                           <td>GM (m)</td> 
+                           <td><span id = "GMc"></span></td> 
                         </tr>
-
+                        
                     </body>
-
+                
                 </table>
                 <h2>General arrangement</h2>
                 <h3>Specification</h3>
@@ -236,32 +231,31 @@
                             <th>Deadweight</th>
                         </tr>
                     </thead>
-
                     <body>
                         <tr>
                             <td><span>Block0</span></td>
-                            <td><span id="bl0"></span><span> m</span></td>
-                            <td><span id="bb0"></span><span> m</span></td>
-                            <td><span id="bh0"></span><span> m</span></td>
-                            <td><span id="bwe0"></span><span> kg</span></td>
+                            <td><span id="bl0"></span><span> m</span></td>                            
+                            <td><span id="bb0"></span><span> m</span></td>                            
+                            <td><span id="bh0"></span><span> m</span></td>                            
+                            <td><span id="bwe0"></span><span> kg</span></td>                            
                         </tr>
                         <tr>
                             <td><span>Block0</span></td>
-                            <td><span id="bl1"></span><span> m</span></td>
-                            <td><span id="bb1"></span><span> m</span></td>
-                            <td><span id="bh1"></span><span> m</span></td>
-                            <td><span id="bwe1"></span><span> kg</span></td>
+                            <td><span id="bl1"></span><span> m</span></td>                            
+                            <td><span id="bb1"></span><span> m</span></td>                            
+                            <td><span id="bh1"></span><span> m</span></td>                            
+                            <td><span id="bwe1"></span><span> kg</span></td>                            
                         </tr>
                         <tr>
                             <td><span>Block2</span></td>
-                            <td><span id="bl2"></span><span> m</span></td>
-                            <td><span id="bb2"></span><span> m</span></td>
-                            <td><span id="bh2"></span><span> m</span></td>
-                            <td><span id="bwe2"></span><span> kg</span></td>
+                            <td><span id="bl2"></span><span> m</span></td>                            
+                            <td><span id="bb2"></span><span> m</span></td>                            
+                            <td><span id="bh2"></span><span> m</span></td>                            
+                            <td><span id="bwe2"></span><span> kg</span></td>                            
                         </tr>
-
+                        
                     </body>
-
+                
                 </table>
                 <h3>Calculations</h3>
                 <table class="table">
@@ -270,377 +264,370 @@
                         <th>Hand value</th>
                         <th>Calculated value</th>
                     </thead>
-
                     <body>
                         <tr>
-                            <td>Deadweight (kg)</td>
-                            <td><span id="deadweight"></span></td>
-                            <td><span id="deadweightc"></span>
-                            <td>
-                            <td><span></span></td>
+                            <td>Deadweight (kg)</td> 
+                            <td><span id = "deadweight"></span></td> 
+                            <td><span id = "deadweightc"></span><td>
+                            <td><span></span></td> 
                         </tr>
                         <tr>
-                            <td>Total area (m2)</td>
-                            <td><span id="bareac"></span></td>
-                            <td><span id="barea"></span>
-                            <td>
-                            <td><span></span></td>
+                            <td>Total area (m2)</td> 
+                            <td><span id = "bareac"></span></td> 
+                            <td><span id = "barea"></span><td>
+                            <td><span></span></td> 
                         </tr>
                         <tr>
-                            <td>Total Volume (m3)</td>
-                            <td><span id="bvolc"></span></td>
-                            <td><span id="bvol"></span>
-                            <td>
-                            <td><span></span></td>
+                            <td>Total Volume (m3)</td> 
+                            <td><span id = "bvolc"></span></td> 
+                            <td><span id = "bvol"></span><td>
+                            <td><span></span></td> 
                         </tr>
                     </body>
-
+                
                 </table>
                 <div id="myDiv" style="width: 480px; height: 400px;">
-                </div>
-            </div>
+			</div>
         </div>
+    </div>
+        
+    <script>
+		"use strict";
+		
+	    // Create scene+
+		var renderer, scene, camera, controls, ship3D;
+		
+		//Ready renderer and scene
+        (function (){
+			renderer = new THREE.WebGLRenderer({antialias: true});
+			renderer.setPixelRatio(window.devicePixelRatio);
+			renderer.setClearColor(0xA9CCE3, 1);
 
-        <script>
-            "use strict";
-
-            // Create scene+
-            var renderer, scene, camera, controls, ship3D;
-
-            //Ready renderer and scene
-            (function () {
-                renderer = new THREE.WebGLRenderer({
-                    antialias: true
-                });
-                renderer.setPixelRatio(window.devicePixelRatio);
-                renderer.setClearColor(0xA9CCE3, 1);
-
-                // get the div that will hold the renderer
-                var container = document.getElementById('3d');
-                //renderer.setSize(container.clientWidth, container.clientHeight);
-                // add the renderer to the div
-                container.appendChild(renderer.domElement);
-
-                scene = new THREE.Scene();
-
-                //Camera and controls:
-                camera = new THREE.PerspectiveCamera(50);
-                camera.up.set(0, 0, 1);
-                scene.add(camera);
-                controls = new THREE.OrbitControls(camera, renderer.domElement);
-
-                //Respond to window resize:
-                function onResize() {
-                    renderer.setSize(container.clientWidth, container.clientHeight);
-                    camera.aspect = container.clientWidth / container.clientHeight;
-                    camera.updateProjectionMatrix();
-                }
-                window.addEventListener("resize", onResize);
-                onResize(); //Ensure the initial setup is good too
-
-                //Add lights:
-                scene.add(new THREE.AmbientLight(0xffffff, 0.3));
-                scene.add(function () {
-                    let sun = new THREE.DirectionalLight(0xffffff, 1);
-                    sun.position.set(1, 1, 1);
-                    return sun;
-                }());
-
-            })();
-
-            // read file from user
-            function readSingleFile(e) {
-                var file = e.target.files[0];
-                if (!file) {
-                    return;
-                }
-
-                var reader = new FileReader();
-                reader.onload = function (e) {
-                    var contents = e.target.result;
-                    //call common function for user files and server files
-                    useFileData(contents);
-                }
-                reader.readAsText(file);
+			// get the div that will hold the renderer
+			var container = document.getElementById('3d');
+			//renderer.setSize(container.clientWidth, container.clientHeight);
+			// add the renderer to the div
+			container.appendChild(renderer.domElement);
+			
+			scene = new THREE.Scene();
+			
+			//Camera and controls:
+			camera = new THREE.PerspectiveCamera(50);
+			camera.up.set(0,0,1);
+			scene.add(camera);
+			controls = new THREE.OrbitControls(camera, renderer.domElement);
+			
+			//Respond to window resize:
+			function onResize() {
+				renderer.setSize(container.clientWidth, container.clientHeight);
+				camera.aspect = container.clientWidth / container.clientHeight;
+				camera.updateProjectionMatrix();
+			}
+			window.addEventListener("resize", onResize);
+			onResize(); //Ensure the initial setup is good too
+	
+			//Add lights:
+			scene.add(new THREE.AmbientLight(0xffffff,0.3));
+			scene.add(function() {
+				let sun = new THREE.DirectionalLight(0xffffff,1);
+				sun.position.set(1,1,1);
+				return sun;
+			}());
+			
+        })();
+				
+        // read file from user
+        function readSingleFile(e){
+            var file = e.target.files[0];
+            if (!file) {
+                return;
             }
+			
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var contents = e.target.result;
+				//call common function for user files and server files
+				useFileData(contents);
+            }
+            reader.readAsText(file);
+        }
+		
+		//Load sample file:
+		new THREE.FileLoader().load("data/ship_specifications/Cruise.json", useFileData);
+		
+		function useFileData(contents) {
+			var shipspec = JSON.parse(contents);
+			displayContents(shipspec);
+			var ship = new Vessel.Ship(shipspec);
+			if (ship3D !== undefined) {
+				scene.remove(ship3D);
+			}
+			ship3D = new Ship3D(ship, "data/STL files");
+			scene.add(ship3D);
+			
+			let LOA = ship.structure.hull.attributes.LOA;
+			camera.position.set(0.7*LOA, 0.7*LOA, 0.7*LOA);
+			controls.target = new THREE.Vector3(LOA/2,0,0);
+			controls.update();
+			animate();
+            
+            //Ship specification
+            
+            let BOA = ship.structure.hull.attributes.BOA
+            let depth = ship.structure.hull.attributes.Depth
+            let draftdesign = ship.designState.calculationParameters.Draft_design
+            let speeddesign = ship.designState.calculationParameters.speed
+            
+            document.getElementById("LOA").innerHTML = LOA;
+            document.getElementById("BOA").innerHTML = BOA;
+            document.getElementById("depth").innerHTML = depth;
+            document.getElementById("draftdesign").innerHTML = draftdesign;
+            document.getElementById("speeddesign").innerHTML = speeddesign;
+            
+            //calculate stability
+            let a = ship.calculateStability();
+            let GM2 = a.GMt.toFixed(3);
+            
+            
 
-            //Load sample file:
-            new THREE.FileLoader().load("data/ship_specifications/Cruise.json", useFileData);
+            
+            /*//baseObjects
+            let lightweight = ship.structure.hull.attributes.lightweight;
+            
+            let block0 = ship.baseObjects[Object.keys(ship.baseObjects)[0]];
+            let block1 = ship.baseObjects[Object.keys(ship.baseObjects)[1]];
+            let block2 = ship.baseObjects[Object.keys(ship.baseObjects)[2]];
+            
+            let bl0 = block0.boxDimensions.length;
+            let bb0 = block0.boxDimensions.breadth;
+            let bh0 = block0.boxDimensions.height;
+            let bwe0 = block0.weightInformation.lightweight;
+            
+            let bl1 = block1.boxDimensions.length;
+            let bb1 = block1.boxDimensions.breadth;
+            let bh1 = block1.boxDimensions.height;
+            let bwe1 = block1.weightInformation.lightweight;
+            
+            let bl2 = block2.boxDimensions.length;
+            let bb2 = block2.boxDimensions.breadth;
+            let bh2 = block2.boxDimensions.height;
+            let bwe2 = block2.weightInformation.lightweight;
+                        
+            let deadweightc = bwe0 + bwe1 + bwe2;
+            
+            let barea = bl0 * bb0 + bl1 * bb1 + bl2 * bb2;
+            let bvol = bl0 * bb0 * bh0 + bl1 * bb1 * bh1 + bl2 * bb2 * bh2;
+                        
+            document.getElementById("bl0").innerHTML = bl0;
+            document.getElementById("bb0").innerHTML = bb0;
+            document.getElementById("bh0").innerHTML = bh0;
+            document.getElementById("bh0").innerHTML = bh0;
+            document.getElementById("bwe0").innerHTML = bwe0;
+            
+            document.getElementById("bl1").innerHTML = bl1;
+            document.getElementById("bb1").innerHTML = bb1;
+            document.getElementById("bh1").innerHTML = bh1;
+            document.getElementById("bwe1").innerHTML = bwe1;
+            
+            document.getElementById("bl2").innerHTML = bl2;
+            document.getElementById("bb2").innerHTML = bb2;
+            document.getElementById("bh2").innerHTML = bh2;
+            document.getElementById("bwe2").innerHTML = bwe2;
+            
+            document.getElementById("barea").innerHTML = barea;
+            document.getElementById("bvol").innerHTML = bvol;
+            
+            //baseObjects calculated values
+            
+            let bareac = 84;
+            let bvolc = 240;
+            document.getElementById("bareac").innerHTML = bareac;
+            document.getElementById("bvolc").innerHTML = bvolc;
+            */
+			//Elias comments: calculated stability values a uses a calculated draft, whereas the other values below are calculated from a given "design draft".
+            //calculated values
+            let KBc = a.KB.toFixed(3);
+            let KGc = a.KG.toFixed(3);
+            let BMc = a.BMt.toFixed(3);
+            let draftc = 6*0.9996;
+			let ha = ship.structure.hull.calculateAttributesAtDraft(draftc);
+			let LCBc = ha.LCB;
+			let LCFc = ha.LCF;
+            let lwlc = ha.LWL;
+            let bwlc = ha.BWL;
+            let Awpc = ha.Awp;
+            let cbc = ha.Cb;
+            let dispc = lwlc * bwlc * cbc * draftc;
+            
+            //stability small angles, only LW
+            let GZmax = [];
+            let degmax = [];
+            let KGlw = depth * 2 / 3.02;
+            let KBlw = ha.KB / 1.3;
+            let BMlw = ha.BMt / 1.7;
+            let GMlw = KBlw + BMlw - KGlw;
+            let GZ = [];
+            let deg =[]
+            
+            for (let i = 0; i < 10; i++){
+                let ideg = Math.sin(i / 180 * Math.PI) ;
+                GZmax.push(GMlw * ideg);   
+                degmax.push(i+1);
+            }
+            
+            document.getElementById("KBc").innerHTML = KBlw.toFixed(3);
+            document.getElementById("KGc").innerHTML = KGlw.toFixed(3);
+            document.getElementById("BMc").innerHTML = BMlw.toFixed(3);
+            document.getElementById("GMc").innerHTML = GMlw.toFixed(3);
+            document.getElementById("draftc").innerHTML = draftc.toFixed(3);
+            document.getElementById("lwlc").innerHTML = lwlc.toFixed(3);
+            document.getElementById("bwlc").innerHTML = bwlc.toFixed(3);
+            document.getElementById("Awpc").innerHTML = Awpc.toFixed(3);
+            document.getElementById("cbc").innerHTML = cbc.toFixed(3);
+            document.getElementById("LCBc").innerHTML = LCBc.toFixed(3);
+            document.getElementById("LCFc").innerHTML = LCFc.toFixed(3);
+            /*cument.getElementById("lightweight").innerHTML = lightweight.toFixed(3);        document.getElementById("deadweightc").innerHTML = deadweightc.toFixed(3);*/ 
+            document.getElementById("dispc").innerHTML = dispc.toFixed(3);
+            
+            
+                                    
+            //GZ curve
+            
+            let maxang = Math.atan(ship.structure.hull.attributes.Depth / (ship.structure.hull.attributes.BOA / 2)) / Math.PI * 180;
+            let maxanground = Math.round(maxang / 10) * 10
+            //loop for degrees of heel
+            let GZ2 = [];
+            let deg2 = [];
+            for (let i = 0; i < 101; i += 1){
+                //loop for moving the wl through the model
+                for (let ii = 0; ii < 2.5; ii += 0.0001){ /*proper value 0.00001*/
+                    //right line of the hull mr = slope and br = b from y=mx+b
+                    let mr = (ship.structure.hull.attributes.Depth / (ship.structure.hull.attributes.BOA / 2));
+                    let br = ship.structure.hull.attributes.Depth - mr * ship.structure.hull.attributes.BOA / 2;
 
-            function useFileData(contents) {
-                var shipspec = JSON.parse(contents);
-                displayContents(shipspec);
-                var ship = new Vessel.Ship(shipspec);
-                if (ship3D !== undefined) {
-                    scene.remove(ship3D);
-                }
-                ship3D = new Ship3D(ship, "data/STL files");
-                scene.add(ship3D);
+                    //left line of the hull ml = slope and bl = b from y=mx+b
+                    let ml = (ship.structure.hull.attributes.Depth / (-ship.structure.hull.attributes.BOA / 2));
+                    let bl = ship.structure.hull.attributes.Depth - mr * (ship.structure.hull.attributes.BOA / 2);
 
-                let LOA = ship.structure.hull.attributes.LOA;
-                camera.position.set(0.7 * LOA, 0.7 * LOA, 0.7 * LOA);
-                controls.target = new THREE.Vector3(LOA / 2, 0, 0);
-                controls.update();
-                animate();
-
-                //Ship specification
-
-                let BOA = ship.structure.hull.attributes.BOA
-                let depth = ship.structure.hull.attributes.Depth
-                let draftdesign = ship.designState.calculationParameters.Draft_design
-                let speeddesign = ship.designState.calculationParameters.speed
-
-                document.getElementById("LOA").innerHTML = LOA;
-                document.getElementById("BOA").innerHTML = BOA;
-                document.getElementById("depth").innerHTML = depth;
-                document.getElementById("draftdesign").innerHTML = draftdesign;
-                document.getElementById("speeddesign").innerHTML = speeddesign;
-
-                //calculate stability
-                let a = ship.calculateStability();
-                let GM2 = a.GMt.toFixed(3);
-
-
-
-
-                /*//baseObjects
-                let lightweight = ship.structure.hull.attributes.lightweight;
-
-                let block0 = ship.baseObjects[Object.keys(ship.baseObjects)[0]];
-                let block1 = ship.baseObjects[Object.keys(ship.baseObjects)[1]];
-                let block2 = ship.baseObjects[Object.keys(ship.baseObjects)[2]];
-
-                let bl0 = block0.boxDimensions.length;
-                let bb0 = block0.boxDimensions.breadth;
-                let bh0 = block0.boxDimensions.height;
-                let bwe0 = block0.weightInformation.lightweight;
-
-                let bl1 = block1.boxDimensions.length;
-                let bb1 = block1.boxDimensions.breadth;
-                let bh1 = block1.boxDimensions.height;
-                let bwe1 = block1.weightInformation.lightweight;
-
-                let bl2 = block2.boxDimensions.length;
-                let bb2 = block2.boxDimensions.breadth;
-                let bh2 = block2.boxDimensions.height;
-                let bwe2 = block2.weightInformation.lightweight;
-
-                let deadweightc = bwe0 + bwe1 + bwe2;
-
-                let barea = bl0 * bb0 + bl1 * bb1 + bl2 * bb2;
-                let bvol = bl0 * bb0 * bh0 + bl1 * bb1 * bh1 + bl2 * bb2 * bh2;
-
-                document.getElementById("bl0").innerHTML = bl0;
-                document.getElementById("bb0").innerHTML = bb0;
-                document.getElementById("bh0").innerHTML = bh0;
-                document.getElementById("bh0").innerHTML = bh0;
-                document.getElementById("bwe0").innerHTML = bwe0;
-
-                document.getElementById("bl1").innerHTML = bl1;
-                document.getElementById("bb1").innerHTML = bb1;
-                document.getElementById("bh1").innerHTML = bh1;
-                document.getElementById("bwe1").innerHTML = bwe1;
-
-                document.getElementById("bl2").innerHTML = bl2;
-                document.getElementById("bb2").innerHTML = bb2;
-                document.getElementById("bh2").innerHTML = bh2;
-                document.getElementById("bwe2").innerHTML = bwe2;
-
-                document.getElementById("barea").innerHTML = barea;
-                document.getElementById("bvol").innerHTML = bvol;
-
-                //baseObjects calculated values
-
-                let bareac = 84;
-                let bvolc = 240;
-                document.getElementById("bareac").innerHTML = bareac;
-                document.getElementById("bvolc").innerHTML = bvolc;
-                */
-                //Elias comments: calculated stability values a uses a calculated draft, whereas the other values below are calculated from a given "design draft".
-                //calculated values
-                let KBc = a.KB.toFixed(3);
-                let KGc = a.KG.toFixed(3);
-                let BMc = a.BMt.toFixed(3);
-                let draftc = 6 * 0.9996;
-                let ha = ship.structure.hull.calculateAttributesAtDraft(draftc);
-                let LCBc = ha.LCB;
-                let LCFc = ha.LCF;
-                let lwlc = ha.LWL;
-                let bwlc = ha.BWL;
-                let Awpc = ha.Awp;
-                let cbc = ha.Cb;
-                let dispc = lwlc * bwlc * cbc * draftc;
-
-                //stability small angles, only LW
-                let GZmax = [];
-                let degmax = [];
-                let KGlw = depth * 2 / 3.02;
-                let KBlw = ha.KB / 1.3;
-                let BMlw = ha.BMt / 1.7;
-                let GMlw = KBlw + BMlw - KGlw;
-                let GZ = [];
-                let deg = []
-
-                for (let i = 0; i < 10; i++) {
-                    let ideg = Math.sin(i / 180 * Math.PI);
-                    GZmax.push(GMlw * ideg);
-                    degmax.push(i + 1);
-                }
-
-                document.getElementById("KBc").innerHTML = KBlw.toFixed(3);
-                document.getElementById("KGc").innerHTML = KGlw.toFixed(3);
-                document.getElementById("BMc").innerHTML = BMlw.toFixed(3);
-                document.getElementById("GMc").innerHTML = GMlw.toFixed(3);
-                document.getElementById("draftc").innerHTML = draftc.toFixed(3);
-                document.getElementById("lwlc").innerHTML = lwlc.toFixed(3);
-                document.getElementById("bwlc").innerHTML = bwlc.toFixed(3);
-                document.getElementById("Awpc").innerHTML = Awpc.toFixed(3);
-                document.getElementById("cbc").innerHTML = cbc.toFixed(3);
-                document.getElementById("LCBc").innerHTML = LCBc.toFixed(3);
-                document.getElementById("LCFc").innerHTML = LCFc.toFixed(3);
-                /*cument.getElementById("lightweight").innerHTML = lightweight.toFixed(3);        document.getElementById("deadweightc").innerHTML = deadweightc.toFixed(3);*/
-                document.getElementById("dispc").innerHTML = dispc.toFixed(3);
-
-
-
-                //GZ curve
-
-                let maxang = Math.atan(ship.structure.hull.attributes.Depth / (ship.structure.hull.attributes.BOA / 2)) /
-                    Math.PI * 180;
-                let maxanground = Math.round(maxang / 10) * 10
-                //loop for degrees of heel
-                let GZ2 = [];
-                let deg2 = [];
-                for (let i = 0; i < 101; i += 1) {
-                    //loop for moving the wl through the model
-                    for (let ii = 0; ii < 2.5; ii += 0.0001) {
-                        /*proper value 0.00001*/
-                        //right line of the hull mr = slope and br = b from y=mx+b
-                        let mr = (ship.structure.hull.attributes.Depth / (ship.structure.hull.attributes.BOA / 2));
-                        let br = ship.structure.hull.attributes.Depth - mr * ship.structure.hull.attributes.BOA / 2;
-
-                        //left line of the hull ml = slope and bl = b from y=mx+b
-                        let ml = (ship.structure.hull.attributes.Depth / (-ship.structure.hull.attributes.BOA / 2));
-                        let bl = ship.structure.hull.attributes.Depth - mr * (ship.structure.hull.attributes.BOA / 2);
-
-                        //water line mwl = slope and bwl = b from y=mx+b
-                        let mwl = Math.tan(i * Math.PI / 180);
-                        let bwl = ship.designState.calculationParameters.Draft_design - mwl * ii;
-
-                        //intersection betwen waterline and right hull line
-                        let answer1xr = (bwl - br) / (mr - mwl);
-                        let answer1yr = mr * answer1xr - br;
-
-                        //intersection betwen waterline and left hull line
-                        let answer1xl = (bwl - bl) / (ml - mwl);
-                        let answer1yl = ml * answer1xl - bl;
-
-                        //intersection with main deck (wl)
-                        let answerdx = (ship.structure.hull.attributes.Depth - bwl) / mwl;
-
-                        //iteration to find equal areas
-                        let basestartl = ship.designState.calculationParameters.Draft_design / mr + ii;
-                        let basestartr = ship.designState.calculationParameters.Draft_design / mr - ii;
-
-                        //measure areas
-                        let al = Math.abs((answer1yl - ship.designState.calculationParameters.Draft_design) * (
-                            basestartl) / 2);
-
-                        let ar = 0;
-                        let topb = 0;
-                        if (answerdx < ship.structure.hull.attributes.BOA / 2) {
-                            topb = (ship.structure.hull.attributes.BOA / 2) - answerdx;
-                            ar = (ship.structure.hull.attributes.Depth - ship.designState.calculationParameters.Draft_design) *
-                                (topb + basestartr) / 2;
-                        } else {
-
-                            ar = Math.abs((answer1yr - ship.designState.calculationParameters.Draft_design) * (
-                                basestartr) / 2);
-                        }
-
-                        let comp = (ar.toFixed(3) - al.toFixed(3));
-                        //compare areas
-                        if (comp === 0) {
-                            //calculate perpendicular line
-                            let ppmwl = -1 / mwl;
-                            let ppbwl = ship.designState.calculationParameters.Draft_design - (basestartl - ship.designState
-                                .calculationParameters.Draft_design / mr) * ppmwl;
-                            //calculate distance to K
-                            let KNnew = ppbwl / Math.sqrt(Math.pow(-ppmwl, 2) + 1)
-                            let radnew = (i / 180) * Math.PI;
-                            let GZnew = KNnew - Math.sin(radnew) * KGlw
-                            deg.push(i)
-                            GZ.push(GZnew);
-                            break;
-
-                        }
-
+                    //water line mwl = slope and bwl = b from y=mx+b
+                    let mwl = Math.tan(i * Math.PI /180);
+                    let bwl = ship.designState.calculationParameters.Draft_design - mwl * ii ;
+                    
+                    //intersection betwen waterline and right hull line
+                    let answer1xr = (bwl - br) / (mr - mwl);
+                    let answer1yr = mr * answer1xr - br;
+                    
+                    //intersection betwen waterline and left hull line
+                    let answer1xl = (bwl - bl) / (ml - mwl);
+                    let answer1yl = ml * answer1xl - bl;
+                    
+                    //intersection with main deck (wl)
+                    let answerdx = (ship.structure.hull.attributes.Depth - bwl) / mwl;
+                    
+                    //iteration to find equal areas
+                    let basestartl = ship.designState.calculationParameters.Draft_design / mr +ii;
+                    let basestartr = ship.designState.calculationParameters.Draft_design / mr -ii;
+                    
+                    //measure areas 
+                    let al = Math.abs ((answer1yl - ship.designState.calculationParameters.Draft_design) * (basestartl) / 2);
+                                        
+                    let ar = 0;
+                    let topb = 0;
+                    if (answerdx < ship.structure.hull.attributes.BOA / 2){
+                        topb = (ship.structure.hull.attributes.BOA / 2) - answerdx;
+                        ar = (ship.structure.hull.attributes.Depth - ship.designState.calculationParameters.Draft_design) * (topb + basestartr) / 2;
                     }
-
-                }
-
-                for (var ii = 10; ii < 110; ii += 10) {
-                    let rad = (ii / 180) * Math.PI;
-                    let ideg2 = Math.sin(rad);
-                    let KN = [0.612, 1.312, 2.285, 2.974, 3.390, 3.616, 3.598, 3.395, 3.057, 2.612];
-                    let a = (ii / 10) - 1;
-                    let kgsin = KGlw * ideg2
-                    GZmax.push(KN[a] - kgsin);
-                    degmax.push(ii)
-                }
-
-                let traze1 = {
-                    x: deg,
-                    y: GZ,
-                    type: "scatter",
-                    name: "Handmode"
-                }
-                let traze2 = {
-                    x: degmax,
-                    y: GZmax,
-                    type: "scatter",
-                    name: "Maxsurf"
-                }
-                let layout = {
-                    title: "GZ Curve",
-                    xaxis: {
-                        title: "degrees (º)"
-                    },
-                    yaxis: {
-                        title: "GZ (m))"
+                    else {
+                        
+                        ar = Math.abs ((answer1yr - ship.designState.calculationParameters.Draft_design) * (basestartr) / 2);
+                    }                    
+                    
+                    let comp = (ar.toFixed(3)-al.toFixed(3));
+                    //compare areas
+                    if (comp === 0){
+                        //calculate perpendicular line
+                        let ppmwl = - 1 / mwl;
+                        let ppbwl = ship.designState.calculationParameters.Draft_design - (basestartl - ship.designState.calculationParameters.Draft_design / mr) * ppmwl;
+                        //calculate distance to K
+                        let KNnew = ppbwl / Math.sqrt (Math.pow(-ppmwl, 2)+1)
+                        let radnew = (i / 180) * Math.PI;
+                        let GZnew = KNnew - Math.sin(radnew) * KGlw
+                        deg.push(i)
+                        GZ.push(GZnew);
+                        break;
+                       
                     }
+                    
                 }
-                let data1 = [traze1];
-                Plotly.newPlot('myDiv', data1, layout)
 
             }
-
-            function animate() {
-                requestAnimationFrame(animate);
-                renderer.render(scene, camera);
+            
+            for (var ii = 10; ii< 110; ii+= 10){
+                let rad = (ii / 180) * Math.PI;
+                let ideg2 = Math.sin(rad);
+                let KN = [0.612, 1.312, 2.285, 2.974, 3.390, 3.616, 3.598, 3.395, 3.057, 2.612];
+                let a = (ii / 10) - 1;
+                let kgsin = KGlw * ideg2
+                GZmax.push(KN[a] - kgsin);
+                degmax.push(ii)
             }
-
-            // display pretty JSON
-            function displayContents(jsonData) {
-                let fileCont = document.getElementById("file-content");
-                fileCont.innerHTML = "";
-                fileCont.appendChild(
-                    renderjson(jsonData)
-                );
+            
+            let traze1 = {
+                x: deg, 
+                y: GZ, 
+                type: "scatter",
+                name: "Handmode"
             }
+            let traze2 ={
+                x: degmax,
+                y: GZmax,
+                type:"scatter",
+                name: "Maxsurf"
+            }
+            let layout = {
+                title: "GZ Curve",
+                xaxis:{
+                    title: "degrees (º)"
+                },
+                yaxis:{
+                    title: "GZ (m))"
+                }
+            }
+            let data1 = [traze1];
+            Plotly.newPlot('myDiv', data1, layout)
 
-            // Catch file browse
-            document.getElementById('file-input')
-                .addEventListener('change', readSingleFile, false)
-
-            //compare values
-        </script>
-        <!-- /.container -->
-
-
-
-        <!-- Insert own scripts here -->
-
+		}
+		
+		function animate() {
+			requestAnimationFrame(animate);			
+			renderer.render(scene, camera);
+		}
+        
+        // display pretty JSON
+        function displayContents(jsonData) {
+			let fileCont = document.getElementById("file-content");
+			fileCont.innerHTML = "";
+			fileCont.appendChild(
+            renderjson(jsonData)
+            );
+        }
+        
+        // Catch file browse
+        document.getElementById('file-input')
+          .addEventListener('change', readSingleFile, false)
+        
+        //compare values
+        
+        
+        
+         
+    </script>
+    <!-- /.container -->
+    
+    
+    
+    <!-- Insert own scripts here -->
+      
 
 </body>
 
