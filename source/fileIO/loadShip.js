@@ -16,13 +16,13 @@ Vessel.loadShip(filePath, function(ship) {
 */
 
 function loadShip(url, callback) {
-    var request = new XMLHttpRequest();
-    request.open('GET', url, true);
-    request.addEventListener("load", function (event) {
-        var response = event.target.response;
-        var specification = JSON.parse(response);
-        var ship = new Ship(specification);
-        callback(ship);
-    });
-    request.send(null);
+	var request = new XMLHttpRequest();
+	request.open('GET', url, true);
+	request.addEventListener("load", function (event) {
+		var response = event.target.response;
+		var specification = JSON.parse(response);
+		var ship = new Ship(specification);
+		callback(ship);
+	});
+	request.send(null);
 }

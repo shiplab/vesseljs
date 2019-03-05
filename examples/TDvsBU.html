@@ -5,46 +5,46 @@
 
 <head>
 
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="">
+	<meta name="author" content="">
 
-    <title>Hull Hydrostatics</title>
+	<title>Hull Hydrostatics</title>
 
-    <!-- Bootstrap Core CSS -->
-    <link href="css/bootstrap.min.css" rel="stylesheet">
+	<!-- Bootstrap Core CSS -->
+	<link href="css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- jQuery Version 1.11.1 -->
-    <script src="js/libs/jquery.js"></script>
+	<!-- jQuery Version 1.11.1 -->
+	<script src="js/libs/jquery.js"></script>
 
-    <!-- Bootstrap Core JavaScript -->
-    <script src="js/libs/bootstrap.min.js"></script>
+	<!-- Bootstrap Core JavaScript -->
+	<script src="js/libs/bootstrap.min.js"></script>
 
-    <!-- D3JavaScript -->
-    <!--script src="js/libs/d3_v4.9.1.js"></script-->
+	<!-- D3JavaScript -->
+	<!--script src="js/libs/d3_v4.9.1.js"></script-->
 
-    <!-- Graphical user interface -->
-    <script src="js/libs/dat.gui.min.js"></script>
+	<!-- Graphical user interface -->
+	<script src="js/libs/dat.gui.min.js"></script>
 
-    <!-- Three script -->
-    <script src="js/libs/three.js"></script>
-    <script src="js/libs/STLLoader.js"></script>
-    <script src="js/libs/OrbitControls.js"></script>
+	<!-- Three script -->
+	<script src="js/libs/three.js"></script>
+	<script src="js/libs/STLLoader.js"></script>
+	<script src="js/libs/OrbitControls.js"></script>
 
-    <!--Import library-->
-    <script src="../build/Vessel.js"></script>
+	<!--Import library-->
+	<script src="../build/Vessel.js"></script>
 
-    <!-- Prettyprinting of JSON data -->
-    <script type="text/javascript" src="js/libs/renderjson.js"></script>
+	<!-- Prettyprinting of JSON data -->
+	<script type="text/javascript" src="js/libs/renderjson.js"></script>
 
-    <!--Ship3D class for three.js-->
-    <script src="js/Ship3D.js"></script>
+	<!--Ship3D class for three.js-->
+	<script src="js/Ship3D.js"></script>
 
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
+	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+	<!--[if lt IE 9]>
         <script src="https://oss.maxcdn.com/js/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/js/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
@@ -53,409 +53,409 @@
 
 <body>
 
-    <!-- Navigation -->
-    <nav class="navbar navbar-inverse">
-        <div class="container">
-            <!-- Add  the <div>[Something]</div> structure for each header in the navbar-->
-            <div class="navbar-header">
-                <a class="navbar-brand" href="https://github.com/shiplab/vesseljs">Github project page</a>
-            </div>
-            <!-- This is for the right part of the navbar. Reserved for Shiplab logo-->
-            <div class="nav navbar-nav navbar-right">
-                <div class="navbar-header">
-                    <a class="navbar-brand" href="http://www.shiplab.hials.org/"><img src="images/barquinho.png" alt="Shiplab logo"
-                            style="height:150%">
-                    </a>
-                </div>
-            </div>
-        </div>
-    </nav>
+	<!-- Navigation -->
+	<nav class="navbar navbar-inverse">
+		<div class="container">
+			<!-- Add  the <div>[Something]</div> structure for each header in the navbar-->
+			<div class="navbar-header">
+				<a class="navbar-brand" href="https://github.com/shiplab/vesseljs">Github project page</a>
+			</div>
+			<!-- This is for the right part of the navbar. Reserved for Shiplab logo-->
+			<div class="nav navbar-nav navbar-right">
+				<div class="navbar-header">
+					<a class="navbar-brand" href="http://www.shiplab.hials.org/"><img src="images/barquinho.png" alt="Shiplab logo"
+						 style="height:150%">
+					</a>
+				</div>
+			</div>
+		</div>
+	</nav>
 
-    <!-- Container creates the space -->
-    <div class="container">
+	<!-- Container creates the space -->
+	<div class="container">
 
-        <!-- Row creates horizontal groups of columns -->
-        <div class="row">
+		<!-- Row creates horizontal groups of columns -->
+		<div class="row">
 
-            <!-- choose horizontal layout in https://www.w3schools.com/bootstrap/bootstrap_grid_examples.asp-->
+			<!-- choose horizontal layout in https://www.w3schools.com/bootstrap/bootstrap_grid_examples.asp-->
 
-            <!-- No divisions in page. Only 1 column. -->
-            <div class="col-md-12 text-center">
-                <h2>Hull Hydrostatics</h2>
-            </div>
+			<!-- No divisions in page. Only 1 column. -->
+			<div class="col-md-12 text-center">
+				<h2>Hull Hydrostatics</h2>
+			</div>
 
-            <div class="col-md-12 text-center">
+			<div class="col-md-12 text-center">
 
-                <!-- Link the GitHub page if you have one. Add a pdf of how the project works if necessary. Just put it inside the same folder and call it how_to.pdf -->
-                <!--<h1>Hull Hydrostatics</h1>-->
-                <p>Interactive calculation of hull hydrostatic properties.</p>
+				<!-- Link the GitHub page if you have one. Add a pdf of how the project works if necessary. Just put it inside the same folder and call it how_to.pdf -->
+				<!--<h1>Hull Hydrostatics</h1>-->
+				<p>Interactive calculation of hull hydrostatic properties.</p>
 
-                <p>Developed by: Vicente Alejandro Iváñez Encinas, Elias Hasle, and Henrique M. Gaspar. Visualization
-                    made using three.js. GUI made with dat.GUI.</p>
+				<p>Developed by: Vicente Alejandro Iváñez Encinas, Elias Hasle, and Henrique M. Gaspar. Visualization
+					made using three.js. GUI made with dat.GUI.</p>
 
-            </div>
+			</div>
 
-            <div class="col-md-12 text-left">
-                <h2>Input</h2>
-                <input type="file" id="file-input" />
-                <h3>Contents of the file:</h3>
-                <pre id="file-content"></pre>
-                <br>
-            </div>
+			<div class="col-md-12 text-left">
+				<h2>Input</h2>
+				<input type="file" id="file-input" />
+				<h3>Contents of the file:</h3>
+				<pre id="file-content"></pre>
+				<br>
+			</div>
 
-            <div class="col-md-12 text-left">
-                <h2>3D orbit view of hull</h2>
-            </div>
-            <div id="3d" class="col-md-12 text-left" style="min-height: 80vh">
-            </div>
+			<div class="col-md-12 text-left">
+				<h2>3D orbit view of hull</h2>
+			</div>
+			<div id="3d" class="col-md-12 text-left" style="min-height: 80vh">
+			</div>
 
-        </div>
-        <div class="col-md-12 text-left">
-            <h2>Hydrostatic Properties</h2>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Variable</th>
-                        <th>Bottom-Up</th>
-                        <th>Top-Down</th>
-                    </tr>
+		</div>
+		<div class="col-md-12 text-left">
+			<h2>Hydrostatic Properties</h2>
+			<table class="table">
+				<thead>
+					<tr>
+						<th>Variable</th>
+						<th>Bottom-Up</th>
+						<th>Top-Down</th>
+					</tr>
 
-                </thead>
+				</thead>
 
-                <body>
-                    <tr>
-                        <td>Length over all (m)</td>
-                        <td id="LOA"></span></td>
-                        <td id="LOAib"></span></td>
-                    </tr>
-                    <tr>
-                        <td>Draft Amidships (m)</td>
-                        <td id="draftc"></span></td>
-                        <td id="draftib"></span></td>
-                    </tr>
-                    <tr>
-                        <td> B (m)</td>
-                        <td id="Bvar"></span></td>
-                        <td id="Bib"></span></td>
-                    </tr>
-                    <tr>
-                        <td>Volume of Displacement (m<sup>3</sup>)</td>
-                        <td id="voldc"></span></td>
-                        <td id="voldib"></span></td>
-                    </tr>
-                    <tr>
-                        <td>Waterline Length (m)</td>
-                        <td id="lwlc"></span></td>
-                        <td id="lwlib"></span></td>
-                    </tr>
-                    <tr>
-                        <td>Maximum Waterline Breadth (m)</td>
-                        <td id="bwlc"></span></td>
-                        <td id="bwlib"></span></td>
-                    </tr>
-                    <tr>
-                        <td>Waterplane Area (m<sup>2</sup>)</td>
-                        <td id="Awpc"></span></td>
-                        <td id="Awpib"></span></td>
-                    </tr>
-                    <tr>
-                        <td>Cb</td>
-                        <td id="cbc"></span></td>
-                        <td id="cbib"></span></td>
-                    </tr>
-                    <tr>
-                        <td>Cp</td>
-                        <td id="cpc"></span></td>
-                        <td id="cpib"></span></td>
-                    </tr>
-                    <tr>
-                        <td>Cwp</td>
-                        <td id="cwpc"></span></td>
-                        <td id="cwpib"></span></td>
-                    </tr>
-                    <tr>
-                        <td>KB (m)</td>
-                        <td id="KBc"></span></td>
-                        <td id="KBib"></span></td>
-                    </tr>
-                    <tr>
-                        <td>LCB (m)</td>
-                        <td id="LCBc"></span></td>
-                        <td id="LCBib"></span></td>
-                    </tr>
-                    <tr>
-                        <td>LCF (m)</td>
-                        <td id="LCFc"></span></td>
-                        <td id="LCFib"></span></td>
-                    </tr>
-                    <tr>
-                        <td>BMt (m)</td>
-                        <td id="BMtc"></span></td>
-                        <td id="BMtib"></span></td>
-                    </tr>
-                    <tr>
-                        <td>BMl (m)</td>
-                        <td id="BMlc"></span></td>
-                        <td id="BMlib"></span></td>
-                    </tr>
-                </body>
+				<body>
+					<tr>
+						<td>Length over all (m)</td>
+						<td id="LOA"></span></td>
+						<td id="LOAib"></span></td>
+					</tr>
+					<tr>
+						<td>Draft Amidships (m)</td>
+						<td id="draftc"></span></td>
+						<td id="draftib"></span></td>
+					</tr>
+					<tr>
+						<td> B (m)</td>
+						<td id="Bvar"></span></td>
+						<td id="Bib"></span></td>
+					</tr>
+					<tr>
+						<td>Volume of Displacement (m<sup>3</sup>)</td>
+						<td id="voldc"></span></td>
+						<td id="voldib"></span></td>
+					</tr>
+					<tr>
+						<td>Waterline Length (m)</td>
+						<td id="lwlc"></span></td>
+						<td id="lwlib"></span></td>
+					</tr>
+					<tr>
+						<td>Maximum Waterline Breadth (m)</td>
+						<td id="bwlc"></span></td>
+						<td id="bwlib"></span></td>
+					</tr>
+					<tr>
+						<td>Waterplane Area (m<sup>2</sup>)</td>
+						<td id="Awpc"></span></td>
+						<td id="Awpib"></span></td>
+					</tr>
+					<tr>
+						<td>Cb</td>
+						<td id="cbc"></span></td>
+						<td id="cbib"></span></td>
+					</tr>
+					<tr>
+						<td>Cp</td>
+						<td id="cpc"></span></td>
+						<td id="cpib"></span></td>
+					</tr>
+					<tr>
+						<td>Cwp</td>
+						<td id="cwpc"></span></td>
+						<td id="cwpib"></span></td>
+					</tr>
+					<tr>
+						<td>KB (m)</td>
+						<td id="KBc"></span></td>
+						<td id="KBib"></span></td>
+					</tr>
+					<tr>
+						<td>LCB (m)</td>
+						<td id="LCBc"></span></td>
+						<td id="LCBib"></span></td>
+					</tr>
+					<tr>
+						<td>LCF (m)</td>
+						<td id="LCFc"></span></td>
+						<td id="LCFib"></span></td>
+					</tr>
+					<tr>
+						<td>BMt (m)</td>
+						<td id="BMtc"></span></td>
+						<td id="BMtib"></span></td>
+					</tr>
+					<tr>
+						<td>BMl (m)</td>
+						<td id="BMlc"></span></td>
+						<td id="BMlib"></span></td>
+					</tr>
+				</body>
 
-            </table>
-        </div>
-    </div>
-    </div>
+			</table>
+		</div>
+	</div>
+	</div>
 
-    <script>
-        "use strict";
+	<script>
+		"use strict";
 
-        Vessel.Ship.prototype.calculateDraftWeightBased = function (shipState) {
-            let dw = this.getWeight(shipState).mass / 1000;
-            let L = this.structure.hull.attributes.LOA;
-            let B = this.structure.hull.attributes.BOA;
-            let v = this.designState.calculationParameters.speed * 0.5144;
-            let Fn = v / (Math.sqrt(9.81 * L));
-            //let Cbj = -4.22 + 27.8 * Math.sqrt(Fn) - 39.1 * Fn + 46.6 * Math.pow(Fn, 3); // SDfEE p.33
-            let Cb = 19410 * Math.pow(Fn, 6) - 31353 * Math.pow(Fn, 5) + 20164 * Math.pow(Fn, 4) - 6528.3 * Math.pow(
-                Fn, 3) + 1107.6 * Math.pow(Fn, 2) - 93.703 * Fn + 3.9648;
-            //let Cbdiff = Cb - Cbj
-            let T = dw / (L * B * Cb)
-            let BT = dw / (L * Cb)
-            return {
-                TWB: T,
-                BTWB: BT,
-                CbWB: Cb
-            };
-        };
-        Vessel.Ship.prototype.calculateDraftIterationBased = function (shipState) {
-            let L = this.structure.hull.attributes.LOA;
-            let dw = this.getWeight(shipState).mass / 1000;
-            let lw = dw / 2;
-            let LB = 6.5; //required info about type of ship
-            let BD = 1.8; //required info about type of ship
-            let TD = 0.7; //required info about type of ship
-            let v = this.designState.calculationParameters.speed * 0.5144;
-            let Fn = v / (Math.sqrt(9.81 * L));
+		Vessel.Ship.prototype.calculateDraftWeightBased = function (shipState) {
+			let dw = this.getWeight(shipState).mass / 1000;
+			let L = this.structure.hull.attributes.LOA;
+			let B = this.structure.hull.attributes.BOA;
+			let v = this.designState.calculationParameters.speed * 0.5144;
+			let Fn = v / (Math.sqrt(9.81 * L));
+			//let Cbj = -4.22 + 27.8 * Math.sqrt(Fn) - 39.1 * Fn + 46.6 * Math.pow(Fn, 3); // SDfEE p.33
+			let Cb = 19410 * Math.pow(Fn, 6) - 31353 * Math.pow(Fn, 5) + 20164 * Math.pow(Fn, 4) - 6528.3 * Math.pow(
+				Fn, 3) + 1107.6 * Math.pow(Fn, 2) - 93.703 * Fn + 3.9648;
+			//let Cbdiff = Cb - Cbj
+			let T = dw / (L * B * Cb)
+			let BT = dw / (L * Cb)
+			return {
+				TWB: T,
+				BTWB: BT,
+				CbWB: Cb
+			};
+		};
+		Vessel.Ship.prototype.calculateDraftIterationBased = function (shipState) {
+			let L = this.structure.hull.attributes.LOA;
+			let dw = this.getWeight(shipState).mass / 1000;
+			let lw = dw / 2;
+			let LB = 6.5; //required info about type of ship
+			let BD = 1.8; //required info about type of ship
+			let TD = 0.7; //required info about type of ship
+			let v = this.designState.calculationParameters.speed * 0.5144;
+			let Fn = v / (Math.sqrt(9.81 * L));
 
-            let B = L / LB;
-            let D = B / BD;
-            let T = D * TD;
-            let Cb = 0.7 + 1 / 8 * Math.atan((23 - 100 * Fn) / (4));
-            let disp = B * T * L * Cb;
-            return {
-                LIB: L,
-                BIB: B,
-                DIB: D,
-                TIB: T,
-                CbIB: Cb,
-                dispIB: disp
-            };
-        };
+			let B = L / LB;
+			let D = B / BD;
+			let T = D * TD;
+			let Cb = 0.7 + 1 / 8 * Math.atan((23 - 100 * Fn) / (4));
+			let disp = B * T * L * Cb;
+			return {
+				LIB: L,
+				BIB: B,
+				DIB: D,
+				TIB: T,
+				CbIB: Cb,
+				dispIB: disp
+			};
+		};
 
-        // Create scene+
-        var renderer, scene, camera, controls, ship3D, ocean;
-        var gui = new dat.GUI();
+		// Create scene+
+		var renderer, scene, camera, controls, ship3D, ocean;
+		var gui = new dat.GUI();
 
-        //Ready renderer and scene
-        (function () {
-            renderer = new THREE.WebGLRenderer({
-                antialias: true
-            });
-            renderer.setPixelRatio(window.devicePixelRatio);
-            renderer.setClearColor(0xA9CCE3, 1);
+		//Ready renderer and scene
+		(function () {
+			renderer = new THREE.WebGLRenderer({
+				antialias: true
+			});
+			renderer.setPixelRatio(window.devicePixelRatio);
+			renderer.setClearColor(0xA9CCE3, 1);
 
-            // get the div that will hold the renderer
-            var container = document.getElementById('3d');
-            //renderer.setSize(container.clientWidth, container.clientHeight);
-            // add the renderer to the div
-            container.appendChild(renderer.domElement);
+			// get the div that will hold the renderer
+			var container = document.getElementById('3d');
+			//renderer.setSize(container.clientWidth, container.clientHeight);
+			// add the renderer to the div
+			container.appendChild(renderer.domElement);
 
-            scene = new THREE.Scene();
+			scene = new THREE.Scene();
 
-            //Camera and controls:
-            camera = new THREE.PerspectiveCamera(50);
-            camera.up.set(0, 0, 1);
-            scene.add(camera);
-            controls = new THREE.OrbitControls(camera, renderer.domElement);
+			//Camera and controls:
+			camera = new THREE.PerspectiveCamera(50);
+			camera.up.set(0, 0, 1);
+			scene.add(camera);
+			controls = new THREE.OrbitControls(camera, renderer.domElement);
 
-            //Respond to window resize:
-            function onResize() {
-                renderer.setSize(container.clientWidth, container.clientHeight);
-                camera.aspect = container.clientWidth / container.clientHeight;
-                camera.updateProjectionMatrix();
-            }
-            window.addEventListener("resize", onResize);
-            onResize(); //Ensure the initial setup is good too
+			//Respond to window resize:
+			function onResize() {
+				renderer.setSize(container.clientWidth, container.clientHeight);
+				camera.aspect = container.clientWidth / container.clientHeight;
+				camera.updateProjectionMatrix();
+			}
+			window.addEventListener("resize", onResize);
+			onResize(); //Ensure the initial setup is good too
 
-            //Add lights:
-            scene.add(new THREE.AmbientLight(0xffffff, 0.3));
-            scene.add(function () {
-                let sun = new THREE.DirectionalLight(0xffffff, 1);
-                sun.position.set(1, 1, 1);
-                return sun;
-            }());
+			//Add lights:
+			scene.add(new THREE.AmbientLight(0xffffff, 0.3));
+			scene.add(function () {
+				let sun = new THREE.DirectionalLight(0xffffff, 1);
+				sun.position.set(1, 1, 1);
+				return sun;
+			}());
 
-            //Add rudimentary ocean, to see effect of draft changes:
-            ocean = new THREE.Mesh(new THREE.PlaneBufferGeometry(1000, 1000), new THREE.MeshPhongMaterial({
-                color: 0x2222bb
-            }));
-            scene.add(ocean);
-            var grid = new THREE.GridHelper(1000, 100);
-            grid.rotation.x = 0.5 * Math.PI;
-            grid.position.z = 0.01;
-            scene.add(grid);
+			//Add rudimentary ocean, to see effect of draft changes:
+			ocean = new THREE.Mesh(new THREE.PlaneBufferGeometry(1000, 1000), new THREE.MeshPhongMaterial({
+				color: 0x2222bb
+			}));
+			scene.add(ocean);
+			var grid = new THREE.GridHelper(1000, 100);
+			grid.rotation.x = 0.5 * Math.PI;
+			grid.position.z = 0.01;
+			scene.add(grid);
 
-        })();
+		})();
 
-        // read file from user
-        function readSingleFile(e) {
-            var file = e.target.files[0];
-            if (!file) {
-                return;
-            }
+		// read file from user
+		function readSingleFile(e) {
+			var file = e.target.files[0];
+			if (!file) {
+				return;
+			}
 
-            var reader = new FileReader();
-            reader.onload = function (e) {
-                var contents = e.target.result;
-                //call common function for user files and server files
-                useFileData(contents);
-            };
-            reader.readAsText(file);
-        }
+			var reader = new FileReader();
+			reader.onload = function (e) {
+				var contents = e.target.result;
+				//call common function for user files and server files
+				useFileData(contents);
+			};
+			reader.readAsText(file);
+		}
 
-        //Load sample file:
-        new THREE.FileLoader().load("data/ship_specifications/PX121.json", useFileData);
+		//Load sample file:
+		new THREE.FileLoader().load("data/ship_specifications/PX121.json", useFileData);
 
-        function useFileData(contents) {
-            var shipspec = JSON.parse(contents);
-            displayContents(shipspec);
-            var ship = new Vessel.Ship(shipspec);
-            if (ship3D !== undefined) {
-                scene.remove(ship3D);
-            }
-            ship3D = new Ship3D(ship, "data/STL files");
-            scene.add(ship3D);
-            let LOA = ship.structure.hull.attributes.LOA;
-            camera.position.set(0.7 * LOA, 0.7 * LOA, 0.7 * LOA);
-            controls.target = new THREE.Vector3(LOA / 2, 0, 0);
-            controls.update();
+		function useFileData(contents) {
+			var shipspec = JSON.parse(contents);
+			displayContents(shipspec);
+			var ship = new Vessel.Ship(shipspec);
+			if (ship3D !== undefined) {
+				scene.remove(ship3D);
+			}
+			ship3D = new Ship3D(ship, "data/STL files");
+			scene.add(ship3D);
+			let LOA = ship.structure.hull.attributes.LOA;
+			camera.position.set(0.7 * LOA, 0.7 * LOA, 0.7 * LOA);
+			controls.target = new THREE.Vector3(LOA / 2, 0, 0);
+			controls.update();
 
-            let Value = {
-                Draft: ship.calculateDraftWeightBased().TWB,
+			let Value = {
+				Draft: ship.calculateDraftWeightBased().TWB,
 
-            };
-            let CalcIB = ship.calculateDraftIterationBased();
-            let CalcWB = ship.calculateDraftWeightBased();
+			};
+			let CalcIB = ship.calculateDraftIterationBased();
+			let CalcWB = ship.calculateDraftWeightBased();
 
-            let Bvar = CalcWB.BTWB / Value.Draft;
+			let Bvar = CalcWB.BTWB / Value.Draft;
 
-            function fillDocument() {
-                //calculate hydrostatics (weight based)
-                let {
-                    LWL: lwlc,
-                    Cb: cbc,
-                    Cp: cpc,
-                    Cwp: cwpc,
-                    BWL: bwlc,
-                    Awp: Awpc,
-                    LCB: LCBc,
-                    KB: KBc,
-                    Ixwp: ixwpc,
-                    Iywp: iywpc,
-                    LCF: LCFc,
-                    Vs: voldc,
-                    BMt: BMtc,
-                    BMl: BMlc
-                } = ship.structure.hull.calculateAttributesAtDraft(Value.Draft);
-                let cbbw = ship.calculateDraftWeightBased().CbWB;
-                document.getElementById("draftc").innerHTML = Value.Draft.toFixed(2);
-                document.getElementById("lwlc").innerHTML = lwlc.toFixed(2);
-                document.getElementById("bwlc").innerHTML = bwlc.toFixed(2);
-                document.getElementById("Awpc").innerHTML = Awpc.toFixed(2);
-                document.getElementById("cbc").innerHTML = cbc.toFixed(2);
-                document.getElementById("cpc").innerHTML = cpc.toFixed(2);
-                document.getElementById("cwpc").innerHTML = cwpc.toFixed(2);
-                document.getElementById("voldc").innerHTML = voldc.toFixed(2);
-                document.getElementById("KBc").innerHTML = KBc.toFixed(2);
-                document.getElementById("LCBc").innerHTML = LCBc.toFixed(2);
-                document.getElementById("LCFc").innerHTML = LCFc.toFixed(2);
-                document.getElementById("BMtc").innerHTML = BMtc.toFixed(2);
-                document.getElementById("BMlc").innerHTML = BMlc.toFixed(2);
-                document.getElementById("Bvar").innerHTML = Bvar.toFixed(2);
-                document.getElementById("LOA").innerHTML = LOA.toFixed(2);
+			function fillDocument() {
+				//calculate hydrostatics (weight based)
+				let {
+					LWL: lwlc,
+					Cb: cbc,
+					Cp: cpc,
+					Cwp: cwpc,
+					BWL: bwlc,
+					Awp: Awpc,
+					LCB: LCBc,
+					KB: KBc,
+					Ixwp: ixwpc,
+					Iywp: iywpc,
+					LCF: LCFc,
+					Vs: voldc,
+					BMt: BMtc,
+					BMl: BMlc
+				} = ship.structure.hull.calculateAttributesAtDraft(Value.Draft);
+				let cbbw = ship.calculateDraftWeightBased().CbWB;
+				document.getElementById("draftc").innerHTML = Value.Draft.toFixed(2);
+				document.getElementById("lwlc").innerHTML = lwlc.toFixed(2);
+				document.getElementById("bwlc").innerHTML = bwlc.toFixed(2);
+				document.getElementById("Awpc").innerHTML = Awpc.toFixed(2);
+				document.getElementById("cbc").innerHTML = cbc.toFixed(2);
+				document.getElementById("cpc").innerHTML = cpc.toFixed(2);
+				document.getElementById("cwpc").innerHTML = cwpc.toFixed(2);
+				document.getElementById("voldc").innerHTML = voldc.toFixed(2);
+				document.getElementById("KBc").innerHTML = KBc.toFixed(2);
+				document.getElementById("LCBc").innerHTML = LCBc.toFixed(2);
+				document.getElementById("LCFc").innerHTML = LCFc.toFixed(2);
+				document.getElementById("BMtc").innerHTML = BMtc.toFixed(2);
+				document.getElementById("BMlc").innerHTML = BMlc.toFixed(2);
+				document.getElementById("Bvar").innerHTML = Bvar.toFixed(2);
+				document.getElementById("LOA").innerHTML = LOA.toFixed(2);
 
-                //calculate hydrostatics (experience, data based)
-                let {
-                    LWL: lwlib,
-                    Cb: cbib,
-                    Cp: cpib,
-                    Cwp: cwpib,
-                    BWL: bwlib,
-                    Awp: Awpib,
-                    LCB: LCBib,
-                    KB: KBib,
-                    Ixwp: ixwpib,
-                    Iywp: iywpib,
-                    LCF: LCFib,
-                    Vs: voldib,
-                    BMt: BMtib,
-                    BMl: BMlib
-                } = ship.structure.hull.calculateAttributesAtDraft(CalcIB.TIB);
+				//calculate hydrostatics (experience, data based)
+				let {
+					LWL: lwlib,
+					Cb: cbib,
+					Cp: cpib,
+					Cwp: cwpib,
+					BWL: bwlib,
+					Awp: Awpib,
+					LCB: LCBib,
+					KB: KBib,
+					Ixwp: ixwpib,
+					Iywp: iywpib,
+					LCF: LCFib,
+					Vs: voldib,
+					BMt: BMtib,
+					BMl: BMlib
+				} = ship.structure.hull.calculateAttributesAtDraft(CalcIB.TIB);
 
-                document.getElementById("draftib").innerHTML = CalcIB.TIB.toFixed(2);
-                document.getElementById("lwlib").innerHTML = lwlib.toFixed(2);
-                document.getElementById("bwlib").innerHTML = bwlib.toFixed(2);
-                document.getElementById("Awpib").innerHTML = Awpib.toFixed(2);
-                document.getElementById("cbib").innerHTML = cbib.toFixed(2);
-                document.getElementById("cpib").innerHTML = cpib.toFixed(2);
-                document.getElementById("cwpib").innerHTML = cwpib.toFixed(2);
-                document.getElementById("voldib").innerHTML = voldib.toFixed(2);
-                document.getElementById("KBib").innerHTML = KBib.toFixed(2);
-                document.getElementById("LCBib").innerHTML = LCBib.toFixed(2);
-                document.getElementById("LCFib").innerHTML = LCFib.toFixed(2);
-                document.getElementById("BMtib").innerHTML = BMtib.toFixed(2);
-                document.getElementById("BMlib").innerHTML = BMlib.toFixed(2);
-                document.getElementById("LOAib").innerHTML = CalcIB.LIB.toFixed(2);
-                document.getElementById("Bib").innerHTML = CalcIB.BIB.toFixed(2);
+				document.getElementById("draftib").innerHTML = CalcIB.TIB.toFixed(2);
+				document.getElementById("lwlib").innerHTML = lwlib.toFixed(2);
+				document.getElementById("bwlib").innerHTML = bwlib.toFixed(2);
+				document.getElementById("Awpib").innerHTML = Awpib.toFixed(2);
+				document.getElementById("cbib").innerHTML = cbib.toFixed(2);
+				document.getElementById("cpib").innerHTML = cpib.toFixed(2);
+				document.getElementById("cwpib").innerHTML = cwpib.toFixed(2);
+				document.getElementById("voldib").innerHTML = voldib.toFixed(2);
+				document.getElementById("KBib").innerHTML = KBib.toFixed(2);
+				document.getElementById("LCBib").innerHTML = LCBib.toFixed(2);
+				document.getElementById("LCFib").innerHTML = LCFib.toFixed(2);
+				document.getElementById("BMtib").innerHTML = BMtib.toFixed(2);
+				document.getElementById("BMlib").innerHTML = BMlib.toFixed(2);
+				document.getElementById("LOAib").innerHTML = CalcIB.LIB.toFixed(2);
+				document.getElementById("Bib").innerHTML = CalcIB.BIB.toFixed(2);
 
-            }
+			}
 
-            fillDocument();
+			fillDocument();
 
-            gui.add(Value, "Draft", 4, 8, 0.01).onChange(function (value) {
-                Bvar = CalcWB.BTWB / Value.Draft;
-                fillDocument();
-                ship3D.position.z = -Value.Draft;
-            });
+			gui.add(Value, "Draft", 4, 8, 0.01).onChange(function (value) {
+				Bvar = CalcWB.BTWB / Value.Draft;
+				fillDocument();
+				ship3D.position.z = -Value.Draft;
+			});
 
-            animate();
+			animate();
 
-        }
+		}
 
-        function animate() {
-            requestAnimationFrame(animate);
-            renderer.render(scene, camera);
-        }
+		function animate() {
+			requestAnimationFrame(animate);
+			renderer.render(scene, camera);
+		}
 
-        // display pretty JSON
-        function displayContents(jsonData) {
-            let fileCont = document.getElementById("file-content");
-            fileCont.innerHTML = "";
-            fileCont.appendChild(
-                renderjson(jsonData)
-            );
-        }
+		// display pretty JSON
+		function displayContents(jsonData) {
+			let fileCont = document.getElementById("file-content");
+			fileCont.innerHTML = "";
+			fileCont.appendChild(
+				renderjson(jsonData)
+			);
+		}
 
-        // Catch file browse
-        document.getElementById('file-input')
-            .addEventListener('change', readSingleFile, false);
+		// Catch file browse
+		document.getElementById('file-input')
+			.addEventListener('change', readSingleFile, false);
 
-        //compare values
-    </script>
-    <!-- /.container -->
+		//compare values
+	</script>
+	<!-- /.container -->
 
 
 
-    <!-- Insert own scripts here -->
+	<!-- Insert own scripts here -->
 
 
 </body>

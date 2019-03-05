@@ -3,117 +3,117 @@
 
 <head>
 
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="">
+	<meta name="author" content="">
 
-    <title>Loading Simulation</title>
+	<title>Loading Simulation</title>
 
-    <!-- Bootstrap Core CSS -->
-    <link href="css/bootstrap.min.css" rel="stylesheet">
+	<!-- Bootstrap Core CSS -->
+	<link href="css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Three script -->
-    <script src="js/libs/three.js"></script>
-    <script src="js/libs/STLLoader.js"></script>
-    <script src="js/libs/OrbitControls.js"></script>
+	<!-- Three script -->
+	<script src="js/libs/three.js"></script>
+	<script src="js/libs/STLLoader.js"></script>
+	<script src="js/libs/OrbitControls.js"></script>
 
-    <!-- jQuery Version 1.11.1 -->
-    <script src="js/libs/jquery.js"></script>
+	<!-- jQuery Version 1.11.1 -->
+	<script src="js/libs/jquery.js"></script>
 
-    <!-- Bootstrap Core JavaScript -->
-    <script src="js/libs/bootstrap.min.js"></script>
+	<!-- Bootstrap Core JavaScript -->
+	<script src="js/libs/bootstrap.min.js"></script>
 
-    <!--Import Vessel.js library-->
-    <script src="../build/Vessel.js"></script>
+	<!--Import Vessel.js library-->
+	<script src="../build/Vessel.js"></script>
 
-    <!--Ship3D class for three.js-->
-    <script src="js/Ship3D.js"></script>
+	<!--Ship3D class for three.js-->
+	<script src="js/Ship3D.js"></script>
 
-    <!--D3 library-->
-    <script src="js/libs/d3.v3.min.js"></script>
+	<!--D3 library-->
+	<script src="js/libs/d3.v3.min.js"></script>
 
-    <!--Line chart-->
-    <script src="js/lineChart.js"></script>
+	<!--Line chart-->
+	<script src="js/lineChart.js"></script>
 
 </head>
 
 <body>
 
-    <!-- Navigation -->
-    <nav class="navbar navbar-inverse">
-        <div class="container">
-            <!-- Add  the <div>[Something]</div> structure for each header in the navbar-->
-            <div class="navbar-header">
-                <a class="navbar-brand" href="https://github.com/shiplab/vesseljs" target="_blank">Github project page</a>
-            </div>
-            <!-- This is for the right part of the navbar. Reserved for Shiplab logo-->
-            <div class="nav navbar-nav navbar-right">
-                <div class="navbar-header">
-                    <a class="navbar-brand" href="http://www.shiplab.ntnu.co/"><img src="images/barquinho.png" alt="Shiplab logo"
-                            style="height:150%">
-                    </a>
-                </div>
-            </div>
-        </div>
-    </nav>
+	<!-- Navigation -->
+	<nav class="navbar navbar-inverse">
+		<div class="container">
+			<!-- Add  the <div>[Something]</div> structure for each header in the navbar-->
+			<div class="navbar-header">
+				<a class="navbar-brand" href="https://github.com/shiplab/vesseljs" target="_blank">Github project page</a>
+			</div>
+			<!-- This is for the right part of the navbar. Reserved for Shiplab logo-->
+			<div class="nav navbar-nav navbar-right">
+				<div class="navbar-header">
+					<a class="navbar-brand" href="http://www.shiplab.ntnu.co/"><img src="images/barquinho.png" alt="Shiplab logo"
+						 style="height:150%">
+					</a>
+				</div>
+			</div>
+		</div>
+	</nav>
 
-    <div class="col-md-12 text-center">
-        <h2>Loading Simulation</h2>
-        <p>Simulation of draft and GM during cargo loading.</p>
-    </div>
+	<div class="col-md-12 text-center">
+		<h2>Loading Simulation</h2>
+		<p>Simulation of draft and GM during cargo loading.</p>
+	</div>
 
-    <div class="container" id="userinputs">
-        <h3>Simulation Inputs</h3>
-        <table class="table">
-            <thead>
-                <th>Parameter</th>
-                <th>Value</th>
-            </thead>
+	<div class="container" id="userinputs">
+		<h3>Simulation Inputs</h3>
+		<table class="table">
+			<thead>
+				<th>Parameter</th>
+				<th>Value</th>
+			</thead>
 
-            <body>
-                <tr>
-                    <td>Loading flow rate per tank (m³/s):</td>
-                    <td><input type="text" id="flow" onchange="saveInputs()"></td>
-                </tr>
-                <tr>
-                    <td>Simulation update frequency (Hertz):</td>
-                    <td><input type="text" id="freq" onchange="saveInputs()"></td>
-                </tr>
-            </body>
-        </table>
-    </div>
+			<body>
+				<tr>
+					<td>Loading flow rate per tank (m³/s):</td>
+					<td><input type="text" id="flow" onchange="saveInputs()"></td>
+				</tr>
+				<tr>
+					<td>Simulation update frequency (Hertz):</td>
+					<td><input type="text" id="freq" onchange="saveInputs()"></td>
+				</tr>
+			</body>
+		</table>
+	</div>
 
-    <div class="container">
-        <h3>Ship Specification</h3>
-        <div id="3d" class="col-md-11 text-left" style="min-height: 65vh">
-        </div>
-    </div>
+	<div class="container">
+		<h3>Ship Specification</h3>
+		<div id="3d" class="col-md-11 text-left" style="min-height: 65vh">
+		</div>
+	</div>
 
-    <div class="container" id="simulate">
-        <h3>Simulate</h3>
-        <button type="button" onclick="simulate()">Simulate</button>
-    </div>
+	<div class="container" id="simulate">
+		<h3>Simulate</h3>
+		<button type="button" onclick="simulate()">Simulate</button>
+	</div>
 
-    <div class="container">
-        <h3>Results Visualization</h3>
-        <p>Adapted from <a href="https://bl.ocks.org/mbostock/3887118" target="_blank">this page</a>.</p>
-        <div class="container" id="lineChart">
-            <style>
-                svg {
-                    font: 10px sans-serif;
-                }
+	<div class="container">
+		<h3>Results Visualization</h3>
+		<p>Adapted from <a href="https://bl.ocks.org/mbostock/3887118" target="_blank">this page</a>.</p>
+		<div class="container" id="lineChart">
+			<style>
+				svg {
+					font: 10px sans-serif;
+				}
 
-                .axis path,
-                .axis line {
-                    fill: none;
-                    stroke: #000;
-                    shape-rendering: crispEdges;
-                }
-            </style>
-        </div>
-    </div>
+				.axis path,
+				.axis line {
+					fill: none;
+					stroke: #000;
+					shape-rendering: crispEdges;
+				}
+			</style>
+		</div>
+	</div>
 
 </body>
 

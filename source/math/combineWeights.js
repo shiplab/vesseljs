@@ -2,12 +2,12 @@
 
 //Very unoptimized for now.
 function combineWeights(array) {
-    let M = array.reduce((sum, e) => sum + e.mass, 0);
-    let cgms = array.map(e => Vectors.scale(e.cg, e.mass));
-    let CG = Vectors.scale(Vectors.sum(cgms), 1 / M);
+	let M = array.reduce((sum, e) => sum + e.mass, 0);
+	let cgms = array.map(e => Vectors.scale(e.cg, e.mass));
+	let CG = Vectors.scale(Vectors.sum(cgms), 1 / M);
 
-    return {
-        mass: M,
-        cg: CG
-    };
+	return {
+		mass: M,
+		cg: CG
+	};
 }

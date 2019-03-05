@@ -3,94 +3,94 @@
 
 <head>
 
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="">
+	<meta name="author" content="">
 
-    <title>Scale Ship Specification</title>
+	<title>Scale Ship Specification</title>
 
-    <!-- Bootstrap Core CSS -->
-    <link href="css/bootstrap.min.css" rel="stylesheet">
+	<!-- Bootstrap Core CSS -->
+	<link href="css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Three script -->
-    <script src="js/libs/three.js"></script>
-    <script src="js/libs/STLLoader.js"></script>
-    <script src="js/libs/OrbitControls.js"></script>
+	<!-- Three script -->
+	<script src="js/libs/three.js"></script>
+	<script src="js/libs/STLLoader.js"></script>
+	<script src="js/libs/OrbitControls.js"></script>
 
-    <!-- jQuery Version 1.11.1 -->
-    <script src="js/libs/jquery.js"></script>
+	<!-- jQuery Version 1.11.1 -->
+	<script src="js/libs/jquery.js"></script>
 
-    <!-- Bootstrap Core JavaScript -->
-    <script src="js/libs/bootstrap.min.js"></script>
+	<!-- Bootstrap Core JavaScript -->
+	<script src="js/libs/bootstrap.min.js"></script>
 
-    <!--Import Vessel.js library-->
-    <script src="../build/Vessel.js"></script>
+	<!--Import Vessel.js library-->
+	<script src="../build/Vessel.js"></script>
 
-    <!--Import spec scaling script-->
-    <script src="js/scaleShipSpec.js"></script>
+	<!--Import spec scaling script-->
+	<script src="js/scaleShipSpec.js"></script>
 
-    <!--Ship3D class for three.js-->
-    <script src="js/Ship3D.js"></script>
+	<!--Ship3D class for three.js-->
+	<script src="js/Ship3D.js"></script>
 </head>
 
 <body>
 
-    <!-- Navigation -->
-    <nav class="navbar navbar-inverse">
-        <div class="container">
-            <!-- Add  the <div>[Something]</div> structure for each header in the navbar-->
-            <div class="navbar-header">
-                <a class="navbar-brand" href="https://github.com/shiplab/vesseljs" target="_blank">Github project page</a>
-            </div>
-            <!-- This is for the right part of the navbar. Reserved for Shiplab logo-->
-            <div class="nav navbar-nav navbar-right">
-                <div class="navbar-header">
-                    <a class="navbar-brand" href="http://www.shiplab.ntnu.co/"><img src="images/barquinho.png" alt="Shiplab logo"
-                            style="height:150%">
-                    </a>
-                </div>
-            </div>
-        </div>
-    </nav>
+	<!-- Navigation -->
+	<nav class="navbar navbar-inverse">
+		<div class="container">
+			<!-- Add  the <div>[Something]</div> structure for each header in the navbar-->
+			<div class="navbar-header">
+				<a class="navbar-brand" href="https://github.com/shiplab/vesseljs" target="_blank">Github project page</a>
+			</div>
+			<!-- This is for the right part of the navbar. Reserved for Shiplab logo-->
+			<div class="nav navbar-nav navbar-right">
+				<div class="navbar-header">
+					<a class="navbar-brand" href="http://www.shiplab.ntnu.co/"><img src="images/barquinho.png" alt="Shiplab logo"
+						 style="height:150%">
+					</a>
+				</div>
+			</div>
+		</div>
+	</nav>
 
-    <div class="col-md-12 text-center">
-        <h2>Scale Ship Specification</h2>
-        <p>Create a new ship specification by linearly scaling a parent one.</p>
-    </div>
+	<div class="col-md-12 text-center">
+		<h2>Scale Ship Specification</h2>
+		<p>Create a new ship specification by linearly scaling a parent one.</p>
+	</div>
 
-    <div class="container" id="userinputs">
-        <h4>Presentation</h4>
-        <p> This is a simple ship specification scaling app. The ship is scaled geometrically with the linear scaling
-            factors chosen below. Thicknesses of structural elements (decks and bulkheads) and lightweights of derived
-            objects remain constant.</p>
-        <table class="table" class="text-center">
-            <thead>
-                <th class="text-center">x-ratio</th>
-                <th class="text-center">y-ratio</th>
-                <th class="text-center">z-ratio</th>
-            </thead>
+	<div class="container" id="userinputs">
+		<h4>Presentation</h4>
+		<p> This is a simple ship specification scaling app. The ship is scaled geometrically with the linear scaling
+			factors chosen below. Thicknesses of structural elements (decks and bulkheads) and lightweights of derived
+			objects remain constant.</p>
+		<table class="table" class="text-center">
+			<thead>
+				<th class="text-center">x-ratio</th>
+				<th class="text-center">y-ratio</th>
+				<th class="text-center">z-ratio</th>
+			</thead>
 
-            <body>
-                <tr>
-                    <td class="text-center"><input type="text" id="xratio" onchange="scaleVis()"></td>
-                    <td class="text-center"><input type="text" id="yratio" onchange="scaleVis()"></td>
-                    <td class="text-center"><input type="text" id="zratio" onchange="scaleVis()"></td>
-                </tr>
-            </body>
-        </table>
+			<body>
+				<tr>
+					<td class="text-center"><input type="text" id="xratio" onchange="scaleVis()"></td>
+					<td class="text-center"><input type="text" id="yratio" onchange="scaleVis()"></td>
+					<td class="text-center"><input type="text" id="zratio" onchange="scaleVis()"></td>
+				</tr>
+			</body>
+		</table>
 
-        <div class="container">
-            <p><input type="file" id="shipspec" accept=".json" onchange="readShipSpec(event)" /></p>
-            <div id="3d" class="col-md-11 text-left" style="min-height: 65vh">
-            </div>
-        </div>
+		<div class="container">
+			<p><input type="file" id="shipspec" accept=".json" onchange="readShipSpec(event)" /></p>
+			<div id="3d" class="col-md-11 text-left" style="min-height: 65vh">
+			</div>
+		</div>
 
-        <h4>Download</h4>
-        <p>Download scaled specification:</p>
-        <button type="button" onclick="download()">Download</button>
-    </div>
+		<h4>Download</h4>
+		<p>Download scaled specification:</p>
+		<button type="button" onclick="download()">Download</button>
+	</div>
 
 </body>
 
@@ -98,108 +98,108 @@
 
 <!--Import simulation master script-->
 <script>
-    /*jshint esversion: 6 */
-    "use strict";
-    var renderer, scene, camera, controls, ship3D, shipspec, shipVis, readShipSpec, scaleVis, download, scaledSpec;
+	/*jshint esversion: 6 */
+	"use strict";
+	var renderer, scene, camera, controls, ship3D, shipspec, shipVis, readShipSpec, scaleVis, download, scaledSpec;
 
-    //Ready renderer and scene
-    (function () {
-        renderer = new THREE.WebGLRenderer({
-            antialias: true
-        });
-        renderer.setPixelRatio(window.devicePixelRatio);
-        renderer.setClearColor(0xA9CCE3, 1);
+	//Ready renderer and scene
+	(function () {
+		renderer = new THREE.WebGLRenderer({
+			antialias: true
+		});
+		renderer.setPixelRatio(window.devicePixelRatio);
+		renderer.setClearColor(0xA9CCE3, 1);
 
-        // get the div that will hold the renderer
-        var container = document.getElementById('3d');
-        // add the renderer to the div
-        container.appendChild(renderer.domElement);
+		// get the div that will hold the renderer
+		var container = document.getElementById('3d');
+		// add the renderer to the div
+		container.appendChild(renderer.domElement);
 
-        scene = new THREE.Scene();
+		scene = new THREE.Scene();
 
-        //Camera and controls:
-        camera = new THREE.PerspectiveCamera(50);
-        camera.up.set(0, 0, 1);
-        scene.add(camera);
-        controls = new THREE.OrbitControls(camera, renderer.domElement);
+		//Camera and controls:
+		camera = new THREE.PerspectiveCamera(50);
+		camera.up.set(0, 0, 1);
+		scene.add(camera);
+		controls = new THREE.OrbitControls(camera, renderer.domElement);
 
-        //Respond to window resize:
-        function onResize() {
-            renderer.setSize(container.clientWidth, container.clientHeight);
-            camera.aspect = container.clientWidth / container.clientHeight;
-            camera.updateProjectionMatrix();
-        }
-        window.addEventListener("resize", onResize);
-        onResize(); //Ensure the initial setup is good too
+		//Respond to window resize:
+		function onResize() {
+			renderer.setSize(container.clientWidth, container.clientHeight);
+			camera.aspect = container.clientWidth / container.clientHeight;
+			camera.updateProjectionMatrix();
+		}
+		window.addEventListener("resize", onResize);
+		onResize(); //Ensure the initial setup is good too
 
-        //Add lights:
-        scene.add(new THREE.AmbientLight(0xffffff, 0.3));
-        scene.add(function () {
-            let sun = new THREE.DirectionalLight(0xffffff, 1);
-            sun.position.set(1, 1, 1);
-            return sun;
-        }());
-    })();
+		//Add lights:
+		scene.add(new THREE.AmbientLight(0xffffff, 0.3));
+		scene.add(function () {
+			let sun = new THREE.DirectionalLight(0xffffff, 1);
+			sun.position.set(1, 1, 1);
+			return sun;
+		}());
+	})();
 
-    readShipSpec = function (event) {
-        var file = event.target.files[0];
-        var name = file.name;
-        var reader = new FileReader();
+	readShipSpec = function (event) {
+		var file = event.target.files[0];
+		var name = file.name;
+		var reader = new FileReader();
 
-        reader.onload = function (event) {
-            var contents = event.target.result;
-            useShipSpec(contents);
-        };
-        reader.readAsText(file);
-    };
+		reader.onload = function (event) {
+			var contents = event.target.result;
+			useShipSpec(contents);
+		};
+		reader.readAsText(file);
+	};
 
-    // load default spec
-    new THREE.FileLoader().load("data/ship_specifications/PX121.json", useShipSpec);
+	// load default spec
+	new THREE.FileLoader().load("data/ship_specifications/PX121.json", useShipSpec);
 
-    function useShipSpec(contents) {
-        shipspec = JSON.parse(contents);
-        shipVis = new Vessel.Ship(shipspec);
-        if (typeof ship3D !== "undefined") {
-            scene.remove(ship3D);
-        }
-        ship3D = new Ship3D(shipVis, "data/STL files");
-        scene.add(ship3D);
+	function useShipSpec(contents) {
+		shipspec = JSON.parse(contents);
+		shipVis = new Vessel.Ship(shipspec);
+		if (typeof ship3D !== "undefined") {
+			scene.remove(ship3D);
+		}
+		ship3D = new Ship3D(shipVis, "data/STL files");
+		scene.add(ship3D);
 
-        let LOA = shipVis.structure.hull.attributes.LOA;
-        camera.position.set(0.7 * LOA, 0.7 * LOA, 0.7 * LOA);
-        controls.target = new THREE.Vector3(LOA / 2, 0, 0);
-        controls.update();
-        animate();
-    }
+		let LOA = shipVis.structure.hull.attributes.LOA;
+		camera.position.set(0.7 * LOA, 0.7 * LOA, 0.7 * LOA);
+		controls.target = new THREE.Vector3(LOA / 2, 0, 0);
+		controls.update();
+		animate();
+	}
 
-    function animate() {
-        requestAnimationFrame(animate);
-        renderer.render(scene, camera);
-    }
+	function animate() {
+		requestAnimationFrame(animate);
+		renderer.render(scene, camera);
+	}
 
-    document.getElementById("xratio").setAttribute("value", 1);
-    document.getElementById("yratio").setAttribute("value", 1);
-    document.getElementById("zratio").setAttribute("value", 1);
+	document.getElementById("xratio").setAttribute("value", 1);
+	document.getElementById("yratio").setAttribute("value", 1);
+	document.getElementById("zratio").setAttribute("value", 1);
 
-    function scaleVis() {
-        ship3D.scale.x = Number(document.getElementById("xratio").value);
-        ship3D.scale.y = Number(document.getElementById("yratio").value);
-        ship3D.scale.z = Number(document.getElementById("zratio").value);
-    }
+	function scaleVis() {
+		ship3D.scale.x = Number(document.getElementById("xratio").value);
+		ship3D.scale.y = Number(document.getElementById("yratio").value);
+		ship3D.scale.z = Number(document.getElementById("zratio").value);
+	}
 
-    function download() {
-        var lengthRatio = Number(document.getElementById("xratio").value);
-        var beamRatio = Number(document.getElementById("yratio").value);
-        var depthRatio = Number(document.getElementById("zratio").value);
-        scaledSpec = scaleShipSpec(shipspec, lengthRatio, beamRatio, depthRatio);
+	function download() {
+		var lengthRatio = Number(document.getElementById("xratio").value);
+		var beamRatio = Number(document.getElementById("yratio").value);
+		var depthRatio = Number(document.getElementById("zratio").value);
+		scaledSpec = scaleShipSpec(shipspec, lengthRatio, beamRatio, depthRatio);
 
-        // download simulation results as JSON file
-        var blob = new Blob([JSON.stringify(scaledSpec, null, 2)], {
-            type: 'application/json'
-        });
-        var link = document.createElement("a");
-        link.href = window.URL.createObjectURL(blob);
-        link.download = "scaledSpec.json";
-        link.click();
-    }
+		// download simulation results as JSON file
+		var blob = new Blob([JSON.stringify(scaledSpec, null, 2)], {
+			type: 'application/json'
+		});
+		var link = document.createElement("a");
+		link.href = window.URL.createObjectURL(blob);
+		link.download = "scaledSpec.json";
+		link.click();
+	}
 </script>

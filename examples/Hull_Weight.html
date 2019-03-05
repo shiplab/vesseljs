@@ -6,51 +6,51 @@
 
 <head>
 
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="">
+	<meta name="author" content="">
 
-    <title>Weight Methods Avaliation</title>
+	<title>Weight Methods Avaliation</title>
 
-    <!-- Bootstrap Core CSS -->
-    <link href="css/bootstrap.min.css" rel="stylesheet">
+	<!-- Bootstrap Core CSS -->
+	<link href="css/bootstrap.min.css" rel="stylesheet">
 
-    <!-- jQuery Version 1.11.1 -->
-    <script src="js/libs/jquery.js"></script>
+	<!-- jQuery Version 1.11.1 -->
+	<script src="js/libs/jquery.js"></script>
 
-    <!-- Bootstrap Core JavaScript -->
-    <script src="js/libs/bootstrap.min.js"></script>
+	<!-- Bootstrap Core JavaScript -->
+	<script src="js/libs/bootstrap.min.js"></script>
 
-    <!-- D3JavaScript -->
-    <!--script src="js/libs/d3_v4.9.1.js"></script-->
+	<!-- D3JavaScript -->
+	<!--script src="js/libs/d3_v4.9.1.js"></script-->
 
-    <!-- Graphical user interface -->
-    <script src="js/libs/dat.gui.min.js"></script>
+	<!-- Graphical user interface -->
+	<script src="js/libs/dat.gui.min.js"></script>
 
-    <!-- Three script -->
-    <script src="js/libs/three.js"></script>
-    <script src="js/libs/STLLoader.js"></script>
-    <script src="js/libs/OrbitControls.js"></script>
+	<!-- Three script -->
+	<script src="js/libs/three.js"></script>
+	<script src="js/libs/STLLoader.js"></script>
+	<script src="js/libs/OrbitControls.js"></script>
 
-    <!--Import library-->
-    <script src="../build/Vessel.js"></script>
+	<!--Import library-->
+	<script src="../build/Vessel.js"></script>
 
-    <!-- library Created by ferrari212 -->
-    <script src="js/weightTestCalc.js">
+	<!-- library Created by ferrari212 -->
+	<script src="js/weightTestCalc.js">
 
-    </script>
+	</script>
 
-    <!-- Prettyprinting of JSON data -->
-    <script type="text/javascript" src="js/libs/renderjson.js"></script>
+	<!-- Prettyprinting of JSON data -->
+	<script type="text/javascript" src="js/libs/renderjson.js"></script>
 
-    <!--Ship3D class for three.js-->
-    <script src="js/Ship3D.js"></script>
+	<!--Ship3D class for three.js-->
+	<script src="js/Ship3D.js"></script>
 
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
+	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+	<!--[if lt IE 9]>
         <script src="https://oss.maxcdn.com/js/libs/html5shiv/3.7.0/html5shiv.js"></script>
         <script src="https://oss.maxcdn.com/js/libs/respond.js/1.4.2/respond.min.js"></script>
     <![endif]-->
@@ -59,260 +59,260 @@
 
 <body>
 
-    <!-- Navigation -->
-    <nav class="navbar navbar-inverse">
-        <div class="container">
-            <!-- Add  the <div>[Something]</div> structure for each header in the navbar-->
-            <div class="navbar-header">
-                <a class="navbar-brand" href="https://github.com/shiplab/vesseljs">Github project page</a>
-            </div>
-            <!-- This is for the right part of the navbar. Reserved for Shiplab logo-->
-            <div class="nav navbar-nav navbar-right">
-                <div class="navbar-header">
-                    <a class="navbar-brand" href="http://www.shiplab.hials.org/"><img src="images/barquinho.png" alt="Shiplab logo"
-                            style="height:150%">
-                    </a>
-                </div>
-            </div>
-        </div>
-    </nav>
+	<!-- Navigation -->
+	<nav class="navbar navbar-inverse">
+		<div class="container">
+			<!-- Add  the <div>[Something]</div> structure for each header in the navbar-->
+			<div class="navbar-header">
+				<a class="navbar-brand" href="https://github.com/shiplab/vesseljs">Github project page</a>
+			</div>
+			<!-- This is for the right part of the navbar. Reserved for Shiplab logo-->
+			<div class="nav navbar-nav navbar-right">
+				<div class="navbar-header">
+					<a class="navbar-brand" href="http://www.shiplab.hials.org/"><img src="images/barquinho.png" alt="Shiplab logo"
+						 style="height:150%">
+					</a>
+				</div>
+			</div>
+		</div>
+	</nav>
 
-    <!-- Container creates the space -->
-    <div class="container">
+	<!-- Container creates the space -->
+	<div class="container">
 
-        <!-- Row creates horizontal groups of columns -->
-        <div class="row">
+		<!-- Row creates horizontal groups of columns -->
+		<div class="row">
 
-            <!-- choose horizontal layout in https://www.w3schools.com/bootstrap/bootstrap_grid_examples.asp-->
+			<!-- choose horizontal layout in https://www.w3schools.com/bootstrap/bootstrap_grid_examples.asp-->
 
-            <!-- No divisions in page. Only 1 column. -->
-            <div class="col-md-12 text-center">
-                <h2>Weight Methods Avaliation</h2>
-            </div>
+			<!-- No divisions in page. Only 1 column. -->
+			<div class="col-md-12 text-center">
+				<h2>Weight Methods Avaliation</h2>
+			</div>
 
-            <div class="col-md-12 text-center">
+			<div class="col-md-12 text-center">
 
-                <!-- Link the GitHub page if you have one. Add a pdf of how the project works if necessary. Just put it inside the same folder and call it how_to.pdf -->
-                <!--<h1>Hull Hydrostatics</h1>-->
-                <p>Weight Estimation by Parametric Models and Statiscal Methods.</p>
+				<!-- Link the GitHub page if you have one. Add a pdf of how the project works if necessary. Just put it inside the same folder and call it how_to.pdf -->
+				<!--<h1>Hull Hydrostatics</h1>-->
+				<p>Weight Estimation by Parametric Models and Statiscal Methods.</p>
 
-                <!-- <p>Developed by: Elias Hasle, Vicente Alejandro Iváñez Encinas and Henrique M. Gaspar. Visualization made using three.js.</p> -->
+				<!-- <p>Developed by: Elias Hasle, Vicente Alejandro Iváñez Encinas and Henrique M. Gaspar. Visualization made using three.js.</p> -->
 
-            </div>
+			</div>
 
-            <div class="col-md-12 text-left">
-                <h2>Input</h2>
-                <input type="file" id="file-input" />
-                <h3>Contents of the file:</h3>
-                <pre id="file-content"></pre>
-                <br>
-            </div>
+			<div class="col-md-12 text-left">
+				<h2>Input</h2>
+				<input type="file" id="file-input" />
+				<h3>Contents of the file:</h3>
+				<pre id="file-content"></pre>
+				<br>
+			</div>
 
-            <div class="col-md-12 text-left">
-                <h2>3D orbit view of hull</h2>
-            </div>
-            <div id="3d" class="col-md-12 text-left" style="min-height: 80vh">
-            </div>
+			<div class="col-md-12 text-left">
+				<h2>3D orbit view of hull</h2>
+			</div>
+			<div id="3d" class="col-md-12 text-left" style="min-height: 80vh">
+			</div>
 
-        </div>
-        <div class="col-md-12 text-left">
-            <h2>Weight Structural Estimation</h2>
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Method</th>
-                        <th>Results</th>
-                    </tr>
+		</div>
+		<div class="col-md-12 text-left">
+			<h2>Weight Structural Estimation</h2>
+			<table class="table">
+				<thead>
+					<tr>
+						<th>Method</th>
+						<th>Results</th>
+					</tr>
 
-                </thead>
+				</thead>
 
-                <body>
-                    <tr>
-                        <td>E Numeral Lyods (t)</td>
-                        <td id="method0"></span></td>
-                    </tr>
-                    <tr>
-                        <td>Midship Parametric Weight (t)</td>
-                        <td id="method1"></span></td>
-                    </tr>
-                    <tr>
-                        <td>Quadricubic Method (t)</td>
-                        <td id="method2"></span></td>
-                    </tr>
-                    <tr>
-                        <td>Statical Analysis (t)</td>
-                        <td id="method3"></span></td>
-                    </tr>
-                    <tr>
-                        <td>Inland Parametric Weight (t)</td>
-                        <td id="method4"></span></td>
-                    </tr>
-                </body>
+				<body>
+					<tr>
+						<td>E Numeral Lyods (t)</td>
+						<td id="method0"></span></td>
+					</tr>
+					<tr>
+						<td>Midship Parametric Weight (t)</td>
+						<td id="method1"></span></td>
+					</tr>
+					<tr>
+						<td>Quadricubic Method (t)</td>
+						<td id="method2"></span></td>
+					</tr>
+					<tr>
+						<td>Statical Analysis (t)</td>
+						<td id="method3"></span></td>
+					</tr>
+					<tr>
+						<td>Inland Parametric Weight (t)</td>
+						<td id="method4"></span></td>
+					</tr>
+				</body>
 
-            </table>
-        </div>
-    </div>
-    </div>
+			</table>
+		</div>
+	</div>
+	</div>
 
-    <script>
-        "use strict";
+	<script>
+		"use strict";
 
-        // Create scene+
-        var renderer, scene, camera, controls, ship3D, ocean;
-        var gui = new dat.GUI();
+		// Create scene+
+		var renderer, scene, camera, controls, ship3D, ocean;
+		var gui = new dat.GUI();
 
-        //Ready renderer and scene
-        (function () {
-            renderer = new THREE.WebGLRenderer({
-                antialias: true
-            });
-            renderer.setPixelRatio(window.devicePixelRatio);
-            renderer.setClearColor(0xA9CCE3, 1);
+		//Ready renderer and scene
+		(function () {
+			renderer = new THREE.WebGLRenderer({
+				antialias: true
+			});
+			renderer.setPixelRatio(window.devicePixelRatio);
+			renderer.setClearColor(0xA9CCE3, 1);
 
-            // get the div that will hold the renderer
-            var container = document.getElementById('3d');
-            //renderer.setSize(container.clientWidth, container.clientHeight);
-            // add the renderer to the div
-            container.appendChild(renderer.domElement);
+			// get the div that will hold the renderer
+			var container = document.getElementById('3d');
+			//renderer.setSize(container.clientWidth, container.clientHeight);
+			// add the renderer to the div
+			container.appendChild(renderer.domElement);
 
-            scene = new THREE.Scene();
+			scene = new THREE.Scene();
 
-            //Camera and controls:
-            camera = new THREE.PerspectiveCamera(50);
-            camera.up.set(0, 0, 1);
-            scene.add(camera);
-            controls = new THREE.OrbitControls(camera, renderer.domElement);
+			//Camera and controls:
+			camera = new THREE.PerspectiveCamera(50);
+			camera.up.set(0, 0, 1);
+			scene.add(camera);
+			controls = new THREE.OrbitControls(camera, renderer.domElement);
 
-            //Respond to window resize:
-            function onResize() {
-                renderer.setSize(container.clientWidth, container.clientHeight);
-                camera.aspect = container.clientWidth / container.clientHeight;
-                camera.updateProjectionMatrix();
-            }
-            window.addEventListener("resize", onResize);
-            onResize(); //Ensure the initial setup is good too
+			//Respond to window resize:
+			function onResize() {
+				renderer.setSize(container.clientWidth, container.clientHeight);
+				camera.aspect = container.clientWidth / container.clientHeight;
+				camera.updateProjectionMatrix();
+			}
+			window.addEventListener("resize", onResize);
+			onResize(); //Ensure the initial setup is good too
 
-            //Add lights:
-            scene.add(new THREE.AmbientLight(0xffffff, 0.3));
-            scene.add(function () {
-                let sun = new THREE.DirectionalLight(0xffffff, 1);
-                sun.position.set(1, 1, 1);
-                return sun;
-            }());
+			//Add lights:
+			scene.add(new THREE.AmbientLight(0xffffff, 0.3));
+			scene.add(function () {
+				let sun = new THREE.DirectionalLight(0xffffff, 1);
+				sun.position.set(1, 1, 1);
+				return sun;
+			}());
 
-            //Add rudimentary ocean, to see effect of draft changes:
-            ocean = new THREE.Mesh(new THREE.PlaneBufferGeometry(1000, 1000), new THREE.MeshPhongMaterial({
-                color: 0x2222bb
-            }));
-            scene.add(ocean);
-            var grid = new THREE.GridHelper(1000, 100);
-            grid.rotation.x = 0.5 * Math.PI;
-            grid.position.z = 0.01;
-            scene.add(grid);
+			//Add rudimentary ocean, to see effect of draft changes:
+			ocean = new THREE.Mesh(new THREE.PlaneBufferGeometry(1000, 1000), new THREE.MeshPhongMaterial({
+				color: 0x2222bb
+			}));
+			scene.add(ocean);
+			var grid = new THREE.GridHelper(1000, 100);
+			grid.rotation.x = 0.5 * Math.PI;
+			grid.position.z = 0.01;
+			scene.add(grid);
 
-        })();
+		})();
 
-        // read file from user
-        function readSingleFile(e) {
-            var file = e.target.files[0];
-            if (!file) {
-                return;
-            }
+		// read file from user
+		function readSingleFile(e) {
+			var file = e.target.files[0];
+			if (!file) {
+				return;
+			}
 
-            var reader = new FileReader();
-            reader.onload = function (e) {
-                var contents = e.target.result;
-                //call common function for user files and server files
-                useFileData(contents);
-            };
-            reader.readAsText(file);
-        }
+			var reader = new FileReader();
+			reader.onload = function (e) {
+				var contents = e.target.result;
+				//call common function for user files and server files
+				useFileData(contents);
+			};
+			reader.readAsText(file);
+		}
 
-        //Load sample file:
-        new THREE.FileLoader().load("data/ship_specifications/PX121.json", useFileData);
+		//Load sample file:
+		new THREE.FileLoader().load("data/ship_specifications/PX121.json", useFileData);
 
-        function useFileData(contents) {
-            var shipspec = JSON.parse(contents);
-            displayContents(shipspec);
-            var ship = new Vessel.Ship(shipspec);
-            if (ship3D !== undefined) {
-                scene.remove(ship3D);
-            }
-            ship3D = new Ship3D(ship, "data/STL files");
-            scene.add(ship3D);
+		function useFileData(contents) {
+			var shipspec = JSON.parse(contents);
+			displayContents(shipspec);
+			var ship = new Vessel.Ship(shipspec);
+			if (ship3D !== undefined) {
+				scene.remove(ship3D);
+			}
+			ship3D = new Ship3D(ship, "data/STL files");
+			scene.add(ship3D);
 
-            let LOA = ship.structure.hull.attributes.LOA;
-            camera.position.set(0.7 * LOA, 0.7 * LOA, 0.7 * LOA);
-            controls.target = new THREE.Vector3(LOA / 2, 0, 0);
-            controls.update();
+			let LOA = ship.structure.hull.attributes.LOA;
+			camera.position.set(0.7 * LOA, 0.7 * LOA, 0.7 * LOA);
+			controls.target = new THREE.Vector3(LOA / 2, 0, 0);
+			controls.update();
 
-            let Value = {
-                Draft: ship.designState.calculationParameters.Draft_design
-            };
+			let Value = {
+				Draft: ship.designState.calculationParameters.Draft_design
+			};
 
-            function fillDocument() {
-                //calculate hydrostatics
-                let {
-                    LWL: lwlc,
-                    Cb: cbc,
-                    Cp: cpc,
-                    Cwp: cwpc,
-                    BWL: bwlc,
-                    Awp: Awpc,
-                    LCB: LCBc,
-                    KB: KBc,
-                    Ixwp: ixwpc,
-                    Iywp: iywpc,
-                    xcwp: LCFc,
-                    Vs: voldc,
-                    BMt: BMtc,
-                    BMl: BMlc
-                } = ship.structure.hull.calculateAttributesAtDraft(Value.Draft);
-                let WEIGHT = getWeightTest(ship); //@ferrari212
+			function fillDocument() {
+				//calculate hydrostatics
+				let {
+					LWL: lwlc,
+					Cb: cbc,
+					Cp: cpc,
+					Cwp: cwpc,
+					BWL: bwlc,
+					Awp: Awpc,
+					LCB: LCBc,
+					KB: KBc,
+					Ixwp: ixwpc,
+					Iywp: iywpc,
+					xcwp: LCFc,
+					Vs: voldc,
+					BMt: BMtc,
+					BMl: BMlc
+				} = ship.structure.hull.calculateAttributesAtDraft(Value.Draft);
+				let WEIGHT = getWeightTest(ship); //@ferrari212
 
-                document.getElementById("method0").innerHTML = WEIGHT[0].mass.toFixed(2);
-                document.getElementById("method1").innerHTML = WEIGHT[1].mass.toFixed(2);
-                document.getElementById("method2").innerHTML = WEIGHT[2].mass.toFixed(2);
-                document.getElementById("method3").innerHTML = WEIGHT[3].mass.toFixed(2);
-                document.getElementById("method4").innerHTML = WEIGHT[4].mass.toFixed(2);
-            }
+				document.getElementById("method0").innerHTML = WEIGHT[0].mass.toFixed(2);
+				document.getElementById("method1").innerHTML = WEIGHT[1].mass.toFixed(2);
+				document.getElementById("method2").innerHTML = WEIGHT[2].mass.toFixed(2);
+				document.getElementById("method3").innerHTML = WEIGHT[3].mass.toFixed(2);
+				document.getElementById("method4").innerHTML = WEIGHT[4].mass.toFixed(2);
+			}
 
-            fillDocument();
+			fillDocument();
 
-            gui.add(Value, "Draft", 0, 4, 0.01).onChange(function (value) {
-                fillDocument();
-                ship3D.position.z = -Value.Draft;
-            });
+			gui.add(Value, "Draft", 0, 4, 0.01).onChange(function (value) {
+				fillDocument();
+				ship3D.position.z = -Value.Draft;
+			});
 
-            animate();
+			animate();
 
-        }
+		}
 
-        function animate() {
-            requestAnimationFrame(animate);
-            renderer.render(scene, camera);
-        }
+		function animate() {
+			requestAnimationFrame(animate);
+			renderer.render(scene, camera);
+		}
 
-        // display pretty JSON
-        function displayContents(jsonData) {
-            let fileCont = document.getElementById("file-content");
-            fileCont.innerHTML = "";
-            fileCont.appendChild(
-                renderjson(jsonData)
-            );
-        }
+		// display pretty JSON
+		function displayContents(jsonData) {
+			let fileCont = document.getElementById("file-content");
+			fileCont.innerHTML = "";
+			fileCont.appendChild(
+				renderjson(jsonData)
+			);
+		}
 
-        // Catch file browse
-        document.getElementById('file-input')
-            .addEventListener('change', readSingleFile, false);
+		// Catch file browse
+		document.getElementById('file-input')
+			.addEventListener('change', readSingleFile, false);
 
-        //compare values
-    </script>
-    <!-- /.container -->
+		//compare values
+	</script>
+	<!-- /.container -->
 
 
 
-    <!-- Insert own scripts here -->
+	<!-- Insert own scripts here -->
 
 
 </body>
