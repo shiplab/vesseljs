@@ -1,6 +1,6 @@
 //@EliasHasle
 
-/*Base class for objects that are constructed from
+/*Base class for objects that are constructed from 
 a literal object.
 
 Constructors can take more parameters than the specification, but the specification must be the first parameter.
@@ -16,7 +16,8 @@ function JSONSpecObject(specification) {
 	if (specification === null) {
 		console.warn("JSONSpecObject: null specification provided. Defaulting to empty specification.");
 		specification = {};
-	} else if (typeof specification === "object") {}
+	}
+	else if (typeof specification === "object") {}
 	/*else if (typeof specification === "string") {
 		try {
 			specification = JSON.parse(specification);
@@ -36,12 +37,12 @@ function JSONSpecObject(specification) {
 JSONSpecObject.prototype = Object.create(Object.prototype);
 Object.assign(JSONSpecObject.prototype, {
 	constructor: JSONSpecObject,
-	setFromSpecification: function (specification) {
+	setFromSpecification: function(specification) {
 		//No sanity checking by default.
 		Object.assign(this, specification);
 		return this;
 	},
-	getSpecification: function () {
+	getSpecification: function() {
 		let spec = {};
 		for (k of Object.keys(this)) {
 			if (this.hasOwnProperty(k)) spec[k] = this[k];
@@ -49,11 +50,11 @@ Object.assign(JSONSpecObject.prototype, {
 		return spec;
 	},
 	//toJSON is the standard way. Added here for testing.
-	toJSON: function () {
+	toJSON: function() {
 		return this.getSpecification();
 	},
 	//fromJSON is added as an alternative and better name.
-	fromJSON: function (spec) {
+	fromJSON: function(spec) {
 		return this.setFromSpecification(spec);
 	}
 });

@@ -5,7 +5,7 @@ function StateModule(ship, states) {
 
 Object.assign(StateModule.prototype, {
 	// return getters listed on an output array inside the simulation object
-	returnOutput: function () {
+	returnOutput: function() {
 		let resObj = {};
 		for (let i = 0; i < this.output.length; i++) {
 			let output = this[this.output[i]];
@@ -18,7 +18,7 @@ Object.assign(StateModule.prototype, {
 		return resObj;
 	},
 	// write getter output to shipState
-	writeOutput: function () {
+	writeOutput: function() {
 		let stateName = this.constructor.name;
 		if (this.states.discrete[stateName] === undefined) {
 			this.states.discrete[stateName] = {
@@ -36,7 +36,7 @@ Object.assign(StateModule.prototype, {
 		}
 		this.states.discrete[stateName].thisStateVer++;
 	},
-	setDraft: function () {
+	setDraft: function() {
 		let draft = this.ship.calculateDraft(this.states);
 		if (this.states.discrete.FloatingCondition === undefined) {
 			this.states.discrete.FloatingCondition = {
@@ -49,7 +49,7 @@ Object.assign(StateModule.prototype, {
 		this.states.discrete.FloatingCondition.thisStateVer++;
 	},
 	// write argument speed to vessel state. If undefined, use vessel's design speed
-	setSpeed: function (speed) {
+	setSpeed: function(speed) {
 		if (this.states.discrete.Speed === undefined) {
 			this.states.discrete.Speed = {
 				state: {},
@@ -64,7 +64,7 @@ Object.assign(StateModule.prototype, {
 	},
 	// write argument heading angle to vessel state. if undefined, use 0 degrees
 	// 0 degrees corresponds to vessel pointing to north. clockwise orientation.
-	setHeading: function (angle) {
+	setHeading: function(angle) {
 		if (this.states.discrete.Heading === undefined) {
 			this.states.discrete.Heading = {
 				state: {},
@@ -79,7 +79,7 @@ Object.assign(StateModule.prototype, {
 	},
 	// cache memoization pattern adapted from http://b-studios.de/blog/2013/11/18/lazy-attributes-in-ecmascript-5/
 	// in the future, expand version comparison also to parameters stored inside each constructor
-	memoized: function (init, cacheName) {
+	memoized: function(init, cacheName) {
 		return {
 			enumerable: true,
 			configurable: false,

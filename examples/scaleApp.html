@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
 
 	<meta charset="utf-8">
@@ -47,8 +46,7 @@
 			<!-- This is for the right part of the navbar. Reserved for Shiplab logo-->
 			<div class="nav navbar-nav navbar-right">
 				<div class="navbar-header">
-					<a class="navbar-brand" href="http://www.shiplab.ntnu.co/"><img src="images/barquinho.png" alt="Shiplab logo"
-						 style="height:150%">
+					<a class="navbar-brand" href="http://www.shiplab.ntnu.co/"><img src="images/barquinho.png" alt="Shiplab logo" style="height:150%"> 
 					</a>
 				</div>
 			</div>
@@ -62,16 +60,13 @@
 
 	<div class="container" id="userinputs">
 		<h4>Presentation</h4>
-		<p> This is a simple ship specification scaling app. The ship is scaled geometrically with the linear scaling
-			factors chosen below. Thicknesses of structural elements (decks and bulkheads) and lightweights of derived
-			objects remain constant.</p>
+		<p> This is a simple ship specification scaling app. The ship is scaled geometrically with the linear scaling factors chosen below. Thicknesses of structural elements (decks and bulkheads) and lightweights of derived objects remain constant.</p>
 		<table class="table" class="text-center">
 			<thead>
 				<th class="text-center">x-ratio</th>
 				<th class="text-center">y-ratio</th>
 				<th class="text-center">z-ratio</th>
 			</thead>
-
 			<body>
 				<tr>
 					<td class="text-center"><input type="text" id="xratio" onchange="scaleVis()"></td>
@@ -82,7 +77,7 @@
 		</table>
 
 		<div class="container">
-			<p><input type="file" id="shipspec" accept=".json" onchange="readShipSpec(event)" /></p>
+			<p><input type="file" id="shipspec" accept=".json" onchange="readShipSpec(event)"/></p>
 			<div id="3d" class="col-md-11 text-left" style="min-height: 65vh">
 			</div>
 		</div>
@@ -93,7 +88,6 @@
 	</div>
 
 </body>
-
 </html>
 
 <!--Import simulation master script-->
@@ -103,10 +97,8 @@
 	var renderer, scene, camera, controls, ship3D, shipspec, shipVis, readShipSpec, scaleVis, download, scaledSpec;
 
 	//Ready renderer and scene
-	(function () {
-		renderer = new THREE.WebGLRenderer({
-			antialias: true
-		});
+	(function (){
+		renderer = new THREE.WebGLRenderer({antialias: true});
 		renderer.setPixelRatio(window.devicePixelRatio);
 		renderer.setClearColor(0xA9CCE3, 1);
 
@@ -114,15 +106,15 @@
 		var container = document.getElementById('3d');
 		// add the renderer to the div
 		container.appendChild(renderer.domElement);
-
+		
 		scene = new THREE.Scene();
-
+		
 		//Camera and controls:
 		camera = new THREE.PerspectiveCamera(50);
-		camera.up.set(0, 0, 1);
+		camera.up.set(0,0,1);
 		scene.add(camera);
 		controls = new THREE.OrbitControls(camera, renderer.domElement);
-
+		
 		//Respond to window resize:
 		function onResize() {
 			renderer.setSize(container.clientWidth, container.clientHeight);
@@ -133,20 +125,20 @@
 		onResize(); //Ensure the initial setup is good too
 
 		//Add lights:
-		scene.add(new THREE.AmbientLight(0xffffff, 0.3));
-		scene.add(function () {
-			let sun = new THREE.DirectionalLight(0xffffff, 1);
-			sun.position.set(1, 1, 1);
+		scene.add(new THREE.AmbientLight(0xffffff,0.3));
+		scene.add(function() {
+			let sun = new THREE.DirectionalLight(0xffffff,1);
+			sun.position.set(1,1,1);
 			return sun;
 		}());
 	})();
 
-	readShipSpec = function (event) {
+	readShipSpec = function(event){
 		var file = event.target.files[0];
 		var name = file.name;
 		var reader = new FileReader();
 
-		reader.onload = function (event) {
+		reader.onload = function(event) {
 			var contents = event.target.result;
 			useShipSpec(contents);
 		};
@@ -164,16 +156,16 @@
 		}
 		ship3D = new Ship3D(shipVis, "data/STL files");
 		scene.add(ship3D);
-
+		
 		let LOA = shipVis.structure.hull.attributes.LOA;
-		camera.position.set(0.7 * LOA, 0.7 * LOA, 0.7 * LOA);
-		controls.target = new THREE.Vector3(LOA / 2, 0, 0);
+		camera.position.set(0.7*LOA, 0.7*LOA, 0.7*LOA);
+		controls.target = new THREE.Vector3(LOA/2,0,0);
 		controls.update();
 		animate();
 	}
 
 	function animate() {
-		requestAnimationFrame(animate);
+		requestAnimationFrame(animate);			
 		renderer.render(scene, camera);
 	}
 
@@ -194,11 +186,9 @@
 		scaledSpec = scaleShipSpec(shipspec, lengthRatio, beamRatio, depthRatio);
 
 		// download simulation results as JSON file
-		var blob = new Blob([JSON.stringify(scaledSpec, null, 2)], {
-			type: 'application/json'
-		});
+		var blob = new Blob([JSON.stringify(scaledSpec, null, 2)], {type : 'application/json'});
 		var link = document.createElement("a");
-		link.href = window.URL.createObjectURL(blob);
+		link.href =  window.URL.createObjectURL(blob);
 		link.download = "scaledSpec.json";
 		link.click();
 	}

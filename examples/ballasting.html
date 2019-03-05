@@ -1,17 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-	<meta charset="utf-8" />
-	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-	<meta name="viewport" content="width=device-width, initial-scale=1" />
-	<meta name="description" content="" />
-	<meta name="author" content="" />
+
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="">
+	<meta name="author" content="">
 
 	<title>Loading and Deballasting Simulation</title>
 
 	<!-- Bootstrap Core CSS -->
-	<link href="css/bootstrap.min.css" rel="stylesheet" />
+	<link href="css/bootstrap.min.css" rel="stylesheet">
 
 	<!-- Three script -->
 	<script src="js/libs/three.js"></script>
@@ -35,9 +35,11 @@
 
 	<!--Line chart-->
 	<script src="js/lineChart.js"></script>
+
 </head>
 
 <body>
+
 	<!-- Navigation -->
 	<nav class="navbar navbar-inverse">
 		<div class="container">
@@ -48,8 +50,7 @@
 			<!-- This is for the right part of the navbar. Reserved for Shiplab logo-->
 			<div class="nav navbar-nav navbar-right">
 				<div class="navbar-header">
-					<a class="navbar-brand" href="http://www.shiplab.ntnu.co/"><img src="images/barquinho.png" alt="Shiplab logo"
-						 style="height:150%" />
+					<a class="navbar-brand" href="http://www.shiplab.ntnu.co/"><img src="images/barquinho.png" alt="Shiplab logo" style="height:150%"> 
 					</a>
 				</div>
 			</div>
@@ -58,9 +59,7 @@
 
 	<div class="col-md-12 text-center">
 		<h2>Loading and Deballasting Simulation</h2>
-		<p>
-			Simulation of draft and GM during cargo loading and ballast unloading.
-		</p>
+		<p>Simulation of draft and GM during cargo loading and ballast unloading.</p>
 	</div>
 
 	<div class="container" id="userinputs">
@@ -70,23 +69,22 @@
 				<th>Parameter</th>
 				<th>Value</th>
 			</thead>
-
 			<body>
 				<tr>
 					<td>Loading flow rate per cargo tank (m³/s):</td>
-					<td><input type="text" id="flowC" onchange="saveInputs()" /></td>
+					<td><input type="text" id="flowC" onchange="saveInputs()"></td>
 				</tr>
 				<tr>
 					<td>Unloading flow rate per ballast tank (m³/s):</td>
-					<td><input type="text" id="flowB" onchange="saveInputs()" /></td>
+					<td><input type="text" id="flowB" onchange="saveInputs()"></td>
 				</tr>
 				<tr>
 					<td>Target draft (m):</td>
-					<td><input type="text" id="tDraft" onchange="saveInputs()" /></td>
+					<td><input type="text" id="tDraft" onchange="saveInputs()"></td>
 				</tr>
 				<tr>
 					<td>Simulation update frequency (Hertz):</td>
-					<td><input type="text" id="freq" onchange="saveInputs()" /></td>
+					<td><input type="text" id="freq" onchange="saveInputs()"></td>
 				</tr>
 			</body>
 		</table>
@@ -94,7 +92,8 @@
 
 	<div class="container">
 		<h3>Ship Specification</h3>
-		<div id="3d" class="col-md-11 text-left" style="min-height: 65vh"></div>
+		<div id="3d" class="col-md-11 text-left" style="min-height: 65vh">
+		</div>
 	</div>
 
 	<div class="container" id="simulate">
@@ -104,16 +103,13 @@
 
 	<div class="container">
 		<h3>Results Visualization</h3>
-		<p>
-			Adapted from
-			<a href="https://bl.ocks.org/mbostock/3887118" target="_blank">this page</a>.
-		</p>
+		<p>Adapted from <a href="https://bl.ocks.org/mbostock/3887118" target="_blank">this page</a>.</p>
 		<div class="container" id="lineChart">
 			<style>
 				svg {
 					font: 10px sans-serif;
 				}
-
+	
 				.axis path,
 				.axis line {
 					fill: none;
@@ -123,8 +119,8 @@
 			</style>
 		</div>
 	</div>
-</body>
 
+</body>
 </html>
 
 <!--Import simulation master script-->

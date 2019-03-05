@@ -1,23 +1,22 @@
 <html>
-
 <head>
 	<title>Ship in Ocean</title>
 	<script src="../build/Vessel.js"></script>
-
+	
 	<script src="js/libs/three.js"></script>
 	<script src="js/libs/STLLoader.js"></script>
-
+	
 	<script src="js/Ship3D_v2.js"></script>
 
-	<!-- Upgrading to WaterShader2.js will remove the dependency
+	<!-- Upgrading to WaterShader2.js will remove the dependency 
 	on Mirror.js as well as open up possibilities for visualizing approximate water flows around vessels. -->
 	<script src="js/libs/Mirror.js"></script>
 	<script src="js/libs/WaterShader.js"></script>
-
+	
 	<script src="js/libs/OrbitControls.js"></script>
 	<script src="js/libs/dat.gui.min.js"></script>
 	<script src="js/libs/skybox_from_examples.js"></script>
-
+	
 	<script src="js/libs/browse_files_Elias_Hasle.js"></script>
 	<script src="js/Patch_interpolation.js"></script>
 	<!--<script src="Moving_bodies_Elias_Hasle.js"></script>-->
@@ -27,137 +26,125 @@
 </head>
 
 <body>
-	<script>
-		"use strict";
+<script>
+"use strict";
 
-		//Globals
-		var renderer, camera, controls, gui, stats;
-		var scene, zUpCont, playback, bodies, ocean, ship3D;
+//Globals
+var renderer, camera, controls, gui, stats;
+var scene, zUpCont, playback, bodies, ocean, ship3D;
 
-		(function main() {
-			//Renderer setup
-			//document.body.style = "overflow: hidden;";
-			document.body.style.overflow = "hidden";
-			var container = document.createElement("div");
-			//container.style = "position: absolute; top: 0; left: 0;"
-			Object.assign(container.style, {
-				position: "absolute",
-				top: 0,
-				left: 0,
-				width: "100vw",
-				height: "100vh"
-			});
-			document.body.appendChild(container);
-			renderer = new THREE.WebGLRenderer({
-				antialias: true
-			});
-			//renderer.setSize(window.innerWidth, window.innerHeight);
-			renderer.setClearColor(0x99aadd);
-			container.appendChild(renderer.domElement);
+(function main() {
+	//Renderer setup
+	//document.body.style = "overflow: hidden;";
+	document.body.style.overflow = "hidden";
+	var container = document.createElement("div");
+	//container.style = "position: absolute; top: 0; left: 0;"
+	Object.assign(container.style, {
+		position: "absolute",
+		top: 0,
+		left: 0,
+		width: "100vw",
+		height: "100vh"
+	});
+	document.body.appendChild(container);
+	renderer = new THREE.WebGLRenderer({antialias: true});
+	//renderer.setSize(window.innerWidth, window.innerHeight);
+	renderer.setClearColor(0x99aadd);
+	container.appendChild(renderer.domElement);
+	
+	playback = new Playback({parentGUI: gui});
+	
+	//Scene setup:
+	scene = new THREE.Scene();
+	let sun = new THREE.DirectionalLight(0xffffff,2);
+	sun.position.set(-512, 246, 128);
+	scene.add(sun);
+	
+	//Ocean size
+	let oSize = 2048;
+	
+	scene.add(new Skybox(oSize));
+	
+	//Use Z up from now on:
+	THREE.Object3D.DefaultUp.set(0,0,1);
+	zUpCont = new THREE.Group();
+	zUpCont.rotation.x = -0.5*Math.PI;
+	scene.add(zUpCont);
+	
+	//Camera setup
+	camera = new THREE.PerspectiveCamera(26, window.innerWidth/window.innerHeight, 1, 1000000);
+	let onResize = function() {
+		let w = container.clientWidth;
+		let h = container.clientHeight;
+		renderer.setSize(w,h);
+		camera.aspect = w/h;
+		camera.updateProjectionMatrix();
+	};
+	window.addEventListener('resize', onResize, false);
+	onResize();
+	camera.position.set(oSize*0.05, -oSize*0.3, oSize*0.05);
+	camera.lookAt(zUpCont.position);
+	zUpCont.add(camera);
+	
+	controls = new THREE.OrbitControls(camera, renderer.domElement);
+	//controls.minDistance = 0;
+	controls.maxDistance = 0.5*oSize;
+	controls.enablePan = false;
+	controls.maxPolarAngle = 0.5*Math.PI-0.1;
+	controls.minPolarAngle = 0.1;
 
-			playback = new Playback({
-				parentGUI: gui
-			});
+	//zUpCont.add(new THREE.AxisHelper(1000));
+	zUpCont.add(new THREE.HemisphereLight(0xccccff, 0x666688, 1));
+	
+	ocean = new Ocean({parentGUI: gui,
+						sunDir: sun.position.clone().normalize(),
+						size: oSize, segments: 127});
+	playback.add(ocean);
+	zUpCont.add(ocean);
+	
+	Vessel.loadShip("data/ship_specifications/PX121.json", function (ship) {
+		ship3D = new Ship3D(ship, {
+			stlPath: "data/STL files",
+			upperColor: 0x33aa33,
+			lowerColor: 0xaa3333,
+			hullOpacity: 1,
+			deckOpacity: 1,
+			objectOpacity: 1
+		});
+		zUpCont.add(ship3D);
+		
+		//VERY approximate motion (for visualisation only)
+		playback.add(function(t) {
+			let x = ship3D.position.x;
+			let y = ship3D.position.y;
+			let oCenter = ocean.calculateZ(x,y,t);
+			
+			ship3D.heave = oCenter;
+		});
+	});
+	
+	//Initial configuration:
+	let w = ocean.addCosineWave({A:5, T:11, theta: 1});
+	
+	playback.play();
+	
+	requestAnimationFrame(animate);
+})();
 
-			//Scene setup:
-			scene = new THREE.Scene();
-			let sun = new THREE.DirectionalLight(0xffffff, 2);
-			sun.position.set(-512, 246, 128);
-			scene.add(sun);
-
-			//Ocean size
-			let oSize = 2048;
-
-			scene.add(new Skybox(oSize));
-
-			//Use Z up from now on:
-			THREE.Object3D.DefaultUp.set(0, 0, 1);
-			zUpCont = new THREE.Group();
-			zUpCont.rotation.x = -0.5 * Math.PI;
-			scene.add(zUpCont);
-
-			//Camera setup
-			camera = new THREE.PerspectiveCamera(26, window.innerWidth / window.innerHeight, 1, 1000000);
-			let onResize = function () {
-				let w = container.clientWidth;
-				let h = container.clientHeight;
-				renderer.setSize(w, h);
-				camera.aspect = w / h;
-				camera.updateProjectionMatrix();
-			};
-			window.addEventListener('resize', onResize, false);
-			onResize();
-			camera.position.set(oSize * 0.05, -oSize * 0.3, oSize * 0.05);
-			camera.lookAt(zUpCont.position);
-			zUpCont.add(camera);
-
-			controls = new THREE.OrbitControls(camera, renderer.domElement);
-			//controls.minDistance = 0;
-			controls.maxDistance = 0.5 * oSize;
-			controls.enablePan = false;
-			controls.maxPolarAngle = 0.5 * Math.PI - 0.1;
-			controls.minPolarAngle = 0.1;
-
-			//zUpCont.add(new THREE.AxisHelper(1000));
-			zUpCont.add(new THREE.HemisphereLight(0xccccff, 0x666688, 1));
-
-			ocean = new Ocean({
-				parentGUI: gui,
-				sunDir: sun.position.clone().normalize(),
-				size: oSize,
-				segments: 127
-			});
-			playback.add(ocean);
-			zUpCont.add(ocean);
-
-			Vessel.loadShip("data/ship_specifications/PX121.json", function (ship) {
-				ship3D = new Ship3D(ship, {
-					stlPath: "data/STL files",
-					upperColor: 0x33aa33,
-					lowerColor: 0xaa3333,
-					hullOpacity: 1,
-					deckOpacity: 1,
-					objectOpacity: 1
-				});
-				zUpCont.add(ship3D);
-
-				//VERY approximate motion (for visualisation only)
-				playback.add(function (t) {
-					let x = ship3D.position.x;
-					let y = ship3D.position.y;
-					let oCenter = ocean.calculateZ(x, y, t);
-
-					ship3D.heave = oCenter;
-				});
-			});
-
-			//Initial configuration:
-			let w = ocean.addCosineWave({
-				A: 5,
-				T: 11,
-				theta: 1
-			});
-
-			playback.play();
-
-			requestAnimationFrame(animate);
-		})();
-
-		function animate(millitime) {
-
-			let playing = playback.update();
-
-			//Disable this to freeze water when not playing
-			if (!playing) {
-				ocean.water.material.uniforms.time.value += 1 / 60;
-			}
-
-			ocean.water.render();
-
-			renderer.render(scene, camera);
-			requestAnimationFrame(animate);
-		}
-	</script>
+function animate(millitime) {
+	
+	let playing = playback.update();
+	
+	//Disable this to freeze water when not playing
+	if (!playing) {
+		ocean.water.material.uniforms.time.value += 1/60;
+	}
+		
+	ocean.water.render();
+	
+	renderer.render(scene, camera);
+	requestAnimationFrame(animate);
+}
+</script>
 </body>
-
 </html>
