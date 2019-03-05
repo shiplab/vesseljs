@@ -1,85 +1,86 @@
 <!--@EliasHasle-->
 <!DOCTYPE html>
 <html>
+
 <head>
-	<title>Test of the new classes and browseDesign</title>
-	<meta charset="utf-8">
-	<script type="text/javascript" src="js/libs/renderjson.js"></script>
-	<script src="../build/Vessel.js"></script>
+    <title>Test of the new classes and browseDesign</title>
+    <meta charset="utf-8">
+    <script type="text/javascript" src="js/libs/renderjson.js"></script>
+    <script src="../build/Vessel.js"></script>
 </head>
+
 <body>
-<ul id="log"></ul>
+    <ul id="log"></ul>
 
-<script>
+    <script>
+        function logToScreen(s, o) {
+            let log = document.getElementById("log");
+            let entry = document.createElement("li");
+            entry.innerHTML = s;
+            if (o !== undefined) {
+                let pre = document.createElement("pre");
+                pre.appendChild(renderjson(o));
+                entry.appendChild(pre);
+            }
+            log.appendChild(entry);
+        }
 
-function logToScreen(s, o) {
-	let log = document.getElementById("log");
-	let entry = document.createElement("li");
-	entry.innerHTML = s;
-	if (o !== undefined) {
-		let pre = document.createElement("pre");
-		pre.appendChild(renderjson(o));
-		entry.appendChild(pre);
-	}
-	log.appendChild(entry);
-}
+        var v;
+        var s;
 
-var v;
-var s;
+        Vessel.loadShip("data/ship_specifications/PX121.json", useShip);
 
-Vessel.loadShip("data/ship_specifications/PX121.json", useShip);
+        function useShip(ship) {
+            v = ship; //just to have an entry point for debugging.
 
-function useShip(ship) {
-	v = ship; //just to have an entry point for debugging.
+            renderjson.set_show_to_level(1);
 
-	renderjson.set_show_to_level(1);
-	
-	logToScreen("Ship: ", ship);
-	//logToScreen("Design state: ", ship.designState);
+            logToScreen("Ship: ", ship);
+            //logToScreen("Design state: ", ship.designState);
 
-	let stateSpec = {
-		calculationParameters: {
-			a: 1,
-			b: 2
-		},
-		objectOverrides: {
-			common: {
-				fullness: 0.4
-			},
-	/*		baseByID: {
-				abc: {
-					asdf: 1234,
-					lkj: 5858
-				},
-				def: {
-					asdf: 3838
-				},
-				ghi: {}
-			},*/
-			derivedByGroup: {},
-			derivedByID: {}
-		}
-	};
-	
-	logToScreen("State specification: ", stateSpec);
-	
-	let state = new Vessel.ShipState(stateSpec);
-	s = state;
-	logToScreen("State: ", state);
+            let stateSpec = {
+                calculationParameters: {
+                    a: 1,
+                    b: 2
+                },
+                objectOverrides: {
+                    common: {
+                        fullness: 0.4
+                    },
+                    /*		baseByID: {
+                    			abc: {
+                    				asdf: 1234,
+                    				lkj: 5858
+                    			},
+                    			def: {
+                    				asdf: 3838
+                    			},
+                    			ghi: {}
+                    		},*/
+                    derivedByGroup: {},
+                    derivedByID: {}
+                }
+            };
 
-	let w = ship.getWeight(state);
-	logToScreen("Weight at given state:", w);
-	
-	let T = ship.calculateDraft(state);
-	logToScreen("Calculated draft: " + T);
-	
-	let ha = v.structure.hull.calculateAttributesAtDraft(T);
-	logToScreen("Calculated hull values at calculated draft: ", ha);
-	
-	let wl = v.structure.hull.getWaterline(T);
-	logToScreen("Waterline at calculated draft: ", wl);
-}
+            logToScreen("State specification: ", stateSpec);
 
-</script>
+            let state = new Vessel.ShipState(stateSpec);
+            s = state;
+            logToScreen("State: ", state);
+
+            let w = ship.getWeight(state);
+            logToScreen("Weight at given state:", w);
+
+            let T = ship.calculateDraft(state);
+            logToScreen("Calculated draft: " + T);
+
+            let ha = v.structure.hull.calculateAttributesAtDraft(T);
+            logToScreen("Calculated hull values at calculated draft: ", ha);
+
+            let wl = v.structure.hull.getWaterline(T);
+            logToScreen("Waterline at calculated draft: ", wl);
+        }
+    </script>
 </body>
+
 </html>

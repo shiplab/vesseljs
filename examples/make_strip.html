@@ -1,209 +1,222 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta name="description" content="">
-	<meta name="author" content="">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
 
-	<title>Vessel.js vs PDSTRIP</title>
+    <title>Vessel.js vs PDSTRIP</title>
 
-	<!-- Bootstrap Core CSS -->
-	<link href="css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
 
-	<!-- Three script -->
-	<script src="js/libs/three.js"></script>
-	<script src="js/libs/STLLoader.js"></script>
-	<script src="js/libs/OrbitControls.js"></script>
+    <!-- Three script -->
+    <script src="js/libs/three.js"></script>
+    <script src="js/libs/STLLoader.js"></script>
+    <script src="js/libs/OrbitControls.js"></script>
 
-	<!-- jQuery Version 1.11.1 -->
-	<script src="js/libs/jquery.js"></script>
+    <!-- jQuery Version 1.11.1 -->
+    <script src="js/libs/jquery.js"></script>
 
-	<!-- Bootstrap Core JavaScript -->
-	<script src="js/libs/bootstrap.min.js"></script>
+    <!-- Bootstrap Core JavaScript -->
+    <script src="js/libs/bootstrap.min.js"></script>
 
-	<!--Import Vessel.js library-->
-	<script src="../build/Vessel.js"></script>
+    <!--Import Vessel.js library-->
+    <script src="../build/Vessel.js"></script>
 
 </head>
 
 <body>
 
-	<!-- Navigation -->
-	<nav class="navbar navbar-inverse">
-		<div class="container">
-			<!-- Add  the <div>[Something]</div> structure for each header in the navbar-->
-			<div class="navbar-header">
-				<a class="navbar-brand" href="https://github.com/shiplab/vesseljs" target="_blank">Github project page</a>
-			</div>
-			<!-- This is for the right part of the navbar. Reserved for Shiplab logo-->
-			<div class="nav navbar-nav navbar-right">
-				<div class="navbar-header">
-					<a class="navbar-brand" href="http://www.shiplab.ntnu.co/"><img src="images/barquinho.png" alt="Shiplab logo" style="height:150%"> 
-					</a>
-				</div>
-			</div>
-		</div>
-	</nav>
+    <!-- Navigation -->
+    <nav class="navbar navbar-inverse">
+        <div class="container">
+            <!-- Add  the <div>[Something]</div> structure for each header in the navbar-->
+            <div class="navbar-header">
+                <a class="navbar-brand" href="https://github.com/shiplab/vesseljs" target="_blank">Github project page</a>
+            </div>
+            <!-- This is for the right part of the navbar. Reserved for Shiplab logo-->
+            <div class="nav navbar-nav navbar-right">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="http://www.shiplab.ntnu.co/"><img src="images/barquinho.png" alt="Shiplab logo"
+                            style="height:150%">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
 
-	<div class="col-md-12 text-center">
-		<h2>Vessel.js vs PDSTRIP</h2>
-		<p>Perform strip theory analyses from a Vessel.js ship specification. Read more about this app <a href="https://github.com/shiplab/vesseljs/wiki/files/COMPIT_2018.pdf" target="_blank">here</a>.</p>
-	</div>
+    <div class="col-md-12 text-center">
+        <h2>Vessel.js vs PDSTRIP</h2>
+        <p>Perform strip theory analyses from a Vessel.js ship specification. Read more about this app <a href="https://github.com/shiplab/vesseljs/wiki/files/COMPIT_2018.pdf"
+                target="_blank">here</a>.</p>
+    </div>
 
-	<div class="container">
-		<h4>Explanation</h4>
-		<p>This app converts a Vessel.js ship specification into <a href="https://sourceforge.net/projects/pdstrip/" target="_blank">PDSTRIP</a> input files for strip theory analyses. Upload a JSON ship specification using the button below, and you will be able to download two files: <span style="font-weight:bold">geomet.out</span> and <span style="font-weight:bold">pdstrip.inp</span>. The PX121 PSV specification is preloaded.</p>
-		<p><input type="file" accept=".json" onchange="readSpec(event)"/></p>
-		<ul>
-			<li id="specName"></li>
-		</ul>
-	</div>
+    <div class="container">
+        <h4>Explanation</h4>
+        <p>This app converts a Vessel.js ship specification into <a href="https://sourceforge.net/projects/pdstrip/"
+                target="_blank">PDSTRIP</a> input files for strip theory analyses. Upload a JSON ship specification
+            using the button below, and you will be able to download two files: <span style="font-weight:bold">geomet.out</span>
+            and <span style="font-weight:bold">pdstrip.inp</span>. The PX121 PSV specification is preloaded.</p>
+        <p><input type="file" accept=".json" onchange="readSpec(event)" /></p>
+        <ul>
+            <li id="specName"></li>
+        </ul>
+    </div>
 
-	<div class="container">
-		<h4>geomet.out</h4>
-		<p>Ship table of offsets. The table is derived for the design load condition given in the ship specification.</p>
-		<p><button id="download1" type="button" onclick="download(geomet, 'geomet.out')" disabled>Download</button></p>
-	</div>
+    <div class="container">
+        <h4>geomet.out</h4>
+        <p>Ship table of offsets. The table is derived for the design load condition given in the ship specification.</p>
+        <p><button id="download1" type="button" onclick="download(geomet, 'geomet.out')" disabled>Download</button></p>
+    </div>
 
-	<div class="container">
-		<h4>pdstrip.inp</h4>
-		<p>Physical parameters for the analyses. It is filled by this app, but should be fine-tuned by the user after downloaded. Radii of gyration are estimated from main dimensions.</p>
-		<p><button id="download2" type="button" onclick="download(pdstrip, 'pdstrip.inp')" disabled>Download</button></p>
-	</div>
+    <div class="container">
+        <h4>pdstrip.inp</h4>
+        <p>Physical parameters for the analyses. It is filled by this app, but should be fine-tuned by the user after
+            downloaded. Radii of gyration are estimated from main dimensions.</p>
+        <p><button id="download2" type="button" onclick="download(pdstrip, 'pdstrip.inp')" disabled>Download</button></p>
+    </div>
 
 </body>
+
 </html>
 
 <script>
-	"use strict";
-	// preload scatter diagram
-	var psvReq = new XMLHttpRequest();
-	psvReq.open("GET", "data/ship_specifications/PX121.json", true);
-	psvReq.addEventListener("load", function(event) {
-		var contents = event.target.response;
-		convert(contents, "PX121.json");
-	});
-	psvReq.send(null);
+    "use strict";
+    // preload scatter diagram
+    var psvReq = new XMLHttpRequest();
+    psvReq.open("GET", "data/ship_specifications/PX121.json", true);
+    psvReq.addEventListener("load", function (event) {
+        var contents = event.target.response;
+        convert(contents, "PX121.json");
+    });
+    psvReq.send(null);
 
-	var readSpec = function(event){
-		var file = event.target.files[0];
-		var specName = file.name;
-		var reader = new FileReader();
+    var readSpec = function (event) {
+        var file = event.target.files[0];
+        var specName = file.name;
+        var reader = new FileReader();
 
-		reader.onload = function(event) {
-			var contents = event.target.result;
-			convert(contents, specName);
-		};
-		reader.readAsText(file);
-	};
+        reader.onload = function (event) {
+            var contents = event.target.result;
+            convert(contents, specName);
+        };
+        reader.readAsText(file);
+    };
 
-	var geomet, pdstrip;
-	var convert = function(contents, specName) {
-		var shipSpec = JSON.parse(contents);
-		var ship = new Vessel.Ship(shipSpec);
-		document.getElementById("specName").innerHTML = specName;
+    var geomet, pdstrip;
+    var convert = function (contents, specName) {
+        var shipSpec = JSON.parse(contents);
+        var ship = new Vessel.Ship(shipSpec);
+        document.getElementById("specName").innerHTML = specName;
 
-		var {mass: masskg, cg: cg} = ship.getWeight();
-		var masston = masskg/1000;
-		var length = ship.structure.hull.attributes.LOA;
-		var beam = ship.structure.hull.attributes.BOA;
-		var draft = ship.calculateDraft();
-		var depth = ship.structure.hull.attributes.Depth;
-		var noStations = ship.structure.hull.halfBreadths.stations.length;
-		var table = ship.structure.hull.halfBreadths.table;
-		var r44 = (0.30 + 0.45)/2 * beam;
-		var r55 = (0.20 + 0.30)/2 * length;
-		var r66 = (0.25 + 0.30)/2 * length;
+        var {
+            mass: masskg,
+            cg: cg
+        } = ship.getWeight();
+        var masston = masskg / 1000;
+        var length = ship.structure.hull.attributes.LOA;
+        var beam = ship.structure.hull.attributes.BOA;
+        var draft = ship.calculateDraft();
+        var depth = ship.structure.hull.attributes.Depth;
+        var noStations = ship.structure.hull.halfBreadths.stations.length;
+        var table = ship.structure.hull.halfBreadths.table;
+        var r44 = (0.30 + 0.45) / 2 * beam;
+        var r55 = (0.20 + 0.30) / 2 * length;
+        var r66 = (0.25 + 0.30) / 2 * length;
 
-		geomet = "          " + noStations + " T  " + draft.toFixed(4) + "\n";
+        geomet = "          " + noStations + " T  " + draft.toFixed(4) + "\n";
 
-		var statHead, statVert, statHor, offPts, prevVO, prevHO, nextVO, nextHO;
-		for (var i = 0; i < noStations; i++) {
-			offPts = 0;
-			statHor = "";
-			statVert = "";
-			for (var j = 0; j < table.length; j++) {
-				if (table[j][i] !== null) {
-					nextHO = beam/2 * table[j][i];
-					nextVO = depth * ship.structure.hull.halfBreadths.waterlines[j];
-					if (j > 0 && table[j][i] === 0) { // avoid a 0 thickness skeg
-						offPts = 0;
-						statHor = "";
-						statVert = "";
-					}
-					if (nextVO > draft) { // interpolate
-						offPts++;
-						statHor += "     " + (prevHO + (draft - prevVO) * (nextHO - prevHO)/(nextVO - prevVO)).toFixed(4);
-						statVert += "     " + (draft).toFixed(4);
-						break;
-					} else {
-						offPts++;
-						statHor += "     " + (nextHO).toFixed(4);
-						statVert += "     " + (nextVO).toFixed(4);
-						prevHO = nextHO;
-						prevVO = nextVO;
-					}
-				}
-			}
-			// x coordinate of the section, number of offset points, number of gaps
-			statHead = "  " + (length * ship.structure.hull.halfBreadths.stations[i]).toFixed(6) + "               " + offPts + " 0";
-			geomet += statHead + "\n" + statHor + "\n" + statVert + "\n";
-		}
+        var statHead, statVert, statHor, offPts, prevVO, prevHO, nextVO, nextHO;
+        for (var i = 0; i < noStations; i++) {
+            offPts = 0;
+            statHor = "";
+            statVert = "";
+            for (var j = 0; j < table.length; j++) {
+                if (table[j][i] !== null) {
+                    nextHO = beam / 2 * table[j][i];
+                    nextVO = depth * ship.structure.hull.halfBreadths.waterlines[j];
+                    if (j > 0 && table[j][i] === 0) { // avoid a 0 thickness skeg
+                        offPts = 0;
+                        statHor = "";
+                        statVert = "";
+                    }
+                    if (nextVO > draft) { // interpolate
+                        offPts++;
+                        statHor += "     " + (prevHO + (draft - prevVO) * (nextHO - prevHO) / (nextVO - prevVO)).toFixed(
+                            4);
+                        statVert += "     " + (draft).toFixed(4);
+                        break;
+                    } else {
+                        offPts++;
+                        statHor += "     " + (nextHO).toFixed(4);
+                        statVert += "     " + (nextVO).toFixed(4);
+                        prevHO = nextHO;
+                        prevVO = nextVO;
+                    }
+                }
+            }
+            // x coordinate of the section, number of offset points, number of gaps
+            statHead = "  " + (length * ship.structure.hull.halfBreadths.stations[i]).toFixed(6) +
+                "               " + offPts + " 0";
+            geomet += statHead + "\n" + statHor + "\n" + statVert + "\n";
+        }
 
-		// coefficients which are repeated for every offset section
-		var flowStr = "";
-		var coeffStr = "";
-		for (i = 0; i < noStations; i++) {
-			flowStr += "0 ";
-			coeffStr += "0.8 0.6  ";
-		}
+        // coefficients which are repeated for every offset section
+        var flowStr = "";
+        var coeffStr = "";
+        for (i = 0; i < noStations; i++) {
+            flowStr += "0 ";
+            coeffStr += "0.8 0.6  ";
+        }
 
-		pdstrip ="0 t t t\n" +
-			specName + " specification\n" +
-			"9.81 1.025 " + draft.toFixed(4) + " -1e6 999.\n" +
-			"4 0 30 60 90\n" +
-			"geomet.out\n" +
-			"\n" +
-			"f\n" +
-			masston.toFixed(1) + "    " + cg.x.toFixed(2) + " " + cg.y.toFixed(2) + " " + cg.z.toFixed(2) + "    " +
-			r44.toFixed(2) + " " + r55.toFixed(2) + " " + r66.toFixed(2) + "   0.0 0.0 0.0\n" +
-			"\n" +
-			flowStr + "  flow separation\n" +
-			"\n" +
-			"0.05 3.0       wave steepness; max wave height\n" +
-			coeffStr + "          Cy Cz\n" +
-			"\n" +
-			"0       fin\n" +
-			"\n" +
-			"0       sails\n" +
-			"\n" +
-			"0  forces depending on motions\n" +
-			"\n" +
-			"0.0 0.0 0.0 0.0 0.0 suspended weight\n" +
-			"\n" +
-			"0  motion points\n" +
-			"\n" +
-			"5\n" +
-			"9.0 13.5 18.0 24.0 36.0               wave length\n" +
-			"\n" +
-			"1\n" +
-			"0.0 t            1 speed\n" +
-			"\n" +
-			"0/";
+        pdstrip = "0 t t t\n" +
+            specName + " specification\n" +
+            "9.81 1.025 " + draft.toFixed(4) + " -1e6 999.\n" +
+            "4 0 30 60 90\n" +
+            "geomet.out\n" +
+            "\n" +
+            "f\n" +
+            masston.toFixed(1) + "    " + cg.x.toFixed(2) + " " + cg.y.toFixed(2) + " " + cg.z.toFixed(2) + "    " +
+            r44.toFixed(2) + " " + r55.toFixed(2) + " " + r66.toFixed(2) + "   0.0 0.0 0.0\n" +
+            "\n" +
+            flowStr + "  flow separation\n" +
+            "\n" +
+            "0.05 3.0       wave steepness; max wave height\n" +
+            coeffStr + "          Cy Cz\n" +
+            "\n" +
+            "0       fin\n" +
+            "\n" +
+            "0       sails\n" +
+            "\n" +
+            "0  forces depending on motions\n" +
+            "\n" +
+            "0.0 0.0 0.0 0.0 0.0 suspended weight\n" +
+            "\n" +
+            "0  motion points\n" +
+            "\n" +
+            "5\n" +
+            "9.0 13.5 18.0 24.0 36.0               wave length\n" +
+            "\n" +
+            "1\n" +
+            "0.0 t            1 speed\n" +
+            "\n" +
+            "0/";
 
-		document.getElementById("download1").disabled = false;
-		document.getElementById("download2").disabled = false;
-	};
+        document.getElementById("download1").disabled = false;
+        document.getElementById("download2").disabled = false;
+    };
 
-	var download = function(variable, fileName) {
-		// download input file
-		var blob = new Blob([variable]);
-		var link = document.createElement("a");
-		link.href =  window.URL.createObjectURL(blob);
-		link.download = fileName;
-		link.click();
-	};
+    var download = function (variable, fileName) {
+        // download input file
+        var blob = new Blob([variable]);
+        var link = document.createElement("a");
+        link.href = window.URL.createObjectURL(blob);
+        link.download = fileName;
+        link.click();
+    };
 </script>

@@ -1,90 +1,93 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta name="description" content="">
-	<meta name="author" content="">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
 
-	<title>Lifting</title>
+    <title>Lifting</title>
 
-	<!-- Bootstrap Core CSS -->
-	<link href="css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Core CSS -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
 
-	<!-- Three script -->
-	<script src="js/libs/three.js"></script>
-	<script src="js/libs/STLLoader.js"></script>
-	<script src="js/libs/OrbitControls.js"></script>
+    <!-- Three script -->
+    <script src="js/libs/three.js"></script>
+    <script src="js/libs/STLLoader.js"></script>
+    <script src="js/libs/OrbitControls.js"></script>
 
-	<!-- jQuery Version 1.11.1 -->
-	<script src="js/libs/jquery.js"></script>
+    <!-- jQuery Version 1.11.1 -->
+    <script src="js/libs/jquery.js"></script>
 
-	<!-- Bootstrap Core JavaScript -->
-	<script src="js/libs/bootstrap.min.js"></script>
+    <!-- Bootstrap Core JavaScript -->
+    <script src="js/libs/bootstrap.min.js"></script>
 
-	<!--Import Vessel.js library-->
-	<script src="../build/Vessel.js"></script>
+    <!--Import Vessel.js library-->
+    <script src="../build/Vessel.js"></script>
 
-	<!--Import wave creation script-->
-	<script src="js/Pendulum.js"></script>
+    <!--Import wave creation script-->
+    <script src="js/Pendulum.js"></script>
 
-	<!-- Numeric JS -->
-	<script src="js/libs/numeric-1.2.6.min.js"></script>
+    <!-- Numeric JS -->
+    <script src="js/libs/numeric-1.2.6.min.js"></script>
 
-	<!-- flot -->
-	<script src="js/libs/jquery.flot.min.js"></script>
+    <!-- flot -->
+    <script src="js/libs/jquery.flot.min.js"></script>
 
-	<!--Ship3D class for three.js-->
-	<script src="js/Ship3D_v2.js"></script>
+    <!--Ship3D class for three.js-->
+    <script src="js/Ship3D_v2.js"></script>
 
-	<!--Import wave creation script-->
-	<script src="js/AFrame3D.js"></script>
+    <!--Import wave creation script-->
+    <script src="js/AFrame3D.js"></script>
 </head>
 
 <body>
-	<!-- Navigation -->
-	<nav class="navbar navbar-inverse">
-		<div class="container">
-			<!-- Add  the <div>[Something]</div> structure for each header in the navbar-->
-			<div class="navbar-header">
-				<a class="navbar-brand" href="https://github.com/shiplab/vesseljs" target="_blank">Github project page</a>
-			</div>
-			<!-- This is for the right part of the navbar. Reserved for Shiplab logo-->
-			<div class="nav navbar-nav navbar-right">
-				<div class="navbar-header">
-					<a class="navbar-brand" href="http://www.shiplab.ntnu.co/"><img src="images/barquinho.png" alt="Shiplab logo" style="height:150%"> 
-					</a>
-				</div>
-			</div>
-		</div>
-	</nav>
+    <!-- Navigation -->
+    <nav class="navbar navbar-inverse">
+        <div class="container">
+            <!-- Add  the <div>[Something]</div> structure for each header in the navbar-->
+            <div class="navbar-header">
+                <a class="navbar-brand" href="https://github.com/shiplab/vesseljs" target="_blank">Github project page</a>
+            </div>
+            <!-- This is for the right part of the navbar. Reserved for Shiplab logo-->
+            <div class="nav navbar-nav navbar-right">
+                <div class="navbar-header">
+                    <a class="navbar-brand" href="http://www.shiplab.ntnu.co/"><img src="images/barquinho.png" alt="Shiplab logo"
+                            style="height:150%">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
 
-	<div class="col-md-12 text-center">
-		<h2>Pendulum Motion in Lifting</h2>
-		<p>Pendulum motion of load hanging from an A-frame.</p>
-	</div>
+    <div class="col-md-12 text-center">
+        <h2>Pendulum Motion in Lifting</h2>
+        <p>Pendulum motion of load hanging from an A-frame.</p>
+    </div>
 
-	<div class="container">
-			<h4>Motion Visualization</h4>
-			<div id="3d" class="col-md-11 text-left" style="min-height: 65vh">
-			</div>
-	</div>
+    <div class="container">
+        <h4>Motion Visualization</h4>
+        <div id="3d" class="col-md-11 text-left" style="min-height: 65vh">
+        </div>
+    </div>
 
-	<div class="container">
+    <div class="container">
 
-	<p>Ship Heave and Roll (m and rad)</p>
-	<div id = "ship_xz" style = "width:100%;height:200px"></div>
+        <p>Ship Heave and Roll (m and rad)</p>
+        <div id="ship_xz" style="width:100%;height:200px"></div>
 
-	<p>Frame Tip - Displacement From Original Position (m)</p>
-	<div id = "frame_tip_yz" style = "width:100%;height:200px"></div>
+        <p>Frame Tip - Displacement From Original Position (m)</p>
+        <div id="frame_tip_yz" style="width:100%;height:200px"></div>
 
-	<p>Load Phi</p>
-	<div id = "load_phi" style = "width:100%;height:200px"></div>
-</div>
+        <p>Load Phi</p>
+        <div id="load_phi" style="width:100%;height:200px"></div>
+    </div>
 
 </body>
+
 </html>
 
 <!--Import simulation master script-->
