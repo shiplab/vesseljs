@@ -85,7 +85,7 @@
 
 			// add report to GUI controller
 			var obj = {
-				"Click to read paper": function(){
+				"Click to read paper": function () {
 					window.open("https://vesseljs.org/papers/open_6_DOF.pdf");
 				}
 			};
@@ -109,7 +109,7 @@
 
 			// Add the bottom of ocean
 			var geometry = new THREE.PlaneBufferGeometry(oSize, oSize, 32);
-			var texture = new THREE.TextureLoader().load( 'textures/bottom.jpg' );
+			var texture = new THREE.TextureLoader().load('textures/bottom.jpg');
 			var material = new THREE.MeshBasicMaterial({
 				side: THREE.FrontSide,
 				map: texture
@@ -128,7 +128,7 @@
 
 			//Camera setup
 			camera = new THREE.PerspectiveCamera(26, window.innerWidth / window.innerHeight, 1, 1000000);
-			let onResize = function() {
+			let onResize = function () {
 				let w = container.clientWidth;
 				let h = container.clientHeight;
 				renderer.setSize(w, h);
@@ -145,7 +145,7 @@
 			//controls.minDistance = 0;
 			controls.maxDistance = 0.5 * oSize;
 			controls.enablePan = false;
-			controls.maxPolarAngle = 3*(Math.PI/4);
+			controls.maxPolarAngle = 3 * (Math.PI / 4);
 			controls.minPolarAngle = 0;
 
 			//zUpCont.add(new THREE.AxisHelper(1000));
@@ -164,7 +164,7 @@
 			states = [];
 
 
-			Vessel.loadShip("data/ship_specifications/mississipiBarge.json", function(ship) {
+			Vessel.loadShip("data/ship_specifications/mississipiBarge.json", function (ship) {
 				states = ship.designState.clone();
 				states.objectOverrides.derivedByGroup["ballast tanks"].fullness = 0.5;
 				states.objectOverrides.derivedByGroup["cargo tanks"].fullness = 0.5;
@@ -193,10 +193,18 @@
 				var anchorLength = 195; // Mooring line Length                   (m)
 
 				mooring.mooringPointOnShip = [
-					[floatingStates.LWL / 2, floatingStates.BWL / 2, designDimention.Depth - floatingStates.T],
-					[floatingStates.LWL / 2, -floatingStates.BWL / 2, designDimention.Depth - floatingStates.T],
-					[-floatingStates.LWL / 2, -floatingStates.BWL / 2, designDimention.Depth - floatingStates.T],
-					[-floatingStates.LWL / 2, floatingStates.BWL / 2, designDimention.Depth - floatingStates.T]
+					[floatingStates.LWL / 2, floatingStates.BWL / 2, designDimention.Depth -
+						floatingStates.T
+					],
+					[floatingStates.LWL / 2, -floatingStates.BWL / 2, designDimention.Depth -
+						floatingStates.T
+					],
+					[-floatingStates.LWL / 2, -floatingStates.BWL / 2, designDimention.Depth -
+						floatingStates.T
+					],
+					[-floatingStates.LWL / 2, floatingStates.BWL / 2, designDimention.Depth -
+						floatingStates.T
+					]
 				]; // Point of mooring line on ship          (m, m, m)
 
 				mooring.anchorPoint = []; // Point of mooring line on seabed        (m, m, m)
@@ -204,7 +212,9 @@
 
 				// Anchoring point in seabed
 				for (var i = 0; i < mooring.mooringPointOnShip.length; i++) {
-					mooring.anchorPoint[i] = [200 * Math.cos(-i * Math.PI / 2 + Math.PI / 4), -oceanDepth, 200 * Math.sin(-i * Math.PI / 2 + Math.PI / 4)]; // Point of mooring line on seabed        (m, m, m)
+					mooring.anchorPoint[i] = [200 * Math.cos(-i * Math.PI / 2 + Math.PI / 4), -oceanDepth,
+						200 * Math.sin(-i * Math.PI / 2 + Math.PI / 4)
+					]; // Point of mooring line on seabed        (m, m, m)
 				}
 
 				// Rope Material
@@ -227,7 +237,9 @@
 				];
 
 				//Insert while functions
-				var geometryMooring = [new THREE.Geometry(), new THREE.Geometry(), new THREE.Geometry(), new THREE.Geometry()];
+				var geometryMooring = [new THREE.Geometry(), new THREE.Geometry(), new THREE.Geometry(),
+					new THREE.Geometry()
+				];
 
 				for (var i = 0; i < geometryMooring.length; i++) {
 					for (var j = 0; j < 52; j++) {
@@ -286,27 +298,31 @@
 				var tprev = 0; // Initial time;
 
 				scale = gui.addFolder("Initial State");
-				scale.add(states.continuous.motion, "surge", -2, 2).step(0.01).onChange(function(newValue) {
+				scale.add(states.continuous.motion, "surge", -2, 2).step(0.01).onChange(function (newValue) {
 					ship3D.surge = newValue;
 					states.continuous.motion.surge = newValue;
 				});
-				scale.add(states.continuous.motion, "sway", -2, 2).step(0.01).onChange(function(newValue) {
+				scale.add(states.continuous.motion, "sway", -2, 2).step(0.01).onChange(function (newValue) {
 					ship3D.sway = newValue;
 					states.continuous.motion.sway = newValue;
 				});
-				scale.add(states.continuous.motion, "heave", -0.5, 0.5).step(0.01).onChange(function(newValue) {
+				scale.add(states.continuous.motion, "heave", -0.5, 0.5).step(0.01).onChange(function (
+					newValue) {
 					ship3D.heave = newValue;
 					states.continuous.motion.heave = newValue;
 				});
-				scale.add(states.continuous.motion, "roll", -0.5, 0.5).step(0.01).onChange(function(newValue) {
+				scale.add(states.continuous.motion, "roll", -0.5, 0.5).step(0.01).onChange(function (
+					newValue) {
 					ship3D.roll = newValue;
 					states.continuous.motion.roll = newValue;
 				});
-				scale.add(states.continuous.motion, "pitch", -0.1, 0.1).step(0.01).onChange(function(newValue) {
+				scale.add(states.continuous.motion, "pitch", -0.1, 0.1).step(0.01).onChange(function (
+					newValue) {
 					ship3D.pitch = newValue;
 					states.continuous.motion.pitch = newValue;
 				});
-				scale.add(states.continuous.motion, "yaw", -0.25, 0.25).step(0.01).onChange(function(newValue) {
+				scale.add(states.continuous.motion, "yaw", -0.25, 0.25).step(0.01).onChange(function (
+					newValue) {
 					ship3D.yaw = newValue;
 					states.continuous.motion.yaw = newValue;
 				});
@@ -317,9 +333,10 @@
 				scale.add(userParameters, "B_55", 10000000, 90000000).step(5000);
 				scale.add(userParameters, "B_66", 1000000, 9000000).step(5000);
 				scale = gui.addFolder("Ship Information");
-				var controller = scale.add(states.objectOverrides.derivedByGroup["ballast tanks"], "fullness", 0, 1).step(0.01);
+				var controller = scale.add(states.objectOverrides.derivedByGroup["ballast tanks"],
+					"fullness", 0, 1).step(0.01);
 
-				controller.onChange(function(newValue) {
+				controller.onChange(function (newValue) {
 					states.objectOverrides.derivedByGroup["cargo tanks"].fullness = newValue;
 					states.version += 1;
 					statMod.setDraft();
@@ -332,7 +349,7 @@
 				scale.open();
 
 				//VERY approximate motion (for visualisation only)
-				playback.add(function(t) {
+				playback.add(function (t) {
 					// let x = ship3D.position.x;
 					// let y = ship3D.position.y;
 					// let oCenter = ocean.calculateZ(x,y,t);

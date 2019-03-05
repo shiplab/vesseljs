@@ -21,7 +21,7 @@ function scaleShipSpec(inputSpec, lengthRatio, beamRatio, depthRatio) {
 		shipSpec.baseObjects[prop].boxDimensions.length *= lengthRatio;
 		shipSpec.baseObjects[prop].boxDimensions.breadth *= beamRatio;
 		shipSpec.baseObjects[prop].boxDimensions.height *= depthRatio;
-		shipSpec.baseObjects[prop].weightInformation.volumeCapacity *= lengthRatio*beamRatio*depthRatio;
+		shipSpec.baseObjects[prop].weightInformation.volumeCapacity *= lengthRatio * beamRatio * depthRatio;
 
 		// check if cg is fixed or mapped
 		if (shipSpec.baseObjects[prop].weightInformation.cg !== undefined) {

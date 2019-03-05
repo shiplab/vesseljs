@@ -9,7 +9,7 @@ have to be done within the update functions.)*/
 
 "use strict";
 
-function Playback(params={}) {
+function Playback(params = {}) {
 	if (params.parentGUI) {
 		this.conf = params.parentGUI.addFolder("Playback")
 		this.conf.open();
@@ -23,25 +23,25 @@ Object.assign(Playback.prototype, {
 	playing: false,
 	paused: false,
 	//Playables should be added in the intended updating order
-	add: function(playable) {
+	add: function (playable) {
 		this.playables.push(playable);
 	},
 	/*remove: function(playable) {
 		this.playables.remove(playable);
 	},*/
-	playOrPause: function() {
+	playOrPause: function () {
 		if (!this.playing) {
 			this.play();
 		} else {
 			//pause
 			this.playing = false;
 			this.paused = true;
-			this.tPaused = 0.001*performance.now();
+			this.tPaused = 0.001 * performance.now();
 		}
 	},
 	//This is kept as an alias:
-	play: function() {
-		let pn = 0.001*performance.now();
+	play: function () {
+		let pn = 0.001 * performance.now();
 		if (!this.paused) {
 			//Play from start
 			this.tStart = pn;
@@ -49,29 +49,29 @@ Object.assign(Playback.prototype, {
 			this.playing = true;
 		} else {
 			//Resume
-			let skip = pn-this.tPaused;
+			let skip = pn - this.tPaused;
 			this.tStart += skip;
 			this.tLast += skip;
 			this.paused = false;
 			this.playing = true;
 		}
 	},
-	stop: function() {
+	stop: function () {
 		this.playing = false;
 		this.paused = false;
 	},
-	update: function() {
+	update: function () {
 		if (!this.playing) return false;
 
-		let pn = 0.001*performance.now();
-		let dt = pn-this.tLast;
+		let pn = 0.001 * performance.now();
+		let dt = pn - this.tLast;
 		this.tLast = pn;
-		let t = pn-this.tStart;
+		let t = pn - this.tStart;
 
 		for (let i = 0; i < this.playables.length; i++) {
 			if (typeof this.playables[i].update !== "undefined")
-				this.playables[i].update(t,dt);
-			else this.playables[i](t,dt); //assume function
+				this.playables[i].update(t, dt);
+			else this.playables[i](t, dt); //assume function
 		}
 
 		return true;

@@ -31,36 +31,37 @@ function ShipState(specification) {
 ShipState.prototype = Object.create(JSONSpecObject.prototype);
 Object.assign(ShipState.prototype, {
 	constructor: ShipState,
-	getSpecification: function() {
+	getSpecification: function () {
 		if (this.cachedVersion !== this.version) {
 			var spec = {
 				calculationParameters: this.calculationParameters,
-				objectOverrides: this.objectOverrides//{}
+				objectOverrides: this.objectOverrides //{}
 			};
-			
+
 			//Sketchy, but versatile:
-			spec = JSON.parse(JSON.stringify(spec));		
-			
+			spec = JSON.parse(JSON.stringify(spec));
+
 			this.specCache = spec;
 			this.cachedVersion = this.version;
 		}
 		return this.specCache;
 	},
-	clone: function() {
+	clone: function () {
 		return new ShipState(this.getSpecification());
 	},
-	getObjectState: function(o) {
+	getObjectState: function (o) {
 		if (this.objectCache[o.id] !== undefined) {
 			let c = this.objectCache[o.id];
 			if (c.thisStateVer === this.version
 				/*&& c.baseStateVer === o.baseObject.baseStateVersion
-				&& c.refStateVer === o.referenceStateVersion*/) {
+				&& c.refStateVer === o.referenceStateVersion*/
+			) {
 				console.log("ShipState.getObjectState: Using cache.");
-				return c.state;	
-			}				
+				return c.state;
+			}
 		}
 		console.log("ShipState.getObjectState: Not using cache.");
-		
+
 		let state = {};
 		Object.assign(state, o.baseObject.baseState);
 		Object.assign(state, o.referenceState);
@@ -77,29 +78,29 @@ Object.assign(ShipState.prototype, {
 				}
 			}
 		}
-		
+
 		this.objectCache[o.id] = {
 			thisStateVer: this.version,
 			/*baseStateVer: o.baseObject.baseStateVersion,
 			refStateVer: o.referenceStateVersion,*/
 			state: state
 		};
-		
+
 		return state;
 	},
 	//o is an object, k is a key to a single state property
-	getObjectStateProperty: function(o, k) {
+	getObjectStateProperty: function (o, k) {
 		return this.getObjectState(o)[k];
 		//I have commented out a compact, but not very efficient, implementation of Alejandro's pattern, that does not fit too well with my caching solution.
-/*		let oo = this.objectOverrides;
-		let sources = [oo.derivedByID[o.id], oo.derivedByGroup[o.affiliations.group], oo.baseByID[o.baseObject.id], oo.common, o.getReferenceState(), o.baseObject.getBaseState()].filter(e=>!!e);
-		for (let i = 0; i < sources.length; i++) {
-			if (sources[i][k] !== undefined) return sources[i][k];
-		}
-		return; //undefined*/
+		/*		let oo = this.objectOverrides;
+				let sources = [oo.derivedByID[o.id], oo.derivedByGroup[o.affiliations.group], oo.baseByID[o.baseObject.id], oo.common, o.getReferenceState(), o.baseObject.getBaseState()].filter(e=>!!e);
+				for (let i = 0; i < sources.length; i++) {
+					if (sources[i][k] !== undefined) return sources[i][k];
+				}
+				return; //undefined*/
 	},
 	//Sets this state exclusively from parameter.
-	setFromSpecification: function(spec) {
+	setFromSpecification: function (spec) {
 		this.objectCache = {}; //reset cache
 		if (!spec) {
 			Object.assign(this, {
@@ -124,13 +125,13 @@ Object.assign(ShipState.prototype, {
 		oo.baseByID = soo.baseByID || {};
 		oo.derivedByGroup = soo.derivedByGroup || {};
 		oo.derivedByID = soo.derivedByID || {};
-		
+
 		this.version++;
-		
+
 		return this;
 	},
 	//Overrides existing directives and adds new ones.
-	extend: function(spec) {
+	extend: function (spec) {
 		Object.assign(this.calculationParameters, spec.calculationParameters);
 		this.calculatedProperties = {};
 		let oo = this.objectOverrides;
@@ -153,10 +154,10 @@ Object.assign(ShipState.prototype, {
 		this.version++;
 	},
 	//Applies only directives of spec that have a corresponding directive in this.
-	override: function(spec) {
+	override: function (spec) {
 		let oo = this.objectOverrides;
 		let soo = spec.objectOverrides;
-		
+
 		let sources = [spec.calculationParameters, soo.common];
 		let targets = [this.calculationParameters, oo.common];
 		for (let i = 0; i < sources.length; i++) {
@@ -171,7 +172,7 @@ Object.assign(ShipState.prototype, {
 
 		sources = [soo.common, soo.baseByID, soo.derivedByGroup, soo.derivedByID];
 		targets = [oo.common, oo.baseByID, oo.derivedByGroup, oo.derivedByID];
-		
+
 		for (let i = 0; i < sources.length; i++) {
 			if (!sources[i]) continue;
 			let specKeys = Object.keys(sources[i]);

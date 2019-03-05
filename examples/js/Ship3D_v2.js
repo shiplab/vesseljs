@@ -23,7 +23,12 @@ TODO: Use calculated draft for position.z, and place the ship model in a motion 
 
 //var hMat; //global for debugging
 
-function Ship3D(ship, {shipState, stlPath, deckOpacity=0.2, objectOpacity=0.5}) {
+function Ship3D(ship, {
+	shipState,
+	stlPath,
+	deckOpacity = 0.2,
+	objectOpacity = 0.5
+}) {
 	THREE.Group.call(this);
 
 	this.normalizer = new THREE.Group();
@@ -35,63 +40,64 @@ function Ship3D(ship, {shipState, stlPath, deckOpacity=0.2, objectOpacity=0.5}) 
 	this.add(this.normalizer);
 
 	Object.defineProperty(this, "draft", {
-		get: function() {
+		get: function () {
 			return -this.position.z;
-		}/*,
-		set: function(value) {
-			this.position.z = -value;
-		}*/
+		}
+		/*,
+				set: function(value) {
+					this.position.z = -value;
+				}*/
 	});
 	Object.defineProperty(this, "surge", {
-		get: function() {
+		get: function () {
 			return this.fluctCont.position.x;
 		},
-		set: function(value) {
+		set: function (value) {
 			this.fluctCont.position.x = value;
 			//this.shipState.motion.surge = value;
 		}
 	});
 	Object.defineProperty(this, "sway", {
-		get: function() {
+		get: function () {
 			return this.fluctCont.position.y;
 		},
-		set: function(value) {
+		set: function (value) {
 			this.fluctCont.position.y = value;
 			//this.shipState.motion.sway = value;
 		}
 	});
 	Object.defineProperty(this, "heave", {
-		get: function() {
+		get: function () {
 			return this.fluctCont.position.z;
 		},
-		set: function(value) {
+		set: function (value) {
 			this.fluctCont.position.z = value;
 			//this.shipState.motion.heave = value;
 		}
 	});
 	Object.defineProperty(this, "yaw", {
-		get: function() {
+		get: function () {
 			return this.fluctCont.rotation.z;
 		},
-		set: function(value) {
+		set: function (value) {
 			this.fluctCont.rotation.z = value;
 			//this.shipState.motion.yaw = value;
 		}
 	});
 	Object.defineProperty(this, "pitch", {
-		get: function() {
+		get: function () {
 			return this.fluctCont.rotation.y;
 		},
-		set: function(value) {
+		set: function (value) {
 			this.fluctCont.rotation.y = value;
 			//this.shipState.motion.pitch = value;
 		}
 	});
 	Object.defineProperty(this, "roll", {
-		get: function() {
+		get: function () {
 			return this.fluctCont.rotation.x;
 		},
-		set: function(value) {
+		set: function (value) {
 			this.fluctCont.rotation.x = value;
 			//this.shipState.motion.roll = value;
 		}
@@ -109,7 +115,15 @@ function Ship3D(ship, {shipState, stlPath, deckOpacity=0.2, objectOpacity=0.5}) 
 	let Depth = hull.attributes.Depth;
 
 	//console.log("LOA:%.1f, BOA:%.1f, Depth:%.1f",LOA,BOA,Depth);
-	let {w: {cg,mass}, T, GMt, GMl} = ship.calculateStability(this.shipState);
+	let {
+		w: {
+			cg,
+			mass
+		},
+		T,
+		GMt,
+		GMl
+	} = ship.calculateStability(this.shipState);
 
 	this.cmContainer.position.set(-cg.x, -cg.y, -cg.z);
 	this.normalizer.position.z = cg.z;
@@ -125,11 +139,16 @@ function Ship3D(ship, {shipState, stlPath, deckOpacity=0.2, objectOpacity=0.5}) 
 	let stations = hull.halfBreadths.stations;
 	//Decks:
 	var decks = new THREE.Group();
-	let deckMat = new THREE.MeshPhongMaterial({color: 0xcccccc/*this.randomColor()*/, transparent: true, opacity: deckOpacity, side: THREE.DoubleSide});
+	let deckMat = new THREE.MeshPhongMaterial({
+		color: 0xcccccc /*this.randomColor()*/ ,
+		transparent: true,
+		opacity: deckOpacity,
+		side: THREE.DoubleSide
+	});
 	//deckGeom.translate(0,0,-0.5);
 	let ds = ship.structure.decks;
 	//let dk = Object.keys(ds);
-	let stss = stations.map(st=>LOA*st); //use scaled stations for now
+	let stss = stations.map(st => LOA * st); //use scaled stations for now
 	//console.log(dk);
 	//for (let i = 0; i < dk.length; i++) {
 	for (let dk in ds) {
@@ -137,23 +156,23 @@ function Ship3D(ship, {shipState, stlPath, deckOpacity=0.2, objectOpacity=0.5}) 
 		let d = ds[dk];
 
 		//Will eventually use BoxBufferGeometry, but that is harder, because vertices are duplicated in the face planes.
-		let deckGeom = new THREE.PlaneBufferGeometry(1, 1, stss.length, 1);//new THREE.BoxBufferGeometry(1,1,1,sts.length,1,1);
+		let deckGeom = new THREE.PlaneBufferGeometry(1, 1, stss.length, 1); //new THREE.BoxBufferGeometry(1,1,1,sts.length,1,1);
 		//console.log("d.zFloor=%.1f", d.zFloor); //DEBUG
 		let zHigh = d.zFloor;
-		let zLow = d.zFloor-d.thickness;
+		let zLow = d.zFloor - d.thickness;
 		let wlHigh = hull.getWaterline(zHigh);
 		let wlLow = hull.getWaterline(zLow);
 		let pos = deckGeom.getAttribute("position");
 		let pa = pos.array;
-		for (let j = 0; j < stss.length+1; j++) {
-			let x = d.xAft+(j/stss.length)*(d.xFwd-d.xAft);
-			let y1 = Vessel.f.linearFromArrays(stss,wlHigh,x);
-			let y2 = Vessel.f.linearFromArrays(stss,wlLow,x);
-			let y = Math.min(0.5*d.breadth, y1, y2);
-			pa[3*j] = x;
-			pa[3*j+1] = y;
-			pa[3*(stss.length+1)+3*j] = x;
-			pa[3*(stss.length+1)+3*j+1] = -y; //test
+		for (let j = 0; j < stss.length + 1; j++) {
+			let x = d.xAft + (j / stss.length) * (d.xFwd - d.xAft);
+			let y1 = Vessel.f.linearFromArrays(stss, wlHigh, x);
+			let y2 = Vessel.f.linearFromArrays(stss, wlLow, x);
+			let y = Math.min(0.5 * d.breadth, y1, y2);
+			pa[3 * j] = x;
+			pa[3 * j + 1] = y;
+			pa[3 * (stss.length + 1) + 3 * j] = x;
+			pa[3 * (stss.length + 1) + 3 * j + 1] = -y; //test
 		}
 		pos.needsUpdate = true;
 
@@ -162,10 +181,15 @@ function Ship3D(ship, {shipState, stlPath, deckOpacity=0.2, objectOpacity=0.5}) 
 		//console.log(pa);
 		let mat = deckMat;
 		if (d.style) {
-			mat = new THREE.MeshPhongMaterial({color: typeof d.style.color !== "undefined" ? d.style.color : 0xcccccc,  transparent: true, opacity: typeof d.style.opacity !== "undefined" ? d.style.opacity : deckOpacity, side: THREE.DoubleSide});
+			mat = new THREE.MeshPhongMaterial({
+				color: typeof d.style.color !== "undefined" ? d.style.color : 0xcccccc,
+				transparent: true,
+				opacity: typeof d.style.opacity !== "undefined" ? d.style.opacity : deckOpacity,
+				side: THREE.DoubleSide
+			});
 		}
 		let deck = new THREE.Mesh(deckGeom, mat);
-		deck.name = dk;//[i];
+		deck.name = dk; //[i];
 		deck.position.z = d.zFloor;
 		//deck.scale.set(d.xFwd-d.xAft, d.breadth, d.thickness);
 		//deck.position.set(0.5*(d.xFwd+d.xAft), 0, d.zFloor);
@@ -176,23 +200,33 @@ function Ship3D(ship, {shipState, stlPath, deckOpacity=0.2, objectOpacity=0.5}) 
 
 	//Bulkheads:
 	var bulkheads = new THREE.Group();
-	bulkheads.scale.set(1, 0.5*BOA, Depth);
+	bulkheads.scale.set(1, 0.5 * BOA, Depth);
 	//Should have individually trimmed geometries like the decks
-	let bhGeom = new THREE.BoxBufferGeometry(1,1,1);
-	bhGeom.translate(0,0,0.5);
-	let bhMat = new THREE.MeshPhongMaterial({color: 0xcccccc/*this.randomColor()*/, transparent: true, opacity: deckOpacity, side: THREE.DoubleSide});
-	bhGeom.translate(0.5,0,0);
+	let bhGeom = new THREE.BoxBufferGeometry(1, 1, 1);
+	bhGeom.translate(0, 0, 0.5);
+	let bhMat = new THREE.MeshPhongMaterial({
+		color: 0xcccccc /*this.randomColor()*/ ,
+		transparent: true,
+		opacity: deckOpacity,
+		side: THREE.DoubleSide
+	});
+	bhGeom.translate(0.5, 0, 0);
 	let bhs = ship.structure.bulkheads;
 	//let bhk = Object.keys(bhs);
 	//for (let i = 0; i < bhk.length; i++) {
 	for (let bhk in bhs) {
-		let bh = bhs[bhk];//bhs[bhk[i]];
+		let bh = bhs[bhk]; //bhs[bhk[i]];
 		let mat = bhMat;
 		if (bh.style) {
-			mat = new THREE.MeshPhongMaterial({color: typeof bh.style.color !== "undefined" ? bh.style.color : 0xcccccc, transparent: true, opacity: typeof bh.style.opacity !== "undefined" ? bh.style.opacity : deckOpacity, side: THREE.DoubleSide});
+			mat = new THREE.MeshPhongMaterial({
+				color: typeof bh.style.color !== "undefined" ? bh.style.color : 0xcccccc,
+				transparent: true,
+				opacity: typeof bh.style.opacity !== "undefined" ? bh.style.opacity : deckOpacity,
+				side: THREE.DoubleSide
+			});
 		}
 		let bulkhead = new THREE.Mesh(bhGeom, mat);
-		bulkhead.name = bhk;//[i];
+		bulkhead.name = bhk; //[i];
 		bulkhead.scale.set(bh.thickness, 1, 1);
 		bulkhead.position.set(bh.xAft, 0, 0);
 		bulkheads.add(bulkhead);
@@ -214,8 +248,8 @@ function Ship3D(ship, {shipState, stlPath, deckOpacity=0.2, objectOpacity=0.5}) 
 	this.cmContainer.add(this.blocks);
 
 	//Default placeholder geometry
-	this.boxGeom = new THREE.BoxBufferGeometry(1,1,1);
-	this.boxGeom.translate(0,0,0.5);
+	this.boxGeom = new THREE.BoxBufferGeometry(1, 1, 1);
+	this.boxGeom.translate(0, 0, 0.5);
 
 	let objects = Object.values(ship.derivedObjects);
 	for (let i = 0; i < objects.length; i++) {
@@ -227,18 +261,26 @@ function Ship3D(ship, {shipState, stlPath, deckOpacity=0.2, objectOpacity=0.5}) 
 Ship3D.prototype = Object.create(THREE.Group.prototype);
 Object.assign(Ship3D.prototype, {
 	constructor: Ship3D,
-	addObject: function(object) {
+	addObject: function (object) {
 		let mat;
 		if (typeof object.style.color !== "undefined" || typeof object.style.opacity !== "undefined") {
 			let color = typeof object.style.color !== "undefined" ? object.style.color : this.randomColor();
 			let opacity = typeof object.style.opacity !== "undefined" ? object.style.opacity : this.objectOpacity;
-			mat = new THREE.MeshPhongMaterial({color, transparent: true, opacity});
+			mat = new THREE.MeshPhongMaterial({
+				color,
+				transparent: true,
+				opacity
+			});
 		} else {
 			let name = this.stripName(object.id);
 			if (this.materials[name] !== undefined) {
 				mat = this.materials[name];
 			} else {
-				mat = new THREE.MeshPhongMaterial({color: this.randomColor(), transparent: true, opacity: this.objectOpacity});
+				mat = new THREE.MeshPhongMaterial({
+					color: this.randomColor(),
+					transparent: true,
+					opacity: this.objectOpacity
+				});
 				this.materials[name] = mat;
 			}
 		}
@@ -257,17 +299,17 @@ Object.assign(Ship3D.prototype, {
 		if (bo.file3D) {
 			let self = this;
 			this.stlLoader.load(
-				this.stlPath+"/"+bo.file3D,
+				this.stlPath + "/" + bo.file3D,
 				function onLoad(geometry) {
 					//Normalize:
 					geometry.computeBoundingBox();
 					let b = geometry.boundingBox;
 					geometry.translate(-b.min.x, -b.min.y, -b.min.z);
-					geometry.scale(1/(b.max.x-b.min.x),
-								1/(b.max.y-b.min.y),
-								1/(b.max.z-b.min.z));
+					geometry.scale(1 / (b.max.x - b.min.x),
+						1 / (b.max.y - b.min.y),
+						1 / (b.max.z - b.min.z));
 					//Align with the same coordinate system as placeholder blocks:
-					geometry.translate(-0.5,-0.5,0);
+					geometry.translate(-0.5, -0.5, 0);
 					let m = new THREE.Mesh(geometry, mat);
 					m.position.set(x, y, z);
 					m.scale.set(d.length, d.breadth, d.height);
@@ -294,16 +336,16 @@ Object.assign(Ship3D.prototype, {
 		}
 	},
 	//this function is used as a temporary hack to group similar objects by color
-	stripName: function(s) {
-		s=s.replace(/[0-9]/g, "");
-		s=s.trim();
+	stripName: function (s) {
+		s = s.replace(/[0-9]/g, "");
+		s = s.trim();
 		return s;
 	},
-	randomColor: function() {
-		let r = Math.round(Math.random()*0xff);
-		let g = Math.round(Math.random()*0xff);
-		let b = Math.round(Math.random()*0xff);
-		return ((r<<16)|(g<<8)|b);
+	randomColor: function () {
+		let r = Math.round(Math.random() * 0xff);
+		let g = Math.round(Math.random() * 0xff);
+		let b = Math.round(Math.random() * 0xff);
+		return ((r << 16) | (g << 8) | b);
 	}
 });
 
@@ -320,14 +362,14 @@ function HullSideGeometry(stations, waterlines, table) {
 	this.M = waterlines.length;
 	//Hull side, in principle Y offsets on an XZ plane:
 	//Even though a plane geometry is usually defined in terms of Z offsets on an XY plane, the order of the coordinates for each vertex is not so important. What is important is to get the topology right. This is ensured by working with the right order of the vertices.
-	THREE.PlaneBufferGeometry.call(this, undefined, undefined, this.N-1,this.M-1);
+	THREE.PlaneBufferGeometry.call(this, undefined, undefined, this.N - 1, this.M - 1);
 
 	this.update();
 }
 
 HullSideGeometry.prototype = Object.create(THREE.PlaneBufferGeometry.prototype);
 Object.assign(HullSideGeometry.prototype, {
-	update: function() {
+	update: function () {
 		let pos = this.getAttribute("position");
 		let pa = pos.array;
 
@@ -349,8 +391,8 @@ Object.assign(HullSideGeometry.prototype, {
 				/*if(typeof table[j] === "undefined") console.error("table[%d] is undefined", j);
 				else if (typeof table[j][i] === "undefined") console.error("table[%d][%d] is undefined", j, i);*/
 				//y
-				pa[c+1] = this.table[j][i]; //y
-				pa[c+2] = this.waterlines[j]; //z
+				pa[c + 1] = this.table[j][i]; //y
+				pa[c + 2] = this.waterlines[j]; //z
 				c += 3;
 			}
 		}
@@ -375,19 +417,19 @@ Object.assign(HullSideGeometry.prototype, {
 					firstNumberJ = j;
 					lastNumberJ = j;
 					//copy vector for i,j to positions for all null cells below:
-					let c = firstNumberJ*N+i;
-					let x = pa[3*c];
-					let y = pa[3*c+1];
-					let z = pa[3*c+2];
+					let c = firstNumberJ * N + i;
+					let x = pa[3 * c];
+					let y = pa[3 * c + 1];
+					let z = pa[3 * c + 2];
 					let d = c;
 					while (firstNumberJ > 0) {
 						firstNumberJ--;
 						d -= N;
-						pa[3*d] = x;
-						pa[3*d+1] = y;
-						pa[3*d+2] = z;
-						uva[2*d] = uva[2*c];
-						uva[2*d+1] = uva[2*c+1];
+						pa[3 * d] = x;
+						pa[3 * d + 1] = y;
+						pa[3 * d + 2] = z;
+						uva[2 * d] = uva[2 * c];
+						uva[2 * d + 1] = uva[2 * c + 1];
 					}
 					break;
 				}
@@ -406,19 +448,19 @@ Object.assign(HullSideGeometry.prototype, {
 			}
 
 			//copy vector for i,j to positions for all null cells above:
-			let c = lastNumberJ*N+i;
-			let x = pa[3*c];
-			let y = pa[3*c+1];
-			let z = pa[3*c+2];
+			let c = lastNumberJ * N + i;
+			let x = pa[3 * c];
+			let y = pa[3 * c + 1];
+			let z = pa[3 * c + 2];
 			let d = c;
-			while (lastNumberJ < M-1) {
+			while (lastNumberJ < M - 1) {
 				lastNumberJ++;
 				d += N;
-				pa[3*d] = x;
-				pa[3*d+1] = y;
-				pa[3*d+2] = z;
-				uva[2*d] = uva[2*c];
-				uva[2*d+1] = uva[2*c+1];
+				pa[3 * d] = x;
+				pa[3 * d + 1] = y;
+				pa[3 * d + 2] = z;
+				uva[2 * d] = uva[2 * c];
+				uva[2 * d + 1] = uva[2 * c + 1];
 			}
 			//////////
 		}
@@ -435,8 +477,8 @@ function Hull3D(hull, design_draft) {
 	THREE.Group.call(this);
 
 	this.hull = hull;
-	this.design_draft = design_draft!==undefined ? design_draft : 0.5*hull.attributes.Depth;
-	this.upperColor = typeof hull.style.upperColor !== "undefined" ? hull.style.upperColor :  0x33aa33;
+	this.design_draft = design_draft !== undefined ? design_draft : 0.5 * hull.attributes.Depth;
+	this.upperColor = typeof hull.style.upperColor !== "undefined" ? hull.style.upperColor : 0x33aa33;
 	this.lowerColor = typeof hull.style.lowerColor !== "undefined" ? hull.style.lowerColor : 0xaa3333;
 	this.opacity = typeof hull.style.opacity !== "undefined" ? hull.style.opacity : 0.5;
 
@@ -446,9 +488,12 @@ Hull3D.prototype = Object.create(THREE.Group.prototype);
 
 Object.assign(Hull3D.prototype, {
 	//Experimental addition. Broken.
-	addStation: function(p) {
+	addStation: function (p) {
 		const hb = this.hull.halfBreadths;
-		const {index, mu} = Vessel.f.bisectionSearch(hb.stations, p);
+		const {
+			index,
+			mu
+		} = Vessel.f.bisectionSearch(hb.stations, p);
 		hb.stations.splice(index, 0, p);
 		for (let i = 0; i < hb.waterlines.length; i++) {
 			hb.table[i].splice(index, 0, 0);
@@ -457,16 +502,19 @@ Object.assign(Hull3D.prototype, {
 		this.update();
 	},
 	//Experimental addition
-	addWaterline: function(p) {
+	addWaterline: function (p) {
 		const hb = this.hull.halfBreadths;
-		const {index, mu} = Vessel.f.bisectionSearch(hb.waterlines, p);
+		const {
+			index,
+			mu
+		} = Vessel.f.bisectionSearch(hb.waterlines, p);
 		hb.waterlines.splice(index, 0, p);
 		hb.table.splice(index, 0, new Array(hb.stations.length).fill(0));
 
 		this.update();
 	},
 	//or updateGeometries?
-	update: function() {
+	update: function () {
 		const hull = this.hull;
 		const upperColor = this.upperColor;
 		const lowerColor = this.lowerColor;
@@ -489,53 +537,53 @@ Object.assign(Hull3D.prototype, {
 		let M = waterlines.length;
 
 		//Bow cap:
-		let bowPlaneOffsets = hull.getStation(LOA).map(str=>str/(0.5*BOA)); //normalized
+		let bowPlaneOffsets = hull.getStation(LOA).map(str => str / (0.5 * BOA)); //normalized
 		if (this.bowCapG) this.bowCapG.dispose();
-		this.bowCapG = new THREE.PlaneBufferGeometry(undefined, undefined, 1,M-1);
+		this.bowCapG = new THREE.PlaneBufferGeometry(undefined, undefined, 1, M - 1);
 		pos = this.bowCapG.getAttribute("position");
 		pa = pos.array;
 		//constant x-offset yz plane
 		for (let j = 0; j < M; j++) {
-			pa[3*(2*j)] = 1;
-			pa[3*(2*j)+1] = bowPlaneOffsets[j];
-			pa[3*(2*j)+2] = waterlines[j];
-			pa[3*(2*j+1)] = 1;
-			pa[3*(2*j+1)+1] = -bowPlaneOffsets[j];
-			pa[3*(2*j+1)+2] = waterlines[j];
+			pa[3 * (2 * j)] = 1;
+			pa[3 * (2 * j) + 1] = bowPlaneOffsets[j];
+			pa[3 * (2 * j) + 2] = waterlines[j];
+			pa[3 * (2 * j + 1)] = 1;
+			pa[3 * (2 * j + 1) + 1] = -bowPlaneOffsets[j];
+			pa[3 * (2 * j + 1) + 2] = waterlines[j];
 		}
 		pos.needsUpdate = true;
 
 		//Aft cap:
-		let aftPlaneOffsets = hull.getStation(0).map(str=>str/(0.5*BOA)); //normalized
+		let aftPlaneOffsets = hull.getStation(0).map(str => str / (0.5 * BOA)); //normalized
 		if (this.aftCapG) this.aftCapG.dispose();
-		this.aftCapG = new THREE.PlaneBufferGeometry(undefined, undefined, 1,M-1);
+		this.aftCapG = new THREE.PlaneBufferGeometry(undefined, undefined, 1, M - 1);
 		pos = this.aftCapG.getAttribute("position");
 		pa = pos.array;
 		//constant x-offset yz plane
 		for (let j = 0; j < M; j++) {
-			pa[3*(2*j)] = 0;
-			pa[3*(2*j)+1] = -aftPlaneOffsets[j];
-			pa[3*(2*j)+2] = waterlines[j];
-			pa[3*(2*j+1)] = 0;
-			pa[3*(2*j+1)+1] = aftPlaneOffsets[j];
-			pa[3*(2*j+1)+2] = waterlines[j];
+			pa[3 * (2 * j)] = 0;
+			pa[3 * (2 * j) + 1] = -aftPlaneOffsets[j];
+			pa[3 * (2 * j) + 2] = waterlines[j];
+			pa[3 * (2 * j + 1)] = 0;
+			pa[3 * (2 * j + 1) + 1] = aftPlaneOffsets[j];
+			pa[3 * (2 * j + 1) + 2] = waterlines[j];
 		}
 		pos.needsUpdate = true;
 
 		//Bottom cap:
-		let bottomPlaneOffsets = hull.getWaterline(0).map(hw=>hw/(0.5*BOA)); //normalized
+		let bottomPlaneOffsets = hull.getWaterline(0).map(hw => hw / (0.5 * BOA)); //normalized
 		if (this.bottomCapG) this.bottomCapG.dispose();
-		this.bottomCapG = new THREE.PlaneBufferGeometry(undefined, undefined, N-1,1);
+		this.bottomCapG = new THREE.PlaneBufferGeometry(undefined, undefined, N - 1, 1);
 		pos = this.bottomCapG.getAttribute("position");
 		pa = pos.array;
 		//constant z-offset xy plane
 		for (let i = 0; i < N; i++) {
-			pa[3*(i)] = stations[i];
-			pa[3*(i)+1] = -bottomPlaneOffsets[i];
-			pa[3*(i)+2] = 0;
-			pa[3*(N+i)] = stations[i];
-			pa[3*(N+i)+1] = bottomPlaneOffsets[i];
-			pa[3*(N+i)+2] = 0;
+			pa[3 * (i)] = stations[i];
+			pa[3 * (i) + 1] = -bottomPlaneOffsets[i];
+			pa[3 * (i) + 2] = 0;
+			pa[3 * (N + i)] = stations[i];
+			pa[3 * (N + i) + 1] = bottomPlaneOffsets[i];
+			pa[3 * (N + i) + 2] = 0;
 		}
 		pos.needsUpdate = true;
 
@@ -547,17 +595,17 @@ Object.assign(Hull3D.prototype, {
 				uniforms: THREE.UniformsUtils.merge([phong.uniforms, {
 					wlThreshold: new THREE.Uniform(0.5),
 					aboveWL: new THREE.Uniform(new THREE.Color()),
-					belowWL:  new THREE.Uniform(new THREE.Color())
+					belowWL: new THREE.Uniform(new THREE.Color())
 				}]),
-				vertexShader: commonDecl+phong.vertexShader.replace("main() {", "main() {\nvZ = position.z;").replace("#define PHONG", ""),
-				fragmentShader: commonDecl+phong.fragmentShader.replace("vec4 diffuseColor = vec4( diffuse, opacity );",
-				"vec4 diffuseColor = vec4( (vZ>wlThreshold)? aboveWL.rgb : belowWL.rgb, opacity );").replace("#define PHONG", ""),
+				vertexShader: commonDecl + phong.vertexShader.replace("main() {", "main() {\nvZ = position.z;").replace("#define PHONG", ""),
+				fragmentShader: commonDecl + phong.fragmentShader.replace("vec4 diffuseColor = vec4( diffuse, opacity );",
+					"vec4 diffuseColor = vec4( (vZ>wlThreshold)? aboveWL.rgb : belowWL.rgb, opacity );").replace("#define PHONG", ""),
 				side: THREE.DoubleSide,
 				lights: true,
 				transparent: true
 			});
 		}
-		this.hMat.uniforms.wlThreshold.value = this.design_draft/Depth;
+		this.hMat.uniforms.wlThreshold.value = this.design_draft / Depth;
 		this.hMat.uniforms.aboveWL.value = new THREE.Color(upperColor);
 		this.hMat.uniforms.belowWL.value = new THREE.Color(lowerColor);
 		this.hMat.uniforms.opacity.value = opacity;
@@ -579,6 +627,6 @@ Object.assign(Hull3D.prototype, {
 
 		this.add(this.bowCap, this.aftCap, this.bottomCap);
 
-		this.scale.set(LOA,0.5*BOA,Depth);
+		this.scale.set(LOA, 0.5 * BOA, Depth);
 	}
 });

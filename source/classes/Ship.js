@@ -9,14 +9,14 @@ Suggested calculations to do:
 */
 
 function Ship(specification) {
-	JSONSpecObject.call(this,specification);
+	JSONSpecObject.call(this, specification);
 }
 Ship.prototype = Object.create(JSONSpecObject.prototype);
 Object.assign(Ship.prototype, {
 	constructor: Ship,
-	setFromSpecification: function(specification) {
+	setFromSpecification: function (specification) {
 		this.attributes = specification.attributes || {};
-		this.structure = new Structure(specification.structure/*,this*/);
+		this.structure = new Structure(specification.structure /*,this*/ );
 		//baseObjects and derivedObjects are arrays in the specification, but are objects (hashmaps) in the constructed ship object:
 		this.baseObjects = {};
 		for (let i = 0; i < specification.baseObjects.length; i++) {
@@ -33,13 +33,13 @@ Object.assign(Ship.prototype, {
 		this.designState = new ShipState(specification.designState);
 		return this;
 	},
-	getSpecification: function() {
+	getSpecification: function () {
 		let specification = {};
 		specification.attributes = this.attributes;
 		specification.structure = this.structure.getSpecification();
 
-		specification.baseObjects = Object.values(this.baseObjects).map(o=>o.getSpecification());
-		specification.derivedObjects = Object.values(this.derivedObjects).map(o=>o.getSpecification());
+		specification.baseObjects = Object.values(this.baseObjects).map(o => o.getSpecification());
+		specification.derivedObjects = Object.values(this.derivedObjects).map(o => o.getSpecification());
 
 		specification.designState = this.designState.getSpecification();
 
@@ -47,7 +47,7 @@ Object.assign(Ship.prototype, {
 	},
 	//This should probably be separated in lightweight and deadweight
 	//Then this function should be replaced by a getDisplacement
-	getWeight: function(shipState) {
+	getWeight: function (shipState) {
 		shipState = shipState || this.designState;
 
 		let components = [];
@@ -67,32 +67,40 @@ Object.assign(Ship.prototype, {
 		//console.info("Calculated weight object: ", W);
 		return W;
 	},
-	calculateDraft: function(shipState, epsilon=0.001, rho=1025) {
+	calculateDraft: function (shipState, epsilon = 0.001, rho = 1025) {
 		let w = this.getWeight(shipState);
 		let M = w.mass;
 		return this.structure.hull.calculateDraftAtMass(M, epsilon, rho);
 	},
 	//Separates between longitudinal and transverse GM
 	//To avoid confusion, no "default" GM or BM is specified in the output.
-	calculateStability: function(shipState){
+	calculateStability: function (shipState) {
 		let w = this.getWeight(shipState);
 		let KG = w.cg.z;
 		let LCG = w.cg.x;
 		let T = this.structure.hull.calculateDraftAtMass(w.mass);
-		let {BMt,BMl,KB,LCB,LCF,LWL,BWL} = this.structure.hull.calculateAttributesAtDraft(T);
+		let {
+			BMt,
+			BMl,
+			KB,
+			LCB,
+			LCF,
+			LWL,
+			BWL
+		} = this.structure.hull.calculateAttributesAtDraft(T);
 		let GMt = KB + BMt - KG;
 		let GMl = KB + BMl - KG;
 
 		// avaiable just for small angles < 3°
 		// this calculation can be incorporated to Vessesl.js with no problem
-		let trim = (LCB-LCG)/GMl;
+		let trim = (LCB - LCG) / GMl;
 		let draftfp = 0;
 		let draftap = 0;
 		let trimd = 0;
 
-		if (trim < Math.tan(3*Math.PI/180)) {
-			draftfp = T-(LWL-LCF)*trim;
-			draftap = T+(LCF)*trim;
+		if (trim < Math.tan(3 * Math.PI / 180)) {
+			draftfp = T - (LWL - LCF) * trim;
+			draftap = T + (LCF) * trim;
 			trimd = draftfp - draftap;
 		} else {
 			draftfp = null;
@@ -100,16 +108,30 @@ Object.assign(Ship.prototype, {
 			trimd = null;
 		}
 		//change the trim for angles
-		trim = Math.atan(trim)*180/Math.PI;
+		trim = Math.atan(trim) * 180 / Math.PI;
 		console.log(trimd);
 
-		let heel = w.cg.y/GMt;
+		let heel = w.cg.y / GMt;
 		//change the hell for meters
 		heel *= BWL;
 
-		return {w, T, GMt, GMl, KB, BMt, BMl, KG, trim, draftfp, draftap, trimd, heel};
+		return {
+			w,
+			T,
+			GMt,
+			GMl,
+			KB,
+			BMt,
+			BMl,
+			KG,
+			trim,
+			draftfp,
+			draftap,
+			trimd,
+			heel
+		};
 	},
-	getFuelMass: function(shipState) {
+	getFuelMass: function (shipState) {
 		shipState = shipState || this.designState;
 
 		let fuelMass = {};
@@ -125,7 +147,7 @@ Object.assign(Ship.prototype, {
 		}
 		return fuelMass;
 	},
-	subtractFuelMass: function(mass, shipState) {
+	subtractFuelMass: function (mass, shipState) {
 		shipState = shipState || this.designState;
 
 		var fuelMass = this.getFuelMass(shipState);
@@ -142,7 +164,7 @@ Object.assign(Ship.prototype, {
 		if (mass <= totalFuel) { // if yes, subtract mass in the same proportion
 			for (var tk = 0; tk < tankEntr.length; tk++) {
 				var tkId = tankEntr[tk][0];
-				shipState.objectCache[tkId].state.fullness -= mass/fuelCap;
+				shipState.objectCache[tkId].state.fullness -= mass / fuelCap;
 			}
 		} else { // if not, make tanks empty
 			mass -= totalFuel;
