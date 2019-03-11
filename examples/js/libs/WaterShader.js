@@ -7,23 +7,45 @@
  * @author Jonas Wagner / http://29a.ch/ && http://29a.ch/slides/2012/webglwater/ : Water shader explanations in WebGL
  */
 
-THREE.ShaderLib[ 'water' ] = {
+THREE.ShaderLib['water'] = {
 
-	uniforms: THREE.UniformsUtils.merge( [
-		THREE.UniformsLib[ "fog" ], {
-			"normalSampler":    { value: null },
-			"mirrorSampler":    { value: null },
-			"alpha":            { value: 1.0 },
-			"time":             { value: 0.0 },
-			"distortionScale":  { value: 20.0 },
-			"noiseScale":       { value: 1.0 },
-			"textureMatrix" :   { value: new THREE.Matrix4() },
-			"sunColor":         { value: new THREE.Color( 0x7F7F7F ) },
-			"sunDirection":     { value: new THREE.Vector3( 0.70707, 0.70707, 0 ) },
-			"eye":              { value: new THREE.Vector3() },
-			"waterColor":       { value: new THREE.Color( 0x555555 ) }
+	uniforms: THREE.UniformsUtils.merge([
+		THREE.UniformsLib["fog"], {
+			"normalSampler": {
+				value: null
+			},
+			"mirrorSampler": {
+				value: null
+			},
+			"alpha": {
+				value: 1.0
+			},
+			"time": {
+				value: 0.0
+			},
+			"distortionScale": {
+				value: 20.0
+			},
+			"noiseScale": {
+				value: 1.0
+			},
+			"textureMatrix": {
+				value: new THREE.Matrix4()
+			},
+			"sunColor": {
+				value: new THREE.Color(0x7F7F7F)
+			},
+			"sunDirection": {
+				value: new THREE.Vector3(0.70707, 0.70707, 0)
+			},
+			"eye": {
+				value: new THREE.Vector3()
+			},
+			"waterColor": {
+				value: new THREE.Color(0x555555)
+			}
 		}
-	] ),
+	]),
 
 	vertexShader: [
 		'uniform mat4 textureMatrix;',
@@ -32,7 +54,7 @@ THREE.ShaderLib[ 'water' ] = {
 		'varying vec4 mirrorCoord;',
 		'varying vec3 worldPosition;',
 
-		THREE.ShaderChunk[ "fog_pars_vertex"],
+		THREE.ShaderChunk["fog_pars_vertex"],
 
 		'void main()',
 		'{',
@@ -41,10 +63,10 @@ THREE.ShaderLib[ 'water' ] = {
 		'	mirrorCoord = textureMatrix * mirrorCoord;',
 		'	gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );',
 
-		THREE.ShaderChunk[ "fog_vertex"],
+		THREE.ShaderChunk["fog_vertex"],
 
 		'}'
-	].join( '\n' ),
+	].join('\n'),
 
 	fragmentShader: [
 		'precision highp float;',
@@ -83,8 +105,8 @@ THREE.ShaderLib[ 'water' ] = {
 		'	diffuseColor += max( dot( sunDirection, surfaceNormal ), 0.0 ) * sunColor * diffuse;',
 		'}',
 
-		THREE.ShaderChunk[ "common" ],
-		THREE.ShaderChunk[ "fog_pars_fragment" ],
+		THREE.ShaderChunk["common"],
+		THREE.ShaderChunk["fog_pars_fragment"],
 
 		'void main()',
 		'{',
@@ -109,19 +131,19 @@ THREE.ShaderLib[ 'water' ] = {
 		'	vec3 scatter = max( 0.0, dot( surfaceNormal, eyeDirection ) ) * waterColor;',
 		'	vec3 albedo = mix( sunColor * diffuseLight * 0.3 + scatter, ( vec3( 0.1 ) + reflectionSample * 0.9 + reflectionSample * specularLight ), reflectance );',
 		'	vec3 outgoingLight = albedo;',
-			THREE.ShaderChunk[ "fog_fragment" ],
+		THREE.ShaderChunk["fog_fragment"],
 		'	gl_FragColor = vec4( outgoingLight, alpha );',
 		'}'
-	].join( '\n' )
+	].join('\n')
 
 };
 
-THREE.Water = function ( renderer, camera, scene, options ) {
+THREE.Water = function (renderer, camera, scene, options) {
 
-	THREE.Object3D.call( this );
+	THREE.Object3D.call(this);
 	this.name = 'water_' + this.id;
 
-	function optionalParameter ( value, defaultValue ) {
+	function optionalParameter(value, defaultValue) {
 
 		return value !== undefined ? value : defaultValue;
 
@@ -131,38 +153,38 @@ THREE.Water = function ( renderer, camera, scene, options ) {
 
 	this.matrixNeedsUpdate = true;
 
-	var width = optionalParameter( options.textureWidth, 512 );
-	var height = optionalParameter( options.textureHeight, 512 );
-	this.clipBias = optionalParameter( options.clipBias, 0.0 );
-	this.alpha = optionalParameter( options.alpha, 1.0 );
-	this.time = optionalParameter( options.time, 0.0 );
-	this.normalSampler = optionalParameter( options.waterNormals, null );
-	this.sunDirection = optionalParameter( options.sunDirection, new THREE.Vector3( 0.70707, 0.70707, 0.0 ) );
-	this.sunColor = new THREE.Color( optionalParameter( options.sunColor, 0xffffff ) );
-	this.waterColor = new THREE.Color( optionalParameter( options.waterColor, 0x7F7F7F ) );
-	this.eye = optionalParameter( options.eye, new THREE.Vector3( 0, 0, 0 ) );
-	this.distortionScale = optionalParameter( options.distortionScale, 20.0 );
-	this.side = optionalParameter( options.side, THREE.FrontSide );
-	this.fog = optionalParameter( options.fog, false );
+	var width = optionalParameter(options.textureWidth, 512);
+	var height = optionalParameter(options.textureHeight, 512);
+	this.clipBias = optionalParameter(options.clipBias, 0.0);
+	this.alpha = optionalParameter(options.alpha, 1.0);
+	this.time = optionalParameter(options.time, 0.0);
+	this.normalSampler = optionalParameter(options.waterNormals, null);
+	this.sunDirection = optionalParameter(options.sunDirection, new THREE.Vector3(0.70707, 0.70707, 0.0));
+	this.sunColor = new THREE.Color(optionalParameter(options.sunColor, 0xffffff));
+	this.waterColor = new THREE.Color(optionalParameter(options.waterColor, 0x7F7F7F));
+	this.eye = optionalParameter(options.eye, new THREE.Vector3(0, 0, 0));
+	this.distortionScale = optionalParameter(options.distortionScale, 20.0);
+	this.side = optionalParameter(options.side, THREE.FrontSide);
+	this.fog = optionalParameter(options.fog, false);
 
 	this.renderer = renderer;
 	this.scene = scene;
 	this.mirrorPlane = new THREE.Plane();
-	this.normal = new THREE.Vector3( 0, 0, 1 );
+	this.normal = new THREE.Vector3(0, 0, 1);
 	this.mirrorWorldPosition = new THREE.Vector3();
 	this.cameraWorldPosition = new THREE.Vector3();
 	this.rotationMatrix = new THREE.Matrix4();
-	this.lookAtPosition = new THREE.Vector3( 0, 0, - 1 );
+	this.lookAtPosition = new THREE.Vector3(0, 0, -1);
 	this.clipPlane = new THREE.Vector4();
 
-	if ( camera instanceof THREE.PerspectiveCamera ) {
+	if (camera instanceof THREE.PerspectiveCamera) {
 
 		this.camera = camera;
 
 	} else {
 
 		this.camera = new THREE.PerspectiveCamera();
-		console.log( this.name + ': camera is not a Perspective Camera!' );
+		console.log(this.name + ': camera is not a Perspective Camera!');
 
 	}
 
@@ -170,20 +192,21 @@ THREE.Water = function ( renderer, camera, scene, options ) {
 
 	this.mirrorCamera = this.camera.clone();
 
-	this.renderTarget = new THREE.WebGLRenderTarget( width, height );
-	this.renderTarget2 = new THREE.WebGLRenderTarget( width, height );
+	this.renderTarget = new THREE.WebGLRenderTarget(width, height);
+	this.renderTarget2 = new THREE.WebGLRenderTarget(width, height);
 
-	var mirrorShader = THREE.ShaderLib[ "water" ];
-	var mirrorUniforms = THREE.UniformsUtils.clone( mirrorShader.uniforms );
+	var mirrorShader = THREE.ShaderLib["water"];
+	var mirrorUniforms = THREE.UniformsUtils.clone(mirrorShader.uniforms);
 
-	this.material = new THREE.ShaderMaterial( {
+	this.material = new THREE.ShaderMaterial({
 		fragmentShader: mirrorShader.fragmentShader,
 		vertexShader: mirrorShader.vertexShader,
 		uniforms: mirrorUniforms,
 		transparent: true,
-		side: this.side,
+		side: THREE.DoubleSide, // comment this line to display only top side of the sea
+		opacity: 0.6,
 		fog: this.fog
-	} );
+	});
 
 	this.material.uniforms.mirrorSampler.value = this.renderTarget.texture;
 	this.material.uniforms.textureMatrix.value = this.textureMatrix;
@@ -197,7 +220,7 @@ THREE.Water = function ( renderer, camera, scene, options ) {
 
 	this.material.uniforms.eye.value = this.eye;
 
-	if ( ! THREE.Math.isPowerOfTwo( width ) || ! THREE.Math.isPowerOfTwo( height ) ) {
+	if (!THREE.Math.isPowerOfTwo(width) || !THREE.Math.isPowerOfTwo(height)) {
 
 		this.renderTarget.texture.generateMipmaps = false;
 		this.renderTarget.texture.minFilter = THREE.LinearFilter;
@@ -211,91 +234,91 @@ THREE.Water = function ( renderer, camera, scene, options ) {
 
 };
 
-THREE.Water.prototype = Object.create( THREE.Mirror.prototype );
+THREE.Water.prototype = Object.create(THREE.Mirror.prototype);
 THREE.Water.prototype.constructor = THREE.Water;
 
 
 THREE.Water.prototype.updateTextureMatrix = function () {
 
-	function sign( x ) {
+	function sign(x) {
 
-		return x ? x < 0 ? - 1 : 1 : 0;
+		return x ? x < 0 ? -1 : 1 : 0;
 
 	}
 
 	this.updateMatrixWorld();
 	this.camera.updateMatrixWorld();
 
-	this.mirrorWorldPosition.setFromMatrixPosition( this.matrixWorld );
-	this.cameraWorldPosition.setFromMatrixPosition( this.camera.matrixWorld );
+	this.mirrorWorldPosition.setFromMatrixPosition(this.matrixWorld);
+	this.cameraWorldPosition.setFromMatrixPosition(this.camera.matrixWorld);
 
-	this.rotationMatrix.extractRotation( this.matrixWorld );
+	this.rotationMatrix.extractRotation(this.matrixWorld);
 
-	this.normal.set( 0, 0, 1 );
-	this.normal.applyMatrix4( this.rotationMatrix );
+	this.normal.set(0, 0, 1);
+	this.normal.applyMatrix4(this.rotationMatrix);
 
-	var view = this.mirrorWorldPosition.clone().sub( this.cameraWorldPosition );
-	view.reflect( this.normal ).negate();
-	view.add( this.mirrorWorldPosition );
+	var view = this.mirrorWorldPosition.clone().sub(this.cameraWorldPosition);
+	view.reflect(this.normal).negate();
+	view.add(this.mirrorWorldPosition);
 
-	this.rotationMatrix.extractRotation( this.camera.matrixWorld );
+	this.rotationMatrix.extractRotation(this.camera.matrixWorld);
 
-	this.lookAtPosition.set( 0, 0, - 1 );
-	this.lookAtPosition.applyMatrix4( this.rotationMatrix );
-	this.lookAtPosition.add( this.cameraWorldPosition );
+	this.lookAtPosition.set(0, 0, -1);
+	this.lookAtPosition.applyMatrix4(this.rotationMatrix);
+	this.lookAtPosition.add(this.cameraWorldPosition);
 
-	var target = this.mirrorWorldPosition.clone().sub( this.lookAtPosition );
-	target.reflect( this.normal ).negate();
-	target.add( this.mirrorWorldPosition );
+	var target = this.mirrorWorldPosition.clone().sub(this.lookAtPosition);
+	target.reflect(this.normal).negate();
+	target.add(this.mirrorWorldPosition);
 
-	this.up.set( 0, - 1, 0 );
-	this.up.applyMatrix4( this.rotationMatrix );
-	this.up.reflect( this.normal ).negate();
+	this.up.set(0, -1, 0);
+	this.up.applyMatrix4(this.rotationMatrix);
+	this.up.reflect(this.normal).negate();
 
-	this.mirrorCamera.position.copy( view );
+	this.mirrorCamera.position.copy(view);
 	this.mirrorCamera.up = this.up;
-	this.mirrorCamera.lookAt( target );
+	this.mirrorCamera.lookAt(target);
 	this.mirrorCamera.aspect = this.camera.aspect;
 
 	this.mirrorCamera.updateProjectionMatrix();
 	this.mirrorCamera.updateMatrixWorld();
-	this.mirrorCamera.matrixWorldInverse.getInverse( this.mirrorCamera.matrixWorld );
+	this.mirrorCamera.matrixWorldInverse.getInverse(this.mirrorCamera.matrixWorld);
 
 	// Update the texture matrix
-	this.textureMatrix.set( 0.5, 0.0, 0.0, 0.5,
-							0.0, 0.5, 0.0, 0.5,
-							0.0, 0.0, 0.5, 0.5,
-							0.0, 0.0, 0.0, 1.0 );
-	this.textureMatrix.multiply( this.mirrorCamera.projectionMatrix );
-	this.textureMatrix.multiply( this.mirrorCamera.matrixWorldInverse );
+	this.textureMatrix.set(0.5, 0.0, 0.0, 0.5,
+		0.0, 0.5, 0.0, 0.5,
+		0.0, 0.0, 0.5, 0.5,
+		0.0, 0.0, 0.0, 1.0);
+	this.textureMatrix.multiply(this.mirrorCamera.projectionMatrix);
+	this.textureMatrix.multiply(this.mirrorCamera.matrixWorldInverse);
 
 	// Now update projection matrix with new clip plane, implementing code from: http://www.terathon.com/code/oblique.html
 	// Paper explaining this technique: http://www.terathon.com/lengyel/Lengyel-Oblique.pdf
-	this.mirrorPlane.setFromNormalAndCoplanarPoint( this.normal, this.mirrorWorldPosition );
-	this.mirrorPlane.applyMatrix4( this.mirrorCamera.matrixWorldInverse );
+	this.mirrorPlane.setFromNormalAndCoplanarPoint(this.normal, this.mirrorWorldPosition);
+	this.mirrorPlane.applyMatrix4(this.mirrorCamera.matrixWorldInverse);
 
-	this.clipPlane.set( this.mirrorPlane.normal.x, this.mirrorPlane.normal.y, this.mirrorPlane.normal.z, this.mirrorPlane.constant );
+	this.clipPlane.set(this.mirrorPlane.normal.x, this.mirrorPlane.normal.y, this.mirrorPlane.normal.z, this.mirrorPlane.constant);
 
 	var q = new THREE.Vector4();
 	var projectionMatrix = this.mirrorCamera.projectionMatrix;
 
-	q.x = ( sign( this.clipPlane.x ) + projectionMatrix.elements[ 8 ] ) / projectionMatrix.elements[ 0 ];
-	q.y = ( sign( this.clipPlane.y ) + projectionMatrix.elements[ 9 ] ) / projectionMatrix.elements[ 5 ];
-	q.z = - 1.0;
-	q.w = ( 1.0 + projectionMatrix.elements[ 10 ] ) / projectionMatrix.elements[ 14 ];
+	q.x = (sign(this.clipPlane.x) + projectionMatrix.elements[8]) / projectionMatrix.elements[0];
+	q.y = (sign(this.clipPlane.y) + projectionMatrix.elements[9]) / projectionMatrix.elements[5];
+	q.z = -1.0;
+	q.w = (1.0 + projectionMatrix.elements[10]) / projectionMatrix.elements[14];
 
 	// Calculate the scaled plane vector
 	var c = new THREE.Vector4();
-	c = this.clipPlane.multiplyScalar( 2.0 / this.clipPlane.dot( q ) );
+	c = this.clipPlane.multiplyScalar(2.0 / this.clipPlane.dot(q));
 
 	// Replacing the third row of the projection matrix
-	projectionMatrix.elements[ 2 ] = c.x;
-	projectionMatrix.elements[ 6 ] = c.y;
-	projectionMatrix.elements[ 10 ] = c.z + 1.0 - this.clipBias;
-	projectionMatrix.elements[ 14 ] = c.w;
+	projectionMatrix.elements[2] = c.x;
+	projectionMatrix.elements[6] = c.y;
+	projectionMatrix.elements[10] = c.z + 1.0 - this.clipBias;
+	projectionMatrix.elements[14] = c.w;
 
 	var worldCoordinates = new THREE.Vector3();
-	worldCoordinates.setFromMatrixPosition( this.camera.matrixWorld );
+	worldCoordinates.setFromMatrixPosition(this.camera.matrixWorld);
 	this.eye = worldCoordinates;
 	this.material.uniforms.eye.value = this.eye;
 

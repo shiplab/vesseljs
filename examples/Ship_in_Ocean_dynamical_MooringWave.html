@@ -463,11 +463,6 @@
 						.onChange(function (newValue) {
 							mooring.radialDistance = newValue;
 							radialDistance = newValue;
-							var rupture = Math.pow(((Math.pow(userParameters.radialDistance), 2) + (Math.pow(userParameters.seaDepth), 2)),
-								0.5);
-							if (rupture < userParameters.anchorLength) {
-								alert("Mooring line is too short.");
-							};
 						})
 						.name("Radial distance");
 					scale
