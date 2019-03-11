@@ -13,8 +13,8 @@ function Playback(params = {}) {
 	if (params.parentGUI) {
 		this.conf = params.parentGUI.addFolder("Playback")
 		this.conf.open();
-		this.conf.add(this, "playOrPause").name("play/pause");
-		this.conf.add(this, "stop");
+		this.conf.add(this, "playOrPause").name("Play/Pause");
+		this.conf.add(this, "stop").name("Stop");
 	}
 
 	this.playables = [];

@@ -5,7 +5,7 @@
 
 /*The code will require the main ship dimensions*/
 
-function DynamicalMovement(ship, states, userParameters, Ini, oceanDepth) {
+function DynamicalMovement(ship, states, userParameters, Ini, seaDepth) {
 	this.ship = ship;
 	this.states = states;
 
@@ -34,9 +34,7 @@ function DynamicalMovement(ship, states, userParameters, Ini, oceanDepth) {
 
 	this.states.continuous.motion = {};
 	var motion = this.states.continuous.motion;
-	[motion.surge, motion.sway, motion.heave, motion.roll, motion.pitch, motion.yaw, motion.VSurge, motion.VSway,
-		motion.VHeave, motion.VRoll, motion.VPitch, motion.VYaw, motion.EX, motion.EY, motion.EZ
-	] = Ini;
+	[motion.surge, motion.sway, motion.heave, motion.roll, motion.pitch, motion.yaw, motion.VSurge, motion.VSway, motion.VHeave, motion.VRoll, motion.VPitch, motion.VYaw, motion.EX, motion.EY, motion.EZ] = Ini;
 
 	this.moveShip = function (tprev, dt) {
 		if (ocean.waves["0"].A) {
@@ -49,7 +47,7 @@ function DynamicalMovement(ship, states, userParameters, Ini, oceanDepth) {
 			waveForce = [0, 0, 0, 0, 0, 0]
 		}
 
-		mooringForce = this.InsertMooring(this.ship, this.states, motion, oceanDepth, mooring.anchorPoint);
+		mooringForce = this.InsertMooring(this.ship, this.states, motion, seaDepth, mooring.anchorPoint);
 
 		// Inertia
 		var I_46 = 0; //Small coupled term, was neglected.
@@ -168,10 +166,10 @@ function DynamicalMovement(ship, states, userParameters, Ini, oceanDepth) {
 			console.warn("Small body approximation denied Breadth > Lambda / 4.");
 		}
 		if (length / breadth < 5) {
-			console.warn("Selender ship condition denied Length/Breadth < 5.");
+			console.warn("Slender ship condition denied Length/Breadth < 5.");
 		}
 
-		// Heavve Forces Calculations
+		// Heave Forces Calculations
 		var A = 2 * Math.sin(Math.pow(omega, 2) * breadth / (2 * g)) * Math.exp(-Math.pow(omega, 2) * draft / g);
 		var alpha = 1; // Speed equals to zero therefore fr is zero
 		var b_33 = rho * Math.pow(g * A, 2) / (Math.pow(omega * alpha, 3));
@@ -340,7 +338,7 @@ function DynamicalMovement(ship, states, userParameters, Ini, oceanDepth) {
 		return m;
 	}
 
-	this.InsertMooring = function (ship, states, motion, oceanDepth, anchorPoint) {
+	this.InsertMooring = function (ship, states, motion, seaDepth, anchorPoint) {
 
 		var J = Euler2J1([motion.roll, motion.pitch, motion.yaw]);
 
@@ -359,8 +357,15 @@ function DynamicalMovement(ship, states, userParameters, Ini, oceanDepth) {
 		var anchorPointOnShip = []; // Line geometry (global)        (m, m, m)
 		var anchorDist = []; // Max. horizontal distance of line       (m)
 		var mooringLengthSuspended; // Suspende line length                   (m)
+		var anchorPoint = [];
 
 		for (var i = 0; i < pos.length; i++) {
+			anchorPoint[i] = [
+				userParameters.radialDistance * Math.cos((-i * Math.PI) / 2 + (mooring.mooringAngle * Math.PI) / 180),
+				-userParameters.seaDepth,
+				userParameters.radialDistance * Math.sin((-i * Math.PI) / 2 + (mooring.mooringAngle * Math.PI) / 180)
+			];
+
 			hangedMooring[i] = []
 			anchorPointOnShip[i] = [pos[i][0] + motion.surge, pos[i][2] + motion.heave, pos[i][1] - motion.sway];
 			anchorDist[i] = Math.pow(Math.pow(anchorPoint[i][0] - anchorPointOnShip[i][0], 2) + Math.pow(anchorPoint[i][1] - anchorPointOnShip[i][1], 2) + Math.pow(anchorPoint[i][2] - anchorPointOnShip[i][2], 2), 0.5);
@@ -368,19 +373,19 @@ function DynamicalMovement(ship, states, userParameters, Ini, oceanDepth) {
 			var as = numeric.linspace(0.01, mooring.anchorLength, 100);
 
 			for (var n = 0; n < as.length; n++) {
-				aPosible[n] = mooring.anchorLength - anchorDist[i] - as[n] * Math.sinh(Math.acosh(((anchorPointOnShip[i][1] + oceanDepth) / as[n]) + 1)) + as[n] * (Math.acosh(((anchorPointOnShip[i][1] + oceanDepth) / as[n]) + 1));
+				aPosible[n] = mooring.anchorLength - anchorDist[i] - as[n] * Math.sinh(Math.acosh(((anchorPointOnShip[i][1] + userParameters.seaDepth) / as[n]) + 1)) + as[n] * (Math.acosh(((anchorPointOnShip[i][1] + userParameters.seaDepth) / as[n]) + 1));
 			}
 			a[i] = numeric.spline(as, aPosible).roots();
-			horizontalForce[i] = a[i] * mooring.w;
-			mooringLengthSuspended = Math.pow((anchorPointOnShip[i][1] + oceanDepth) * ((anchorPointOnShip[i][1] + oceanDepth) + 2 * a[i]), 0.5);
+			horizontalForce[i] = a[i] * userParameters.density;
+			mooringLengthSuspended = Math.pow((anchorPointOnShip[i][1] + userParameters.seaDepth) * ((anchorPointOnShip[i][1] + userParameters.seaDepth) + 2 * a[i]), 0.5);
 			xs = a[i] * Math.asinh(mooringLengthSuspended / a[i]); // m (Horizontal distance of the ship)
-			verticalForce[i] = mooring.w * mooringLengthSuspended;
+			verticalForce[i] = userParameters.density * mooringLengthSuspended;
 
 			const dx = xs / 50; // m (Distance variated)
 			var m = 0;
 			for (var d = xs; d >= 0; d -= dx) {
 				hangedMooring[i][m] = [anchorPointOnShip[i][0] + (xs - d) * (anchorAngle[i][0]),
-					a[i] * (Math.cosh(d / a[i]) - 1) - oceanDepth,
+					a[i] * (Math.cosh(d / a[i]) - 1) - userParameters.seaDepth,
 					anchorPointOnShip[i][2] + (xs - d) * (anchorAngle[i][1])
 				];
 				m++;
@@ -439,4 +444,5 @@ function DynamicalMovement(ship, states, userParameters, Ini, oceanDepth) {
 
 		return FM;
 	}
+
 };

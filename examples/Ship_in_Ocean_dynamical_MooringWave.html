@@ -40,8 +40,26 @@
 		var renderer, camera, controls, gui, stats;
 		var scene, zUpCont, playback, bodies, ocean, ship3D, statMod;
 		var designDimention, floatingStates, mooring, line, hangedMooring;
-		var RG_system, g, MM, ADD_mass, AA, A_33, BB, B_33, B_44, B_55, B_66, CC, waveForce, C_D;
-		var mooring
+		var RG_system,
+			g,
+			MM,
+			ADD_mass,
+			AA,
+			A_33,
+			BB,
+			B_33,
+			B_44,
+			B_55,
+			B_66,
+			CC,
+			waveForce,
+			C_D,
+			seaDepth,
+			anchorLength,
+			radialDistance,
+			density,
+			mooringAngle;
+		var mooring;
 		var dynMov, wavMo, states, scale;
 		var group;
 
@@ -52,11 +70,21 @@
 		B_44 = 3000000; // Assumed Roll Linear Damping Coeff.	(kgm2/s)
 		B_55 = 60000000; // Assumed Roll Linear Damping Coeff.	(kgm2/s)
 		B_66 = 6000000; // Assumed Roll Linear Damping Coeff.	(kgm2/s)
+		seaDepth = 30; // Sea bottom depth (m)
+		anchorLength = 195; // Anchor length (m)
+		radialDistance = 200;
+		density = 200;
+		mooringAngle = 45;
 		var userParameters = {
 			C_D,
 			B_44,
 			B_55,
-			B_66
+			B_66,
+			seaDepth,
+			anchorLength,
+			radialDistance,
+			density,
+			mooringAngle
 		};
 
 		(function main() {
@@ -109,15 +137,18 @@
 
 			// Add the bottom of ocean
 			var geometry = new THREE.PlaneBufferGeometry(oSize, oSize, 32);
-			var texture = new THREE.TextureLoader().load('textures/bottom.jpg');
+			geometry.dynamic = true;
+			var texture = new THREE.TextureLoader().load("textures/bottom.jpg");
 			var material = new THREE.MeshBasicMaterial({
 				side: THREE.FrontSide,
-				map: texture
+				map: texture,
+				transparent: true
 			});
 			var plane = new THREE.Mesh(geometry, material);
-			plane.rotateX(-Math.PI / 2);
-			var oceanDepth = 30;
-			plane.translateZ(-oceanDepth);
+			plane.rotation.set(-Math.PI / 2, 0, 0);
+			plane.position.setY(-userParameters.seaDepth);
+			plane.material.side = THREE.DoubleSide;
+			plane.material.opacity = 0.8;
 			scene.add(plane);
 
 			//Use Z up from now on:
@@ -127,7 +158,12 @@
 			scene.add(zUpCont);
 
 			//Camera setup
-			camera = new THREE.PerspectiveCamera(26, window.innerWidth / window.innerHeight, 1, 1000000);
+			camera = new THREE.PerspectiveCamera(
+				26,
+				window.innerWidth / window.innerHeight,
+				1,
+				1000000
+			);
 			let onResize = function () {
 				let w = container.clientWidth;
 				let h = container.clientHeight;
@@ -135,7 +171,7 @@
 				camera.aspect = w / h;
 				camera.updateProjectionMatrix();
 			};
-			window.addEventListener('resize', onResize, false);
+			window.addEventListener("resize", onResize, false);
 			onResize();
 			camera.position.set(oSize * 0.05, -oSize * 0.05, oSize * 0.02);
 			camera.lookAt(zUpCont.position);
@@ -163,209 +199,335 @@
 			wavMo = [];
 			states = [];
 
-
-			Vessel.loadShip("data/ship_specifications/mississipiBarge.json", function (ship) {
-				states = ship.designState.clone();
-				states.objectOverrides.derivedByGroup["ballast tanks"].fullness = 0.5;
-				states.objectOverrides.derivedByGroup["cargo tanks"].fullness = 0.5;
-				console.log(states.objectCache);
-				statMod = new Vessel.StateModule(ship, states);
-				statMod.setDraft();
-				//console.log(states.shipCache.thisStateVer);
-				ship3D = new Ship3D(ship, {
-					shipState: states,
-					stlPath: "data/STL files",
-					upperColor: 0x33aa33,
-					lowerColor: 0xaa3333,
-					hullOpacity: 1,
-					deckOpacity: 1,
-					objectOpacity: 1
-				});
-				zUpCont.add(ship3D);
-
-				// Insert mooring lines
-				designDimention = ship.structure.hull.attributes;
-				floatingStates = states.discrete.FloatingCondition.state;
-
-				states.continuous.mooring = {};
-				mooring = states.continuous.mooring;
-
-				var anchorLength = 195; // Mooring line Length                   (m)
-
-				mooring.mooringPointOnShip = [
-					[floatingStates.LWL / 2, floatingStates.BWL / 2, designDimention.Depth -
-						floatingStates.T
-					],
-					[floatingStates.LWL / 2, -floatingStates.BWL / 2, designDimention.Depth -
-						floatingStates.T
-					],
-					[-floatingStates.LWL / 2, -floatingStates.BWL / 2, designDimention.Depth -
-						floatingStates.T
-					],
-					[-floatingStates.LWL / 2, floatingStates.BWL / 2, designDimention.Depth -
-						floatingStates.T
-					]
-				]; // Point of mooring line on ship          (m, m, m)
-
-				mooring.anchorPoint = []; // Point of mooring line on seabed        (m, m, m)
-				mooring.anchorLineGeometry = []; // Line geometry (global)        (m, m, m)
-
-				// Anchoring point in seabed
-				for (var i = 0; i < mooring.mooringPointOnShip.length; i++) {
-					mooring.anchorPoint[i] = [200 * Math.cos(-i * Math.PI / 2 + Math.PI / 4), -oceanDepth,
-						200 * Math.sin(-i * Math.PI / 2 + Math.PI / 4)
-					]; // Point of mooring line on seabed        (m, m, m)
-				}
-
-				// Rope Material
-				var materialLine = [new THREE.LineBasicMaterial({
-						color: 0xffffff,
-						linewidth: 2
-					}),
-					new THREE.LineBasicMaterial({
-						color: 0xff0000,
-						linewidth: 2
-					}),
-					new THREE.LineBasicMaterial({
-						color: 0x33cc33,
-						linewidth: 2
-					}),
-					new THREE.LineBasicMaterial({
-						color: 0x0066ff,
-						linewidth: 2
-					}),
-				];
-
-				//Insert while functions
-				var geometryMooring = [new THREE.Geometry(), new THREE.Geometry(), new THREE.Geometry(),
-					new THREE.Geometry()
-				];
-
-				for (var i = 0; i < geometryMooring.length; i++) {
-					for (var j = 0; j < 52; j++) {
-						geometryMooring[i].vertices.push(new THREE.Vector3(0, 0, 0));
-					}
-				}
-
-				//
-				// var line = [];
-
-				for (var i = 0; i < mooring.mooringPointOnShip.length; i++) {
-					// geometryMooring[i].vertices.push(new THREE.Vector3(anchorPointOnShip[i][0], anchorPointOnShip[i][1], anchorPointOnShip[i][2]));
-					//
-					// for (var m = 0; m < hangedMooring[i].length; m++) {
-					//   geometryMooring[i].vertices.push(new THREE.Vector3(hangedMooring[i][m][0], hangedMooring[i][m][1], hangedMooring[i][m][2]));
-					// }
-					//
-					// geometryMooring[i].vertices.push(new THREE.Vector3(anchorPoint[i][0], anchorPoint[i][1], anchorPoint[i][2]));
-
-					// for (var h = 0; h < 55; i++) {
-					// 	geometryMooring[i].vertices[h].push(new THREE.Vector3(i ,h , 0));
-					// }
-
-					// geometryMooring[i].verticesNeedUpdate = true;
-					mooring.anchorLineGeometry[i] = new THREE.Line(geometryMooring[i], materialLine[i]);
-					mooring.anchorLineGeometry[i].geometry.verticesNeedUpdate = true;
-					scene.add(mooring.anchorLineGeometry[i]);
-				}
-
-				mooring.hangedMooring = []; // Point of hanged mooring line on seabed (m, m, m)
-
-				mooring.anchorLength = 195; // Mooring line Length                   (m)
-				mooring.w = 200; // Mooring line density                  (kg/m)
-
-				// Initial Velocities
-				// Initial BF-Surge Velocity
-				// Initial BF-Sway Velocity
-				// Initial BF-Heave Velocity
-				// Initial BF-Roll Velocity
-				// Initial BF-Pitch Velocity
-				// Initial BF-Yaw Velocity
-				// Initial Euler Angle X
-				// Initial Euler Angle Y
-				// Initial Euler Angle Z
-				// [Surge, Sway, Heave, VSurge, VSway, VHeave, VRoll, VPitch, VYaw, EX, EY, EZ]
-				var Ini = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-				states.continuous.motion = {
-					surge: Ini[0],
-					sway: Ini[1],
-					heave: Ini[2],
-					roll: Ini[3],
-					pitch: Ini[4],
-					yaw: Ini[5]
-				};
-
-				var tprev = 0; // Initial time;
-
-				scale = gui.addFolder("Initial State");
-				scale.add(states.continuous.motion, "surge", -2, 2).step(0.01).onChange(function (newValue) {
-					ship3D.surge = newValue;
-					states.continuous.motion.surge = newValue;
-				});
-				scale.add(states.continuous.motion, "sway", -2, 2).step(0.01).onChange(function (newValue) {
-					ship3D.sway = newValue;
-					states.continuous.motion.sway = newValue;
-				});
-				scale.add(states.continuous.motion, "heave", -0.5, 0.5).step(0.01).onChange(function (
-					newValue) {
-					ship3D.heave = newValue;
-					states.continuous.motion.heave = newValue;
-				});
-				scale.add(states.continuous.motion, "roll", -0.5, 0.5).step(0.01).onChange(function (
-					newValue) {
-					ship3D.roll = newValue;
-					states.continuous.motion.roll = newValue;
-				});
-				scale.add(states.continuous.motion, "pitch", -0.1, 0.1).step(0.01).onChange(function (
-					newValue) {
-					ship3D.pitch = newValue;
-					states.continuous.motion.pitch = newValue;
-				});
-				scale.add(states.continuous.motion, "yaw", -0.25, 0.25).step(0.01).onChange(function (
-					newValue) {
-					ship3D.yaw = newValue;
-					states.continuous.motion.yaw = newValue;
-				});
-				scale.open();
-				scale = gui.addFolder("Damping Coeficients");
-				scale.add(userParameters, "C_D", 0.1, 0.9).step(0.01);
-				scale.add(userParameters, "B_44", 1000000, 9000000).step(5000);
-				scale.add(userParameters, "B_55", 10000000, 90000000).step(5000);
-				scale.add(userParameters, "B_66", 1000000, 9000000).step(5000);
-				scale = gui.addFolder("Ship Information");
-				var controller = scale.add(states.objectOverrides.derivedByGroup["ballast tanks"],
-					"fullness", 0, 1).step(0.01);
-
-				controller.onChange(function (newValue) {
-					states.objectOverrides.derivedByGroup["cargo tanks"].fullness = newValue;
-					states.version += 1;
+			Vessel.loadShip(
+				"data/ship_specifications/mississipiBarge.json",
+				function (ship) {
+					states = ship.designState.clone();
+					states.objectOverrides.derivedByGroup[
+						"ballast tanks"
+					].fullness = 0.5;
+					states.objectOverrides.derivedByGroup["cargo tanks"].fullness = 0.5;
+					//console.log(states.objectCache);
+					statMod = new Vessel.StateModule(ship, states);
 					statMod.setDraft();
-					ship3D.position.z = -states.discrete.FloatingCondition.state.T;
-				});
+					//console.log(states.shipCache.thisStateVer);
+					ship3D = new Ship3D(ship, {
+						shipState: states,
+						stlPath: "data/STL files",
+						upperColor: 0x33aa33,
+						lowerColor: 0xaa3333,
+						hullOpacity: 1,
+						deckOpacity: 1,
+						objectOpacity: 1
+					});
+					zUpCont.add(ship3D);
 
+					// Insert mooring lines
+					designDimention = ship.structure.hull.attributes;
+					floatingStates = states.discrete.FloatingCondition.state;
 
-				// cylinderCil.setRotationFromAxisAngle ([0, 0.25, 0], -Math.PI/4);
-				dynMov = new DynamicalMovement(ship, states, userParameters, Ini, oceanDepth);
-				scale.open();
+					states.continuous.mooring = {};
+					mooring = states.continuous.mooring;
 
-				//VERY approximate motion (for visualisation only)
-				playback.add(function (t) {
-					// let x = ship3D.position.x;
-					// let y = ship3D.position.y;
-					// let oCenter = ocean.calculateZ(x,y,t);
-					let dt = t - tprev;
+					// var anchorLength = 195; // Mooring line Length                   (m)
 
-					dynMov.moveShip(tprev, dt);
-					tprev = t;
+					mooring.mooringPointOnShip = [
+						[
+							floatingStates.LWL / 2,
+							floatingStates.BWL / 2,
+							designDimention.Depth - floatingStates.T
+						],
+						[
+							floatingStates.LWL / 2,
+							-floatingStates.BWL / 2,
+							designDimention.Depth - floatingStates.T
+						],
+						[
+							-floatingStates.LWL / 2,
+							-floatingStates.BWL / 2,
+							designDimention.Depth - floatingStates.T
+						],
+						[
+							-floatingStates.LWL / 2,
+							floatingStates.BWL / 2,
+							designDimention.Depth - floatingStates.T
+						]
+					]; // Point of mooring line on ship          (m, m, m)
 
-					ship3D.surge = states.continuous.motion.surge;
-					ship3D.sway = states.continuous.motion.sway;
-					ship3D.heave = states.continuous.motion.heave;
-					ship3D.roll = states.continuous.motion.roll;
-					ship3D.pitch = states.continuous.motion.pitch;
-					ship3D.yaw = states.continuous.motion.yaw;
-				});
-			});
+					mooring.anchorPoint = []; // Point of mooring line on seabed        (m, m, m)
+					mooring.anchorLineGeometry = []; // Line geometry (global)        (m, m, m)
+					mooring.radialDistance = radialDistance;
+					mooring.mooringAngle = mooringAngle;
+
+					// Anchoring point in seabed
+					for (var i = 0; i < mooring.mooringPointOnShip.length; i++) {
+						mooring.anchorPoint[i] = [
+							mooring.radialDistance *
+							Math.cos(
+								(-i * Math.PI) / 2 + (mooring.mooringAngle * Math.PI) / 180
+							),
+							-seaDepth,
+							mooring.radialDistance *
+							Math.sin(
+								(-i * Math.PI) / 2 + (mooring.mooringAngle * Math.PI) / 180
+							)
+						]; // Point of mooring line on seabed        (m, m, m)
+					}
+					//console.log(mooring.anchorPoint)
+
+					// Rope Material
+					var materialLine = [
+						new THREE.LineBasicMaterial({
+							color: 0xffffff,
+							linewidth: 2
+						}),
+						new THREE.LineBasicMaterial({
+							color: 0xff0000,
+							linewidth: 2
+						}),
+						new THREE.LineBasicMaterial({
+							color: 0x33cc33,
+							linewidth: 2
+						}),
+						new THREE.LineBasicMaterial({
+							color: 0x0066ff,
+							linewidth: 2
+						})
+					];
+
+					//Insert while functions
+					var geometryMooring = [
+						new THREE.Geometry(),
+						new THREE.Geometry(),
+						new THREE.Geometry(),
+						new THREE.Geometry()
+					];
+
+					for (var i = 0; i < geometryMooring.length; i++) {
+						for (var j = 0; j < 52; j++) {
+							geometryMooring[i].vertices.push(new THREE.Vector3(0, 0, 0));
+						}
+					}
+
+					//
+					// var line = [];
+
+					for (var i = 0; i < mooring.mooringPointOnShip.length; i++) {
+						// geometryMooring[i].vertices.push(new THREE.Vector3(anchorPointOnShip[i][0], anchorPointOnShip[i][1], anchorPointOnShip[i][2]));
+						//
+						// for (var m = 0; m < hangedMooring[i].length; m++) {
+						//   geometryMooring[i].vertices.push(new THREE.Vector3(hangedMooring[i][m][0], hangedMooring[i][m][1], hangedMooring[i][m][2]));
+						// }
+						//
+						// geometryMooring[i].vertices.push(new THREE.Vector3(anchorPoint[i][0], anchorPoint[i][1], anchorPoint[i][2]));
+
+						// for (var h = 0; h < 55; i++) {
+						// 	geometryMooring[i].vertices[h].push(new THREE.Vector3(i ,h , 0));
+						// }
+
+						// geometryMooring[i].verticesNeedUpdate = true;
+						mooring.anchorLineGeometry[i] = new THREE.Line(
+							geometryMooring[i],
+							materialLine[i]
+						);
+						mooring.anchorLineGeometry[i].geometry.verticesNeedUpdate = true;
+						scene.add(mooring.anchorLineGeometry[i]);
+					}
+
+					mooring.hangedMooring = []; // Point of hanged mooring line on seabed (m, m, m)
+
+					mooring.anchorLength = anchorLength; // Mooring line Length                   (m)
+					mooring.w = density; // Mooring line density                  (kg/m)
+					mooring.radialDistance = radialDistance;
+					mooring.seaDepth = seaDepth;
+
+					// Initial Velocities
+					// Initial BF-Surge Velocity
+					// Initial BF-Sway Velocity
+					// Initial BF-Heave Velocity
+					// Initial BF-Roll Velocity
+					// Initial BF-Pitch Velocity
+					// Initial BF-Yaw Velocity
+					// Initial Euler Angle X
+					// Initial Euler Angle Y
+					// Initial Euler Angle Z
+					// [Surge, Sway, Heave, VSurge, VSway, VHeave, VRoll, VPitch, VYaw, EX, EY, EZ]
+					var Ini = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+					states.continuous.motion = {
+						surge: Ini[0],
+						sway: Ini[1],
+						heave: Ini[2],
+						roll: Ini[3],
+						pitch: Ini[4],
+						yaw: Ini[5]
+					};
+
+					var tprev = 0; // Initial time
+
+					scale = gui.addFolder("Initial State");
+					scale
+						.add(states.continuous.motion, "surge", -2, 2)
+						.step(0.01)
+						.onChange(function (newValue) {
+							ship3D.surge = newValue;
+							states.continuous.motion.surge = newValue;
+						})
+						.name("Surge");
+					scale
+						.add(states.continuous.motion, "sway", -2, 2)
+						.step(0.01)
+						.onChange(function (newValue) {
+							ship3D.sway = newValue;
+							states.continuous.motion.sway = newValue;
+						})
+						.name("Sway");
+					scale
+						.add(states.continuous.motion, "heave", -0.5, 0.5)
+						.step(0.01)
+						.onChange(function (newValue) {
+							ship3D.heave = newValue;
+							states.continuous.motion.heave = newValue;
+						})
+						.name("Heave");
+					scale
+						.add(states.continuous.motion, "roll", -0.5, 0.5)
+						.step(0.01)
+						.onChange(function (newValue) {
+							ship3D.roll = newValue;
+							states.continuous.motion.roll = newValue;
+						})
+						.name("Roll");
+					scale
+						.add(states.continuous.motion, "pitch", -0.1, 0.1)
+						.step(0.01)
+						.onChange(function (newValue) {
+							ship3D.pitch = newValue;
+							states.continuous.motion.pitch = newValue;
+						})
+						.name("Pitch");
+					scale
+						.add(states.continuous.motion, "yaw", -0.25, 0.25)
+						.step(0.01)
+						.onChange(function (newValue) {
+							ship3D.yaw = newValue;
+							states.continuous.motion.yaw = newValue;
+						})
+						.name("Yaw");
+					scale.open();
+					scale = gui.addFolder("Damping Coefficients");
+					scale
+						.add(userParameters, "C_D", 0.1, 0.9)
+						.step(0.01)
+						.name("<div>C<sub>D</sub></div>");
+					scale
+						.add(userParameters, "B_44", 1000000, 9000000)
+						.step(5000)
+						.name("<div>B<sub>44</sub></div>");
+					scale
+						.add(userParameters, "B_55", 10000000, 90000000)
+						.step(5000)
+						.name("<div>B<sub>55</sub></div>");
+					scale
+						.add(userParameters, "B_66", 1000000, 9000000)
+						.step(5000)
+						.name("<div>B<sub>66</sub></div>");
+					scale = gui.addFolder("Mooring Configuration");
+					scale
+						.add(userParameters, "seaDepth", 10, 100)
+						.step(5)
+						.onChange(function (newValue) {
+							seaDepth = newValue;
+							mooring.seaDepth = newValue;
+							for (let i = scene.children.length - 1; i >= 0; i--) {
+								if (scene.children[i].type === "Mesh")
+									scene.remove(scene.children[i]);
+							}
+							var plane = new THREE.Mesh(geometry, material);
+							plane.rotation.set(-Math.PI / 2, 0, 0);
+							plane.position.setY(-userParameters.seaDepth);
+							plane.material.side = THREE.DoubleSide;
+							plane.material.opacity = 0.8;
+							scene.add(plane);
+						})
+						.name("Sea depth");
+					scale
+						.add(userParameters, "anchorLength", 50, 500)
+						.step(1)
+						.onChange(function (newValue) {
+							mooring.anchorLength = newValue;
+						})
+						.name("Mooring length");
+					scale
+						.add(userParameters, "radialDistance", 50, 500)
+						.step(1)
+						.onChange(function (newValue) {
+							mooring.radialDistance = newValue;
+							radialDistance = newValue;
+							var rupture = Math.pow(((Math.pow(userParameters.radialDistance), 2) + (Math.pow(userParameters.seaDepth), 2)),
+								0.5);
+							if (rupture < userParameters.anchorLength) {
+								alert("Mooring line is too short.");
+							};
+						})
+						.name("Radial distance");
+					scale
+						.add(userParameters, "mooringAngle", 0, 90)
+						.step(1)
+						.onChange(function (newValue) {
+							mooring.mooringAngle = newValue;
+							mooringAngle = newValue;
+						})
+						.name("Mooring Angle");
+					scale
+						.add(userParameters, "density", 50, 500)
+						.step(1)
+						.onChange(function (newValue) {
+							mooring.w = newValue;
+						})
+						.name("Density");
+					scale = gui.addFolder("Ship Information");
+					var controller = scale
+						.add(
+							states.objectOverrides.derivedByGroup["ballast tanks"],
+							"fullness",
+							0,
+							1
+						)
+						.step(0.01)
+						.name("Fullness");
+
+					controller.onChange(function (newValue) {
+						states.objectOverrides.derivedByGroup[
+							"cargo tanks"
+						].fullness = newValue;
+						states.version += 1;
+						statMod.setDraft();
+						ship3D.position.z = -states.discrete.FloatingCondition.state.T;
+					});
+
+					// cylinderCil.setRotationFromAxisAngle ([0, 0.25, 0], -Math.PI/4);
+					dynMov = new DynamicalMovement(ship, states, userParameters, Ini);
+					scale.open();
+
+					//VERY approximate motion (for visualisation only)
+					playback.add(function (t) {
+						// let x = ship3D.position.x;
+						// let y = ship3D.position.y;
+						// let oCenter = ocean.calculateZ(x,y,t);
+						let dt = t - tprev;
+
+						dynMov.moveShip(tprev, dt);
+						tprev = t;
+
+						ship3D.surge = states.continuous.motion.surge;
+						ship3D.sway = states.continuous.motion.sway;
+						ship3D.heave = states.continuous.motion.heave;
+						ship3D.roll = states.continuous.motion.roll;
+						ship3D.pitch = states.continuous.motion.pitch;
+						ship3D.yaw = states.continuous.motion.yaw;
+					});
+				}
+			);
 
 			//Initial configuration:
 			let w = ocean.addCosineWave({
@@ -374,9 +536,7 @@
 				theta: 1
 			});
 			if (ocean.cosConf) ocean.cosConf.close();
-
 			playback.play();
-
 			requestAnimationFrame(animate);
 		})();
 
@@ -389,11 +549,8 @@
 			if (!playing) {
 				ocean.water.material.uniforms.time.value += 1 / 60;
 			}
-
 			requestAnimationFrame(animate);
 		}
-
-
 
 		function updateMotion() {
 			for (let i = 0; i < wavMo.length; i++) {
