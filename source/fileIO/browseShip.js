@@ -15,7 +15,7 @@ According to the ECMAScript standard, it is required that the file browsing is i
 "use strict";
 var browseShip = function() {
 	var browseButton;
-	return function (callback) {
+	return function(callback) {
 		browseButton = document.createElement("input");
 		Object.assign(browseButton, {
 			type: "file",

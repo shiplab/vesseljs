@@ -53,10 +53,10 @@ Object.assign(ShipState.prototype, {
 					this.objectOverrides.derivedByID
 				}
 			};
-			
+
 			//Sketchy, but versatile, deep-copy pattern:
-			spec = JSON.parse(JSON.stringify(spec));		
-			
+			spec = JSON.parse(JSON.stringify(spec));
+
 			this.specCache = spec;
 			this.cachedSpecVersion = this.version;
 		}
@@ -73,11 +73,11 @@ Object.assign(ShipState.prototype, {
 				/*&& c.baseStateVer === o.baseObject.baseStateVersion
 				&& c.refStateVer === o.referenceStateVersion*/) {
 				//console.log("ShipState.getObjectState: Using cache.");
-				return c.state;	
-			}				
+				return c.state;
+			}
 		}
 		//console.log("ShipState.getObjectState: Not using cache.");
-		
+
 		//Build the state in multiple steps,
 		//such that the later steps override
 		//the earlier ones when in conflict.
@@ -103,7 +103,7 @@ Object.assign(ShipState.prototype, {
 				}
 			}
 		}
-		
+
 		//Cache the result, conditioned on the ShipState version
 		//(not good, should restrict the dependency more)
 		this.objectCache[o.id] = {
@@ -112,35 +112,35 @@ Object.assign(ShipState.prototype, {
 			refStateVer: o.referenceStateVersion,*/
 			state: state
 		};
-		
+
 		return state;
 	},
 	//o is an object, k is a key to a single state property
 	getObjectStateProperty: function(o, k) {
 		return this.getObjectState(o)[k];
 		//I have commented out a compact, but not very efficient, implementation of Alejandro's pattern, that does not fit too well with my caching solution.
-/*		let oo = this.objectOverrides;
-		let sources = [oo.derivedByID[o.id], oo.derivedByGroup[o.affiliations.group], oo.baseByID[o.baseObject.id], oo.baseByGroup[o.baseObject.group], oo.common, o.getReferenceState(), o.baseObject.getBaseState()].filter(e=>!!e);
-		for (let i = 0; i < sources.length; i++) {
-			if (sources[i][k] !== undefined) return sources[i][k];
-		}
-		return; //undefined*/
+		/*		let oo = this.objectOverrides;
+				let sources = [oo.derivedByID[o.id], oo.derivedByGroup[o.affiliations.group], oo.baseByID[o.baseObject.id], oo.baseByGroup[o.baseObject.group], oo.common, o.getReferenceState(), o.baseObject.getBaseState()].filter(e=>!!e);
+				for (let i = 0; i < sources.length; i++) {
+					if (sources[i][k] !== undefined) return sources[i][k];
+				}
+				return; //undefined*/
 	},
 	//Sets this state exclusively from parameter.
-	setFromSpecification: function(spec={}) {
+	setFromSpecification: function(spec = {}) {
 		this.objectCache = {}; //reset cache
 
 		this.calculationParameters = spec.calculationParameters || {};
-		
+
 		//This is new:
-		this.motion = spec.motion || 
-					{
-						heave: 0,
-						pitch: 0,
-						roll: 0,
-						heading: 0,
-						speed: 0,
-					};
+		this.motion = spec.motion ||
+			{
+				heave: 0,
+				pitch: 0,
+				roll: 0,
+				heading: 0,
+				speed: 0,
+			};
 
 		let prevVer = typeof this.objectOverrides === "undefined" ? -1 : this.objectOverrides.version;
 
@@ -163,10 +163,10 @@ Object.assign(ShipState.prototype, {
 				derivedByID: {}
 			}
 		}
-		
-		this.objectOverrides.version = prevVer+1;
+
+		this.objectOverrides.version = prevVer + 1;
 		this.version++;
-		
+
 		return this;
 	},
 	//Overrides existing directives and adds new ones.
@@ -196,7 +196,7 @@ Object.assign(ShipState.prototype, {
 	override: function(spec) {
 		let oo = this.objectOverrides;
 		let soo = spec.objectOverrides;
-		
+
 		let sources = [spec.calculationParameters, soo.common];
 		let targets = [this.calculationParameters, oo.common];
 		for (let i = 0; i < sources.length; i++) {
@@ -210,7 +210,7 @@ Object.assign(ShipState.prototype, {
 
 		sources = [soo.common, soo.baseByGroup, soo.baseByID, soo.derivedByGroup, soo.derivedByID];
 		targets = [oo.common, oo.baseByGroup, oo.baseByID, oo.derivedByGroup, oo.derivedByID];
-		
+
 		for (let i = 0; i < sources.length; i++) {
 			if (!sources[i]) continue;
 			for (let key in sources[i]) {
