@@ -456,6 +456,15 @@
 						.onChange(function (newValue) {
 							mooring.anchorLength = newValue;
 						})
+						.onFinishChange(function () {
+							let condition = Math.pow((Math.pow(userParameters.seaDepth, 2) + Math.pow(userParameters.radialDistance, 2)),
+								0.5) - 10;
+							console.log(condition)
+							if (condition > userParameters.anchorLength) {
+								alert("Mooring line is not long enough. Consider increasing to " + Math.round(condition) +
+									" meters.");
+							};
+						})
 						.name("Mooring length");
 					scale
 						.add(userParameters, "radialDistance", 50, 500)
