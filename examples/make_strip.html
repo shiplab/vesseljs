@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
 	<meta charset="utf-8">
@@ -11,18 +12,18 @@
 	<title>Vessel.js vs PDSTRIP</title>
 
 	<!-- Bootstrap Core CSS -->
-	<link href="css/bootstrap.min.css" rel="stylesheet">
+	<link href="libs/bootstrap.min.css" rel="stylesheet">
 
 	<!-- Three script -->
-	<script src="js/libs/three.js"></script>
-	<script src="js/libs/STLLoader.js"></script>
-	<script src="js/libs/OrbitControls.js"></script>
+	<script src="libs/three.js"></script>
+	<script src="libs/STLLoader.js"></script>
+	<script src="libs/OrbitControls.js"></script>
 
 	<!-- jQuery Version 1.11.1 -->
-	<script src="js/libs/jquery.js"></script>
+	<script src="libs/jquery.js"></script>
 
 	<!-- Bootstrap Core JavaScript -->
-	<script src="js/libs/bootstrap.min.js"></script>
+	<script src="libs/bootstrap.min.js"></script>
 
 	<!--Import Vessel.js library-->
 	<script src="../build/Vessel.js"></script>
@@ -41,7 +42,7 @@
 			<!-- This is for the right part of the navbar. Reserved for Shiplab logo-->
 			<div class="nav navbar-nav navbar-right">
 				<div class="navbar-header">
-					<a class="navbar-brand" href="http://www.shiplab.ntnu.co/"><img src="images/barquinho.png" alt="Shiplab logo" style="height:150%"> 
+					<a class="navbar-brand" href="http://www.shiplab.ntnu.co/"><img src="images/barquinho.png" alt="Shiplab logo" style="height:150%">
 					</a>
 				</div>
 			</div>
@@ -56,7 +57,7 @@
 	<div class="container">
 		<h4>Explanation</h4>
 		<p>This app converts a Vessel.js ship specification into <a href="https://sourceforge.net/projects/pdstrip/" target="_blank">PDSTRIP</a> input files for strip theory analyses. Upload a JSON ship specification using the button below, and you will be able to download two files: <span style="font-weight:bold">geomet.out</span> and <span style="font-weight:bold">pdstrip.inp</span>. The PX121 PSV specification is preloaded.</p>
-		<p><input type="file" accept=".json" onchange="readSpec(event)"/></p>
+		<p><input type="file" accept=".json" onchange="readSpec(event)" /></p>
 		<ul>
 			<li id="specName"></li>
 		</ul>
@@ -75,20 +76,21 @@
 	</div>
 
 </body>
+
 </html>
 
 <script>
 	"use strict";
 	// preload scatter diagram
 	var psvReq = new XMLHttpRequest();
-	psvReq.open("GET", "data/ship_specifications/PX121.json", true);
+	psvReq.open("GET", "specs/ship_specifications/PX121.json", true);
 	psvReq.addEventListener("load", function(event) {
 		var contents = event.target.response;
 		convert(contents, "PX121.json");
 	});
 	psvReq.send(null);
 
-	var readSpec = function(event){
+	var readSpec = function(event) {
 		var file = event.target.files[0];
 		var specName = file.name;
 		var reader = new FileReader();
@@ -107,16 +109,16 @@
 		document.getElementById("specName").innerHTML = specName;
 
 		var {mass: masskg, cg: cg} = ship.getWeight();
-		var masston = masskg/1000;
+		var masston = masskg / 1000;
 		var length = ship.structure.hull.attributes.LOA;
 		var beam = ship.structure.hull.attributes.BOA;
 		var draft = ship.calculateDraft();
 		var depth = ship.structure.hull.attributes.Depth;
 		var noStations = ship.structure.hull.halfBreadths.stations.length;
 		var table = ship.structure.hull.halfBreadths.table;
-		var r44 = (0.30 + 0.45)/2 * beam;
-		var r55 = (0.20 + 0.30)/2 * length;
-		var r66 = (0.25 + 0.30)/2 * length;
+		var r44 = (0.30 + 0.45) / 2 * beam;
+		var r55 = (0.20 + 0.30) / 2 * length;
+		var r66 = (0.25 + 0.30) / 2 * length;
 
 		geomet = "          " + noStations + " T  " + draft.toFixed(4) + "\n";
 
@@ -127,7 +129,7 @@
 			statVert = "";
 			for (var j = 0; j < table.length; j++) {
 				if (table[j][i] !== null) {
-					nextHO = beam/2 * table[j][i];
+					nextHO = beam / 2 * table[j][i];
 					nextVO = depth * ship.structure.hull.halfBreadths.waterlines[j];
 					if (j > 0 && table[j][i] === 0) { // avoid a 0 thickness skeg
 						offPts = 0;
@@ -136,7 +138,7 @@
 					}
 					if (nextVO > draft) { // interpolate
 						offPts++;
-						statHor += "     " + (prevHO + (draft - prevVO) * (nextHO - prevHO)/(nextVO - prevVO)).toFixed(4);
+						statHor += "     " + (prevHO + (draft - prevVO) * (nextHO - prevHO) / (nextVO - prevVO)).toFixed(4);
 						statVert += "     " + (draft).toFixed(4);
 						break;
 					} else {
@@ -161,7 +163,7 @@
 			coeffStr += "0.8 0.6  ";
 		}
 
-		pdstrip ="0 t t t\n" +
+		pdstrip = "0 t t t\n" +
 			specName + " specification\n" +
 			"9.81 1.025 " + draft.toFixed(4) + " -1e6 999.\n" +
 			"4 0 30 60 90\n" +
@@ -202,7 +204,7 @@
 		// download input file
 		var blob = new Blob([variable]);
 		var link = document.createElement("a");
-		link.href =  window.URL.createObjectURL(blob);
+		link.href = window.URL.createObjectURL(blob);
 		link.download = fileName;
 		link.click();
 	};

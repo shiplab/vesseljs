@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<title>Object Weight</title>
+	<!-- Bootstrap Core CSS -->
+	<link href="libs/bootstrap.min.css" rel="stylesheet">
+	<!-- jQuery Version 1.11.1 -->
+	<script src="libs/jquery.js"></script>
+	<!-- Gist Embed -->
+	<script src="libs/gist-embed.min.js"></script>
+	<!-- Bootstrap Core JavaScript -->
+	<script src="libs/bootstrap.min.js"></script>
+	<!--Import library-->
+	<script src="../build/Vessel.js"></script>
+	<!--Scripts to make an download zip from source-->
+	<script src="libs/jszip.js"></script>
+	<script src="libs/FileSaver.js"></script>
+	<script src="snippets/saveSource.js"></script>
+</head>
+
+<body>
+	<!-- Navigation -->
+	<nav class="navbar navbar-inverse">
+		<div class="container">
+			<!-- Add  the <div>[Something]</div> structure for each header in the navbar-->
+			<div class="navbar-header">
+				<a class="navbar-brand" href="https://github.com/shiplab/vesseljs">Github project page</a>
+			</div>
+			<!-- This is for the right part of the navbar. Reserved for Shiplab logo-->
+			<div class="nav navbar-nav navbar-right">
+				<div class="navbar-header">
+					<a class="navbar-brand" href="https://www.shiplab.hials.org/"><img src="images/barquinho.png" alt="Shiplab logo" style="height:150%">
+					</a>
+				</div>
+			</div>
+		</div>
+	</nav>
+	<!-- Container creates the space -->
+	<div class="container">
+		<!-- Row creates horizontal groups of columns -->
+		<div class="row">
+			<!-- No divisions in page. Only 1 column. -->
+			<div class="col-md-12 text-center">
+				<h2>Object Weight</h2>
+			</div>
+			<div class="col-md-12 text-center">
+				<p>Define and calculate a tank's weight and center of gravity. <a href="https://gist.github.com/icarofonseca/4a80f1d46c0be0c690f16fb559ed76a4">View source.</a></p>
+				<input type="button" value="Download Source" onClick="saveSource()">
+			</div>
+			<div class="col-md-12 text-left">
+				<p>There are three ways to define the center of gravity of a tank object:
+					<ul>
+						<li>unspecified, which will default to the center of the geometric box.</li>
+						<li>fixed.</li>
+						<li>mapped to the level of fluid.</li>
+					</ul>
+					The following examples will illustrate how to perform calculations for each of the three cases.</p>
+			</div>
+			<div class="col-md-12 text-left">
+				<h4>Unspecified CG</h4>
+				<p>A base object can be created without specifying its center of gravity. First, create an empty BaseObject:</p>
+				<code data-gist-id="4a80f1d46c0be0c690f16fb559ed76a4" data-gist-file="object_weight.js" data-gist-hide-footer="true" data-gist-hide-line-numbers="true" data-gist-line="5"></code>
+				<p>Fill it with the identification tag, geometric and weight data:</p>
+				<code data-gist-id="4a80f1d46c0be0c690f16fb559ed76a4" data-gist-file="object_weight.js" data-gist-hide-footer="true" data-gist-hide-line-numbers="true" data-gist-line="7-20"></code>
+				<p>Now create an empty DerivedObject:</p>
+				<code data-gist-id="4a80f1d46c0be0c690f16fb559ed76a4" data-gist-file="object_weight.js" data-gist-hide-footer="true" data-gist-hide-line-numbers="true" data-gist-line="22"></code>
+				<p>Link it to the respective BaseObject and fill it with position (in relation to the vessel):</p>
+				<code data-gist-id="4a80f1d46c0be0c690f16fb559ed76a4" data-gist-file="object_weight.js" data-gist-hide-footer="true" data-gist-hide-line-numbers="true" data-gist-line="24-31"></code>
+				<p>To calculate the object's weight and CG, first we create a ShipState object to handle the simulated state:</p>
+				<code data-gist-id="4a80f1d46c0be0c690f16fb559ed76a4" data-gist-file="object_weight.js" data-gist-hide-footer="true" data-gist-hide-line-numbers="true" data-gist-line="33"></code>
+				<p>And then evoke the getWeight method with the state as argument:</p>
+				<code data-gist-id="4a80f1d46c0be0c690f16fb559ed76a4" data-gist-file="object_weight.js" data-gist-hide-footer="true" data-gist-hide-line-numbers="true" data-gist-line="34"></code>
+				<p>Which returns the full tank weight with the CG positioned in the center of the bounding box:</p>
+				<pre id="unspecified"></pre>
+			</div>
+			<div class="col-md-12 text-left">
+				<h4>Fixed CG</h4>
+				<p>To define a fixed CG, the weight information inside the base object above can be defined as:</p>
+				<code data-gist-id="4a80f1d46c0be0c690f16fb559ed76a4" data-gist-file="object_weight.js" data-gist-hide-footer="true" data-gist-hide-line-numbers="true" data-gist-line="38-43"></code>
+				<p>So, the getWeight method returns:
+					<pre id="fixed"></pre>
+				</p>
+			</div>
+			<div class="col-md-12 text-left">
+				<h4>Mapped CG</h4>
+				<p>To calculate the CG according to the fluid level, a CG mapping needs to be defined in the base object, for example:</p>
+				<code data-gist-id="4a80f1d46c0be0c690f16fb559ed76a4" data-gist-file="object_weight.js" data-gist-hide-footer="true" data-gist-hide-line-numbers="true" data-gist-line="48-62"></code>
+				<p>If the base state is kept as before (full, or fullness = 1), then the getWeight method yields the total weight with the maximum CG listed in the mapping above:</p>
+				<pre id="mapped1"></pre>
+				<p>Now, if the base state is changed to fullness = 0.7, the method will calculate the new weight and interpolate the corresponding CG from the valules listed in the mapping, returning:</p>
+				<pre id="mapped2"></pre>
+			</div>
+		</div>
+	</div>
+	<script src="object_weight.js"></script>
+</body>
+
+</html>

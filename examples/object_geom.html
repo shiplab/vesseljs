@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<title>Object Visualization</title>
+	<!-- Bootstrap Core CSS -->
+	<link href="libs/bootstrap.min.css" rel="stylesheet">
+	<!-- jQuery Version 1.11.1 -->
+	<script src="libs/jquery.js"></script>
+	<!-- Gist Embed -->
+	<script src="libs/gist-embed.min.js"></script>
+	<!-- Bootstrap Core JavaScript -->
+	<script src="libs/bootstrap.min.js"></script>
+	<!-- Three script -->
+	<script src="libs/three.js"></script>
+	<script src="libs/STLLoader.js"></script>
+	<script src="libs/OrbitControls.js"></script>
+	<!--Import library-->
+	<script src="../build/Vessel.js"></script>
+	<!--Ship3D class for three.js-->
+	<script src="snippets/Ship3D.js"></script>
+	<!--Scripts to make an download zip from source-->
+	<script src="libs/jszip.js"></script>
+	<script src="libs/FileSaver.js"></script>
+	<script src="snippets/saveSource.js"></script>
+</head>
+
+<body>
+	<!-- Navigation -->
+	<nav class="navbar navbar-inverse">
+		<div class="container">
+			<!-- Add  the <div>[Something]</div> structure for each header in the navbar-->
+			<div class="navbar-header">
+				<a class="navbar-brand" href="https://github.com/shiplab/vesseljs">Github project page</a>
+			</div>
+			<!-- This is for the right part of the navbar. Reserved for Shiplab logo-->
+			<div class="nav navbar-nav navbar-right">
+				<div class="navbar-header">
+					<a class="navbar-brand" href="https://www.shiplab.hials.org/"><img src="images/barquinho.png" alt="Shiplab logo" style="height:150%">
+					</a>
+				</div>
+			</div>
+		</div>
+	</nav>
+	<!-- Container creates the space -->
+	<div class="container">
+		<!-- Row creates horizontal groups of columns -->
+		<div class="row">
+			<!-- No divisions in page. Only 1 column. -->
+			<div class="col-md-12 text-center">
+				<h2>Object Visualization</h2>
+			</div>
+			<div class="col-md-12 text-center">
+				<p>Define and visualize a tank object. <a href="https://gist.github.com/icarofonseca/7f8caba8678e0b159d682363908692ff">View source.</a></p>
+				<input type="button" value="Download Source" onClick="saveSource()">
+			</div>
+			<div class="col-md-12 text-left">
+				<p>First, create an empty BaseObject to store basic properties:</p>
+				<code data-gist-id="7f8caba8678e0b159d682363908692ff" data-gist-file="object_geom.js" data-gist-hide-footer="true" data-gist-hide-line-numbers="true" data-gist-line="5"></code>
+				<p>Fill it with the identification tag and geometric data:</p>
+				<code data-gist-id="7f8caba8678e0b159d682363908692ff" data-gist-file="object_geom.js" data-gist-hide-footer="true" data-gist-hide-line-numbers="true" data-gist-line="7-12"></code>
+				<p>Create now an empty DerivedObject:</p>
+				<code data-gist-id="7f8caba8678e0b159d682363908692ff" data-gist-file="object_geom.js" data-gist-hide-footer="true" data-gist-hide-line-numbers="true" data-gist-line="14"></code>
+				<p>Link it to the respective BaseObject and fill it with position (in relation to the vessel):</p>
+				<code data-gist-id="7f8caba8678e0b159d682363908692ff" data-gist-file="object_geom.js" data-gist-hide-footer="true" data-gist-line="16-23"></code>
+				<p>Now that the derived object (myObject) was created, we will plot its 3D Visualization.
+					However this can only be done with the tank as part of a ship object, so we need to generate a minimal ship specification:
+				</p>
+				<code data-gist-id="7f8caba8678e0b159d682363908692ff" data-gist-file="object_geom.js" data-gist-hide-footer="true" data-gist-hide-line-numbers="true" data-gist-line="25-47"></code>
+				<p>Then, create a Ship object from that specification and populate it with the base and derived objects:</p>
+				<code data-gist-id="7f8caba8678e0b159d682363908692ff" data-gist-file="object_geom.js" data-gist-hide-footer="true" data-gist-hide-line-numbers="true" data-gist-line="49-51"></code>
+				<p>The visualization is created with an interface built to transform the Ship object above in a <a href="https://threejs.org/" target="_blank">Three.js</a> render.
+					The rendering environment can be prepared by copying and pasting the following script:
+				</p>
+				<code data-gist-id="7f8caba8678e0b159d682363908692ff" data-gist-file="object_geom.js" data-gist-hide-footer="true" data-gist-hide-line-numbers="true" data-gist-line="53-87"></code>
+				<p>Once the rendering environment is created, a 3D model of the ship object (which in this particular case contains only one object and no hull or structure) can be generated:</p>
+				<code data-gist-id="7f8caba8678e0b159d682363908692ff" data-gist-file="object_geom.js" data-gist-hide-footer="true" data-gist-hide-line-numbers="true" data-gist-line="89"></code>
+				<p>The "stl/" path points to the folder where the STL 3D files are stored.
+					If no related file is specified inside the base object, as is the case here, the function will automatically create a cuboid with the specified dimensions.
+				</p>
+				<p>Now the 3D render can be added to the scene with the relevant configurations of camera position and control target:</p>
+				<code data-gist-id="7f8caba8678e0b159d682363908692ff" data-gist-file="object_geom.js" data-gist-hide-footer="true" data-gist-hide-line-numbers="true" data-gist-line="90-101"></code>
+				<p>The result is:</p>
+			</div>
+			<div id="3d" class="col-md-12 text-left" style="min-height: 40vh">
+			</div>
+		</div>
+	</div>
+	<script src="object_geom.js"></script>
+</body>
+
+</html>
