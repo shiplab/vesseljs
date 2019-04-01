@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<title>Fuel Consumption Simulation</title>
+	<!-- Bootstrap Core CSS -->
+	<link href="libs/bootstrap.min.css" rel="stylesheet">
+	<!-- Three script -->
+	<script src="libs/three.js"></script>
+	<script src="libs/STLLoader.js"></script>
+	<script src="libs/OrbitControls.js"></script>
+	<!-- jQuery Version 1.11.1 -->
+	<script src="libs/jquery.js"></script>
+	<!-- Bootstrap Core JavaScript -->
+	<script src="libs/bootstrap.min.js"></script>
+	<!--Import Vessel.js library-->
+	<script src="../build/Vessel.js"></script>
+	<!--Import spec scaling script-->
+	<script src="snippets/scaleShipSpec.js"></script>
+	<!--Ship3D class for three.js-->
+	<script src="snippets/Ship3D.js"></script>
+	<!--D3 library-->
+	<script src="libs/d3.v3.min.js"></script>
+	<!--D3 parallel coordinates-->
+	<script src="snippets/parallelCoordinates.js"></script>
+	<!--D3 scatter plot-->
+	<script src="snippets/scatterPlot.js"></script>
+	<!--Pareto Frontier-->
+	<script src="snippets/paretoFrontier.js"></script>
+</head>
+
+<body>
+	<!-- Navigation -->
+	<nav class="navbar navbar-inverse">
+		<div class="container">
+			<!-- Add  the <div>[Something]</div> structure for each header in the navbar-->
+			<div class="navbar-header">
+				<a class="navbar-brand" href="https://github.com/shiplab/vesseljs" target="_blank">Github project page</a>
+			</div>
+			<!-- This is for the right part of the navbar. Reserved for Shiplab logo-->
+			<div class="nav navbar-nav navbar-right">
+				<div class="navbar-header">
+					<a class="navbar-brand" href="http://www.shiplab.ntnu.co/"><img src="images/barquinho.png" alt="Shiplab logo" style="height:150%">
+					</a>
+				</div>
+			</div>
+		</div>
+	</nav>
+	<div class="col-md-12 text-center">
+		<h2>Fuel Consumption Simulation</h2>
+		<p>Quick parametric fuel consumption simulation app. Read more about this app <a href="https://vesseljs.org/papers/COMPIT_2018.pdf" target="_blank">here</a>.
+			<a href="https://gist.github.com/icarofonseca/c61660cf81da7130fabef7461155e799" target="_blank">View source</a>.
+		</p>
+	</div>
+	<div class="container" id="userinputs">
+		<h3>Simulation Inputs</h3>
+		<table class="table">
+			<thead>
+				<th>Parameter</th>
+				<th>Value</th>
+				<th>Parameter</th>
+				<th>Value</th>
+			</thead>
+
+			<body>
+				<tr>
+					<td>Preferred ship sailing speed, knots:</td>
+					<td><input type="text" id="initSpeed" onchange="saveInputs()"></td>
+					<td>Base time step, seconds:</td>
+					<td><input type="text" id="timeStep" onchange="saveInputs()"></td>
+				</tr>
+				<tr>
+					<td>Vertical acceleration threshold, m/s²:</td>
+					<td><input type="text" id="accThres" onchange="saveInputs()"></td>
+					<td>Fuel level time step, multiple of base:</td>
+					<td><input type="text" id="timeStepFuel" onchange="saveInputs()"></td>
+				</tr>
+				<tr>
+					<td>Relative position to LOA, %:</td>
+					<td><input type="text" id="cgPosition" onchange="saveInputs()"></td>
+					<td>Wave time step, multiple of base:</td>
+					<td><input type="text" id="timeStepWave" onchange="saveInputs()"></td>
+				</tr>
+				<tr>
+					<td>Planar path coordinates, nm:</td>
+					<td><input type="text" id="path" onchange="saveInputs()"></td>
+					<td>Draft time step, multiple of base:</td>
+					<td><input type="text" id="timeStepDraft" onchange="saveInputs()"></td>
+				</tr>
+				<tr>
+					<td>Auxiliary power load, W:</td>
+					<td><input type="text" id="auxPower" onchange="saveInputs()"></td>
+					<td></td>
+					<td></td>
+				</tr>
+			</body>
+		</table>
+	</div>
+	<div class="container">
+		<h3>Design Library</h3>
+		<div class="container">
+			<h4>Ship Specification</h4>
+			<p><input type="file" id="shipspec" accept=".json" onchange="readShipSpec(event)" /></p>
+			<div id="3d" class="col-md-11 text-left" style="min-height: 65vh">
+			</div>
+		</div>
+		<div class="col-sm-6">
+			<h4>Visualization</h4>
+			<div class="slidecontainer">
+				Tick box to fix corresponding dimension (volumes are kept constant).<br>
+				<input id="fixLength" type="checkbox" onchange="fixDimension('length')">
+				Length (<span id="length">0.00</span> m) <input type="range" value="1" step="0.005" class="slider" id="lengthRatio" oninput="scaleDim('length')">
+				<input id="fixBeam" type="checkbox" onchange="fixDimension('beam')">
+				Beam (<span id="beam">0.00</span> m)<input type="range" value="1" step="0.005" class="slider" id="beamRatio" oninput="scaleDim('beam')">
+				<input id="fixDepth" type="checkbox" onchange="fixDimension('depth')">
+				Depth (<span id="depth">0.00</span> m)<input type="range" value="1" step="0.005" class="slider" id="depthRatio" oninput="scaleDim('depth')">
+			</div>
+		</div>
+		<div class="col-sm-6">
+			<h4>Weight Scaling and Simulation</h4>
+			<p align="justify">Weights of hull, decks and bulkheads are scaled with their areas. Lightweights of tanks and compartments are assumed to remain constant. As capacities of tanks and compartments scale with volume, they also remain constant. Read more about ship objects <a href="https://github.com/shiplab/vesseljs/wiki/API-Reference#ship-" target="_blank">here</a>.</p>
+			<p align="justify">Simulation will be performed for the design space visualized above. The algorithm will fix the beam at base value, loop through the length, step over beam, loop through length and so on. A step of 0.05 in the scaling ratio is used by default, totaling a number of up to 25 simulated ship specifications.</p>
+		</div>
+	</div>
+	<div class="container">
+		<div class="col-sm-6">
+			<h4>Propeller Specifications</h4>
+			<p> Read more about propeller specifications <a href="https://github.com/icarofonseca/vesseljs/blob/master/examples/data/propeller_specifications/README.md" target="_blank">here</a>.</p>
+			<p><input type="file" id="propspec" multiple accept=".json" onchange="readPropSpecs(event)" /></p>
+			<ul id="propspeclist"></ul>
+		</div>
+		<div class="col-sm-6">
+			<h4>Power Plant Specifications</h4>
+			<p> Read more about power plant specifications <a href="https://github.com/icarofonseca/vesseljs/blob/master/examples/data/power_plant_specifications/README.md" target="_blank">here</a>.</p>
+			<p><input type="file" id="powspec" multiple accept=".json" onchange="readPowSpecs(event)" /></p>
+			<ul id="powspeclist"></ul>
+		</div>
+	</div>
+	<div class="container" id="simulate">
+		<h3>Simulate</h3>
+		<p>Every combination of scaled ship, propeller and power plant specifications will be simulated. It may take some minutes to perform all the simulations.</p>
+		<button type="button" onclick="simulate()">Simulate</button>
+	</div>
+	<div class="container">
+		<h3>Results Visualization</h3>
+		<div class="container" id="parallel">
+			<h4>Parallel Coordinates</h4>
+			<p>Adapted from <a href="https://bl.ocks.org/jasondavies/1341281" target="_blank">this page</a>.</p>
+			<style>
+				svg {
+					font: 10px sans-serif;
+					display: block;
+					margin: auto;
+				}
+
+				.background path {
+					fill: none;
+					stroke: #ddd;
+					shape-rendering: crispEdges;
+				}
+
+				.foreground path {
+					fill: none;
+				}
+
+				.brush .extent {
+					fill-opacity: .3;
+					stroke: #fff;
+					shape-rendering: crispEdges;
+				}
+
+				.axis line,
+				.axis path {
+					fill: none;
+					stroke: #000;
+					shape-rendering: crispEdges;
+				}
+
+				.axis text {
+					text-shadow: 0 1px 0 #fff, 1px 0 0 #fff, 0 -1px 0 #fff, -1px 0 0 #fff;
+					cursor: move;
+				}
+			</style>
+		</div>
+		<div class="container" id="scatter">
+			<h4>Pareto Frontier</h4>
+			<p>Adapted from <a href="https://bl.ocks.org/mbostock/3887118" target="_blank">this page</a>.</p>
+			<style>
+				svg {
+					font: 10px sans-serif;
+				}
+
+				.axis path,
+				.axis line {
+					fill: none;
+					stroke: #000;
+					shape-rendering: crispEdges;
+				}
+
+				.dot {
+					stroke: #000;
+				}
+			</style>
+		</div>
+		<div class="container">
+			<h4>Design Description</h4>
+			<p>Click on one design in the Pareto frontier plot to display its description below.</p>
+			<pre id="designData"></pre>
+		</div>
+	</div>
+</body>
+
+</html>
+<!--Import simulation master script-->
+<script src="path.js"></script>

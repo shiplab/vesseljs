@@ -11,15 +11,15 @@ var renderer, scene, camera, controls, ship3D, shipspec, saveInputs, barge, stat
 	var container = document.getElementById('3d');
 	// add the renderer to the div
 	container.appendChild(renderer.domElement);
-	
+
 	scene = new THREE.Scene();
-	
+
 	//Camera and controls:
 	camera = new THREE.PerspectiveCamera(50);
 	camera.up.set(0,0,1);
 	scene.add(camera);
 	controls = new THREE.OrbitControls(camera, renderer.domElement);
-	
+
 	//Respond to window resize:
 	function onResize() {
 		renderer.setSize(container.clientWidth, container.clientHeight);
@@ -39,7 +39,7 @@ var renderer, scene, camera, controls, ship3D, shipspec, saveInputs, barge, stat
 })();
 
 // load default spec
-new THREE.FileLoader().load("data/ship_specifications/barge.json", useShipSpec);
+new THREE.FileLoader().load("specs/ship_specifications/barge.json", useShipSpec);
 
 function useShipSpec(contents) {
 	shipspec = JSON.parse(contents);
@@ -47,9 +47,9 @@ function useShipSpec(contents) {
 	if (typeof ship3D !== "undefined") {
 		scene.remove(ship3D);
 	}
-	ship3D = new Ship3D(barge, "data/STL files");
+	ship3D = new Ship3D(barge);
 	scene.add(ship3D);
-	
+
 	let LOA = barge.structure.hull.attributes.LOA;
 	camera.position.set(0.7*LOA, 0.7*LOA, 0.7*LOA);
 	controls.target = new THREE.Vector3(LOA/2,0,0);
@@ -58,7 +58,7 @@ function useShipSpec(contents) {
 }
 
 function animate() {
-	requestAnimationFrame(animate);			
+	requestAnimationFrame(animate);
 	renderer.render(scene, camera);
 }
 

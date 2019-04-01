@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<title>Stability</title>
+	<!-- Bootstrap Core CSS -->
+	<link href="libs/bootstrap.min.css" rel="stylesheet">
+	<!-- jQuery Version 1.11.1 -->
+	<script src="libs/jquery.js"></script>
+	<!-- Gist Embed -->
+	<script src="libs/gist-embed.min.js"></script>
+	<!-- Bootstrap Core JavaScript -->
+	<script src="libs/bootstrap.min.js"></script>
+	<!--Import library-->
+	<script src="../build/Vessel.js"></script>
+	<!--Scripts to make an download zip from source-->
+	<script src="libs/jszip.js"></script>
+	<script src="libs/FileSaver.js"></script>
+	<script src="snippets/saveSource.js"></script>
+</head>
+
+<body>
+	<!-- Navigation -->
+	<nav class="navbar navbar-inverse">
+		<div class="container">
+			<!-- Add  the <div>[Something]</div> structure for each header in the navbar-->
+			<div class="navbar-header">
+				<a class="navbar-brand" href="https://github.com/shiplab/vesseljs">Github project page</a>
+			</div>
+			<!-- This is for the right part of the navbar. Reserved for Shiplab logo-->
+			<div class="nav navbar-nav navbar-right">
+				<div class="navbar-header">
+					<a class="navbar-brand" href="https://www.shiplab.hials.org/"><img src="images/barquinho.png" alt="Shiplab logo" style="height:150%">
+					</a>
+				</div>
+			</div>
+		</div>
+	</nav>
+	<!-- Container creates the space -->
+	<div class="container">
+		<!-- Row creates horizontal groups of columns -->
+		<div class="row">
+			<!-- No divisions in page. Only 1 column. -->
+			<div class="col-md-12 text-center">
+				<h2>Stability</h2>
+			</div>
+			<div class="col-md-12 text-center">
+				<p>Calculate static stability of a vessel. <a href="https://gist.github.com/icarofonseca/b4cffa30a226ebdf4ba84d6c60b68ef8">View source.</a></p>
+				<input type="button" value="Download Source" onClick="saveSource()">
+			</div>
+			<div class="col-md-12 text-left">
+				<p>A Ship object provides a calculateStability method to calculate stability parameters.
+					The structural weight is estimated with a top-down approach following an empirical formula.
+					The parameters used in the estimation are stored in designState.calculationParameters.
+					For example, for the <a href="https://gist.github.com/icarofonseca/b2b194cb147a1d1b3946524f46378574">PX121.json</a> specification, they read:
+					<pre id="parameters"></pre>
+				</p>
+				<p>The stability parameters can be calculated with:</p>
+				<code data-gist-id="b4cffa30a226ebdf4ba84d6c60b68ef8" data-gist-file="stability.js" data-gist-hide-footer="true" data-gist-hide-line-numbers="true" data-gist-line="13-15"></code>
+				<p>As an empty state object was used, all tanks are half loaded by default.</p>
+				<p>This yields as results:
+					<pre id="stability"></pre>
+				</p>
+			</div>
+		</div>
+		<script src="stability.js"></script>
+</body>
+
+</html>

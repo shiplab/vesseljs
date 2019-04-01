@@ -6,7 +6,7 @@ Depends on JSONSpecObject.js
 
 function DerivedObject(specification, baseObjects) {
 	this.baseObjects = baseObjects;
-	JSONSpecObject.call(this,specification);
+	JSONSpecObject.call(this, specification);
 }
 DerivedObject.prototype = Object.create(JSONSpecObject.prototype);
 Object.assign(DerivedObject.prototype, {
@@ -38,17 +38,17 @@ Object.assign(DerivedObject.prototype, {
 		} else {
 			spec.baseObject = this.baseObject.getSpecification();
 		}
-		
+
 		return spec;
 	},
 	getWeight: function(state) {
 		let oState = state.getObjectState(this);
-		
+
 		//Support disabled objects:
 		if (oState.exists === false) {
-			return {mass: 0, cg: {x:0, y:0, z:0}};
+			return {mass: 0, cg: {x: 0, y: 0, z: 0}};
 		}
-		
+
 		let p = {
 			x: oState.xCentre,
 			y: oState.yCentre,
@@ -58,8 +58,8 @@ Object.assign(DerivedObject.prototype, {
 		let w = this.baseObject.getWeight(oState.fullness);
 		let m = w.mass;
 		let cg = Vectors.add(p, w.cg);
-		
-		if (isNaN(cg.x+cg.y+cg.z)) {
+
+		if (isNaN(cg.x + cg.y + cg.z)) {
 			console.error("DerivedObject.getWeight: returning NaN values.");
 		}
 

@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
 	<meta charset="utf-8">
@@ -11,36 +12,36 @@
 	<title>Lifting</title>
 
 	<!-- Bootstrap Core CSS -->
-	<link href="css/bootstrap.min.css" rel="stylesheet">
+	<link href="libs/bootstrap.min.css" rel="stylesheet">
 
 	<!-- Three script -->
-	<script src="js/libs/three.js"></script>
-	<script src="js/libs/STLLoader.js"></script>
-	<script src="js/libs/OrbitControls.js"></script>
+	<script src="libs/three.js"></script>
+	<script src="libs/STLLoader.js"></script>
+	<script src="libs/OrbitControls.js"></script>
 
 	<!-- jQuery Version 1.11.1 -->
-	<script src="js/libs/jquery.js"></script>
+	<script src="libs/jquery.js"></script>
 
 	<!-- Bootstrap Core JavaScript -->
-	<script src="js/libs/bootstrap.min.js"></script>
+	<script src="libs/bootstrap.min.js"></script>
 
 	<!--Import Vessel.js library-->
 	<script src="../build/Vessel.js"></script>
 
 	<!--Import wave creation script-->
-	<script src="js/Pendulum.js"></script>
+	<script src="snippets/Pendulum.js"></script>
 
 	<!-- Numeric JS -->
-	<script src="js/libs/numeric-1.2.6.min.js"></script>
+	<script src="libs/numeric-1.2.6.min.js"></script>
 
 	<!-- flot -->
-	<script src="js/libs/jquery.flot.min.js"></script>
+	<script src="libs/jquery.flot.min.js"></script>
 
 	<!--Ship3D class for three.js-->
-	<script src="js/Ship3D_v2.js"></script>
+	<script src="snippets/Ship3D_v2.js"></script>
 
 	<!--Import wave creation script-->
-	<script src="js/AFrame3D.js"></script>
+	<script src="snippets/AFrame3D.js"></script>
 </head>
 
 <body>
@@ -54,7 +55,7 @@
 			<!-- This is for the right part of the navbar. Reserved for Shiplab logo-->
 			<div class="nav navbar-nav navbar-right">
 				<div class="navbar-header">
-					<a class="navbar-brand" href="http://www.shiplab.ntnu.co/"><img src="images/barquinho.png" alt="Shiplab logo" style="height:150%"> 
+					<a class="navbar-brand" href="http://www.shiplab.ntnu.co/"><img src="images/barquinho.png" alt="Shiplab logo" style="height:150%">
 					</a>
 				</div>
 			</div>
@@ -67,24 +68,25 @@
 	</div>
 
 	<div class="container">
-			<h4>Motion Visualization</h4>
-			<div id="3d" class="col-md-11 text-left" style="min-height: 65vh">
-			</div>
+		<h4>Motion Visualization</h4>
+		<div id="3d" class="col-md-11 text-left" style="min-height: 65vh">
+		</div>
 	</div>
 
 	<div class="container">
 
-	<p>Ship Heave and Roll (m and rad)</p>
-	<div id = "ship_xz" style = "width:100%;height:200px"></div>
+		<p>Ship Heave and Roll (m and rad)</p>
+		<div id="ship_xz" style="width:100%;height:200px"></div>
 
-	<p>Frame Tip - Displacement From Original Position (m)</p>
-	<div id = "frame_tip_yz" style = "width:100%;height:200px"></div>
+		<p>Frame Tip - Displacement From Original Position (m)</p>
+		<div id="frame_tip_yz" style="width:100%;height:200px"></div>
 
-	<p>Load Phi</p>
-	<div id = "load_phi" style = "width:100%;height:200px"></div>
-</div>
+		<p>Load Phi</p>
+		<div id="load_phi" style="width:100%;height:200px"></div>
+	</div>
 
 </body>
+
 </html>
 
 <!--Import simulation master script-->

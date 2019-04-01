@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<title>Hull Definition and Hydrostatics</title>
+	<!-- Bootstrap Core CSS -->
+	<link href="libs/bootstrap.min.css" rel="stylesheet">
+	<!-- jQuery Version 1.11.1 -->
+	<script src="libs/jquery.js"></script>
+	<!-- Gist Embed -->
+	<script src="libs/gist-embed.min.js"></script>
+	<!-- Bootstrap Core JavaScript -->
+	<script src="libs/bootstrap.min.js"></script>
+	<!-- Three script -->
+	<script src="libs/three.js"></script>
+	<script src="libs/STLLoader.js"></script>
+	<script src="libs/OrbitControls.js"></script>
+	<!--Import library-->
+	<script src="../build/Vessel.js"></script>
+	<!--Ship3D class for three.js-->
+	<script src="snippets/Ship3D.js"></script>
+	<!--Scripts to make an download zip from source-->
+	<script src="libs/jszip.js"></script>
+	<script src="libs/FileSaver.js"></script>
+	<script src="snippets/saveSource.js"></script>
+</head>
+
+<body>
+	<!-- Navigation -->
+	<nav class="navbar navbar-inverse">
+		<div class="container">
+			<!-- Add  the <div>[Something]</div> structure for each header in the navbar-->
+			<div class="navbar-header">
+				<a class="navbar-brand" href="https://github.com/shiplab/vesseljs">Github project page</a>
+			</div>
+			<!-- This is for the right part of the navbar. Reserved for Shiplab logo-->
+			<div class="nav navbar-nav navbar-right">
+				<div class="navbar-header">
+					<a class="navbar-brand" href="https://www.shiplab.hials.org/"><img src="images/barquinho.png" alt="Shiplab logo" style="height:150%">
+					</a>
+				</div>
+			</div>
+		</div>
+	</nav>
+	<!-- Container creates the space -->
+	<div class="container">
+		<!-- Row creates horizontal groups of columns -->
+		<div class="row">
+			<!-- No divisions in page. Only 1 column. -->
+			<div class="col-md-12 text-center">
+				<h2>Hull Definition and Hydrostatics</h2>
+			</div>
+			<div class="col-md-12 text-center">
+				<p>Define, visualize a hull and calculate its hydrostatic properties. <a href="https://gist.github.com/icarofonseca/f5aea8f8591c5b2a529418845db0c03f">View source.</a></p>
+				<input type="button" value="Download Source" onClick="saveSource()">
+			</div>
+			<div class="col-md-12 text-left">
+				<p>A Ship object in the Vessel.js library is created from a specification object.
+					The specification below defines a prismatic hull, without any additional part.
+					The hull lines (stored in the halfBreadths property) are taken as symmetrical
+					and are defined proportionally to the ship's main dimensions (stored in the attributes property):
+				</p>
+				<code data-gist-id="f5aea8f8591c5b2a529418845db0c03f" data-gist-file="hydrostatics.js" data-gist-hide-footer="true" data-gist-hide-line-numbers="true" data-gist-line="5-29"></code>
+				<p>Then, we create a Ship object from this specification:</p>
+				<code data-gist-id="f5aea8f8591c5b2a529418845db0c03f" data-gist-file="hydrostatics.js" data-gist-hide-footer="true" data-gist-hide-line-numbers="true" data-gist-line="31"></code>
+				<p>The visualization is created with an interface built to transform the Ship object above in a <a href="https://threejs.org/" target="_blank">Three.js</a>
+					render (see <a href="Object_geom.html" target="_blank">here</a> for more details). The result is displayed below.
+					The different colors indicate the position of the design draft.
+				</p>
+			</div>
+			<div id="3d" class="col-md-12 text-left" style="min-height: 40vh">
+			</div>
+			<div class="col-md-12 text-left">
+				<p>To calculate the hydrostatic properties of the hull for a given draft, say, 2 m, the following method can be evoked:</p>
+				<code data-gist-id="f5aea8f8591c5b2a529418845db0c03f" data-gist-file="hydrostatics.js" data-gist-hide-footer="true" data-gist-hide-line-numbers="true" data-gist-line="33-34"></code>
+				<p>Which returns:</p>
+				<pre id="hydro"></pre>
+			</div>
+		</div>
+	</div>
+	<script src="hydrostatics.js"></script>
+</body>
+
+</html>
