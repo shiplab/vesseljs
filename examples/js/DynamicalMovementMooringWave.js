@@ -360,11 +360,14 @@ function DynamicalMovement(ship, states, userParameters, Ini, seaDepth) {
 		var anchorPoint = [];
 
 		for (var i = 0; i < pos.length; i++) {
+			if (i==0 || i==1) baseangle = 0;
+			if (i==3 || i==2) baseangle = Math.PI;
 			anchorPoint[i] = [
-				userParameters.radialDistance * Math.cos((-i * Math.PI) / 2 + (mooring.mooringAngle * Math.PI) / 180),
+				userParameters.radialDistance * Math.cos((baseangle) + Math.pow((-1), i) * (mooring.mooringAngle * Math.PI) / 180),
 				-userParameters.seaDepth,
-				userParameters.radialDistance * Math.sin((-i * Math.PI) / 2 + (mooring.mooringAngle * Math.PI) / 180)
+				userParameters.radialDistance * Math.sin((baseangle) + Math.pow((-1), i) * (mooring.mooringAngle * Math.PI) / 180)
 			];
+			console.log(anchorPoint)
 
 			hangedMooring[i] = []
 			anchorPointOnShip[i] = [pos[i][0] + motion.surge, pos[i][2] + motion.heave, pos[i][1] - motion.sway];

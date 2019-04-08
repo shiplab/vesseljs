@@ -14,7 +14,7 @@ function Playback(params = {}) {
 		this.conf = params.parentGUI.addFolder("Playback")
 		this.conf.open();
 		this.conf.add(this, "playOrPause").name("Play/Pause");
-		this.conf.add(this, "stop").name("Stop");
+		this.conf.add(this, "stop");
 	}
 
 	this.playables = [];
