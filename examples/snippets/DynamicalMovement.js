@@ -115,7 +115,7 @@ function DynamicalMovement(ship, states, userParameters, Ini, oceanDepth) {
 			[0, 0, 0, 0, 0, 0]
 		]; // Restoring Matrix
 		// console.log("Natural Period Vibration: Heave %.2f; Roll %.2f; Pitch %.2f;", (2*Math.PI)*Math.pow(AA[2][2]/C_33,0.5), (2*Math.PI)*Math.pow(AA[3][3]/C_44,0.5), (2*Math.PI)*Math.pow(AA[4][4]/C_55,0.5));
-		// Rugen Kutta
+		// Runge Kutta
 		// dy(1:6)  = World fixed velocity
 		// dy(7:12) = Body fixed acceleration
 		// dy(13:15)= Euler angle rate
@@ -132,7 +132,7 @@ function DynamicalMovement(ship, states, userParameters, Ini, oceanDepth) {
 		motion.VPitch, motion.VYaw, motion.EX, motion.EY, motion.EZ
 		];
 
-		var sol = numeric.dopri(tprev, tprev + dt, y, this.RugenKuttaSolver, 1e-8, 10000).at(tprev + dt);
+		var sol = numeric.dopri(tprev, tprev + dt, y, this.RungeKuttaSolver, 1e-8, 10000).at(tprev + dt);
 
 		// Equalizing the solution
 		[motion.surge, motion.sway, motion.heave, motion.roll, motion.pitch, motion.yaw, motion.VSurge,
