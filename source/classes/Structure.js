@@ -1,62 +1,59 @@
 //@EliasHasle
 
-function Structure(spec /*, ship*/ ) {
+function Structure(spec/*, ship*/) {
 	//this.ship = ship;
 	JSONSpecObject.call(this, spec);
 }
 Structure.prototype = Object.create(JSONSpecObject.prototype);
 Object.assign(Structure.prototype, {
-	setFromSpecification: function (spec) {
-		this.hull = new Hull(spec.hull /*, this.ship*/ );
-		this.decks = spec.decks;
-		/*{};
-				let dspecs = spec.decks;
-				let decks = this.decks;
-				let dnames = Object.keys(dspecs);
-				for (let i = 0; i < dnames.length; i++) {
-					let name = dnames[i];
-					let dspec = dspecs[name];
-					decks[name] = new Deck(dspec,this.ship);
-				}*/
-		this.bulkheads = spec.bulkheads;
-		/*{};
-				let bhspecs = spec.bulkheads;
-				let bulkheads = this.bulkheads;
-				let bhnames = Object.keys(bhspecs);
-				for (let i = 0; i < bhnames.length; i++) {
-					let name = bhnames[i];
-					let bhspec = bhspecs[name];
-					bulkheads[name] = new Bulkhead(bhspec,this.ship);
-				}*/
+	setFromSpecification: function(spec) {
+		this.hull = new Hull(spec.hull/*, this.ship*/);
+		this.decks = spec.decks;/*{};
+		let dspecs = spec.decks;
+		let decks = this.decks;
+		let dnames = Object.keys(dspecs);
+		for (let i = 0; i < dnames.length; i++) {
+			let name = dnames[i];
+			let dspec = dspecs[name];
+			decks[name] = new Deck(dspec,this.ship);
+		}*/
+		this.bulkheads = spec.bulkheads;/*{};
+		let bhspecs = spec.bulkheads;
+		let bulkheads = this.bulkheads;
+		let bhnames = Object.keys(bhspecs);
+		for (let i = 0; i < bhnames.length; i++) {
+			let name = bhnames[i];
+			let bhspec = bhspecs[name];
+			bulkheads[name] = new Bulkhead(bhspec,this.ship);
+		}*/
 
 		return this;
 	},
-	getSpecification: function () {
+	getSpecification: function() {
 		let spec = {
 			hull: this.hull.getSpecification(),
 			decks: this.decks,
 			bulkheads: this.bulkheads
-		};
-		/*{decks: {}, bulkheads: {}};
+		};/*{decks: {}, bulkheads: {}};
 
-				spec.hull = this.hull.getSpecification();
+		spec.hull = this.hull.getSpecification();
 
-				let sd = spec.decks;
-				let dk = Object.keys(this.decks);
-				for (let i = 0; i < dk.length; i++) {
-					sd[dk[i]] = this.decks[dk[i]].getSpecification();
-				}
+		let sd = spec.decks;
+		let dk = Object.keys(this.decks);
+		for (let i = 0; i < dk.length; i++) {
+			sd[dk[i]] = this.decks[dk[i]].getSpecification();
+		}
 
-				let sbh = spec.bulkheads;
-				let bhk = Object.keys(this.bulkheads);
-				for (let i = 0; i < bhk.length; i++) {
-					sbh[bhk[i]] = this.bulkheads[bhk[i]].getSpecification();
-				}*/
+		let sbh = spec.bulkheads;
+		let bhk = Object.keys(this.bulkheads);
+		for (let i = 0; i < bhk.length; i++) {
+			sbh[bhk[i]] = this.bulkheads[bhk[i]].getSpecification();
+		}*/
 
 		return spec;
 	},
 	//This is all dummy calculations
-	getWeight: function (designState) {
+	getWeight: function(designState) {
 		let components = [];
 		//Hull
 		components.push(this.hull.getWeight(designState));
@@ -68,12 +65,7 @@ Object.assign(Structure.prototype, {
 			let zc = d.zFloor + 0.5 * d.thickness;
 			let yc = d.yCentre;
 			let b = d.breadth;
-			let wlc = this.hull.waterlineCalculation(zc, {
-				minX: d.xAft,
-				maxX: d.xFwd,
-				minY: yc - 0.5 * b,
-				maxY: yc + 0.5 * b
-			});
+			let wlc = this.hull.waterlineCalculation(zc, {minX: d.xAft, maxX: d.xFwd, minY: yc - 0.5 * b, maxY: yc + 0.5 * b});
 			components.push({
 				//approximation
 				mass: wlc.Awp * d.thickness * d.density,

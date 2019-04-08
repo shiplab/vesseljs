@@ -4,10 +4,8 @@ var renderer, scene, camera, controls, ship3D, aFrame3D, shipspec, readShipSpec,
 	zDiff, yLever, yDiff;
 
 //Ready renderer and scene
-(function () {
-	renderer = new THREE.WebGLRenderer({
-		antialias: true
-	});
+(function() {
+	renderer = new THREE.WebGLRenderer({antialias: true});
 	renderer.setPixelRatio(window.devicePixelRatio);
 	renderer.setClearColor(0xA9CCE3, 1);
 
@@ -35,18 +33,18 @@ var renderer, scene, camera, controls, ship3D, aFrame3D, shipspec, readShipSpec,
 
 	//Add lights:
 	scene.add(new THREE.AmbientLight(0xffffff, 0.3));
-	scene.add(function () {
+	scene.add(function() {
 		let sun = new THREE.DirectionalLight(0xffffff, 1);
 		sun.position.set(1, 1, 1);
 		return sun;
 	}());
 })();
 
-readShipSpec = function (event) {
+readShipSpec = function(event) {
 	var file = event.target.files[0];
 	var reader = new FileReader();
 
-	reader.onload = function (event) {
+	reader.onload = function(event) {
 		var contents = event.target.result;
 		useShipSpec(contents);
 	};
@@ -54,7 +52,7 @@ readShipSpec = function (event) {
 };
 
 // load default spec
-new THREE.FileLoader().load("data/ship_specifications/PX121.json", useShipSpec);
+new THREE.FileLoader().load("specs/ship_specifications/PX121.json", useShipSpec);
 
 // load ship specification
 function useShipSpec(contents) {
@@ -131,26 +129,22 @@ function useShipSpec(contents) {
 	initzt = deckHeight + aFrame.height - states.discrete.FloatingCondition.state.T - 2 * aFrame.radiusVert;
 
 	var geometry = new THREE.CylinderGeometry(0.05, 0.05, L, 32);
-	var material = new THREE.MeshBasicMaterial({
-		color: "black"
-	});
+	var material = new THREE.MeshBasicMaterial({color: "black"});
 	cable = new THREE.Mesh(geometry, material);
 
 	cable.rotation.x = Math.PI / 2;
 
-	cable.position.z = -L / 2;
+	cable.position.z = - L / 2;
 
 	loadGroup.add(cable);
 
 	var geometry = new THREE.BoxGeometry(2, 2, 2);
-	var material = new THREE.MeshBasicMaterial({
-		color: 0x00ff00
-	});
+	var material = new THREE.MeshBasicMaterial({color: 0x00ff00});
 	load = new THREE.Mesh(geometry, material);
 
 	var initzl = deckHeight - L;
 
-	load.position.z = -L;
+	load.position.z = - L;
 
 	loadGroup.add(load);
 	loadGroup.applyMatrix(new THREE.Matrix4().makeTranslation(initx, inity, initzt));
@@ -179,21 +173,10 @@ function useShipSpec(contents) {
 		roll.push(rollCoeff * Math.cos(wavCre.waveDef.waveFreq * t[index]));
 	}
 
-	var ship_xz = [{
-		data: numeric.transpose([t, heave]),
-		label: "Heave"
-	}, {
-		data: numeric.transpose([t, roll]),
-		label: "Roll"
-	}];
+	var ship_xz = [{data: numeric.transpose([t, heave]), label: "Heave"}, {data: numeric.transpose([t, roll]), label: "Roll"}];
 
-	$.plot("#ship_xz", ship_xz, {
-		xaxis: {
-			tickFormatter: function (val, axis) {
-				return val < axis.max ? val.toFixed(2) : "time (s)";
-			}
-		}
-	});
+	$.plot("#ship_xz", ship_xz,
+		{xaxis: {tickFormatter: function(val, axis) {return val < axis.max ? val.toFixed(2) : "time (s)";}}});
 
 	var yDisp = [];
 	for (index = 0; index < t.length; index++) {
@@ -205,21 +188,10 @@ function useShipSpec(contents) {
 		zDisp.push(heave[index] - (inity - states.discrete.FloatingCondition.state.w.cg.y) * roll[index] - (heave[0] - (inity - states.discrete.FloatingCondition.state.w.cg.y) * roll[0]));
 	}
 
-	var frame_tip_yz = [{
-		data: numeric.transpose([t, yDisp]),
-		label: "yDisp"
-	}, {
-		data: numeric.transpose([t, zDisp]),
-		label: "zDisp"
-	}];
+	var frame_tip_yz = [{data: numeric.transpose([t, yDisp]), label: "yDisp"}, {data: numeric.transpose([t, zDisp]), label: "zDisp"}];
 
-	$.plot("#frame_tip_yz", frame_tip_yz, {
-		xaxis: {
-			tickFormatter: function (val, axis) {
-				return val < axis.max ? val.toFixed(2) : "time (s)";
-			}
-		}
-	});
+	$.plot("#frame_tip_yz", frame_tip_yz,
+		{xaxis: {tickFormatter: function(val, axis) {return val < axis.max ? val.toFixed(2) : "time (s)";}}});
 
 	var sol = numeric.dopri(0, tmax, [0, 0, 0, 0], pend.f); //max x, min x, init X
 
@@ -230,13 +202,8 @@ function useShipSpec(contents) {
 		load_phi[i][1] = sol.y[i][0];
 	}
 
-	$.plot("#load_phi", [load_phi], {
-		xaxis: {
-			tickFormatter: function (val, axis) {
-				return val < axis.max ? val.toFixed(2) : "time (s)";
-			}
-		}
-	});
+	$.plot("#load_phi", [load_phi],
+		{xaxis: {tickFormatter: function(val, axis) {return val < axis.max ? val.toFixed(2) : "time (s)";}}});
 
 	controls.update();
 	animate();
@@ -247,14 +214,14 @@ function animate() {
 	var dt = time - tprev;
 
 	ship3D.heave = states.discrete.WaveMotion.state.heaveAmp * Math.cos(wavCre.waveDef.waveFreq * time);
-	ship3D.roll = -states.discrete.WaveMotion.state.rollAmp * Math.cos(wavCre.waveDef.waveFreq * time);
+	ship3D.roll = - states.discrete.WaveMotion.state.rollAmp * Math.cos(wavCre.waveDef.waveFreq * time);
 
 	states.continuous.motion.heave = ship3D.heave;
 	states.continuous.motion.roll = ship3D.roll;
 	states.continuous.motion.pitch = 0;
 
 	loadGroup.position.z = ship3D.heave + zDiff + zLever * Math.cos(ship3D.roll) + yLever * Math.sin(ship3D.roll);
-	loadGroup.position.y = -zLever * Math.sin(ship3D.roll) + yLever * Math.cos(ship3D.roll);
+	loadGroup.position.y = - zLever * Math.sin(ship3D.roll) + yLever * Math.cos(ship3D.roll);
 
 	if (dt !== 0) {
 		// solve the pendulum ODE:

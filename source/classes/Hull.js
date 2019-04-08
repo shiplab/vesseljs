@@ -15,7 +15,7 @@ function Hull(spec) {
 Hull.prototype = Object.create(JSONSpecObject.prototype);
 Object.assign(Hull.prototype, {
 	constructor: Hull,
-	setFromSpecification: function (spec) {
+	setFromSpecification: function(spec) {
 		this.halfBreadths = spec.halfBreadths;
 		//this.buttockHeights = spec.buttockHeights;
 		this.attributes = spec.attributes; //this could/should include LOA, BOA, Depth
@@ -23,7 +23,7 @@ Object.assign(Hull.prototype, {
 		this.style = spec.style || {};
 		return this;
 	},
-	getSpecification: function () {
+	getSpecification: function() {
 		return {
 			halfBreadths: this.halfBreadths,
 			//buttockHeights: this.buttockHeights
@@ -32,7 +32,7 @@ Object.assign(Hull.prototype, {
 		};
 	},
 	//to facilitate economical caching, it may be best to have a few numerical parameters to this function instead of letting it depend on the whole designState. Or maybe the designState is static enough.
-	getWeight: function (designState) {
+	getWeight: function(designState) {
 		let ha = this.attributes;
 		let B = ha.BOA;
 		let D = ha.Depth;
@@ -61,10 +61,10 @@ Object.assign(Hull.prototype, {
 	Output:
 	Array representing waterline offsets for a given height from the keel (typically a draft).
 	*/
-	getWaterline: function (z) {
+	getWaterline: function(z) {
 		let ha = this.attributes;
 		let zr = z / ha.Depth; //using zr requires fewer operations and less memory than a scaled copy of wls.
-		let wls = this.halfBreadths.waterlines; //.map(wl=>wl*ha.Depth);
+		let wls = this.halfBreadths.waterlines;//.map(wl=>wl*ha.Depth);
 		let sts = this.halfBreadths.stations;
 		let tab = this.halfBreadths.table;
 
@@ -79,10 +79,7 @@ Object.assign(Hull.prototype, {
 				mu = 1;
 				//wl = tab[a].slice();
 			} else {
-				({
-					index: a,
-					mu: mu
-				} = bisectionSearch(wls, zr));
+				({index: a, mu: mu} = bisectionSearch(wls, zr));
 				if (a === wls.length - 1) {
 					a = wls.length - 2;
 					mu = 1;
@@ -123,9 +120,8 @@ Object.assign(Hull.prototype, {
 				}
 				//Find upper value for interpolation
 				let c = a + 1;
-				if (upper !== undefined) {
-					/*upper found above*/
-				} else if (tab[c][j] !== null && !isNaN(tab[c][j])) {
+				if (upper !== undefined) {/*upper found above*/}
+				else if (tab[c][j] !== null && !isNaN(tab[c][j])) {
 					upper = tab[c][j];
 				} else {
 					//The cell value is NaN.
@@ -152,17 +148,14 @@ Object.assign(Hull.prototype, {
 		}
 	},
 	//This must be debugged more. getWaterline got an overhaul, but this did not.
-	getStation: function (x) {
+	getStation: function(x) {
 		let ha = this.attributes;
 		let xr = x / ha.LOA;
 		let sts = this.halfBreadths.stations;
 		let wls = this.halfBreadths.waterlines;
 		let tab = this.halfBreadths.table;
 
-		let {
-			index: a,
-			mu: mu
-		} = bisectionSearch(sts, xr);
+		let {index: a, mu: mu} = bisectionSearch(sts, xr);
 
 		let st;
 		if (a < 0 || a >= sts.length) st = new Array(wls.length).fill(null);
@@ -187,13 +180,8 @@ Object.assign(Hull.prototype, {
 		return st;
 	},
 	//typically deck bounds
-	waterlineCalculation: function (z, bounds) {
-		let {
-			minX,
-			maxX,
-			minY,
-			maxY
-		} = bounds || {};
+	waterlineCalculation: function(z, bounds) {
+		let {minX, maxX, minY, maxY} = bounds || {};
 
 		//console.group/*Collapsed*/("waterlineCalculation.");
 		//console.info("Arguments: z=", z, " Boundaries: ", arguments[1]);
@@ -215,10 +203,7 @@ Object.assign(Hull.prototype, {
 			let wlpre;
 			if (hasMinX) {
 				let muf;
-				({
-					index: first,
-					mu: muf
-				} = bisectionSearch(sts, minX));
+				({index: first, mu: muf} = bisectionSearch(sts, minX));
 				let lower = wl[first];
 				let upper = wl[first + 1];
 				if ((lower === null || isNaN(lower)) && (upper === null || isNaN(upper))) {
@@ -231,10 +216,7 @@ Object.assign(Hull.prototype, {
 			let wlsuff;
 			if (hasMaxX) {
 				let mul;
-				({
-					index: last,
-					mu: mul
-				} = bisectionSearch(sts, maxX));
+				({index: last, mu: mul} = bisectionSearch(sts, maxX));
 				let lower = wl[last];
 				let upper = wl[last + 1];
 				if ((lower === null || isNaN(lower)) && (upper === null || isNaN(upper))) {
@@ -258,8 +240,7 @@ Object.assign(Hull.prototype, {
 		}
 
 		//This does not yet account properly for undefined minY, maxY.
-		let port = [],
-			star = [];
+		let port = [], star = [];
 		for (let i = 0; i < wl.length; i++) {
 			if (wl[i] === null || isNaN(wl[i])) {
 				star[i] = minY || null;
@@ -274,11 +255,7 @@ Object.assign(Hull.prototype, {
 		//console.info("Arguments to sectionCalculation:", sts, star, port);
 
 		//sectionCalculation can potentially be served some nulls.
-		let sc = sectionCalculation({
-			xs: sts,
-			ymins: star,
-			ymaxs: port
-		});
+		let sc = sectionCalculation({xs: sts, ymins: star, ymaxs: port});
 		let LWL = sc.maxX - sc.minX;
 		let BWL = sc.maxY - sc.minY;
 		let Cwp = sc.A / (LWL * BWL);
@@ -308,14 +285,11 @@ Object.assign(Hull.prototype, {
 	},
 	//Not done, and not tested
 	//The optional maxZ parameter is introduced for enabling below-water calculations. More bounds will add more complexity, although then some common logic may perhaps be moved from this method and waterlineCalculation to sectionCalculation.
-	stationCalculation: function (x, maxZ) {
+	stationCalculation: function(x, maxZ) {
 		let wls = this.halfBreadths.waterlines.map(wl => this.attributes.Depth * wl);
 		let port = this.getStation(x);
 		if (maxZ !== null && !isNaN(maxZ)) {
-			let {
-				index,
-				mu
-			} = bisectionSearch(wls, maxZ);
+			let {index, mu} = bisectionSearch(wls, maxZ);
 			if (index < wls.length - 1) {
 				wls[index + 1] = lerp(wls[index], wls[index + 1], mu);
 				port[index + 1] = lerp(port[index], port[index + 1], mu);
@@ -325,11 +299,7 @@ Object.assign(Hull.prototype, {
 		}
 		let star = port.map(hb => -hb);
 
-		let sc = sectionCalculation({
-			xs: wls,
-			ymins: star,
-			ymaxs: port
-		});
+		let sc = sectionCalculation({xs: wls, ymins: star, ymaxs: port});
 		return {
 			x: x, //or xc? or cg.. Hm.
 			yc: sc.yc,
@@ -349,7 +319,7 @@ Object.assign(Hull.prototype, {
 	nulls in the offset table will be corrected to numbers in this calculation, whereas the intended meaning of a null supposedly is that there is no hull at that position. This means the calculation can overestimate the wetted area (and possibly make other errors too).
 	*/
 	//Important: calculateAttributesAtDraft takes one mandatory parameter T. (The function defined here is immediately called during construction of the prototype, and returns the proper function.)
-	calculateAttributesAtDraft: function () {
+	calculateAttributesAtDraft: function() {
 		function levelCalculation(hull,
 			z,
 			prev = {
@@ -364,11 +334,7 @@ Object.assign(Hull.prototype, {
 				prMinY: 0,
 				prMaxY: 0,
 				Ap: 0,
-				Cv: {
-					x: 0,
-					y: 0,
-					z: 0
-				}
+				Cv: {x: 0, y: 0, z: 0}
 			}) {
 
 			let wlc = hull.waterlineCalculation(z, {});
@@ -430,11 +396,7 @@ Object.assign(Hull.prototype, {
 			let C = combineVolumes(calculations);
 			//Cv of slice. Note that switching of yz must
 			//be done before combining with previous level
-			let Cv = {
-				x: C.Cv.x,
-				y: C.Cv.z,
-				z: C.Cv.y
-			};
+			let Cv = {x: C.Cv.x, y: C.Cv.z, z: C.Cv.y};
 
 			lev.Vs = prev.Vs + C.V; //hull volume below z
 			lev.As = prev.As + C.As; //outside surface below z
@@ -458,7 +420,7 @@ Object.assign(Hull.prototype, {
 		}
 
 		//Here is the returned function calculateAttributesAtDraft(T):
-		return function (T) {
+		return function(T) {
 			if (T === null || isNaN(T)) {
 				console.error("Hull.prototype.calculateAttributesAtDraft(T): No draft specified. Returning undefined.");
 				return;
@@ -484,10 +446,7 @@ Object.assign(Hull.prototype, {
 			}
 
 			//Find highest data waterline below or at water level:
-			let {
-				index,
-				mu
-			} = bisectionSearch(wls, T);
+			let {index, mu} = bisectionSearch(wls, T);
 
 			//console.info("Highest data waterline below or at water level: " + index);
 			//console.log(this.levels);
@@ -529,11 +488,11 @@ Object.assign(Hull.prototype, {
 		};
 	}(),
 	//M is the mass (in kg) of the ship
-	calculateDraftAtMass: function (M, epsilon = 0.001, rho = 1025) {
+	calculateDraftAtMass: function(M, epsilon = 0.001, rho = 1025) {
 		let VT = M / rho; //Target submerged volume (1025=rho_seawater)
 		//Interpolation:
 		let a = 0;
-		let b = this.attributes.Depth; //depth is not draft ¿?
+		let b = this.attributes.Depth;             //depth is not draft ¿?
 		let t = 0.5 * b;
 		//Souce: https://en.wikipedia.org/wiki/Secant_method
 		// Secant Method to Find out where is the zero point
@@ -571,4 +530,4 @@ Object.assign(Hull.prototype, {
 		return t
 	}
 });
-//@EliasHasle
+		//@EliasHasle

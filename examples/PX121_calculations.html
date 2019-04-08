@@ -5,7 +5,7 @@
 <head>
 	<title>Test of the new classes and browseDesign</title>
 	<meta charset="utf-8">
-	<script type="text/javascript" src="js/libs/renderjson.js"></script>
+	<script type="text/javascript" src="libs/renderjson.js"></script>
 	<script src="../build/Vessel.js"></script>
 </head>
 
@@ -13,6 +13,7 @@
 	<ul id="log"></ul>
 
 	<script>
+
 		function logToScreen(s, o) {
 			let log = document.getElementById("log");
 			let entry = document.createElement("li");
@@ -28,7 +29,7 @@
 		var v;
 		var s;
 
-		Vessel.loadShip("data/ship_specifications/PX121.json", useShip);
+		Vessel.loadShip("specs/ship_specifications/PX121.json", useShip);
 
 		function useShip(ship) {
 			v = ship; //just to have an entry point for debugging.
@@ -80,6 +81,7 @@
 			let wl = v.structure.hull.getWaterline(T);
 			logToScreen("Waterline at calculated draft: ", wl);
 		}
+
 	</script>
 </body>
 

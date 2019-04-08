@@ -60,16 +60,7 @@ function patchColumnCalculation(x1, x2, y1, y2, z00, z01, z10, z11) {
 	//Bilinear area calculation. Works too, but is currently numerical, and quite complex (which means it is bug-prone and hard to maintain). But it is more exact, even with just a few segments for numerical integration (the last, optional, parameter)
 	let As = Math.abs(bilinearArea(x1, x2, y1, y2, z00, z01, z10, z11));
 
-	return {
-		Ab: Ab,
-		As: As,
-		V: V,
-		Cv: {
-			x: xc,
-			y: yc,
-			z: zc
-		}
-	};
+	return {Ab: Ab, As: As, V: V, Cv: {x: xc, y: yc, z: zc}};
 }
 
 //Input: array of objects with calculation results for elements.
@@ -77,11 +68,7 @@ function patchColumnCalculation(x1, x2, y1, y2, z00, z01, z10, z11) {
 function combineVolumes(array) {
 	let V = 0;
 	let As = 0;
-	let Cv = {
-		x: 0,
-		y: 0,
-		z: 0
-	};
+	let Cv = {x: 0, y: 0, z: 0};
 	let L = array.length;
 	//if (L===0) return {V,As,Cv};
 	for (let i = 0; i < L; i++) {
@@ -95,9 +82,5 @@ function combineVolumes(array) {
 
 	//console.info("combineVolumes: Combined Cv is (" + Cv.x + ", " + Cv.y + ", " + Cv.z + ").");
 
-	return {
-		V,
-		As,
-		Cv
-	}; //{V: V, As: As, Cv: Cv};
+	return {V, As, Cv};//{V: V, As: As, Cv: Cv};
 }

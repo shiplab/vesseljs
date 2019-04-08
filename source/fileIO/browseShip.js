@@ -13,20 +13,20 @@ According to the ECMAScript standard, it is required that the file browsing is i
 */
 
 "use strict";
-var browseShip = function () {
+var browseShip = function() {
 	var browseButton;
-	return function (callback) {
+	return function(callback) {
 		browseButton = document.createElement("input");
 		Object.assign(browseButton, {
 			type: "file",
 			multiple: false,
 			style: "display: none",
 			accept: ".json, application/json",
-			onchange: function (e) {
+			onchange: function(e) {
 				//console.log("Change event triggered on browse.");
 				let file = browseButton.files[0];
 				let reader = new FileReader();
-				reader.onload = function (event) {
+				reader.onload = function(event) {
 					let result = event.target.result;
 					let specification = JSON.parse(result);
 					let ship = new Ship(specification);

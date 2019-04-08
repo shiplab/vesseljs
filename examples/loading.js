@@ -2,10 +2,8 @@
 var renderer, scene, camera, controls, ship3D, shipspec, saveInputs, barge, states, stateHistory, simulate;
 
 //Ready renderer and scene
-(function () {
-	renderer = new THREE.WebGLRenderer({
-		antialias: true
-	});
+(function (){
+	renderer = new THREE.WebGLRenderer({antialias: true});
 	renderer.setPixelRatio(window.devicePixelRatio);
 	renderer.setClearColor(0xA9CCE3, 1);
 
@@ -18,7 +16,7 @@ var renderer, scene, camera, controls, ship3D, shipspec, saveInputs, barge, stat
 
 	//Camera and controls:
 	camera = new THREE.PerspectiveCamera(50);
-	camera.up.set(0, 0, 1);
+	camera.up.set(0,0,1);
 	scene.add(camera);
 	controls = new THREE.OrbitControls(camera, renderer.domElement);
 
@@ -32,16 +30,16 @@ var renderer, scene, camera, controls, ship3D, shipspec, saveInputs, barge, stat
 	onResize(); //Ensure the initial setup is good too
 
 	//Add lights:
-	scene.add(new THREE.AmbientLight(0xffffff, 0.3));
-	scene.add(function () {
-		let sun = new THREE.DirectionalLight(0xffffff, 1);
-		sun.position.set(1, 1, 1);
+	scene.add(new THREE.AmbientLight(0xffffff,0.3));
+	scene.add(function() {
+		let sun = new THREE.DirectionalLight(0xffffff,1);
+		sun.position.set(1,1,1);
 		return sun;
 	}());
 })();
 
 // load default spec
-new THREE.FileLoader().load("data/ship_specifications/barge.json", useShipSpec);
+new THREE.FileLoader().load("specs/ship_specifications/barge.json", useShipSpec);
 
 function useShipSpec(contents) {
 	shipspec = JSON.parse(contents);
@@ -49,12 +47,12 @@ function useShipSpec(contents) {
 	if (typeof ship3D !== "undefined") {
 		scene.remove(ship3D);
 	}
-	ship3D = new Ship3D(barge, "data/STL files");
+	ship3D = new Ship3D(barge);
 	scene.add(ship3D);
 
 	let LOA = barge.structure.hull.attributes.LOA;
-	camera.position.set(0.7 * LOA, 0.7 * LOA, 0.7 * LOA);
-	controls.target = new THREE.Vector3(LOA / 2, 0, 0);
+	camera.position.set(0.7*LOA, 0.7*LOA, 0.7*LOA);
+	controls.target = new THREE.Vector3(LOA/2,0,0);
 	controls.update();
 	animate();
 }
@@ -70,12 +68,12 @@ var freq = 0.1;
 document.getElementById("flow").setAttribute("value", flow);
 document.getElementById("freq").setAttribute("value", freq);
 
-saveInputs = function () {
+saveInputs = function() {
 	flow = Number(document.getElementById("flow").value);
 	freq = Number(document.getElementById("freq").value);
 };
 
-simulate = function () {
+simulate = function() {
 	// create object to store result history
 	stateHistory = [];
 	var keyResults = [];
@@ -83,8 +81,8 @@ simulate = function () {
 	states = new Vessel.ShipState(barge.designState.getSpecification());
 
 	var time = 0;
-	var timeStep = 1 / freq;
-	var fillRatio = flow * timeStep / barge.baseObjects.cargo.weightInformation.volumeCapacity;
+	var timeStep = 1/freq;
+	var fillRatio = flow * timeStep/barge.baseObjects.cargo.weightInformation.volumeCapacity;
 
 	var statMod = new Vessel.StateModule(barge, states);
 	statMod.setDraft();

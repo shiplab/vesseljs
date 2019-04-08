@@ -14,9 +14,9 @@ function Ship(specification) {
 Ship.prototype = Object.create(JSONSpecObject.prototype);
 Object.assign(Ship.prototype, {
 	constructor: Ship,
-	setFromSpecification: function (specification) {
+	setFromSpecification: function(specification) {
 		this.attributes = specification.attributes || {};
-		this.structure = new Structure(specification.structure /*,this*/ );
+		this.structure = new Structure(specification.structure/*,this*/);
 		//baseObjects and derivedObjects are arrays in the specification, but are objects (hashmaps) in the constructed ship object:
 		this.baseObjects = {};
 		for (let i = 0; i < specification.baseObjects.length; i++) {
@@ -33,7 +33,7 @@ Object.assign(Ship.prototype, {
 		this.designState = new ShipState(specification.designState);
 		return this;
 	},
-	getSpecification: function () {
+	getSpecification: function() {
 		let specification = {};
 		specification.attributes = this.attributes;
 		specification.structure = this.structure.getSpecification();
@@ -47,7 +47,7 @@ Object.assign(Ship.prototype, {
 	},
 	//This should probably be separated in lightweight and deadweight
 	//Then this function should be replaced by a getDisplacement
-	getWeight: function (shipState) {
+	getWeight: function(shipState) {
 		shipState = shipState || this.designState;
 
 		let components = [];
@@ -67,27 +67,19 @@ Object.assign(Ship.prototype, {
 		//console.info("Calculated weight object: ", W);
 		return W;
 	},
-	calculateDraft: function (shipState, epsilon = 0.001, rho = 1025) {
+	calculateDraft: function(shipState, epsilon = 0.001, rho = 1025) {
 		let w = this.getWeight(shipState);
 		let M = w.mass;
 		return this.structure.hull.calculateDraftAtMass(M, epsilon, rho);
 	},
 	//Separates between longitudinal and transverse GM
 	//To avoid confusion, no "default" GM or BM is specified in the output.
-	calculateStability: function (shipState) {
+	calculateStability: function(shipState) {
 		let w = this.getWeight(shipState);
 		let KG = w.cg.z;
 		let LCG = w.cg.x;
 		let T = this.structure.hull.calculateDraftAtMass(w.mass);
-		let {
-			BMt,
-			BMl,
-			KB,
-			LCB,
-			LCF,
-			LWL,
-			BWL
-		} = this.structure.hull.calculateAttributesAtDraft(T);
+		let {BMt, BMl, KB, LCB, LCF, LWL, BWL} = this.structure.hull.calculateAttributesAtDraft(T);
 		let GMt = KB + BMt - KG;
 		let GMl = KB + BMl - KG;
 
@@ -115,23 +107,9 @@ Object.assign(Ship.prototype, {
 		//change the hell for meters
 		heel *= BWL;
 
-		return {
-			w,
-			T,
-			GMt,
-			GMl,
-			KB,
-			BMt,
-			BMl,
-			KG,
-			trim,
-			draftfp,
-			draftap,
-			trimd,
-			heel
-		};
+		return {w, T, GMt, GMl, KB, BMt, BMl, KG, trim, draftfp, draftap, trimd, heel};
 	},
-	getFuelMass: function (shipState) {
+	getFuelMass: function(shipState) {
 		shipState = shipState || this.designState;
 
 		let fuelMass = {};
@@ -147,7 +125,7 @@ Object.assign(Ship.prototype, {
 		}
 		return fuelMass;
 	},
-	subtractFuelMass: function (mass, shipState) {
+	subtractFuelMass: function(mass, shipState) {
 		shipState = shipState || this.designState;
 
 		var fuelMass = this.getFuelMass(shipState);

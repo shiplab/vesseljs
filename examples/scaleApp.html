@@ -12,27 +12,27 @@
 	<title>Scale Ship Specification</title>
 
 	<!-- Bootstrap Core CSS -->
-	<link href="css/bootstrap.min.css" rel="stylesheet">
+	<link href="libs/bootstrap.min.css" rel="stylesheet">
 
 	<!-- Three script -->
-	<script src="js/libs/three.js"></script>
-	<script src="js/libs/STLLoader.js"></script>
-	<script src="js/libs/OrbitControls.js"></script>
+	<script src="libs/three.js"></script>
+	<script src="libs/STLLoader.js"></script>
+	<script src="libs/OrbitControls.js"></script>
 
 	<!-- jQuery Version 1.11.1 -->
-	<script src="js/libs/jquery.js"></script>
+	<script src="libs/jquery.js"></script>
 
 	<!-- Bootstrap Core JavaScript -->
-	<script src="js/libs/bootstrap.min.js"></script>
+	<script src="libs/bootstrap.min.js"></script>
 
 	<!--Import Vessel.js library-->
 	<script src="../build/Vessel.js"></script>
 
 	<!--Import spec scaling script-->
-	<script src="js/scaleShipSpec.js"></script>
+	<script src="snippets/scaleShipSpec.js"></script>
 
 	<!--Ship3D class for three.js-->
-	<script src="js/Ship3D.js"></script>
+	<script src="snippets/Ship3D.js"></script>
 </head>
 
 <body>
@@ -47,8 +47,7 @@
 			<!-- This is for the right part of the navbar. Reserved for Shiplab logo-->
 			<div class="nav navbar-nav navbar-right">
 				<div class="navbar-header">
-					<a class="navbar-brand" href="http://www.shiplab.ntnu.co/"><img src="images/barquinho.png" alt="Shiplab logo"
-						 style="height:150%">
+					<a class="navbar-brand" href="http://www.shiplab.ntnu.co/"><img src="images/barquinho.png" alt="Shiplab logo" style="height:150%">
 					</a>
 				</div>
 			</div>
@@ -62,9 +61,7 @@
 
 	<div class="container" id="userinputs">
 		<h4>Presentation</h4>
-		<p> This is a simple ship specification scaling app. The ship is scaled geometrically with the linear scaling
-			factors chosen below. Thicknesses of structural elements (decks and bulkheads) and lightweights of derived
-			objects remain constant.</p>
+		<p> This is a simple ship specification scaling app. The ship is scaled geometrically with the linear scaling factors chosen below. Thicknesses of structural elements (decks and bulkheads) and lightweights of derived objects remain constant.</p>
 		<table class="table" class="text-center">
 			<thead>
 				<th class="text-center">x-ratio</th>
@@ -103,10 +100,8 @@
 	var renderer, scene, camera, controls, ship3D, shipspec, shipVis, readShipSpec, scaleVis, download, scaledSpec;
 
 	//Ready renderer and scene
-	(function () {
-		renderer = new THREE.WebGLRenderer({
-			antialias: true
-		});
+	(function() {
+		renderer = new THREE.WebGLRenderer({antialias: true});
 		renderer.setPixelRatio(window.devicePixelRatio);
 		renderer.setClearColor(0xA9CCE3, 1);
 
@@ -134,19 +129,19 @@
 
 		//Add lights:
 		scene.add(new THREE.AmbientLight(0xffffff, 0.3));
-		scene.add(function () {
+		scene.add(function() {
 			let sun = new THREE.DirectionalLight(0xffffff, 1);
 			sun.position.set(1, 1, 1);
 			return sun;
 		}());
 	})();
 
-	readShipSpec = function (event) {
+	readShipSpec = function(event) {
 		var file = event.target.files[0];
 		var name = file.name;
 		var reader = new FileReader();
 
-		reader.onload = function (event) {
+		reader.onload = function(event) {
 			var contents = event.target.result;
 			useShipSpec(contents);
 		};
@@ -154,7 +149,7 @@
 	};
 
 	// load default spec
-	new THREE.FileLoader().load("data/ship_specifications/PX121.json", useShipSpec);
+	new THREE.FileLoader().load("specs/ship_specifications/PX121.json", useShipSpec);
 
 	function useShipSpec(contents) {
 		shipspec = JSON.parse(contents);
@@ -162,7 +157,7 @@
 		if (typeof ship3D !== "undefined") {
 			scene.remove(ship3D);
 		}
-		ship3D = new Ship3D(shipVis, "data/STL files");
+		ship3D = new Ship3D(shipVis, "specs/STL files");
 		scene.add(ship3D);
 
 		let LOA = shipVis.structure.hull.attributes.LOA;
@@ -194,9 +189,7 @@
 		scaledSpec = scaleShipSpec(shipspec, lengthRatio, beamRatio, depthRatio);
 
 		// download simulation results as JSON file
-		var blob = new Blob([JSON.stringify(scaledSpec, null, 2)], {
-			type: 'application/json'
-		});
+		var blob = new Blob([JSON.stringify(scaledSpec, null, 2)], {type: 'application/json'});
 		var link = document.createElement("a");
 		link.href = window.URL.createObjectURL(blob);
 		link.download = "scaledSpec.json";

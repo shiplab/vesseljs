@@ -47,7 +47,7 @@ function Positioning(ship, states, path) {
 		StateModule.prototype.setHeading.call(this, this.routeData.heading[0]);
 	}
 
-	this.advanceShip = function (timeStep) { // calculate advanced distance during one time step
+	this.advanceShip = function(timeStep) { // calculate advanced distance during one time step
 		var remVec, remDist;
 		var advDist = timeStep * 1 / 3600 * this.states.discrete.Speed.state.speed;
 

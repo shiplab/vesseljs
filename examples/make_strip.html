@@ -12,18 +12,18 @@
 	<title>Vessel.js vs PDSTRIP</title>
 
 	<!-- Bootstrap Core CSS -->
-	<link href="css/bootstrap.min.css" rel="stylesheet">
+	<link href="libs/bootstrap.min.css" rel="stylesheet">
 
 	<!-- Three script -->
-	<script src="js/libs/three.js"></script>
-	<script src="js/libs/STLLoader.js"></script>
-	<script src="js/libs/OrbitControls.js"></script>
+	<script src="libs/three.js"></script>
+	<script src="libs/STLLoader.js"></script>
+	<script src="libs/OrbitControls.js"></script>
 
 	<!-- jQuery Version 1.11.1 -->
-	<script src="js/libs/jquery.js"></script>
+	<script src="libs/jquery.js"></script>
 
 	<!-- Bootstrap Core JavaScript -->
-	<script src="js/libs/bootstrap.min.js"></script>
+	<script src="libs/bootstrap.min.js"></script>
 
 	<!--Import Vessel.js library-->
 	<script src="../build/Vessel.js"></script>
@@ -42,8 +42,7 @@
 			<!-- This is for the right part of the navbar. Reserved for Shiplab logo-->
 			<div class="nav navbar-nav navbar-right">
 				<div class="navbar-header">
-					<a class="navbar-brand" href="http://www.shiplab.ntnu.co/"><img src="images/barquinho.png" alt="Shiplab logo"
-						 style="height:150%">
+					<a class="navbar-brand" href="http://www.shiplab.ntnu.co/"><img src="images/barquinho.png" alt="Shiplab logo" style="height:150%">
 					</a>
 				</div>
 			</div>
@@ -52,16 +51,12 @@
 
 	<div class="col-md-12 text-center">
 		<h2>Vessel.js vs PDSTRIP</h2>
-		<p>Perform strip theory analyses from a Vessel.js ship specification. Read more about this app <a href="https://github.com/shiplab/vesseljs/wiki/files/COMPIT_2018.pdf"
-			 target="_blank">here</a>.</p>
+		<p>Perform strip theory analyses from a Vessel.js ship specification. Read more about this app <a href="https://github.com/shiplab/vesseljs/wiki/files/COMPIT_2018.pdf" target="_blank">here</a>.</p>
 	</div>
 
 	<div class="container">
 		<h4>Explanation</h4>
-		<p>This app converts a Vessel.js ship specification into <a href="https://sourceforge.net/projects/pdstrip/" target="_blank">PDSTRIP</a>
-			input files for strip theory analyses. Upload a JSON ship specification
-			using the button below, and you will be able to download two files: <span style="font-weight:bold">geomet.out</span>
-			and <span style="font-weight:bold">pdstrip.inp</span>. The PX121 PSV specification is preloaded.</p>
+		<p>This app converts a Vessel.js ship specification into <a href="https://sourceforge.net/projects/pdstrip/" target="_blank">PDSTRIP</a> input files for strip theory analyses. Upload a JSON ship specification using the button below, and you will be able to download two files: <span style="font-weight:bold">geomet.out</span> and <span style="font-weight:bold">pdstrip.inp</span>. The PX121 PSV specification is preloaded.</p>
 		<p><input type="file" accept=".json" onchange="readSpec(event)" /></p>
 		<ul>
 			<li id="specName"></li>
@@ -76,8 +71,7 @@
 
 	<div class="container">
 		<h4>pdstrip.inp</h4>
-		<p>Physical parameters for the analyses. It is filled by this app, but should be fine-tuned by the user after
-			downloaded. Radii of gyration are estimated from main dimensions.</p>
+		<p>Physical parameters for the analyses. It is filled by this app, but should be fine-tuned by the user after downloaded. Radii of gyration are estimated from main dimensions.</p>
 		<p><button id="download2" type="button" onclick="download(pdstrip, 'pdstrip.inp')" disabled>Download</button></p>
 	</div>
 
@@ -89,19 +83,19 @@
 	"use strict";
 	// preload scatter diagram
 	var psvReq = new XMLHttpRequest();
-	psvReq.open("GET", "data/ship_specifications/PX121.json", true);
-	psvReq.addEventListener("load", function (event) {
+	psvReq.open("GET", "specs/ship_specifications/PX121.json", true);
+	psvReq.addEventListener("load", function(event) {
 		var contents = event.target.response;
 		convert(contents, "PX121.json");
 	});
 	psvReq.send(null);
 
-	var readSpec = function (event) {
+	var readSpec = function(event) {
 		var file = event.target.files[0];
 		var specName = file.name;
 		var reader = new FileReader();
 
-		reader.onload = function (event) {
+		reader.onload = function(event) {
 			var contents = event.target.result;
 			convert(contents, specName);
 		};
@@ -109,15 +103,12 @@
 	};
 
 	var geomet, pdstrip;
-	var convert = function (contents, specName) {
+	var convert = function(contents, specName) {
 		var shipSpec = JSON.parse(contents);
 		var ship = new Vessel.Ship(shipSpec);
 		document.getElementById("specName").innerHTML = specName;
 
-		var {
-			mass: masskg,
-			cg: cg
-		} = ship.getWeight();
+		var {mass: masskg, cg: cg} = ship.getWeight();
 		var masston = masskg / 1000;
 		var length = ship.structure.hull.attributes.LOA;
 		var beam = ship.structure.hull.attributes.BOA;
@@ -147,8 +138,7 @@
 					}
 					if (nextVO > draft) { // interpolate
 						offPts++;
-						statHor += "     " + (prevHO + (draft - prevVO) * (nextHO - prevHO) / (nextVO - prevVO)).toFixed(
-							4);
+						statHor += "     " + (prevHO + (draft - prevVO) * (nextHO - prevHO) / (nextVO - prevVO)).toFixed(4);
 						statVert += "     " + (draft).toFixed(4);
 						break;
 					} else {
@@ -161,8 +151,7 @@
 				}
 			}
 			// x coordinate of the section, number of offset points, number of gaps
-			statHead = "  " + (length * ship.structure.hull.halfBreadths.stations[i]).toFixed(6) +
-				"               " + offPts + " 0";
+			statHead = "  " + (length * ship.structure.hull.halfBreadths.stations[i]).toFixed(6) + "               " + offPts + " 0";
 			geomet += statHead + "\n" + statHor + "\n" + statVert + "\n";
 		}
 
@@ -211,7 +200,7 @@
 		document.getElementById("download2").disabled = false;
 	};
 
-	var download = function (variable, fileName) {
+	var download = function(variable, fileName) {
 		// download input file
 		var blob = new Blob([variable]);
 		var link = document.createElement("a");

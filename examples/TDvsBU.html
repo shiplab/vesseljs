@@ -14,33 +14,33 @@
 	<title>Hull Hydrostatics</title>
 
 	<!-- Bootstrap Core CSS -->
-	<link href="css/bootstrap.min.css" rel="stylesheet">
+	<link href="libs/bootstrap.min.css" rel="stylesheet">
 
 	<!-- jQuery Version 1.11.1 -->
-	<script src="js/libs/jquery.js"></script>
+	<script src="libs/jquery.js"></script>
 
 	<!-- Bootstrap Core JavaScript -->
-	<script src="js/libs/bootstrap.min.js"></script>
+	<script src="libs/bootstrap.min.js"></script>
 
 	<!-- D3JavaScript -->
 	<!--script src="js/libs/d3_v4.9.1.js"></script-->
 
 	<!-- Graphical user interface -->
-	<script src="js/libs/dat.gui.min.js"></script>
+	<script src="libs/dat.gui.min.js"></script>
 
 	<!-- Three script -->
-	<script src="js/libs/three.js"></script>
-	<script src="js/libs/STLLoader.js"></script>
-	<script src="js/libs/OrbitControls.js"></script>
+	<script src="libs/three.js"></script>
+	<script src="libs/STLLoader.js"></script>
+	<script src="libs/OrbitControls.js"></script>
 
 	<!--Import library-->
 	<script src="../build/Vessel.js"></script>
 
 	<!-- Prettyprinting of JSON data -->
-	<script type="text/javascript" src="js/libs/renderjson.js"></script>
+	<script type="text/javascript" src="libs/renderjson.js"></script>
 
 	<!--Ship3D class for three.js-->
-	<script src="js/Ship3D.js"></script>
+	<script src="snippets/Ship3D.js"></script>
 
 	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -63,8 +63,7 @@
 			<!-- This is for the right part of the navbar. Reserved for Shiplab logo-->
 			<div class="nav navbar-nav navbar-right">
 				<div class="navbar-header">
-					<a class="navbar-brand" href="http://www.shiplab.hials.org/"><img src="images/barquinho.png" alt="Shiplab logo"
-						 style="height:150%">
+					<a class="navbar-brand" href="http://www.shiplab.hials.org/"><img src="images/barquinho.png" alt="Shiplab logo" style="height:150%">
 					</a>
 				</div>
 			</div>
@@ -90,8 +89,7 @@
 				<!--<h1>Hull Hydrostatics</h1>-->
 				<p>Interactive calculation of hull hydrostatic properties.</p>
 
-				<p>Developed by: Vicente Alejandro Iváñez Encinas, Elias Hasle, and Henrique M. Gaspar. Visualization
-					made using three.js. GUI made with dat.GUI.</p>
+				<p>Developed by: Vicente Alejandro Iváñez Encinas, Elias Hasle, and Henrique M. Gaspar. Visualization made using three.js. GUI made with dat.GUI.</p>
 
 			</div>
 
@@ -208,25 +206,20 @@
 	<script>
 		"use strict";
 
-		Vessel.Ship.prototype.calculateDraftWeightBased = function (shipState) {
+		Vessel.Ship.prototype.calculateDraftWeightBased = function(shipState) {
 			let dw = this.getWeight(shipState).mass / 1000;
 			let L = this.structure.hull.attributes.LOA;
 			let B = this.structure.hull.attributes.BOA;
 			let v = this.designState.calculationParameters.speed * 0.5144;
 			let Fn = v / (Math.sqrt(9.81 * L));
 			//let Cbj = -4.22 + 27.8 * Math.sqrt(Fn) - 39.1 * Fn + 46.6 * Math.pow(Fn, 3); // SDfEE p.33
-			let Cb = 19410 * Math.pow(Fn, 6) - 31353 * Math.pow(Fn, 5) + 20164 * Math.pow(Fn, 4) - 6528.3 * Math.pow(
-				Fn, 3) + 1107.6 * Math.pow(Fn, 2) - 93.703 * Fn + 3.9648;
+			let Cb = 19410 * Math.pow(Fn, 6) - 31353 * Math.pow(Fn, 5) + 20164 * Math.pow(Fn, 4) - 6528.3 * Math.pow(Fn, 3) + 1107.6 * Math.pow(Fn, 2) - 93.703 * Fn + 3.9648;
 			//let Cbdiff = Cb - Cbj
 			let T = dw / (L * B * Cb)
 			let BT = dw / (L * Cb)
-			return {
-				TWB: T,
-				BTWB: BT,
-				CbWB: Cb
-			};
+			return {TWB: T, BTWB: BT, CbWB: Cb};
 		};
-		Vessel.Ship.prototype.calculateDraftIterationBased = function (shipState) {
+		Vessel.Ship.prototype.calculateDraftIterationBased = function(shipState) {
 			let L = this.structure.hull.attributes.LOA;
 			let dw = this.getWeight(shipState).mass / 1000;
 			let lw = dw / 2;
@@ -241,14 +234,7 @@
 			let T = D * TD;
 			let Cb = 0.7 + 1 / 8 * Math.atan((23 - 100 * Fn) / (4));
 			let disp = B * T * L * Cb;
-			return {
-				LIB: L,
-				BIB: B,
-				DIB: D,
-				TIB: T,
-				CbIB: Cb,
-				dispIB: disp
-			};
+			return {LIB: L, BIB: B, DIB: D, TIB: T, CbIB: Cb, dispIB: disp};
 		};
 
 		// Create scene+
@@ -256,10 +242,8 @@
 		var gui = new dat.GUI();
 
 		//Ready renderer and scene
-		(function () {
-			renderer = new THREE.WebGLRenderer({
-				antialias: true
-			});
+		(function() {
+			renderer = new THREE.WebGLRenderer({antialias: true});
 			renderer.setPixelRatio(window.devicePixelRatio);
 			renderer.setClearColor(0xA9CCE3, 1);
 
@@ -288,16 +272,14 @@
 
 			//Add lights:
 			scene.add(new THREE.AmbientLight(0xffffff, 0.3));
-			scene.add(function () {
+			scene.add(function() {
 				let sun = new THREE.DirectionalLight(0xffffff, 1);
 				sun.position.set(1, 1, 1);
 				return sun;
 			}());
 
 			//Add rudimentary ocean, to see effect of draft changes:
-			ocean = new THREE.Mesh(new THREE.PlaneBufferGeometry(1000, 1000), new THREE.MeshPhongMaterial({
-				color: 0x2222bb
-			}));
+			ocean = new THREE.Mesh(new THREE.PlaneBufferGeometry(1000, 1000), new THREE.MeshPhongMaterial({color: 0x2222bb}));
 			scene.add(ocean);
 			var grid = new THREE.GridHelper(1000, 100);
 			grid.rotation.x = 0.5 * Math.PI;
@@ -314,7 +296,7 @@
 			}
 
 			var reader = new FileReader();
-			reader.onload = function (e) {
+			reader.onload = function(e) {
 				var contents = e.target.result;
 				//call common function for user files and server files
 				useFileData(contents);
@@ -323,7 +305,7 @@
 		}
 
 		//Load sample file:
-		new THREE.FileLoader().load("data/ship_specifications/PX121.json", useFileData);
+		new THREE.FileLoader().load("specs/ship_specifications/PX121.json", useFileData);
 
 		function useFileData(contents) {
 			var shipspec = JSON.parse(contents);
@@ -332,7 +314,7 @@
 			if (ship3D !== undefined) {
 				scene.remove(ship3D);
 			}
-			ship3D = new Ship3D(ship, "data/STL files");
+			ship3D = new Ship3D(ship, "specs/STL files");
 			scene.add(ship3D);
 			let LOA = ship.structure.hull.attributes.LOA;
 			camera.position.set(0.7 * LOA, 0.7 * LOA, 0.7 * LOA);
@@ -350,22 +332,8 @@
 
 			function fillDocument() {
 				//calculate hydrostatics (weight based)
-				let {
-					LWL: lwlc,
-					Cb: cbc,
-					Cp: cpc,
-					Cwp: cwpc,
-					BWL: bwlc,
-					Awp: Awpc,
-					LCB: LCBc,
-					KB: KBc,
-					Ixwp: ixwpc,
-					Iywp: iywpc,
-					LCF: LCFc,
-					Vs: voldc,
-					BMt: BMtc,
-					BMl: BMlc
-				} = ship.structure.hull.calculateAttributesAtDraft(Value.Draft);
+				let {LWL: lwlc, Cb: cbc, Cp: cpc, Cwp: cwpc, BWL: bwlc, Awp: Awpc, LCB: LCBc, KB: KBc, Ixwp: ixwpc, Iywp: iywpc,
+					LCF: LCFc, Vs: voldc, BMt: BMtc, BMl: BMlc} = ship.structure.hull.calculateAttributesAtDraft(Value.Draft);
 				let cbbw = ship.calculateDraftWeightBased().CbWB;
 				document.getElementById("draftc").innerHTML = Value.Draft.toFixed(2);
 				document.getElementById("lwlc").innerHTML = lwlc.toFixed(2);
@@ -384,22 +352,8 @@
 				document.getElementById("LOA").innerHTML = LOA.toFixed(2);
 
 				//calculate hydrostatics (experience, data based)
-				let {
-					LWL: lwlib,
-					Cb: cbib,
-					Cp: cpib,
-					Cwp: cwpib,
-					BWL: bwlib,
-					Awp: Awpib,
-					LCB: LCBib,
-					KB: KBib,
-					Ixwp: ixwpib,
-					Iywp: iywpib,
-					LCF: LCFib,
-					Vs: voldib,
-					BMt: BMtib,
-					BMl: BMlib
-				} = ship.structure.hull.calculateAttributesAtDraft(CalcIB.TIB);
+				let {LWL: lwlib, Cb: cbib, Cp: cpib, Cwp: cwpib, BWL: bwlib, Awp: Awpib, LCB: LCBib, KB: KBib, Ixwp: ixwpib, Iywp: iywpib,
+					LCF: LCFib, Vs: voldib, BMt: BMtib, BMl: BMlib} = ship.structure.hull.calculateAttributesAtDraft(CalcIB.TIB);
 
 				document.getElementById("draftib").innerHTML = CalcIB.TIB.toFixed(2);
 				document.getElementById("lwlib").innerHTML = lwlib.toFixed(2);
@@ -421,7 +375,7 @@
 
 			fillDocument();
 
-			gui.add(Value, "Draft", 4, 8, 0.01).onChange(function (value) {
+			gui.add(Value, "Draft", 4, 8, 0.01).onChange(function(value) {
 				Bvar = CalcWB.BTWB / Value.Draft;
 				fillDocument();
 				ship3D.position.z = -Value.Draft;
@@ -449,7 +403,9 @@
 		document.getElementById('file-input')
 			.addEventListener('change', readSingleFile, false);
 
-		//compare values
+        //compare values
+
+
 	</script>
 	<!-- /.container -->
 

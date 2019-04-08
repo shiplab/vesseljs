@@ -13,6 +13,7 @@
 	<ul id="log"></ul>
 
 	<script>
+
 		function logToScreen(s) {
 			let log = document.getElementById("log");
 			let entry = document.createElement("li");
@@ -54,8 +55,7 @@
 			logToScreen("State: " + JSON.stringify(state.getSpecification()));
 
 			let w = ship.getWeight(state);
-			logToScreen("Calculated total mass: " + w.mass.toFixed(0) + ", cg: {x: " + w.cg.x.toFixed(2) + ", y: " + w.cg
-				.y.toFixed(2) + ", z: " + w.cg.z.toFixed(2) + "}.");
+			logToScreen("Calculated total mass: " + w.mass.toFixed(0) + ", cg: {x: " + w.cg.x.toFixed(2) + ", y: " + w.cg.y.toFixed(2) + ", z: " + w.cg.z.toFixed(2) + "}.");
 
 			let T = ship.calculateDraft();
 			logToScreen("Calculated draft: " + T);

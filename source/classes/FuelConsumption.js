@@ -2,7 +2,7 @@ function FuelConsumption(ship, states, powerPlant) {
 	StateModule.call(this, ship, states);
 	this.propellerState = this.states.discrete.PropellerInteraction.state;
 
-	this.setAuxPower = function (Paux) {
+	this.setAuxPower = function(Paux) {
 		if (typeof Paux === "undefined") {
 			Paux = 0;
 		}
@@ -34,7 +34,7 @@ Object.assign(FuelConsumption.prototype, {
 });
 
 Object.defineProperties(FuelConsumption.prototype, {
-	consumptionRate: StateModule.prototype.memoized(function () { // consumption rate in kg/s
+	consumptionRate: StateModule.prototype.memoized(function() { // consumption rate in kg/s
 		// share load among engines in a system's array
 		function shareLoad(system, load) {
 			var triggerRatio = 0.8; // define loading rate at which next engine in the power system will be activated for sharing loads

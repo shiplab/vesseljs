@@ -11,25 +11,18 @@ function BaseObject(specification) {
 BaseObject.prototype = Object.create(JSONSpecObject.prototype);
 Object.assign(BaseObject.prototype, {
 	constructor: BaseObject,
-	setFromSpecification: function (spec) {
+	setFromSpecification: function(spec) {
 		this.id = spec.id;
 		this.affiliations = spec.affiliations || {};
-		this.boxDimensions = spec.boxDimensions || {
-			length: undefined,
-			width: undefined,
-			height: undefined
-		};
+		this.boxDimensions = spec.boxDimensions || {length: undefined, width: undefined, height: undefined};
 		this.weightInformation = spec.weightInformation;
-		this.cost = spec.cost || {
-			currency: undefined,
-			value: undefined
-		};
+		this.cost = spec.cost || {currency: undefined, value: undefined};
 		this.capabilities = spec.capabilities || {};
 		this.file3D = spec.file3D;
 		this.baseState = spec.baseState;
 		return this;
 	},
-	getSpecification: function () {
+	getSpecification: function() {
 		return {
 			id: this.id,
 			affiliations: this.affiliations,
@@ -42,7 +35,7 @@ Object.assign(BaseObject.prototype, {
 		};
 	},
 	//Maybe this will take more state parameters than just fullness.
-	getWeight: function (fullness) {
+	getWeight: function(fullness) {
 		fullness = fullness || 0;
 
 		let wi = this.weightInformation;
@@ -60,10 +53,7 @@ Object.assign(BaseObject.prototype, {
 			let fs = fcgm.fullnesses;
 			let cgs = fcgm.cgs;
 			//Find closest entries:
-			let {
-				index: i,
-				mu: mu
-			} = bisectionSearch(fs, fullness);
+			let {index: i, mu: mu} = bisectionSearch(fs, fullness);
 			cg = [];
 			for (let j = 0; j < 3; j++) {
 				let c;
@@ -81,14 +71,7 @@ Object.assign(BaseObject.prototype, {
 			console.warn("BaseObject.getWeight: No cg or fullnessCGMapping supplied. Defaults to center of bounding box.");
 			cg = [0, 0, 0.5 * this.boxDimensions.height];
 		}
-		let w = {
-			mass: m,
-			cg: {
-				x: cg[0],
-				y: cg[1],
-				z: cg[2]
-			}
-		};
+		let w = {mass: m, cg: {x: cg[0], y: cg[1], z: cg[2]}};
 		return w;
 	}
 });

@@ -9,7 +9,7 @@ This can test more features by using the trapezoid prism hull instead of the tri
 <head>
 	<title>Comparison of manually calculations and library calculations</title>
 	<meta charset="utf-8">
-	<script type="text/javascript" src="js/libs/renderjson.js"></script>
+	<script type="text/javascript" src="libs/renderjson.js"></script>
 	<script src="../build/Vessel.js"></script>
 </head>
 
@@ -17,6 +17,7 @@ This can test more features by using the trapezoid prism hull instead of the tri
 	<ul id="log"></ul>
 
 	<script>
+
 		function logToScreen(s, o) {
 			let log = document.getElementById("log");
 			let entry = document.createElement("li");
@@ -58,7 +59,7 @@ This can test more features by using the trapezoid prism hull instead of the tri
 		var v;
 		var s;
 
-		Vessel.loadShip("data/ship_specifications/blockCase.json", useShip);
+		Vessel.loadShip("specs/ship_specifications/blockCase.json", useShip);
 
 		function useShip(ship) {
 			v = ship; //just to have an entry point for debugging.
@@ -104,18 +105,14 @@ This can test more features by using the trapezoid prism hull instead of the tri
 			let LWL = LOA;
 			let Vs = 0.5 * LWL * BWL * T;
 			//let Vbb = BWL*LWL*T;// = LOA*(BOA/Depth)*T^2
-			let Cb = 0.5; // = Vs/Vbb
+			let Cb = 0.5;// = Vs/Vbb
 			let Cp = 1; // because the hull is a prism
 			let Cm = 0.5; //Cb/Cp (what is this?)
 			let Ap = 0.5 * BWL * T;
 			let As = 2 * Ap + 2 * LWL * Math.sqrt(T ** 2 + (0.5 * BWL) ** 2);
 			let Awp = LWL * BWL;
 			let Cwp = 1;
-			let Cv = {
-				x: 0.5 * LOA,
-				y: 0,
-				z: (2 / 3.) * T
-			}
+			let Cv = {x: 0.5 * LOA, y: 0, z: (2 / 3.) * T}
 			let LCB = Cv.x;
 			let KB = Cv.z;
 			let Ixwp = LWL * BWL ** 3 / 12.;
@@ -145,15 +142,14 @@ This can test more features by using the trapezoid prism hull instead of the tri
 				Cb: Cb,
 				Cm: Cm,
 				Cp: Cp,
-				Cv: Cv,
-				/*{
-							x: LCBx,
-							y: undefined,
-							z: KB
-						},*/
+				Cv: Cv,/*{
+			x: LCBx,
+			y: undefined,
+			z: KB
+		},*/
 				LCB: LCB,
 				KB: KB,
-				xcwp: xcwp, //LCFx
+				xcwp: xcwp,//LCFx
 				ycwp: ycwp,
 				LCF: LCF,
 				Ixwp: Ixwp,
@@ -173,6 +169,7 @@ This can test more features by using the trapezoid prism hull instead of the tri
 			//let wl = v.structure.hull.getWaterline(T,3);
 			//logToScreen("Waterline at calculated draft: ", wl);
 		}
+
 	</script>
 </body>
 

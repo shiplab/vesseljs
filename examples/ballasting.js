@@ -2,10 +2,8 @@
 var renderer, scene, camera, controls, ship3D, shipspec, saveInputs, barge, states, simulate, stateHistory;
 
 //Ready renderer and scene
-(function () {
-	renderer = new THREE.WebGLRenderer({
-		antialias: true
-	});
+(function() {
+	renderer = new THREE.WebGLRenderer({antialias: true});
 	renderer.setPixelRatio(window.devicePixelRatio);
 	renderer.setClearColor(0xA9CCE3, 1);
 
@@ -33,7 +31,7 @@ var renderer, scene, camera, controls, ship3D, shipspec, saveInputs, barge, stat
 
 	//Add lights:
 	scene.add(new THREE.AmbientLight(0xffffff, 0.3));
-	scene.add(function () {
+	scene.add(function() {
 		let sun = new THREE.DirectionalLight(0xffffff, 1);
 		sun.position.set(1, 1, 1);
 		return sun;
@@ -41,7 +39,7 @@ var renderer, scene, camera, controls, ship3D, shipspec, saveInputs, barge, stat
 })();
 
 // load default spec
-new THREE.FileLoader().load("data/ship_specifications/barge.json", useShipSpec);
+new THREE.FileLoader().load("specs/ship_specifications/barge.json", useShipSpec);
 
 function useShipSpec(contents) {
 	shipspec = JSON.parse(contents);
@@ -49,7 +47,7 @@ function useShipSpec(contents) {
 	if (typeof ship3D !== "undefined") {
 		scene.remove(ship3D);
 	}
-	ship3D = new Ship3D(barge, "data/STL files");
+	ship3D = new Ship3D(barge);
 	scene.add(ship3D);
 
 	let LOA = barge.structure.hull.attributes.LOA;
@@ -74,14 +72,14 @@ document.getElementById("flowB").setAttribute("value", flowB);
 document.getElementById("tDraft").setAttribute("value", tDraft);
 document.getElementById("freq").setAttribute("value", freq);
 
-saveInputs = function () {
+saveInputs = function() {
 	flowC = Number(document.getElementById("flowC").value);
 	flowB = Number(document.getElementById("flowB").value);
 	tDraft = Number(document.getElementById("tDraft").value);
 	freq = Number(document.getElementById("freq").value);
 };
 
-simulate = function () {
+simulate = function() {
 	// create object to store result history
 	stateHistory = [];
 	var keyResults = [];

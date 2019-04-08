@@ -33,7 +33,7 @@ Object.assign(WaveMotion.prototype, {
 });
 
 Object.defineProperties(WaveMotion.prototype, {
-	coefficients: StateModule.prototype.memoized(function () {
+	coefficients: StateModule.prototype.memoized(function() {
 		var bethaDeg = Math.abs(this.wavCre.waveDef.heading - this.headingState.heading);
 		var betha = bethaDeg * Math.PI / 180;
 		var speedSI = 0.514444 * this.speedState.speed;
@@ -45,17 +45,9 @@ Object.defineProperties(WaveMotion.prototype, {
 		var alpha = 1 - Froude_N * Math.sqrt(wave_number * this.floatState.LWL) * Math.cos(betha);
 		var encounter_frequency = this.wavCre.waveDef.waveFreq * alpha;
 
-		return {
-			betha,
-			Froude_N,
-			wave_number,
-			eff_wave_number,
-			smith_factor,
-			alpha,
-			encounter_frequency
-		};
+		return {betha, Froude_N, wave_number, eff_wave_number, smith_factor, alpha, encounter_frequency};
 	}, "coefficients"),
-	verticalMotion: StateModule.prototype.memoized(function () {
+	verticalMotion: StateModule.prototype.memoized(function() {
 		var Breadth = this.floatState.BWL * this.floatState.Cb;
 		var cgDistance = this.position / 100 * this.ship.structure.hull.attributes.LOA - this.states.discrete.FloatingCondition.state.w.cg.x;
 		var sectional_hydro_damping = 2 * Math.sin(0.5 * this.coefficients.wave_number * Breadth * Math.pow(this.coefficients.alpha, 2)) * Math.exp(-this.coefficients.wave_number *
@@ -85,16 +77,11 @@ Object.defineProperties(WaveMotion.prototype, {
 		var Vertical_Acceleration = Math.pow(this.coefficients.encounter_frequency, 2) * Vertical_Movement;
 
 		return {
-			pitchAmp: FRF_Pitch,
-			pitchMov: Pitch_Movement,
-			pitchAcc: Pitch_Acceleration,
-			heaveAmp: Heave_Amplitude,
-			heaveAcc: Heave_Acceleration,
-			verticalMov: Vertical_Movement,
-			verticalAcc: Vertical_Acceleration
+			pitchAmp: FRF_Pitch, pitchMov: Pitch_Movement, pitchAcc: Pitch_Acceleration, heaveAmp: Heave_Amplitude, heaveAcc: Heave_Acceleration,
+			verticalMov: Vertical_Movement, verticalAcc: Vertical_Acceleration
 		};
 	}, "verticalMotion"),
-	bendingMoment: StateModule.prototype.memoized(function () {
+	bendingMoment: StateModule.prototype.memoized(function() {
 		var Cb_mom = Math.max(0.6, this.floatState.Cb);
 		var phi = 2.5 * (1 - Cb_mom);
 		var F_Cb = Math.pow(1 - phi, 2) + 0.6 * this.coefficients.alpha * (2 - phi);
@@ -103,7 +90,7 @@ Object.defineProperties(WaveMotion.prototype, {
 			(1 - Math.cos(this.coefficients.eff_wave_number * this.floatState.LWL / 2) - (this.coefficients.eff_wave_number * this.floatState.LWL / 4) * Math.sin(this.coefficients.eff_wave_number * this.floatState.LWL / 2)) *
 			F_v * F_Cb * Math.pow(Math.abs(Math.cos(this.coefficients.betha)), 1 / 3)) * this.rho * this.g * this.floatState.BWL * Math.pow(this.floatState.LWL, 2) / 1000000;
 	}, "bendingMoment"),
-	rollAmp: StateModule.prototype.memoized(function () {
+	rollAmp: StateModule.prototype.memoized(function() {
 		// estimate natural roll period
 		var naturalPeriod = (2 * this.floatState.BWL * Math.PI * (0.35 + 0.45) / 2) / Math.pow(this.g * this.floatState.GMt, 0.5);
 

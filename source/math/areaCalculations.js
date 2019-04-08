@@ -30,36 +30,23 @@ function trapezoidCalculation(xbase0, xbase1, xtop0, xtop1, ybase, ytop) {
 	let xcrt2 = (xtop1 + (xbase1 - xtop1) / 3);
 	let Iyrt2 = (xbase1 - xtop1) ** 3 * h / 36;
 
-	let Iy = steiner(Iyrt1, Art1, xcrt1, xc) +
-		steiner(Iyrec, Arec, xcrec, xc) +
-		steiner(Iyrt2, Art2, xcrt2, xc);
+	let Iy = steiner(Iyrt1, Art1, xcrt1, xc)
+		+ steiner(Iyrec, Arec, xcrec, xc)
+		+ steiner(Iyrt2, Art2, xcrt2, xc);
 
 	let maxX = Math.max.apply(null, [xbase0, xbase1, xtop0, xtop1]);
 	let minX = Math.min.apply(null, [xbase0, xbase1, xtop0, xtop1]);
 	let maxY = Math.max(ybase, ytop);
 	let minY = Math.min(ybase, ytop);
 
-	return {
-		A: A,
-		xc: xc,
-		yc: yc,
-		Ix: Ix,
-		Iy: Iy,
-		maxX: maxX,
-		minX: minX,
-		maxY: maxY,
-		minY: minY
-	};
+	return {A: A, xc: xc, yc: yc, Ix: Ix, Iy: Iy, maxX: maxX, minX: minX, maxY: maxY, minY: minY};
 }
 
 function combineAreas(array) {
 	let A = 0;
 	let xc = 0;
 	let yc = 0;
-	let maxX = 0,
-		minX = 0,
-		maxY = 0,
-		minY = 0;
+	let maxX = 0, minX = 0, maxY = 0, minY = 0;
 	let L = array.length;
 	for (let i = 0; i < L; i++) {
 		let e = array[i];
@@ -94,25 +81,11 @@ function combineAreas(array) {
 		Iy += steiner(e.Iy, e.A, e.xc, xc);
 	}
 
-	return {
-		A: A,
-		xc: xc,
-		yc: yc,
-		Ix: Ix,
-		Iy: Iy,
-		maxX: maxX,
-		minX: minX,
-		maxY: maxY,
-		minY: minY
-	};
+	return {A: A, xc: xc, yc: yc, Ix: Ix, Iy: Iy, maxX: maxX, minX: minX, maxY: maxY, minY: minY};
 }
 
 //x and y here refers to coordinates in the plane that is being calculated on.
-function sectionCalculation({
-	xs,
-	ymins,
-	ymaxs
-}) {
+function sectionCalculation({xs, ymins, ymaxs}) {
 	//console.group/*Collapsed*/("sectionCalculation");
 	//console.info("Arguments (xs, ymins, ymaxs): ", arguments[0]);
 
@@ -130,18 +103,7 @@ function sectionCalculation({
 
 	let C = combineAreas(calculations); //Might be zero areas!
 
-	let output = {
-		A: C.A,
-		maxX: C.maxY,
-		minX: C.minY,
-		maxY: C.maxX,
-		minY: C.minX,
-		xc: C.yc,
-		yc: C.xc,
-		Ix: C.Iy,
-		Iy: C.Ix,
-		Abb: (C.maxY - C.minY) * (C.maxX - C.minX)
-	};
+	let output = {A: C.A, maxX: C.maxY, minX: C.minY, maxY: C.maxX, minY: C.minX, xc: C.yc, yc: C.xc, Ix: C.Iy, Iy: C.Ix, Abb: (C.maxY - C.minY) * (C.maxX - C.minX)};
 	//console.info("Output: ", output);
 	//console.groupEnd();
 	return output;
@@ -191,10 +153,8 @@ function bilinearArea(x1, x2, y1, y2, z11, z12, z21, z22, segs = 5) {
 
 	//Simple numerical calculation of double integral:
 	let A = 0;
-	let X = x2 - x1,
-		Y = y2 - y1;
-	let N = segs,
-		M = segs;
+	let X = x2 - x1, Y = y2 - y1;
+	let N = segs, M = segs;
 	for (let i = 0; i < N; i++) {
 		let x = x1 + ((i + 0.5) / N) * X;
 		for (let j = 0; j < M; j++) {

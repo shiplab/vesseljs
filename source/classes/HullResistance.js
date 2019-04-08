@@ -44,7 +44,7 @@ Object.assign(HullResistance.prototype, {
 });
 
 Object.defineProperties(HullResistance.prototype, {
-	coefficients: StateModule.prototype.memoized(function () {
+	coefficients: StateModule.prototype.memoized(function() {
 		var lcb = 100 * (this.floatState.LCB - (this.floatState.minXs + this.floatState.LWL / 2)) / this.floatState.LWL; // %
 
 		var Tfore;
@@ -85,23 +85,9 @@ Object.defineProperties(HullResistance.prototype, {
 		var re = this.rho * this.floatState.LWL * speedSI / this.mi; // Reynolds number
 		var cf = 0.075 / Math.pow((Math.log(re) / Math.log(10)) - 2, 2); // frictional coefficient
 
-		return {
-			lcb,
-			Tfore,
-			Taft,
-			T,
-			hb,
-			c2,
-			ca,
-			abt,
-			wa,
-			lr,
-			k,
-			speedSI,
-			cf
-		};
+		return {lcb, Tfore, Taft, T, hb, c2, ca, abt, wa, lr, k, speedSI, cf};
 	}, "coefficients"),
-	calmResistance: StateModule.prototype.memoized(function () { // N, total hull resistance in calm waters
+	calmResistance: StateModule.prototype.memoized(function() { // N, total hull resistance in calm waters
 		var at = 0.95 * (this.coefficients.Taft - this.coefficients.Taft * 0.9225) * this.floatState.BWL * 0.89 * this.tr; // transom stern area
 		var c3 = 0.56 * (Math.pow(this.coefficients.abt, 1.5)) / (this.floatState.BWL * this.coefficients.T * (0.31 * Math.pow(this.coefficients.abt, 0.5) + this.coefficients.Tfore - this.coefficients.hb));
 		var rf = 0.5 * this.rho * Math.pow(this.coefficients.speedSI, 2) * this.coefficients.wa * this.coefficients.cf; // frictional resistance
@@ -226,7 +212,7 @@ Object.defineProperties(HullResistance.prototype, {
 
 		return Rt;
 	}, "calmResistance"),
-	totalResistance: StateModule.prototype.memoized(function () {
+	totalResistance: StateModule.prototype.memoized(function() {
 		var Hw = 2 * this.wavCre.waveDef.waveAmplitude; // wave height
 
 		var Rtadd; // N, total resistance including added wave resistance
@@ -239,12 +225,9 @@ Object.defineProperties(HullResistance.prototype, {
 
 		var Pe = this.coefficients.speedSI * Rtadd; // effective power
 
-		return {
-			Rtadd,
-			Pe
-		};
+		return {Rtadd, Pe};
 	}, "totalResistance"),
-	efficiency: StateModule.prototype.memoized(function () {
+	efficiency: StateModule.prototype.memoized(function() {
 		var c8;
 		if (this.floatState.BWL / this.coefficients.Taft < 5) {
 			c8 = this.floatState.BWL * this.coefficients.wa / (this.floatState.LWL * this.propeller.D * this.coefficients.Taft);
@@ -293,10 +276,6 @@ Object.defineProperties(HullResistance.prototype, {
 
 		var etah = (1 - t) / (1 - w); // hull efficiency
 
-		return {
-			w,
-			t,
-			etah
-		};
+		return {w, t, etah};
 	}, "efficiency")
 });

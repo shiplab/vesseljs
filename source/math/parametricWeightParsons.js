@@ -41,7 +41,8 @@ function parametricWeightHull(K, L, B, T, D, CB, Fn) {
 	let VCGHull = 0;
 	if (L < 120) {
 		VCGHull = 0.01 * D * (46.6 + 0.135 * (0.81 - CB) * Math.pow(L / D, 2)) + 0.008 * D * (L / D - 6.5);
-	} else {
+	}
+	else {
 		VCGHull = 0.01 * D * (46.6 + 0.135 * (0.81 - CB) * Math.pow(L / D, 2));
 	}
 	// LCB is the longitudinal Center of Buoyancy converted from
@@ -52,14 +53,7 @@ function parametricWeightHull(K, L, B, T, D, CB, Fn) {
 
 	// Returns the object
 
-	return {
-		mass: W,
-		cg: {
-			x: LCGHull,
-			y: 0,
-			z: VCGHull
-		}
-	};
+	return {mass: W, cg: {x: LCGHull, y: 0, z: VCGHull}};
 }
 
 // This function estimates the remainder of the Dead Ship Weight. It includes the fuel, the lube oil, the fresh water, the crew and the provisions and stores.
@@ -76,16 +70,17 @@ function parametricWeightHull(K, L, B, T, D, CB, Fn) {
 function parametricWeightDeadweight(SFR, MCR, speed, person, day) {
 
 	// Calculates estimated  weight
-	let Wfo = SFR * MCR * speed * 1.1; // Fuel oil Weight
-	let Wlo = 0; // Lube oil Weight
+	let Wfo = SFR * MCR * speed * 1.1;  // Fuel oil Weight
+	let Wlo = 0;                        // Lube oil Weight
 	if (speed > 10) {
 		Wlo = 15;
-	} else {
+	}
+	else {
 		Wlo = 20
 	}
-	let Wfw = 0.17 * person; // Weight of fresh water
-	let Wce = 0.17 * person; // Weight of crew and effects
-	let Wpr = 0.01 * person * day; // Weight of provisions and stores
+	let Wfw = 0.17 * person;            // Weight of fresh water
+	let Wce = 0.17 * person;            // Weight of crew and effects
+	let Wpr = 0.01 * person * day;      // Weight of provisions and stores
 	let W = Wfo + Wlo + Wfw + Wce + Wpr; // Total weigth
 
 
@@ -94,9 +89,7 @@ function parametricWeightDeadweight(SFR, MCR, speed, person, day) {
 
 	// Returns the object
 
-	return {
-		mass: W
-	};
+	return {mass: W};
 }
 
 // This function estimates the structural weight of the machinery, main engine(s) and the remainder of the machinery weight.
@@ -130,10 +123,7 @@ function parametricWeightMachinery(MCR, hdb, Der, B, T, L, test) {
 
 	// Returns the object
 
-	return {
-		mass: W,
-		VCG: VCGMach
-	};
+	return {mass: W, VCG: VCGMach};
 }
 
 
@@ -157,9 +147,11 @@ function parametricWeightOutfit(Co, LBP, D) {
 	let VCGOut = 0;
 	if (LBP < 125) {
 		VCGOut = D + 1.25
-	} else if (LBP < 250) {
+	}
+	else if (LBP < 250) {
 		VCGOut = D + 1.25 + 0.01 * (LBP - 125)
-	} else {
+	}
+	else {
 		VCGOut = D + 2.5
 	}
 
@@ -167,8 +159,5 @@ function parametricWeightOutfit(Co, LBP, D) {
 
 	// Returns the object
 
-	return {
-		mass: W,
-		VCG: VCGOut
-	};
+	return {mass: W, VCG: VCGOut};
 }

@@ -6,8 +6,5 @@ function combineWeights(array) {
 	let cgms = array.map(e => Vectors.scale(e.cg, e.mass));
 	let CG = Vectors.scale(Vectors.sum(cgms), 1 / M);
 
-	return {
-		mass: M,
-		cg: CG
-	};
+	return {mass: M, cg: CG};
 }

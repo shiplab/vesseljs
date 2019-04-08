@@ -8,19 +8,12 @@ Returns an object with the index and an interpolation parameter mu that gives th
 function bisectionSearch(array, value) {
 	if (value < array[0]) {
 		console.warn("bisectionSearch: requested value below lowest array element. Returning undefined.");
-		return {
-			index: undefined,
-			mu: undefined
-		};
+		return {index: undefined, mu: undefined};
 	}
-	let index = 0,
-		upper = array.length;
+	let index = 0, upper = array.length;
 	while (upper > index + 1) {
 		let c = Math.floor(0.5 * (index + upper));
-		if (array[c] === value) return {
-			index: c,
-			mu: 0
-		};
+		if (array[c] === value) return {index: c, mu: 0};
 		else if (array[c] < value) index = c;
 		else upper = c;
 	}
@@ -32,10 +25,7 @@ function bisectionSearch(array, value) {
 		console.warn("bisectionSearch: Reached end of array. Simple interpolation will result in NaN.");
 		mu = undefined;
 	}
-	return {
-		index,
-		mu
-	};
+	return {index, mu};
 }
 
 //linear interpolation
@@ -49,10 +39,7 @@ function lerp(a, b, mu = 0.5) {
 
 //Test. Not safe yet.
 function linearFromArrays(xx, yy, x) {
-	let {
-		index,
-		mu
-	} = bisectionSearch(xx, x);
+	let {index, mu} = bisectionSearch(xx, x);
 	if (index === undefined || mu === undefined) return 0;
 	return lerp(yy[index], yy[index + 1], mu);
 }
@@ -60,10 +47,10 @@ function linearFromArrays(xx, yy, x) {
 //Source: https://en.wikipedia.org/wiki/Bilinear_interpolation
 //(I have used other sources too)
 function bilinearUnitSquareCoeffs(z00, z01, z10, z11) {
-	let a00 = z00; //mux=muy=0
-	let a10 = z10 - z00; //mux=1, muy=0
-	let a01 = z01 - z00; //mux=0, muy=1
-	let a11 = z11 + z00 - z01 - z10; //mux=muy=1
+	let a00 = z00;				//mux=muy=0
+	let a10 = z10 - z00;			//mux=1, muy=0
+	let a01 = z01 - z00;			//mux=0, muy=1
+	let a11 = z11 + z00 - z01 - z10;	//mux=muy=1
 	return [a00, a10, a01, a11];
 }
 
@@ -102,7 +89,7 @@ function bilinearCoeffs(x1, x2, y1, y2, z00, z01, z10, z11) {
 //I have apparently not documented this well.
 function bilinear(x1, x2, y1, y2, z11, z12, z21, z22, x, y) {
 	let [b00, b10, b01, b11] =
-	bilinearCoeffs(x1, x2, y1, y2, z11, z12, z21, z22);
+		bilinearCoeffs(x1, x2, y1, y2, z11, z12, z21, z22);
 	let fromCoeffs = b00 + b10 * x + b01 * y + b11 * x * y;
 
 	//The following is supposed to be equivalent. Some tests yielding identical results (and no tests so far yielding different results) suggest that the calculations are in fact equivalent.
