@@ -137,7 +137,7 @@ function DynamicalMovement(ship, states, userParameters, Ini, seaDepth) {
 		motion.VPitch, motion.VYaw, motion.EX, motion.EY, motion.EZ
 		];
 
-		var sol = numeric.dopri(tprev, tprev + dt, y, this.RugenKuttaSolver, 1e-8, 10000).at(tprev + dt);
+		var sol = numeric.dopri(tprev, tprev + dt, y, this.RungeKuttaSolver, 1e-8, 10000).at(tprev + dt);
 
 		// Equalizing the solution
 		[motion.surge, motion.sway, motion.heave, motion.roll, motion.pitch, motion.yaw, motion.VSurge,
@@ -220,7 +220,7 @@ function DynamicalMovement(ship, states, userParameters, Ini, seaDepth) {
 		return FW;
 	}
 
-	this.RugenKuttaSolver = function(t, y) {
+	this.RungeKuttaSolver = function(t, y) {
 		var J1 = Euler2J1(y.slice(3, 6));
 		var J2 = Euler2J2(y.slice(3, 6));
 

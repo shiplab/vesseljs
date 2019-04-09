@@ -141,7 +141,7 @@ function DynamicalMovement(ship, states, userParameters, Ini, oceanDepth) {
 		motion.heave += this.states.discrete.FloatingCondition.state.T;
 	};
 
-	this.RugenKuttaSolver = function(t, y) {
+	this.RungeKuttaSolver = function(t, y) {
 		var J1 = Euler2J1(y.slice(3, 6));
 		var J2 = Euler2J2(y.slice(3, 6));
 
