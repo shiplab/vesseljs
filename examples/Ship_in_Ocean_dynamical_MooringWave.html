@@ -39,7 +39,7 @@
 		//Globals
 		var renderer, camera, controls, gui, stats;
 		var scene, zUpCont, playback, bodies, ocean, ship3D, statMod;
-		var designDimention, floatingStates, mooring, line, hangedMooring;
+		var designDimension, floatingStates, mooring, line, hangedMooring;
 		var RG_system,
 			g,
 			MM,
@@ -218,7 +218,7 @@
 					zUpCont.add(ship3D);
 
 					// Insert mooring lines
-					designDimention = ship.structure.hull.attributes;
+					designDimension = ship.structure.hull.attributes;
 					floatingStates = states.discrete.FloatingCondition.state;
 
 					states.continuous.mooring = {};
@@ -230,22 +230,22 @@
 						[
 							floatingStates.LWL / 2,
 							floatingStates.BWL / 2,
-							designDimention.Depth - floatingStates.T
+							designDimension.Depth - floatingStates.T
 						],
 						[
 							floatingStates.LWL / 2,
 							-floatingStates.BWL / 2,
-							designDimention.Depth - floatingStates.T
+							designDimension.Depth - floatingStates.T
 						],
 						[
 							-floatingStates.LWL / 2,
 							-floatingStates.BWL / 2,
-							designDimention.Depth - floatingStates.T
+							designDimension.Depth - floatingStates.T
 						],
 						[
 							-floatingStates.LWL / 2,
 							floatingStates.BWL / 2,
-							designDimention.Depth - floatingStates.T
+							designDimension.Depth - floatingStates.T
 						]
 					]; // Point of mooring line on ship          (m, m, m)
 
