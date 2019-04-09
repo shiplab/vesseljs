@@ -262,7 +262,7 @@ Object.assign(Ship3D.prototype, {
 				},
 				undefined,
 				function onError() {
-					console.warn("Specified file " + e.File + " not found. Falling back on placeholder.");
+					console.warn("Specified file " + bo.file3D + " not found. Falling back on placeholder.");
 					let m = new THREE.Mesh(this.boxGeom, mat);
 					m.position.set(x, y, z);
 					m.rotation.set(rx,ry,rz);
