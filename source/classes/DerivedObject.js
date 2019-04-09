@@ -67,7 +67,7 @@ Object.assign(DerivedObject.prototype, {
 		
 		//THIS IGNORES (BREAKS) fullness-CG mapping:
 		if (oState.rotation)
-			cg = Vectors.rotateTaitBryanExtrinsicXYZ(cg, oState.rotation);
+			cg = Vectors.rotateTaitBryan(cg, oState.rotation);
 		
 		cg = Vectors.add(p, cg);
 		

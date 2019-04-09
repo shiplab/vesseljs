@@ -73,9 +73,10 @@ var Vectors = {
 	},
 	
 	//Return the result of rotating the vector v by angles r={x,y,z} in radians.
-	rotateTaitBryanExtrinsicXYZ: function(v, r) {
+	//Intrinsic ZYX order (yaw,pitch,roll) is achieved by applying world axis rotations in XYZ order.
+	rotateTaitBryan: function(v, r) {
 		let c,s;
-
+		
 		//Rotate around x axis
 		c = Math.cos(r.x);
 		s = Math.sin(r.x);
