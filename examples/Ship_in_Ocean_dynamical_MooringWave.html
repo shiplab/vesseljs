@@ -224,26 +224,24 @@
 					states.continuous.mooring = {};
 					mooring = states.continuous.mooring;
 
-					// var anchorLength = 195; // Mooring line Length                   (m)
-
 					mooring.mooringPointOnShip = [
 						[
-							floatingStates.LWL / 2,
+							floatingStates.LWL / 2 + floatingStates.trim,
 							floatingStates.BWL / 2,
 							designDimension.Depth - floatingStates.T
 						],
 						[
-							floatingStates.LWL / 2,
+							floatingStates.LWL / 2 + floatingStates.trim,
 							-floatingStates.BWL / 2,
 							designDimension.Depth - floatingStates.T
 						],
 						[
-							-floatingStates.LWL / 2,
+							-floatingStates.LWL / 2 + floatingStates.trim,
 							-floatingStates.BWL / 2,
 							designDimension.Depth - floatingStates.T
 						],
 						[
-							-floatingStates.LWL / 2,
+							-floatingStates.LWL / 2 + floatingStates.trim,
 							floatingStates.BWL / 2,
 							designDimension.Depth - floatingStates.T
 						]
@@ -268,7 +266,6 @@
 							)
 						]; // Point of mooring line on seabed        (m, m, m)
 					}
-					//console.log(mooring.anchorPoint)
 
 					// Rope Material
 					var materialLine = [
@@ -454,7 +451,6 @@
 						.onFinishChange(function () {
 							let condition = Math.pow((Math.pow(userParameters.seaDepth, 2) + Math.pow(userParameters.radialDistance, 2)),
 								0.5) - 10;
-							console.log(condition)
 							if (condition > userParameters.anchorLength) {
 								alert("Mooring line is not long enough. Consider increasing to " + Math.round(condition) +
 									" meters.");
