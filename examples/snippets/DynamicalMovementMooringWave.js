@@ -17,7 +17,7 @@ function DynamicalMovement(ship, states, userParameters, Ini, seaDepth) {
 
 	length = floatingStates.LWL;
 	breadth = floatingStates.BWL;
-	depth = designDimention.Depth;
+	depth = designDimension.Depth;
 	draft = floatingStates.T;
 	Cb = calculatedParameters.Cb_design;
 	KG = 0.5 * depth;
