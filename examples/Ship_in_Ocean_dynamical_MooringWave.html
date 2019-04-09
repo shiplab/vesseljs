@@ -220,7 +220,6 @@
 					// Insert mooring lines
 					designDimension = ship.structure.hull.attributes;
 					floatingStates = states.discrete.FloatingCondition.state;
-					console.log(floatingStates);
 
 					states.continuous.mooring = {};
 					mooring = states.continuous.mooring;
@@ -237,17 +236,17 @@
 							designDimension.Depth - floatingStates.T
 						],
 						[
-							-floatingStates.LWL / 2 - floatingStates.trimd,
+							-floatingStates.LWL / 2 + floatingStates.trim,
 							-floatingStates.BWL / 2,
 							designDimension.Depth - floatingStates.T
 						],
 						[
-							-floatingStates.LWL / 2 - floatingStates.trimd,
+							-floatingStates.LWL / 2 + floatingStates.trim,
 							floatingStates.BWL / 2,
 							designDimension.Depth - floatingStates.T
 						]
 					]; // Point of mooring line on ship          (m, m, m)
-					console.log(mooring.mooringPointOnShip);
+
 					mooring.anchorPoint = []; // Point of mooring line on seabed        (m, m, m)
 					mooring.anchorLineGeometry = []; // Line geometry (global)        (m, m, m)
 					mooring.radialDistance = radialDistance;
