@@ -73,7 +73,7 @@ function useShipSpec(contents) {
 	}
 	ship3D = new Ship3D(ship, {
 		shipState: states,
-		stlPath: "data/STL files",
+		stlPath: "specs/STL files",
 		upperColor: 0x33aa33,
 		lowerColor: 0xaa3333,
 		hullOpacity: 1,
