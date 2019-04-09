@@ -9,7 +9,7 @@ function DynamicalMovement(ship, states, userParameters, Ini, oceanDepth) {
 	this.ship = ship;
 	this.states = states;
 
-	var designDimention = this.ship.structure.hull.attributes;
+	var designDimension = this.ship.structure.hull.attributes;
 	var calculatedParameters = this.ship.designState.calculationParameters;
 	var floatingStates = this.states.discrete.FloatingCondition.state;
 
@@ -19,7 +19,7 @@ function DynamicalMovement(ship, states, userParameters, Ini, oceanDepth) {
 
 	length = floatingStates.LWL;
 	breadth = floatingStates.BWL;
-	depth = designDimention.Depth;
+	depth = designDimension.Depth;
 	draft = floatingStates.T;
 	Cb = calculatedParameters.Cb_design;
 	KG = 0.5 * depth;
