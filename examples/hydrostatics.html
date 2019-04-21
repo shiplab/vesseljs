@@ -12,8 +12,6 @@
 	<link href="libs/bootstrap.min.css" rel="stylesheet">
 	<!-- jQuery Version 1.11.1 -->
 	<script src="libs/jquery.js"></script>
-	<!-- Gist Embed -->
-	<script src="libs/gist-embed.min.js"></script>
 	<!-- Bootstrap Core JavaScript -->
 	<script src="libs/bootstrap.min.js"></script>
 	<!-- Three script -->
@@ -56,7 +54,7 @@
 				<h2>Hull Definition and Hydrostatics</h2>
 			</div>
 			<div class="col-md-12 text-center">
-				<p>Define, visualize a hull and calculate its hydrostatic properties. <a href="https://gist.github.com/icarofonseca/f5aea8f8591c5b2a529418845db0c03f">View source.</a></p>
+				<p>Define, visualize a hull and calculate its hydrostatic properties.</p>
 				<input type="button" value="Download Source" onClick="saveSource()">
 			</div>
 			<div class="col-md-12 text-left">
@@ -65,9 +63,9 @@
 					The hull lines (stored in the halfBreadths property) are taken as symmetrical
 					and are defined proportionally to the ship's main dimensions (stored in the attributes property):
 				</p>
-				<code data-gist-id="f5aea8f8591c5b2a529418845db0c03f" data-gist-file="hydrostatics.js" data-gist-hide-footer="true" data-gist-hide-line-numbers="true" data-gist-line="5-29"></code>
+				<pre id="source1"></pre>
 				<p>Then, we create a Ship object from this specification:</p>
-				<code data-gist-id="f5aea8f8591c5b2a529418845db0c03f" data-gist-file="hydrostatics.js" data-gist-hide-footer="true" data-gist-hide-line-numbers="true" data-gist-line="31"></code>
+				<pre id="source2"></pre>
 				<p>The visualization is created with an interface built to transform the Ship object above in a <a href="https://threejs.org/" target="_blank">Three.js</a>
 					render (see <a href="Object_geom.html" target="_blank">here</a> for more details). The result is displayed below.
 					The different colors indicate the position of the design draft.
@@ -77,13 +75,112 @@
 			</div>
 			<div class="col-md-12 text-left">
 				<p>To calculate the hydrostatic properties of the hull for a given draft, say, 2 m, the following method can be evoked:</p>
-				<code data-gist-id="f5aea8f8591c5b2a529418845db0c03f" data-gist-file="hydrostatics.js" data-gist-hide-footer="true" data-gist-hide-line-numbers="true" data-gist-line="33-34"></code>
+				<pre id="source3"></pre>
 				<p>Which returns:</p>
 				<pre id="hydro"></pre>
 			</div>
 		</div>
 	</div>
-	<script src="hydrostatics.js"></script>
+
+	<script>
+		"use strict";
+
+		var objectTemplate, myObject, spec, ship, renderer, scene, camera, controls, ship3D, draft, hydro;
+	</script>
+
+<script id="script1">spec = {
+	"designState": {
+		"calculationParameters": {
+			"Draft_design": 2
+		}
+	},
+	"structure": {
+		"hull": {
+			"attributes": {
+				"LOA": 20,
+				"BOA": 8,
+				"Depth": 4
+			},
+			"halfBreadths": {
+				"waterlines": [0, 1],
+				"stations": [0, 1],
+				"table": [[0, 0], [1, 1]]
+			}
+		},
+		"decks": {},
+		"bulkheads": {}
+	},
+	"baseObjects": [],
+	"derivedObjects": []
+};
+</script>
+
+<script id="script2">var ship = new Vessel.Ship(spec);</script>
+
+<script id="script3">draft = 2;
+hydro = ship.structure.hull.calculateAttributesAtDraft(draft);
+</script>
+
+	<script>
+		document.getElementById("hydro").innerHTML = JSON.stringify(hydro, null, 4);
+
+		//Ready renderer and scene
+		(function() {
+			renderer = new THREE.WebGLRenderer({antialias: true});
+			renderer.setPixelRatio(window.devicePixelRatio);
+			renderer.setClearColor(0xA9CCE3, 1);
+
+			// get the div that will hold the renderer
+			var container = document.getElementById('3d');
+			container.appendChild(renderer.domElement);
+
+			scene = new THREE.Scene();
+
+			//Camera and controls:
+			camera = new THREE.PerspectiveCamera(50);
+			camera.up.set(0, 0, 1);
+			scene.add(camera);
+			controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+			//Respond to window resize:
+			function onResize() {
+				renderer.setSize(container.clientWidth, container.clientHeight);
+				camera.aspect = container.clientWidth / container.clientHeight;
+				camera.updateProjectionMatrix();
+			}
+			window.addEventListener("resize", onResize);
+			onResize(); //Ensure the initial setup is good too
+
+			//Add lights:
+			scene.add(new THREE.AmbientLight(0xffffff, 0.3));
+			scene.add(function() {
+				let sun = new THREE.DirectionalLight(0xffffff, 1);
+				sun.position.set(1, 1, 1);
+				return sun;
+			}());
+
+		})();
+
+		ship3D = new Ship3D(ship, "stl/");
+		scene.add(ship3D);
+
+		let LOA = ship.structure.hull.attributes.LOA;
+		camera.position.set(0.7 * LOA, 0.7 * LOA, 0.7 * LOA);
+		controls.target = new THREE.Vector3(LOA / 2, 0, 0);
+		controls.update();
+		animate();
+
+		function animate() {
+			requestAnimationFrame(animate);
+			renderer.render(scene, camera);
+		}
+	</script>
+
+	<script>
+		document.getElementById("source1").innerHTML = document.getElementById("script1").innerHTML;
+		document.getElementById("source2").innerHTML = document.getElementById("script2").innerHTML;
+		document.getElementById("source3").innerHTML = document.getElementById("script3").innerHTML;
+	</script>
 </body>
 
 </html>

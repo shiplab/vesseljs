@@ -12,8 +12,6 @@
 	<link href="libs/bootstrap.min.css" rel="stylesheet">
 	<!-- jQuery Version 1.11.1 -->
 	<script src="libs/jquery.js"></script>
-	<!-- Gist Embed -->
-	<script src="libs/gist-embed.min.js"></script>
 	<!-- Bootstrap Core JavaScript -->
 	<script src="libs/bootstrap.min.js"></script>
 	<!--Import library-->
@@ -50,25 +48,48 @@
 				<h2>Stability</h2>
 			</div>
 			<div class="col-md-12 text-center">
-				<p>Calculate static stability of a vessel. <a href="https://gist.github.com/icarofonseca/b4cffa30a226ebdf4ba84d6c60b68ef8">View source.</a></p>
+				<p>Calculate static stability of a vessel.</p>
 				<input type="button" value="Download Source" onClick="saveSource()">
 			</div>
 			<div class="col-md-12 text-left">
 				<p>A Ship object provides a calculateStability method to calculate stability parameters.
 					The structural weight is estimated with a top-down approach following an empirical formula.
 					The parameters used in the estimation are stored in designState.calculationParameters.
-					For example, for the <a href="https://gist.github.com/icarofonseca/b2b194cb147a1d1b3946524f46378574">PX121.json</a> specification, they read:
+					For example, for the PX121.json specification, they read:
 					<pre id="parameters"></pre>
 				</p>
 				<p>The stability parameters can be calculated with:</p>
-				<code data-gist-id="b4cffa30a226ebdf4ba84d6c60b68ef8" data-gist-file="stability.js" data-gist-hide-footer="true" data-gist-hide-line-numbers="true" data-gist-line="13-15"></code>
+				<pre>// create a state object to store the data
+state = new Vessel.ShipState();
+stability = ship.calculateStability(state);</pre>
 				<p>As an empty state object was used, all tanks are half loaded by default.</p>
 				<p>This yields as results:
 					<pre id="stability"></pre>
 				</p>
 			</div>
 		</div>
-		<script src="stability.js"></script>
+	</div>
+
+	<script>
+		"use strict";
+
+		var filePath, parameters, state, stability;
+
+		// define  path of the file in the server
+		filePath = "specs/ship_specifications/PX121.json";
+
+		Vessel.loadShip(filePath, function(ship) {
+			// ship loaded in the local scope
+			parameters = JSON.stringify(ship.designState.calculationParameters, null, 4);
+			document.getElementById("parameters").innerHTML = parameters;
+
+			// create a state object to store the data
+			state = new Vessel.ShipState();
+			stability = ship.calculateStability(state);
+
+			document.getElementById("stability").innerHTML = JSON.stringify(stability, null, 4);
+		});
+	</script>
 </body>
 
 </html>
