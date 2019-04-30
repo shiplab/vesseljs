@@ -274,13 +274,10 @@
 					mooring.w = density; // Mooring line density (kg/m)
 					mooring.seaDepth = seaDepth; // Sea depth from sea surface (m)
 					mooring.hangedMooring = []; // Point of hanged mooring line on seabed (m, m, m)
-					mooring.mooringStatus = {
-						mooringNE: 'OK',
-						mooringNW: 'OK',
-						mooringSE: 'OK',
-						mooringSW: 'OK',
-					} // Check if the mooring failed or not
-
+					mooring.mooringStatus.mooringNE = 'OK';
+					mooring.mooringStatus.mooringNW = 'OK';
+					mooring.mooringStatus.mooringSE = 'OK';
+					mooring.mooringStatus.mooringSW = 'OK';
 
 					// Anchoring point in seabed
 					for (var i = 0; i < pos.length; i++) {
