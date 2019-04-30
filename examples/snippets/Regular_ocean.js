@@ -47,8 +47,8 @@ function DirectionalCosine(params) {
 		},
 		set: function(newvalue) {
 			theta = newvalue;
-			this.costh = Math.cos(theta);
-			this.sinth = Math.sin(theta);
+			this.costh = Math.cos(theta*Math.PI/180);
+			this.sinth = Math.sin(theta*Math.PI/180);
 		}
 	});
 	this.theta = typeof params.theta !== "undefined" ? params.theta : 0;
@@ -73,7 +73,7 @@ Object.assign(DirectionalCosine.prototype, {
 	},
 	calculate: function(x, y, t) {
 		let xm = x * this.costh + y * this.sinth;
-		return this.A * Math.cos(this.phi + 2 * Math.PI * (xm / this.L) - this.omega * t);
+		return this.A * Math.cos(this.phi*Math.PI/180 + 2 * Math.PI * (xm / this.L) - this.omega * t);
 	}
 });
 
@@ -142,7 +142,7 @@ function Ocean(params) {
 			},
 			set: function(obj, prop, value) {
 				scope.currentCos[prop] = value;
-				wavCre.setWaveDef(2 * Math.PI / scope.currentCos["T"], scope.currentCos["A"], 180 / Math.PI * scope.currentCos["theta"]);
+				wavCre.setWaveDef(2 * Math.PI / scope.currentCos["T"], scope.currentCos["A"], scope.currentCos["theta"]);
 				updateMotion();
 				return true; //debug
 			},
@@ -153,8 +153,8 @@ function Ocean(params) {
 		this.conf.add(pcos, "A", 0.0, 10.0, 0.1).name("Amplitude (A)");
 		this.conf.add(pcos, "T", 2.0, 20.0, 0.1).name("Period (T)");
 		this.conf.add(pcos, "L", 6.0, 700.0, 0.5).name("Length (L)");
-		this.conf.add(pcos, "theta", 0, 2 * Math.PI, 0.01).name("<div>Direction (&theta;)</div>");
-		this.conf.add(pcos, "phi", -Math.PI, Math.PI, 0.01).name("<div>Phase (&Phi;)</div>");
+		this.conf.add(pcos, "theta", 0, 180, 0.01).name("<div>Direction (&theta;)</div>");
+		this.conf.add(pcos, "phi", -180, 180, 0.01).name("<div>Phase (&Phi;)</div>");
 		//Dispose of temporary cosine wave object
 		this.currentCos = {};
 		this.conf.updateDisplay();
@@ -167,7 +167,7 @@ Object.assign(Ocean.prototype, {
 		params = params || {};
 		let w = new DirectionalCosine(params);
 		this.waves.push(w);
-		wavCre.setWaveDef(2 * Math.PI / w["T"], w["A"], 180 / Math.PI * w["theta"]);
+		wavCre.setWaveDef(2 * Math.PI / w["T"], w["A"], w["theta"]);
 
 		this.currentCos = w;
 

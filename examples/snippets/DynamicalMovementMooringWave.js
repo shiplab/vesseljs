@@ -164,12 +164,12 @@ function DynamicalMovement(ship, states, userParameters, Ini, seaDepth) {
 		var phase = omega * t - ocean.waves["0"].phi - k * projMag;
 
 		// WARNING:
-		if (breadth > ocean.waves["0"].L / 4) {
-			console.warn("Small body approximation denied Breadth > Lambda / 4.");
-		}
-		if (length / breadth < 5) {
-			console.warn("Slender ship condition denied Length/Breadth < 5.");
-		}
+		//if (breadth > ocean.waves["0"].L / 4) {
+		//	console.warn("Small body approximation denied Breadth > Lambda / 4.");
+		//}
+		//if (length / breadth < 5) {
+		//	console.warn("Slender ship condition denied Length/Breadth < 5.");
+		//}
 
 		// Heave Forces Calculations
 		var A = 2 * Math.sin(Math.pow(omega, 2) * breadth / (2 * g)) * Math.exp(-Math.pow(omega, 2) * draft / g);
@@ -195,9 +195,9 @@ function DynamicalMovement(ship, states, userParameters, Ini, seaDepth) {
 		rb = -2.12 * r - 1.89;
 		rd = 1.16 * r - 7.97;
 
-		if (r < 1 || r > 3) {
-			console.warn('This B/T ratio is not supported by the method: %f', r);
-		}
+		//if (r < 1 || r > 3) {
+		//	console.warn('This B/T ratio is not supported by the method: %f', r);
+		//}
 
 		// Equation (6.62)
 		var b_44 = rho * draft * Math.pow(breadth, 3) * Math.pow(2 * g / breadth, 0.5) * ra * Math.exp(rb * Math.pow(omega, -1.3)) * Math.pow(omega, rd);
@@ -347,29 +347,41 @@ function DynamicalMovement(ship, states, userParameters, Ini, seaDepth) {
 		pos = [numeric.dot(J, mooring.mooringPointOnShip[0]), numeric.dot(J, mooring.mooringPointOnShip[1]), numeric.dot(J, mooring.mooringPointOnShip[2]), numeric.dot(J, mooring.mooringPointOnShip[3])];
 
 		// Variables Inserting
-		var xs; // Mooring suspended line                (m)
-		var aPosible = []; // Guesses necessary for solving Eq.     (m)
-		var a = []; // Guesses necessary for solving Eq.     (m)
-		var horizontalForce = []; // Horizontal Force on the ship          (kgf)
-		var verticalForce = []; // Vertical Force on the ship            (kgf)
-		var FM = numeric.rep([6], 0); // Horizontal forces and Moments       (m)
+		var xs; // Mooring suspended line (m)
+		var aPosible = []; // Guesses necessary for solving Eq. (m)
+		var a = []; // Guesses necessary for solving Eq. (m)
+		var horizontalForce = []; // Horizontal Force on the ship (kgf)
+		var verticalForce = []; // Vertical Force on the ship (kgf)
+		var FM = numeric.rep([6], 0); // Horizontal forces and Moments (m)
 
 		// Anchoring point in seabed
-		var anchorAngle = []; // Cos and sin of horzontal angle         ( )
-		var anchorPointOnShip = []; // Line geometry (global)        (m, m, m)
-		var anchorDist = []; // Max. horizontal distance of line       (m)
-		var mooringLengthSuspended; // Suspende line length                   (m)
+		var anchorAngle = []; // Cos and sin of horzontal angle (-)
+		var anchorPointOnShip = []; // Line geometry (global) (m, m, m)
+		var anchorDist = []; // Max. horizontal distance of line (m)
+		var mooringLengthSuspended; // Suspende line length (m)
 		var anchorPoint = [];
+		var resultingForce = [];
 
 		for (var i = 0; i < pos.length; i++) {
-			if (i==0 || i==1) baseangle = 0;
-			if (i==3 || i==2) baseangle = Math.PI;
+			if (i==0 || i==1) {
+				baseangle = 0;
+				lwl = floatingStates.LWL/2+floatingStates.trim;
+			};
+			if (i==3 || i==2) {
+				baseangle = Math.PI;
+				lwl = -floatingStates.LWL/2+floatingStates.trim;
+			};
+			if (i==0 || i==3) {
+				bwl = floatingStates.BWL/2
+			};
+			if (i==1 || i==2) {
+				bwl = -floatingStates.BWL/2
+			};
 			anchorPoint[i] = [
-				userParameters.radialDistance * Math.cos((baseangle) + Math.pow((-1), i) * (mooring.mooringAngle * Math.PI) / 180),
+				userParameters.radialDistance * Math.cos((baseangle) + Math.pow((-1), i) * (mooring.mooringAngle * Math.PI) / 180) + lwl,
 				-userParameters.seaDepth,
-				userParameters.radialDistance * Math.sin((baseangle) + Math.pow((-1), i) * (mooring.mooringAngle * Math.PI) / 180)
+				userParameters.radialDistance * Math.sin((baseangle) + Math.pow((-1), i) * (mooring.mooringAngle * Math.PI) / 180) + bwl,
 			];
-			console.log(anchorPoint)
 
 			hangedMooring[i] = []
 			anchorPointOnShip[i] = [pos[i][0] + motion.surge, pos[i][2] + motion.heave, pos[i][1] - motion.sway];
@@ -377,6 +389,7 @@ function DynamicalMovement(ship, states, userParameters, Ini, seaDepth) {
 			anchorAngle[i] = [(anchorPoint[i][0] - anchorPointOnShip[i][0]) / anchorDist[i], (anchorPoint[i][2] - anchorPointOnShip[i][2]) / anchorDist[i]];
 			var as = numeric.linspace(0.01, mooring.anchorLength, 100);
 
+			
 			for (var n = 0; n < as.length; n++) {
 				aPosible[n] = mooring.anchorLength - anchorDist[i] - as[n] * Math.sinh(Math.acosh(((anchorPointOnShip[i][1] + userParameters.seaDepth) / as[n]) + 1)) + as[n] * (Math.acosh(((anchorPointOnShip[i][1] + userParameters.seaDepth) / as[n]) + 1));
 			}
@@ -396,21 +409,303 @@ function DynamicalMovement(ship, states, userParameters, Ini, seaDepth) {
 				m++;
 			}
 
+			//if (hangedMooring[i].length == 0) {
+			//	scene.remove(mooring.anchorLineGeometry[i])
+			//	resultingForce[i] = 9999999999999999
+			//}
+
 			// Approximation small angles of yaw
 			FM[0] += g * horizontalForce[i] * (anchorAngle[i][0]);
 			FM[1] -= g * horizontalForce[i] * (anchorAngle[i][1]);
 			FM[2] -= g * verticalForce[i];
 			FM[3] += (g * horizontalForce[i] * (anchorAngle[i][1])) * (pos[i][2] + depth - draft / 2) + (g * verticalForce[i]) * pos[i][1];
-			// console.log(FM[3], (g * horizontalForce[i] * (anchorAngle[i][1]))*(pos[i][2]+depth-draft/2) + (g * verticalForce[i])*pos[i][1]);
 			FM[4] += g * horizontalForce[i] * (anchorAngle[i][0]) * (pos[i][2] + depth - draft / 2) + g * verticalForce[i] * pos[i][0];
-			// console.log(FM[4], g * horizontalForce[i] * (anchorAngle[i][0])*(pos[i][2]+depth-draft/2) + g * verticalForce[i]*pos[i][0]);
 			FM[5] += (-g * horizontalForce[i] * (anchorAngle[i][1])) * (pos[i][0]) + g * horizontalForce[i] * (anchorAngle[i][0]) * (pos[i][1]);
-			// console.log(FM[5], (-g * horizontalForce[i] * (anchorAngle[i][1]))*(pos[i][0]) + g * horizontalForce[i] * (anchorAngle[i][0])*(pos[i][1]));
-			// debugger
-		}
-		// console.log(FM[4]);
+			
+			// Force component at this specific moment
+			Fx = g * horizontalForce[i] * (anchorAngle[i][0]);
+			Fy = g * horizontalForce[i] * (anchorAngle[i][1]);
+			Fz = g * verticalForce[i];
+			resultingForce[i] = Math.pow(Math.pow(Fx, 2) + Math.pow(Fy, 2) + Math.pow(Fz, 2), 0.5)/1000; // Resulting Force in kN
+
+			// SUBSTITUIR ITEM NUMBER BY A QUERY SELECTOR WITH THE NAME
+			if (i==0) {
+				if (resultingForce[0] > mooring.breakingLoad) {
+					mooring.mooringStatus.mooringNE = 'Fail';
+					var change = document.getElementsByTagName("LI").item(32);
+					change.style.color = '#FF0000';
+					var change2 = change.querySelector(".c");
+					var change3 = change2.querySelector("input");
+					change3.style.color = '#FF0000';
+				}
+			}
+			if (i==1) {
+				if (resultingForce[1] > mooring.breakingLoad) {
+					mooring.mooringStatus.mooringNW = 'Fail';
+					var change = document.getElementsByTagName("LI").item(33);
+					change.style.color = '#FF0000';
+					var change2 = change.querySelector(".c");
+					var change3 = change2.querySelector("input");
+					change3.style.color = '#FF0000';
+				}
+			}
+			if (i==2) {
+				if (resultingForce[2] > mooring.breakingLoad) {
+					mooring.mooringStatus.mooringSW = 'Fail';
+					var change = document.getElementsByTagName("LI").item(35);
+					change.style.color = '#FF0000';
+					var change2 = change.querySelector(".c");
+					var change3 = change2.querySelector("input");
+					change3.style.color = '#FF0000';
+				}
+			}
+			if (i==3) {
+				if (resultingForce[3] > mooring.breakingLoad) {
+					mooring.mooringStatus.mooringSE = 'Fail';
+					var change = document.getElementsByTagName("LI").item(34);
+					change.style.color = '#FF0000';
+					var change2 = change.querySelector(".c");
+					var change3 = change2.querySelector("input");
+					change3.style.color = '#FF0000';
+				}
+			}
+		};
+
+		mooring.conditionMooring = [mooring.mooringStatus.mooringNE, mooring.mooringStatus.mooringNW, mooring.mooringStatus.mooringSW, mooring.mooringStatus.mooringSE];
+
+		window.feedTension = function(callback) {
+			var tick = {};
+			if (mooring.conditionMooring[0] != "Fail") {
+				tick.plot0 = resultingForce[0];
+			} else {
+				tick.plot0 = 0
+			}
+			if (mooring.conditionMooring[1] != "Fail") {
+				tick.plot1 = resultingForce[1];
+			} else {
+				tick.plot1 = 0
+			}
+			if (mooring.conditionMooring[2] != "Fail") {
+				tick.plot3 = resultingForce[2];
+			} else {
+				tick.plot3 = 0
+			}
+			if (mooring.conditionMooring[3] != "Fail") {
+				tick.plot2 = resultingForce[3];
+			} else {
+				tick.plot2 = 0
+			}
+			callback(JSON.stringify(tick));
+		};
+		window.feedMotion = function(callback) {
+			var tick = {};
+			tick.plot0 = motion.heave;
+			callback(JSON.stringify(tick));
+		};
+		window.feedMotionRoll = function(callback) {
+			var tick = {};
+			tick.plot0 = motion.roll * 180 / Math.PI;
+			tick.plot1 = motion.pitch * 180 / Math.PI;
+			callback(JSON.stringify(tick));
+		};
+		
+		var myDashboardMooring = {
+			"graphset":[
+			  {//---------- mooring line tension plot-----------//
+				"type":"line",
+				"plotarea":{
+					"adjust-layout":true
+				},
+				"height":"100%",
+				"width":"33%",
+				"x":"0%",
+				"y":"0%",
+				"plot":{ 
+					"aspect":"spline", 
+					"marker":{"visible":true},
+				},
+				"series":[{
+					"values":[0],
+					"lineColor": "#808080",
+					"text": "Mooring NE",
+					"marker" :{
+						"background-color":"#808080",
+					},
+				}, {
+					"values":[0],
+					"lineColor": "0xff0000",
+					"text": "Mooring NW",
+					"marker" :{
+						"background-color":"0xff0000",
+					},
+					
+				}, {
+					"values":[0],
+					"lineColor": "0x0066ff",
+					"text": "Mooring SE",
+					"marker" :{
+						"background-color":"0x0066ff",
+					},
+				}, {
+					"values":[0],
+					"lineColor": "0x33cc33",
+					"text": "Mooring SW",
+					"marker" :{
+						"background-color":"0x33cc33",
+					},
+				},
+				],
+				"refresh":{
+					"type":"feed",
+					"transport":"js",
+					"url":"feedTension()",
+					"method":"pull",
+					"interval":500,
+					"adjust-scale":true
+				},
+				scaleY: {
+					label: {
+					  text: 'Tension',
+					  fontStyle: 'normal',
+      				  fontWeight: 'normal',
+					},
+				},
+				title:{
+					text:"Mooring Line Tension",
+					marginBottom: "0",
+					fontFamily:"Helvetica",
+					fontWeight:"none",
+					fontSize: 12
+				},
+				plotarea: {
+					"margin": "20% 10% 15% 10%",
+				},
+				legend: {
+					"layout": "float",
+					"background-color": "none",
+					"border-width": 0,
+					"shadow": 0,
+					"text-align":"middle",
+					"offsetY": 25,
+					"align": "center",
+					"item": {
+						"font-color": "#black",
+						"font-size": "10px"
+					}
+				},
+			  },
+			  {//---------- ship motion heave -----------//
+				"type":"line",
+				"height":"100%",
+				"width":"33%",
+				"x":"33%",
+				"y":"0%",
+				"plot":{ 
+					"aspect":"spline", 
+					"marker":{"visible":true},
+				},
+				"series":[{
+					"values":[0],
+					"text": "Heave [meters]"
+				}],
+				"refresh":{
+					"type":"feed",
+					"transport":"js",
+					"url":"feedMotion()",
+					"method":"pull",
+					"interval":500,
+					"adjust-scale":true
+				},
+				title:{
+					text:"Ship Motion",
+					marginBottom: "0",
+					fontFamily:"Helvetica",
+					fontWeight:"none",
+					fontSize: 12
+				},
+				plotarea: {
+					"margin": "20% 10% 15% 10%",
+				},
+				legend: {
+					"layout": "float",
+					"background-color": "none",
+					"border-width": 0,
+					"shadow": 0,
+					"text-align":"middle",
+					"offsetY": 25,
+					"align": "center",
+					"item": {
+						"font-color": "#black",
+						"font-size": "10px"
+					}
+				},
+			  },
+			  {//---------- ship motion pitch roll -----------//
+				"type":"line",
+				"height":"100%",
+				"width":"33%",
+				"x":"66%",
+				"y":"0%",
+				"plot":{ 
+					"aspect":"spline", 
+					"marker":{"visible":true},
+				},
+				"series":[{
+					"values":[0],
+					"text": "Roll [deg]"
+				}, {
+					"values":[0],
+					"text": "Pitch [deg]"
+				}],
+				"refresh":{
+					"type":"feed",
+					"transport":"js",
+					"url":"feedMotionRoll()",
+					"method":"pull",
+					"interval":500,
+					"adjust-scale":true
+				},
+				title:{
+					text:"Ship Motion",
+					marginBottom: "0",
+					fontFamily:"Helvetica",
+					fontWeight:"none",
+					fontSize: 12
+				},
+				plotarea: {
+					"margin": "20% 10% 15% 10%",
+				},
+				legend: {
+					"layout": "float",
+					"background-color": "none",
+					"border-width": 0,
+					"shadow": 0,
+					"text-align":"middle",
+					"offsetY": 25,
+					"align": "center",
+					"item": {
+						"font-color": "#black",
+						"font-size": "10px"
+					}
+				},
+			  },
+			]
+		};
+	
+		window.onload=function(){
+			 zingchart.render({ 
+				id:'plotMooringTension',
+				height:"100%",
+				width:"100%",
+				data: myDashboardMooring,
+			});
+		};
 
 		for (var i = 0; i < pos.length; i++) {
+			if (mooring.conditionMooring[i] == "Fail") {
+				scene.remove(mooring.anchorLineGeometry[i])
+			}
+
 			if (mooring.anchorLineGeometry[i].geometry.vertices[0] == undefined) {
 				mooring.anchorLineGeometry[i].geometry.vertices[0] = [];
 				mooring.anchorLineGeometry[i].geometry.vertices[0].push(new THREE.Vector3(anchorPointOnShip[i][0], anchorPointOnShip[i][1], anchorPointOnShip[i][2]));
@@ -419,7 +714,6 @@ function DynamicalMovement(ship, states, userParameters, Ini, seaDepth) {
 				mooring.anchorLineGeometry[i].geometry.vertices[0].y = anchorPointOnShip[i][1];
 				mooring.anchorLineGeometry[i].geometry.vertices[0].z = anchorPointOnShip[i][2];
 			}
-
 
 			for (var m = 0; m < hangedMooring[i].length; m++) {
 				if (mooring.anchorLineGeometry[i].geometry.vertices[m + 1] == undefined) {
@@ -430,10 +724,8 @@ function DynamicalMovement(ship, states, userParameters, Ini, seaDepth) {
 					mooring.anchorLineGeometry[i].geometry.vertices[m + 1].y = hangedMooring[i][m][1];
 					mooring.anchorLineGeometry[i].geometry.vertices[m + 1].z = hangedMooring[i][m][2];
 				}
-				// line[i][m+1].geometry.vertices = [hangedMooring[i][m][0], hangedMooring[i][m][1], hangedMooring[i][m][2]];
 			}
 
-			// line[i][m+2].geometry.vertices = [anchorPoint[i][0], anchorPoint[i][1], anchorPoint[i][2]];
 			if (mooring.anchorLineGeometry[i].geometry.vertices[m] == undefined) {
 				mooring.anchorLineGeometry[i].geometry.vertices[m] = [];
 				mooring.anchorLineGeometry[i].geometry.vertices[m].push(new THREE.Vector3(anchorPoint[i][0], anchorPoint[i][1], anchorPoint[i][2]));
@@ -442,11 +734,8 @@ function DynamicalMovement(ship, states, userParameters, Ini, seaDepth) {
 				mooring.anchorLineGeometry[i].geometry.vertices[m].y = anchorPoint[i][1];
 				mooring.anchorLineGeometry[i].geometry.vertices[m].z = anchorPoint[i][2];
 			}
-
 			mooring.anchorLineGeometry[i].geometry.verticesNeedUpdate = true;
 		}
-		// states.continuous.mooring = mooring;
-
 		return FM;
 	}
 };
