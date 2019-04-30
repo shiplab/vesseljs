@@ -9,34 +9,51 @@
 
 	<script src="snippets/Ship3D_v2.js"></script>
 
-	<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-
 	<!-- Upgrading to WaterShader2.js will remove the dependency
 	on Mirror.js as well as open up possibilities for visualizing approximate water flows around vessels. -->
 	<script src="libs/Mirror.js"></script>
 	<script src="libs/WaterShader.js"></script>
-
 	<script src="libs/OrbitControls.js"></script>
-	<script src="libs/dat.gui.min.js"></script>
 	<script src="libs/skybox_from_examples.js"></script>
-
 	<script src="libs/browse_files_Elias_Hasle.js"></script>
+
 	<script src="snippets/Patch_interpolation.js"></script>
-	<!--<script src="Moving_bodies_Elias_Hasle.js"></script>-->
 	<script src="snippets/Playback.js"></script>
 	<script src="snippets/Regular_ocean.js"></script>
+	<script src="snippets/DynamicalMovementMooringWave.js"></script>
+	<!--<script src="Moving_bodies_Elias_Hasle.js"></script>-->
 	<!--<script src="keyboard_arrow_input_Elias_Hasle.js"></script>-->
 
-	<script src="snippets/DynamicalMovementMooringWave.js"></script>
-	<!-- <script src="js/mooringSystem.js"></script> -->
+	<script src="libs/dat.gui.min.js"></script>
 	<script src="libs/numeric-1.2.6.min.js"></script>
+	<script src="libs/zingchart.min.js"></script>
 </head>
+
+<style>
+
+.button-reload{
+	border:none;
+	display:inline-block;
+	padding:8px 16px;
+	vertical-align:middle;
+	overflow:hidden;
+	text-decoration:none;
+	color:white;
+	background-color:black;
+	text-align:center;
+	cursor:pointer;
+	white-space:nowrap}
+
+.hover-red:hover{
+	color:#fff!important;
+	background-color:#f44336!important}
+
+</style>
 
 <body>
 	<script>
 		"use strict";
-
-		//Globals
+		// globals
 		var renderer, camera, controls, gui, stats;
 		var scene, zUpCont, playback, bodies, ocean, ship3D, statMod;
 		var designDimension, floatingStates, mooring, line, hangedMooring;
@@ -51,30 +68,32 @@
 			B_44,
 			B_55,
 			B_66,
+			C_D,
 			CC,
 			waveForce,
-			C_D,
 			seaDepth,
 			anchorLength,
 			radialDistance,
 			density,
-			mooringAngle;
+			mooringAngle,
+			breakingLoad;
 		var mooring;
 		var dynMov, wavMo, states, scale;
 		var group;
+		var clock = new THREE.Clock();
 
 		hangedMooring = []; // Point of hanged mooring line on seabed (m, m, m)
-
 		// Damping
-		C_D = 0.2; // Assumed Linear Resistance Coeff.	(m/s)
-		B_44 = 3000000; // Assumed Roll Linear Damping Coeff.	(kgm2/s)
-		B_55 = 60000000; // Assumed Roll Linear Damping Coeff.	(kgm2/s)
-		B_66 = 6000000; // Assumed Roll Linear Damping Coeff.	(kgm2/s)
-		seaDepth = 30; // Sea bottom depth (m)
-		anchorLength = 195; // Anchor length (m)
+		C_D = 0.2; // Assumed Linear Resistance Coefficient (m/s)
+		B_44 = 3000000; // Assumed Roll Linear Damping Coefficient (kgm2/s)
+		B_55 = 60000000; // Assumed Roll Linear Damping Coefficient (kgm2/s)
+		B_66 = 6000000; // Assumed Roll Linear Damping Coefficient (kgm2/s)
+		seaDepth = 40; // Sea bottom depth (m)
+		anchorLength = 222; // Anchor length (m)
 		radialDistance = 200;
 		density = 200;
 		mooringAngle = 45;
+		breakingLoad = 500;
 		var userParameters = {
 			C_D,
 			B_44,
@@ -84,12 +103,12 @@
 			anchorLength,
 			radialDistance,
 			density,
-			mooringAngle
+			mooringAngle,
+			breakingLoad,
 		};
 
 		(function main() {
 			//Renderer setup
-			//document.body.style = "overflow: hidden;";
 			document.body.style.overflow = "hidden";
 			var container = document.createElement("div");
 			//container.style = "position: absolute; top: 0; left: 0;"
@@ -98,7 +117,7 @@
 				top: 0,
 				left: 0,
 				width: "100vw",
-				height: "100vh"
+				height: "75vh"
 			});
 			document.body.appendChild(container);
 			renderer = new THREE.WebGLRenderer({
@@ -111,20 +130,19 @@
 			//GUI setup (comment out to remove gui)
 			gui = new dat.GUI();
 
-			// add report to GUI controller
+			//add report to GUI controller
 			var obj = {
 				"Click to read paper": function() {
 					window.open("https://raw.githubusercontent.com/wiki/shiplab/vesseljs/files/open_6_DOF.pdf");
 				}
 			};
-
 			gui.add(obj, "Click to read paper");
 
 			playback = new Playback({
 				parentGUI: gui
 			});
 
-			//Scene setup:
+			//Scene setup
 			scene = new THREE.Scene();
 			let sun = new THREE.DirectionalLight(0xffffff, 2);
 			sun.position.set(-512, 246, 128);
@@ -135,23 +153,23 @@
 
 			scene.add(new Skybox(oSize));
 
-			// Add the bottom of ocean
+			//Add the bottom of ocean
 			var geometry = new THREE.PlaneBufferGeometry(oSize, oSize, 32);
 			geometry.dynamic = true;
 			var texture = new THREE.TextureLoader().load("textures/bottom.jpg");
 			var material = new THREE.MeshBasicMaterial({
 				side: THREE.FrontSide,
 				map: texture,
-				transparent: true
+				transparent: true	// visible from below
 			});
 			var plane = new THREE.Mesh(geometry, material);
 			plane.rotation.set(-Math.PI / 2, 0, 0);
 			plane.position.setY(-userParameters.seaDepth);
-			plane.material.side = THREE.DoubleSide;
+			plane.material.side = THREE.DoubleSide;   // visible both sides
 			plane.material.opacity = 0.8;
 			scene.add(plane);
 
-			//Use Z up from now on:
+			//Use Z up from now on
 			THREE.Object3D.DefaultUp.set(0, 0, 1);
 			zUpCont = new THREE.Group();
 			zUpCont.rotation.x = -0.5 * Math.PI;
@@ -183,7 +201,7 @@
 			zUpCont.add(new THREE.HemisphereLight(0xccccff, 0x666688, 1));
 
 			ocean = new Ocean({
-				parentGUI: gui, //remenber to insert back to see the waves
+				parentGUI: gui,
 				sunDir: sun.position.clone().normalize(),
 				size: oSize,
 				segments: 127
@@ -193,19 +211,16 @@
 
 			wavMo = [];
 			states = [];
-
+			
+			//Load the ship specifications
 			Vessel.loadShip(
 				"specs/ship_specifications/mississipiBarge.json",
 				function (ship) {
 					states = ship.designState.clone();
-					states.objectOverrides.derivedByGroup[
-						"ballast tanks"
-					].fullness = 0.5;
+					states.objectOverrides.derivedByGroup["ballast tanks"].fullness = 0.5;
 					states.objectOverrides.derivedByGroup["cargo tanks"].fullness = 0.5;
-					//console.log(states.objectCache);
 					statMod = new Vessel.StateModule(ship, states);
 					statMod.setDraft();
-					//console.log(states.shipCache.thisStateVer);
 					ship3D = new Ship3D(ship, {
 						shipState: states,
 						stlPath: "data/STL files",
@@ -217,13 +232,15 @@
 					});
 					zUpCont.add(ship3D);
 
-					// Insert mooring lines
+					//Insert mooring lines
 					designDimension = ship.structure.hull.attributes;
 					floatingStates = states.discrete.FloatingCondition.state;
 
 					states.continuous.mooring = {};
 					mooring = states.continuous.mooring;
-
+					
+					//Point of mooring line on ship (m, m, m)
+					//Trim added to correct misplacement of mooring node
 					mooring.mooringPointOnShip = [
 						[
 							floatingStates.LWL / 2 + floatingStates.trim,
@@ -245,49 +262,72 @@
 							floatingStates.BWL / 2,
 							designDimension.Depth - floatingStates.T
 						]
-					]; // Point of mooring line on ship          (m, m, m)
+					]; 
 
-					mooring.anchorPoint = []; // Point of mooring line on seabed        (m, m, m)
-					mooring.anchorLineGeometry = []; // Line geometry (global)        (m, m, m)
-					mooring.radialDistance = radialDistance;
-					mooring.mooringAngle = mooringAngle;
+					// Add properties to the mooring
+					mooring.anchorPoint = []; // Point of mooring line on seabed (m, m, m)
+					mooring.anchorLineGeometry = []; // Line geometry (global) (m, m, m)
+					mooring.radialDistance = radialDistance; // Distance between point on ship and anchoring(m)
+					mooring.mooringAngle = mooringAngle; // Radial angle - mooring rotation (degrees)
+					mooring.breakingLoad = breakingLoad; // Load limit for mooring line (kN)
+					mooring.anchorLength = anchorLength; // Mooring line Length (m)
+					mooring.w = density; // Mooring line density (kg/m)
+					mooring.seaDepth = seaDepth; // Sea depth from sea surface (m)
+					mooring.hangedMooring = []; // Point of hanged mooring line on seabed (m, m, m)
+					mooring.mooringStatus = {
+						mooringNE: 'OK',
+						mooringNW: 'OK',
+						mooringSE: 'OK',
+						mooringSW: 'OK',
+					} // Check if the mooring failed or not
+
 
 					// Anchoring point in seabed
-					for (var i = 0; i < mooring.mooringPointOnShip.length; i++) {
+					for (var i = 0; i < pos.length; i++) {
+						var baseangle, bwl, lwl;
+						if (i==0 || i==1) {
+							baseangle = 0;
+							lwl = floatingStates.LWL/2;
+						};
+						if (i==3 || i==2) {
+							baseangle = Math.PI;
+							lwl = -floatingStates.LWL/2;
+						};
+						if (i==0 || i==3) {
+							bwl = floatingStates.BWL/2;
+						};
+						if (i==1 || i==2) {
+							bwl = -floatingStates.BWL/2;
+						};
 						mooring.anchorPoint[i] = [
-							mooring.radialDistance *
-							Math.cos(
-								(-i * Math.PI) / 2 + (mooring.mooringAngle * Math.PI) / 180
-							),
+							mooring.radialDistance * Math.cos((baseangle) + Math.pow((-1), i) * (mooring.mooringAngle * Math.PI) / 180) + lwl,
 							-seaDepth,
-							mooring.radialDistance *
-							Math.sin(
-								(-i * Math.PI) / 2 + (mooring.mooringAngle * Math.PI) / 180
-							)
-						]; // Point of mooring line on seabed        (m, m, m)
-					}
+							mooring.radialDistance * Math.sin((baseangle) + Math.pow((-1), i) * (mooring.mooringAngle * Math.PI) / 180) + bwl,
+						];
+					};
 
 					// Rope Material
+					var colorMooring = [0xffffff, 0xff0000, 0x33cc33, 0x0066ff];
 					var materialLine = [
 						new THREE.LineBasicMaterial({
-							color: 0xffffff,
+							color: colorMooring[0], 
+							linewidth: 2})
+						,
+						new THREE.LineBasicMaterial({
+							color: colorMooring[1],
 							linewidth: 2
 						}),
 						new THREE.LineBasicMaterial({
-							color: 0xff0000,
+							color: colorMooring[2],
 							linewidth: 2
 						}),
 						new THREE.LineBasicMaterial({
-							color: 0x33cc33,
-							linewidth: 2
-						}),
-						new THREE.LineBasicMaterial({
-							color: 0x0066ff,
+							color: colorMooring[3],
 							linewidth: 2
 						})
 					];
 
-					//Insert while functions
+					// Insert while functions
 					var geometryMooring = [
 						new THREE.Geometry(),
 						new THREE.Geometry(),
@@ -301,23 +341,7 @@
 						}
 					}
 
-					//
-					// var line = [];
-
 					for (var i = 0; i < mooring.mooringPointOnShip.length; i++) {
-						// geometryMooring[i].vertices.push(new THREE.Vector3(anchorPointOnShip[i][0], anchorPointOnShip[i][1], anchorPointOnShip[i][2]));
-						//
-						// for (var m = 0; m < hangedMooring[i].length; m++) {
-						//   geometryMooring[i].vertices.push(new THREE.Vector3(hangedMooring[i][m][0], hangedMooring[i][m][1], hangedMooring[i][m][2]));
-						// }
-						//
-						// geometryMooring[i].vertices.push(new THREE.Vector3(anchorPoint[i][0], anchorPoint[i][1], anchorPoint[i][2]));
-
-						// for (var h = 0; h < 55; i++) {
-						// 	geometryMooring[i].vertices[h].push(new THREE.Vector3(i ,h , 0));
-						// }
-
-						// geometryMooring[i].verticesNeedUpdate = true;
 						mooring.anchorLineGeometry[i] = new THREE.Line(
 							geometryMooring[i],
 							materialLine[i]
@@ -325,24 +349,9 @@
 						mooring.anchorLineGeometry[i].geometry.verticesNeedUpdate = true;
 						scene.add(mooring.anchorLineGeometry[i]);
 					}
-
-					mooring.hangedMooring = []; // Point of hanged mooring line on seabed (m, m, m)
-
-					mooring.anchorLength = anchorLength; // Mooring line Length                   (m)
-					mooring.w = density; // Mooring line density                  (kg/m)
-					mooring.radialDistance = radialDistance;
-					mooring.seaDepth = seaDepth;
-
-					// Initial Velocities
-					// Initial BF-Surge Velocity
-					// Initial BF-Sway Velocity
-					// Initial BF-Heave Velocity
-					// Initial BF-Roll Velocity
-					// Initial BF-Pitch Velocity
-					// Initial BF-Yaw Velocity
-					// Initial Euler Angle X
-					// Initial Euler Angle Y
-					// Initial Euler Angle Z
+					
+					// Initial Velocities: BF-Surge, BF-Sway, BF-Heave, BF-Roll, BF-Pitch, BF-Yaw
+					// Initial Euler Angle X,  Angle Y, Angle Z
 					// [Surge, Sway, Heave, VSurge, VSway, VHeave, VRoll, VPitch, VYaw, EX, EY, EZ]
 					var Ini = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 					states.continuous.motion = {
@@ -405,7 +414,6 @@
 							states.continuous.motion.yaw = newValue;
 						})
 						.name("Yaw");
-					scale.open();
 					scale = gui.addFolder("Damping Coefficients");
 					scale
 						.add(userParameters, "C_D", 0.1, 0.9)
@@ -423,54 +431,29 @@
 						.add(userParameters, "B_66", 1000000, 9000000)
 						.step(5000)
 						.name("<div>B<sub>66</sub></div>");
+						scale = gui.addFolder("Ship Information");
+					var controller = scale
+						.add(states.objectOverrides.derivedByGroup["ballast tanks"], "fullness", 0, 1)
+						.step(0.01)
+						.name("Fullness");
 					scale = gui.addFolder("Mooring Configuration");
 					scale
-						.add(userParameters, "seaDepth", 10, 100)
-						.step(5)
-						.onChange(function (newValue) {
-							seaDepth = newValue;
-							mooring.seaDepth = newValue;
-							for (let i = scene.children.length - 1; i >= 0; i--) {
-								if (scene.children[i].type === "Mesh")
-									scene.remove(scene.children[i]);
-							}
-							var plane = new THREE.Mesh(geometry, material);
-							plane.rotation.set(-Math.PI / 2, 0, 0);
-							plane.position.setY(-userParameters.seaDepth);
-							plane.material.side = THREE.DoubleSide;
-							plane.material.opacity = 0.8;
-							scene.add(plane);
-						})
-						.name("Sea depth");
+						.add(mooring.mooringStatus, 'mooringNE').listen()
+						.name("Anchor NE");
 					scale
-						.add(userParameters, "anchorLength", 50, 500)
-						.step(1)
-						.onChange(function (newValue) {
-							mooring.anchorLength = newValue;
-						})
-						.onFinishChange(function () {
-							let condition = Math.pow((Math.pow(userParameters.seaDepth, 2) + Math.pow(userParameters.radialDistance, 2)),
-								0.5) - 10;
-							if (condition > userParameters.anchorLength) {
-								alert("Mooring line is not long enough. Consider increasing to " + Math.round(condition) +
-									" meters.");
-							};
-						})
-						.name("Mooring length");
+						.add(mooring.mooringStatus, 'mooringNW').listen()
+						.name("Anchor NW");
 					scale
-						.add(userParameters, "radialDistance", 50, 500)
-						.step(1)
-						.onChange(function (newValue) {
-							mooring.radialDistance = newValue;
-							radialDistance = newValue;
-						})
-						.name("Radial distance");
+						.add(mooring.mooringStatus, 'mooringSE').listen()
+						.name("Anchor SE");
+					scale
+						.add(mooring.mooringStatus, 'mooringSW').listen()
+						.name("Anchor SW");
 					scale
 						.add(userParameters, "mooringAngle", 0, 90)
 						.step(1)
 						.onChange(function (newValue) {
 							mooring.mooringAngle = newValue;
-							mooringAngle = newValue;
 						})
 						.name("Mooring Angle");
 					scale
@@ -480,37 +463,93 @@
 							mooring.w = newValue;
 						})
 						.name("Density");
-					scale = gui.addFolder("Ship Information");
-					var controller = scale
-						.add(
-							states.objectOverrides.derivedByGroup["ballast tanks"],
-							"fullness",
-							0,
-							1
-						)
-						.step(0.01)
-						.name("Fullness");
+					scale
+						.add(userParameters, "breakingLoad", 0, 1000)
+						.step(1)
+						.onChange(function (newValue) {
+							mooring.breakingLoad = newValue;
+						})
+						.name("Breaking Load");
+					scale
+						.add(userParameters, "radialDistance", 50, 500)
+						.step(1)
+						.onChange(function (newValue) {
+							mooring.radialDistance = newValue;
+						})
+						.name("Radial distance");
+					scale
+						.add(userParameters, "seaDepth", 10, 100)
+						.step(5)
+						.onChange(function (newValue) {
+							mooring.seaDepth = newValue;
 
-					controller.onChange(function (newValue) {
-						states.objectOverrides.derivedByGroup[
-							"cargo tanks"
-						].fullness = newValue;
+							// Define a new approximate anchorLength whenever the seaDepth is changed
+							var pointHeight = mooring.mooringPointOnShip[0][2];
+							var minimumLength = Math.pow(Math.pow(seaDepth+pointHeight, 2) + Math.pow(userParameters.radialDistance, 2), 0.5) + 10;
+							var maximumLength = seaDepth+pointHeight + userParameters.radialDistance;
+							userParameters.anchorLength = (minimumLength+maximumLength) * 0.5
+							// Remove the original anchorLength and replaces by a new one with the update value
+							insertAnchorLengthGui.remove();
+							insertAnchorLengthGui = scale.add(userParameters, "anchorLength").min(minimumLength).max(maximumLength).name("Mooring length").onChange(function (newValue) {
+							mooring.anchorLength = newValue});
+							
+							// Remove the sea bottom
+							for (let i = scene.children.length - 1; i >= 0; i--) {
+								if (scene.children[i].type === "Mesh")
+									scene.remove(scene.children[i]);
+							}
+							// Adds a sea bottom with the new seaDepth value
+							var plane = new THREE.Mesh(geometry, material);
+							plane.rotation.set(-Math.PI / 2, 0, 0);
+							plane.position.setY(-userParameters.seaDepth);
+							plane.material.side = THREE.DoubleSide;
+							plane.material.opacity = 0.8;
+							scene.add(plane);
+							let sun = new THREE.DirectionalLight(0xffffff, 2);
+							scene.add(new Skybox(oSize));
+						})
+						.name("Sea depth");
+					var insertAnchorLengthGui = scale
+						.add(userParameters, "anchorLength")
+						.min(150)
+						.max(250)
+						.step(1)
+						.onChange(function (newValue) {
+							mooring.anchorLength = newValue;
+						})
+						.name("Mooring length");
+					scale.open();
+					gui.remember(userParameters); // Allows to save the data in preset json
+					
+					// Change the GUI color to match the mooring line color on simulation
+					// Number 32, 33, 34, 35 are the position in the menu
+					var change = document.getElementsByTagName("LI").item(32);
+					change.style.borderLeft = '3px solid #FFFFFF';
+					var change = document.getElementsByTagName("LI").item(33);
+					change.style.borderLeft = '3px solid #FF0000';
+					var change = document.getElementsByTagName("LI").item(34);
+					change.style.borderLeft = '3px solid #66FF';
+					var change = document.getElementsByTagName("LI").item(35);
+					change.style.borderLeft = '3px solid #33CC33';
+
+					// Update draft when changing the fullness aspect
+					controller.onChange(function (newValue) {	
+						states.objectOverrides.derivedByGroup["cargo tanks"].fullness = newValue;
 						states.version += 1;
 						statMod.setDraft();
-						ship3D.position.z = -states.discrete.FloatingCondition.state.T;
+						floatingStates.T = states.discrete.FloatingCondition.state.T;
 					});
 
-					// cylinderCil.setRotationFromAxisAngle ([0, 0.25, 0], -Math.PI/4);
+					// Call the main function at DynamicalMovementMooringWave.js to run the simulation
 					dynMov = new DynamicalMovement(ship, states, userParameters, Ini);
 					scale.open();
 
-					//VERY approximate motion (for visualisation only)
+					// VERY approximate motion (for visualisation only)
 					playback.add(function (t) {
 						// let x = ship3D.position.x;
 						// let y = ship3D.position.y;
 						// let oCenter = ocean.calculateZ(x,y,t);
 						let dt = t - tprev;
-
 						dynMov.moveShip(tprev, dt);
 						tprev = t;
 
@@ -524,11 +563,11 @@
 				}
 			);
 
-			//Initial configuration:
+			// Initial configuration
 			let w = ocean.addCosineWave({
-				A: 0,
-				T: 11,
-				theta: 1
+				A: 0.5,	// Amplitude (m)
+				T: 11, // Period (s)
+				theta: 0 // Direction (degrees)
 			});
 			if (ocean.cosConf) ocean.cosConf.close();
 			playback.play();
@@ -536,6 +575,7 @@
 		})();
 
 		function animate(millitime) {
+			var t = clock.getElapsedTime();
 			ocean.water.render();
 			renderer.render(scene, camera);
 			let playing = playback.update();
@@ -553,6 +593,12 @@
 			}
 		}
 	</script>
+
+<!-- Reload button to refresh page -->
+<input type="button" value="Reload Simulation" onClick="document.location.reload(true)" class="button-reload hover-red" style="position:fixed; bottom:24%; width:15%">
+<!-- Real time plots for motion response and tension -->
+<div id="plotMooringTension" style="position:fixed; bottom:0; float:left; width:80%; height:23%"></div>
+
 </body>
 
 </html>
