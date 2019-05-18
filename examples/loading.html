@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 
 	<meta charset="utf-8">
@@ -11,30 +12,30 @@
 	<title>Loading Simulation</title>
 
 	<!-- Bootstrap Core CSS -->
-	<link href="css/bootstrap.min.css" rel="stylesheet">
+	<link href="libs/bootstrap.min.css" rel="stylesheet">
 
 	<!-- Three script -->
-	<script src="js/libs/three.js"></script>
-	<script src="js/libs/STLLoader.js"></script>
-	<script src="js/libs/OrbitControls.js"></script>
+	<script src="libs/three.js"></script>
+	<script src="libs/STLLoader.js"></script>
+	<script src="libs/OrbitControls.js"></script>
 
 	<!-- jQuery Version 1.11.1 -->
-	<script src="js/libs/jquery.js"></script>
+	<script src="libs/jquery.js"></script>
 
 	<!-- Bootstrap Core JavaScript -->
-	<script src="js/libs/bootstrap.min.js"></script>
+	<script src="libs/bootstrap.min.js"></script>
 
 	<!--Import Vessel.js library-->
 	<script src="../build/Vessel.js"></script>
 
 	<!--Ship3D class for three.js-->
-	<script src="js/Ship3D.js"></script>
+	<script src="snippets/Ship3D.js"></script>
 
 	<!--D3 library-->
-	<script src="js/libs/d3.v3.min.js"></script>
+	<script src="libs/d3.v3.min.js"></script>
 
 	<!--Line chart-->
-	<script src="js/lineChart.js"></script>
+	<script src="snippets/lineChart.js"></script>
 
 </head>
 
@@ -50,7 +51,7 @@
 			<!-- This is for the right part of the navbar. Reserved for Shiplab logo-->
 			<div class="nav navbar-nav navbar-right">
 				<div class="navbar-header">
-					<a class="navbar-brand" href="http://www.shiplab.ntnu.co/"><img src="images/barquinho.png" alt="Shiplab logo" style="height:150%"> 
+					<a class="navbar-brand" href="http://www.shiplab.ntnu.co/"><img src="images/barquinho.png" alt="Shiplab logo" style="height:150%">
 					</a>
 				</div>
 			</div>
@@ -69,6 +70,7 @@
 				<th>Parameter</th>
 				<th>Value</th>
 			</thead>
+
 			<body>
 				<tr>
 					<td>Loading flow rate per tank (m³/s):</td>
@@ -101,7 +103,7 @@
 				svg {
 					font: 10px sans-serif;
 				}
-	
+
 				.axis path,
 				.axis line {
 					fill: none;
@@ -113,6 +115,7 @@
 	</div>
 
 </body>
+
 </html>
 
 <!--Import simulation master script-->

@@ -5,188 +5,189 @@
 
 <head>
 
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="description" content="">
-    <meta name="author" content="">
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="">
+	<meta name="author" content="">
 
-    <title>Hull Hydrostatics</title>
+	<title>Hull Hydrostatics</title>
 
-    <!-- Bootstrap Core CSS -->
-    <link href="css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- jQuery Version 1.11.1 -->
-    <script src="js/libs/jquery.js"></script>
+	<!-- Bootstrap Core CSS -->
+	<link href="libs/bootstrap.min.css" rel="stylesheet">
 
-    <!-- Bootstrap Core JavaScript -->
-    <script src="js/libs/bootstrap.min.js"></script> 
-	
+	<!-- jQuery Version 1.11.1 -->
+	<script src="libs/jquery.js"></script>
+
+	<!-- Bootstrap Core JavaScript -->
+	<script src="libs/bootstrap.min.js"></script>
+
 	<!-- D3JavaScript -->
 	<!--script src="js/libs/d3_v4.9.1.js"></script-->
 
 	<!-- Graphical user interface -->
-	<script src="js/libs/dat.gui.min.js"></script>
-	
+	<script src="libs/dat.gui.min.js"></script>
+
 	<!-- Three script -->
-    <script src="js/libs/three.js"></script>
-	<script src="js/libs/STLLoader.js"></script>
-    <script src="js/libs/OrbitControls.js"></script>
+	<script src="libs/three.js"></script>
+	<script src="libs/STLLoader.js"></script>
+	<script src="libs/OrbitControls.js"></script>
 
 	<!--Import library-->
 	<script src="../build/Vessel.js"></script>
 
 	<!-- Prettyprinting of JSON data -->
-	<script type="text/javascript" src="js/libs/renderjson.js"></script>
-	
-	<!--Ship3D class for three.js-->
-	<script src="js/Ship3D.js"></script>
+	<script type="text/javascript" src="libs/renderjson.js"></script>
 
-    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-        <script src="https://oss.maxcdn.com/js/libs/html5shiv/3.7.0/html5shiv.js"></script>
-        <script src="https://oss.maxcdn.com/js/libs/respond.js/1.4.2/respond.min.js"></script>
-    <![endif]-->
+	<!--Ship3D class for three.js-->
+	<script src="snippets/Ship3D.js"></script>
+
+	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+	<!--[if lt IE 9]>
+		<script src="https://oss.maxcdn.com/js/libs/html5shiv/3.7.0/html5shiv.js"></script>
+		<script src="https://oss.maxcdn.com/js/libs/respond.js/1.4.2/respond.min.js"></script>
+	<![endif]-->
 
 </head>
 
 <body>
 
-    <!-- Navigation -->
-    <nav class="navbar navbar-inverse">
-        <div class="container">
-            <!-- Add  the <div>[Something]</div> structure for each header in the navbar-->
-            <div class="navbar-header">               
-                <a class="navbar-brand" href="https://github.com/shiplab/vesseljs">Github project page</a>
-            </div>
-            <!-- This is for the right part of the navbar. Reserved for Shiplab logo-->
-            <div class="nav navbar-nav navbar-right">
-                <div class="navbar-header">
-                    <a class="navbar-brand" href="http://www.shiplab.hials.org/"><img src="images/barquinho.png" alt="Shiplab logo" style="height:150%"> 
-                    </a>                    
-                </div>
-            </div>
-        </div>
-    </nav>
-            
-    <!-- Container creates the space -->
-    <div class="container">
-        
-        <!-- Row creates horizontal groups of columns -->
-        <div class="row">
-            
-            <!-- choose horizontal layout in https://www.w3schools.com/bootstrap/bootstrap_grid_examples.asp-->
-            
-            <!-- No divisions in page. Only 1 column. -->
-             <div class="col-md-12 text-center">
-                <h2>Hull Hydrostatics</h2>
-            </div>  
-            
+	<!-- Navigation -->
+	<nav class="navbar navbar-inverse">
+		<div class="container">
+			<!-- Add  the <div>[Something]</div> structure for each header in the navbar-->
+			<div class="navbar-header">
+				<a class="navbar-brand" href="https://github.com/shiplab/vesseljs">Github project page</a>
+			</div>
+			<!-- This is for the right part of the navbar. Reserved for Shiplab logo-->
+			<div class="nav navbar-nav navbar-right">
+				<div class="navbar-header">
+					<a class="navbar-brand" href="http://www.shiplab.hials.org/"><img src="images/barquinho.png" alt="Shiplab logo" style="height:150%">
+					</a>
+				</div>
+			</div>
+		</div>
+	</nav>
+
+	<!-- Container creates the space -->
+	<div class="container">
+
+		<!-- Row creates horizontal groups of columns -->
+		<div class="row">
+
+			<!-- choose horizontal layout in https://www.w3schools.com/bootstrap/bootstrap_grid_examples.asp-->
+
+			<!-- No divisions in page. Only 1 column. -->
 			<div class="col-md-12 text-center">
-                
-                <!-- Link the GitHub page if you have one. Add a pdf of how the project works if necessary. Just put it inside the same folder and call it how_to.pdf -->
-                <!--<h1>Hull Hydrostatics</h1>-->
-                <p>Interactive calculation of hull hydrostatic properties.</p>
-				                                    
+				<h2>Hull Hydrostatics</h2>
+			</div>
+
+			<div class="col-md-12 text-center">
+
+				<!-- Link the GitHub page if you have one. Add a pdf of how the project works if necessary. Just put it inside the same folder and call it how_to.pdf -->
+				<!--<h1>Hull Hydrostatics</h1>-->
+				<p>Interactive calculation of hull hydrostatic properties.</p>
+
 				<p>Developed by: Elias Hasle, Vicente Alejandro Iváñez Encinas and Henrique M. Gaspar. Visualization made using three.js.</p>
 
-            </div>
-			
-            <div class="col-md-12 text-left">
-                <h2>Input</h2>
-                <input type="file" id="file-input" />
-                <h3>Contents of the file:</h3>
-                <pre id="file-content"></pre>
-                <br>
-            </div>
-            
-            <div class="col-md-12 text-left">
-                <h2>3D orbit view of hull</h2>
+			</div>
+
+			<div class="col-md-12 text-left">
+				<h2>Input</h2>
+				<input type="file" id="file-input" />
+				<h3>Contents of the file:</h3>
+				<pre id="file-content"></pre>
+				<br>
+			</div>
+
+			<div class="col-md-12 text-left">
+				<h2>3D orbit view of hull</h2>
 			</div>
 			<div id="3d" class="col-md-12 text-left" style="min-height: 80vh">
-            </div>
-                
 			</div>
-            <div class="col-md-12 text-left">
-                <h2>Hydrostatic Properties</h2>
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Variable</th>
-                            <th>Results</th>
-                        </tr>
-                    
-                    </thead>
-                    <body>
-                        <tr>
-                           <td>Draft Amidships (m)</td> 
-                           <td id="draftc"></span></td> 
-                        </tr>
-                        <tr>
-                           <td>Volume of Displacement (m<sup>3</sup>)</td> 
-                           <td id="voldc"></span></td> 
-                        </tr>
-                        <tr>
-                           <td>Waterline Length (m)</td>
-						   <td id="lwlc"></span></td> 
-                        </tr>
-                        <tr>
-                           <td>Maximum Waterline Breadth (m)</td>
-						   <td id="bwlc"></span></td> 
-                        </tr>
-                        <tr>
-                           <td>Waterplane Area (m<sup>2</sup>)</td>
-						   <td id="Awpc"></span></td>
-                        </tr>
-						<tr>
-							<td>Cb</td>
-							<td id="cbc"></span></td> 
-						</tr>
-						<tr>
-							<td>Cp</td>
-							<td id="cpc"></span></td> 
-						</tr>
-						<tr>
-							<td>Cwp</td>
-							<td id="cwpc"></span></td> 
-						</tr>
-                        <tr>
-                           <td>KB (m)</td>
-						   <td id="KBc"></span></td> 
-                        </tr>
-						<tr>
-							<td>LCB (m)</td>
-							<td id="LCBc"></span></td> 
-						</tr>
-						<tr>
-							<td>LCF (m)</td>
-							<td id="LCFc"></span></td> 
-						</tr>
-                        <tr>
-                           <td>BMt (m)</td>
-						   <td id="BMtc"></span></td> 
-                        </tr>
-						<tr>
-							<td>BMl (m)</td>
-							<td id="BMlc"></span></td> 
-						</tr>
-                    </body>
-                
-                </table>
-			</div>
-        </div>
-    </div>
-        
-    <script>
+
+		</div>
+		<div class="col-md-12 text-left">
+			<h2>Hydrostatic Properties</h2>
+			<table class="table">
+				<thead>
+					<tr>
+						<th>Variable</th>
+						<th>Results</th>
+					</tr>
+
+				</thead>
+
+				<body>
+					<tr>
+						<td>Draft Amidships (m)</td>
+						<td id="draftc"></span></td>
+					</tr>
+					<tr>
+						<td>Volume of Displacement (m<sup>3</sup>)</td>
+						<td id="voldc"></span></td>
+					</tr>
+					<tr>
+						<td>Waterline Length (m)</td>
+						<td id="lwlc"></span></td>
+					</tr>
+					<tr>
+						<td>Maximum Waterline Breadth (m)</td>
+						<td id="bwlc"></span></td>
+					</tr>
+					<tr>
+						<td>Waterplane Area (m<sup>2</sup>)</td>
+						<td id="Awpc"></span></td>
+					</tr>
+					<tr>
+						<td>Cb</td>
+						<td id="cbc"></span></td>
+					</tr>
+					<tr>
+						<td>Cp</td>
+						<td id="cpc"></span></td>
+					</tr>
+					<tr>
+						<td>Cwp</td>
+						<td id="cwpc"></span></td>
+					</tr>
+					<tr>
+						<td>KB (m)</td>
+						<td id="KBc"></span></td>
+					</tr>
+					<tr>
+						<td>LCB (m)</td>
+						<td id="LCBc"></span></td>
+					</tr>
+					<tr>
+						<td>LCF (m)</td>
+						<td id="LCFc"></span></td>
+					</tr>
+					<tr>
+						<td>BMt (m)</td>
+						<td id="BMtc"></span></td>
+					</tr>
+					<tr>
+						<td>BMl (m)</td>
+						<td id="BMlc"></span></td>
+					</tr>
+				</body>
+
+			</table>
+		</div>
+	</div>
+	</div>
+
+	<script>
 		"use strict";
-		
-	    // Create scene+
+
+		// Create scene+
 		var renderer, scene, camera, controls, ship3D, ocean;
 		var gui = new dat.GUI();
-		
+
 		//Ready renderer and scene
-        (function (){
+		(function() {
 			renderer = new THREE.WebGLRenderer({antialias: true});
 			renderer.setPixelRatio(window.devicePixelRatio);
 			renderer.setClearColor(0xA9CCE3, 1);
@@ -196,15 +197,15 @@
 			//renderer.setSize(container.clientWidth, container.clientHeight);
 			// add the renderer to the div
 			container.appendChild(renderer.domElement);
-			
+
 			scene = new THREE.Scene();
-			
+
 			//Camera and controls:
 			camera = new THREE.PerspectiveCamera(50);
-			camera.up.set(0,0,1);
+			camera.up.set(0, 0, 1);
 			scene.add(camera);
 			controls = new THREE.OrbitControls(camera, renderer.domElement);
-			
+
 			//Respond to window resize:
 			function onResize() {
 				renderer.setSize(container.clientWidth, container.clientHeight);
@@ -213,44 +214,44 @@
 			}
 			window.addEventListener("resize", onResize);
 			onResize(); //Ensure the initial setup is good too
-	
+
 			//Add lights:
-			scene.add(new THREE.AmbientLight(0xffffff,0.3));
+			scene.add(new THREE.AmbientLight(0xffffff, 0.3));
 			scene.add(function() {
-				let sun = new THREE.DirectionalLight(0xffffff,1);
-				sun.position.set(1,1,1);
+				let sun = new THREE.DirectionalLight(0xffffff, 1);
+				sun.position.set(1, 1, 1);
 				return sun;
 			}());
 
 			//Add rudimentary ocean, to see effect of draft changes:
-			ocean = new THREE.Mesh(new THREE.PlaneBufferGeometry(1000,1000), new THREE.MeshPhongMaterial({color: 0x2222bb}));
+			ocean = new THREE.Mesh(new THREE.PlaneBufferGeometry(1000, 1000), new THREE.MeshPhongMaterial({color: 0x2222bb}));
 			scene.add(ocean);
 			var grid = new THREE.GridHelper(1000, 100);
-			grid.rotation.x = 0.5*Math.PI;
+			grid.rotation.x = 0.5 * Math.PI;
 			grid.position.z = 0.01;
 			scene.add(grid);
-			
-        })();
-		
-        // read file from user
-        function readSingleFile(e){
-            var file = e.target.files[0];
-            if (!file) {
-                return;
-            }
-			
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                var contents = e.target.result;
+
+		})();
+
+		// read file from user
+		function readSingleFile(e) {
+			var file = e.target.files[0];
+			if (!file) {
+				return;
+			}
+
+			var reader = new FileReader();
+			reader.onload = function(e) {
+				var contents = e.target.result;
 				//call common function for user files and server files
 				useFileData(contents);
-            };
-            reader.readAsText(file);
-        }
-		
+			};
+			reader.readAsText(file);
+		}
+
 		//Load sample file:
-		new THREE.FileLoader().load("data/ship_specifications/prismaticHull.json", useFileData);
-		
+		new THREE.FileLoader().load("specs/ship_specifications/prismaticHull.json", useFileData);
+
 		function useFileData(contents) {
 			var shipspec = JSON.parse(contents);
 			displayContents(shipspec);
@@ -258,23 +259,23 @@
 			if (ship3D !== undefined) {
 				scene.remove(ship3D);
 			}
-			ship3D = new Ship3D(ship, "data/STL files");
+			ship3D = new Ship3D(ship, "specs/STL files");
 			scene.add(ship3D);
-			
+
 			let LOA = ship.structure.hull.attributes.LOA;
-			camera.position.set(0.7*LOA, 0.7*LOA, 0.7*LOA);
-			controls.target = new THREE.Vector3(LOA/2,0,0);
+			camera.position.set(0.7 * LOA, 0.7 * LOA, 0.7 * LOA);
+			controls.target = new THREE.Vector3(LOA / 2, 0, 0);
 			controls.update();
 
 			let Value = {
 				Draft: ship.calculateDraft()
 			};
 
-			function fillDocument(){
+			function fillDocument() {
 				//calculate hydrostatics
 				let {LWL: lwlc, Cb: cbc, Cp: cpc, Cwp: cwpc, BWL: bwlc, Awp: Awpc, LCB: LCBc, KB: KBc, Ixwp: ixwpc, Iywp: iywpc,
 					LCF: LCFc, Vs: voldc, BMt: BMtc, BMl: BMlc} = ship.structure.hull.calculateAttributesAtDraft(Value.Draft);
-				
+
 				document.getElementById("draftc").innerHTML = Value.Draft.toFixed(2);
 				document.getElementById("lwlc").innerHTML = lwlc.toFixed(2);
 				document.getElementById("bwlc").innerHTML = bwlc.toFixed(2);
@@ -289,10 +290,10 @@
 				document.getElementById("BMtc").innerHTML = BMtc.toFixed(2);
 				document.getElementById("BMlc").innerHTML = BMlc.toFixed(2);
 			}
-			
+
 			fillDocument();
 
-			gui.add(Value, "Draft", 0, 4, 0.01).onChange(function (value) {
+			gui.add(Value, "Draft", 0, 4, 0.01).onChange(function(value) {
 				fillDocument();
 				ship3D.position.z = -Value.Draft;
 			});
@@ -300,35 +301,35 @@
 			animate();
 
 		}
-		
+
 		function animate() {
-			requestAnimationFrame(animate);			
+			requestAnimationFrame(animate);
 			renderer.render(scene, camera);
 		}
-        
-        // display pretty JSON
-        function displayContents(jsonData) {
+
+		// display pretty JSON
+		function displayContents(jsonData) {
 			let fileCont = document.getElementById("file-content");
 			fileCont.innerHTML = "";
 			fileCont.appendChild(
-            renderjson(jsonData)
-            );
-        }
-        
-        // Catch file browse
-        document.getElementById('file-input')
-          .addEventListener('change', readSingleFile, false);
-        
+				renderjson(jsonData)
+			);
+		}
+
+		// Catch file browse
+		document.getElementById('file-input')
+			.addEventListener('change', readSingleFile, false);
+
         //compare values
-        
-         
-    </script>
-    <!-- /.container -->
-    
-    
-    
-    <!-- Insert own scripts here -->
-      
+
+
+	</script>
+	<!-- /.container -->
+
+
+
+	<!-- Insert own scripts here -->
+
 
 </body>
 

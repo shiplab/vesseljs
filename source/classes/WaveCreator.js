@@ -16,16 +16,16 @@ function WaveCreator(defList, waveDuration = 3600) { // wave creator constructor
 		}
 	};
 	this.defList = defList || [ // list wave definitions
-			[0.6, 2.25, 180],
-			[1.1, 1.75, 150]
-		];
+		[0.6, 2.25, 180],
+		[1.1, 1.75, 150]
+	];
 	this.setRandom = function() { // set a wave definition randomly
 		var rand = this.defList[Math.floor(Math.random() * this.defList.length)];
 		this.setWaveDef(rand[0], rand[1], rand[2]);
 	};
 	this.setTime = function(time) {
 		// change wave definition along time
-		var noSpans = time/waveDuration;
+		var noSpans = time / waveDuration;
 		var coord = Math.floor(noSpans % this.defList.length);
 
 		this.setWaveDef(this.defList[coord][0], this.defList[coord][1], this.defList[coord][2]);

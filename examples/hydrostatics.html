@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<title>Hull Definition and Hydrostatics</title>
+	<!-- Bootstrap Core CSS -->
+	<link href="libs/bootstrap.min.css" rel="stylesheet">
+	<!-- jQuery Version 1.11.1 -->
+	<script src="libs/jquery.js"></script>
+	<!-- Bootstrap Core JavaScript -->
+	<script src="libs/bootstrap.min.js"></script>
+	<!-- Three script -->
+	<script src="libs/three.js"></script>
+	<script src="libs/STLLoader.js"></script>
+	<script src="libs/OrbitControls.js"></script>
+	<!--Import library-->
+	<script src="../build/Vessel.js"></script>
+	<!--Ship3D class for three.js-->
+	<script src="snippets/Ship3D.js"></script>
+	<!--Scripts to make an download zip from source-->
+	<script src="libs/jszip.js"></script>
+	<script src="libs/FileSaver.js"></script>
+	<script src="snippets/saveSource.js"></script>
+</head>
+
+<body>
+	<!-- Navigation -->
+	<nav class="navbar navbar-inverse">
+		<div class="container">
+			<!-- Add  the <div>[Something]</div> structure for each header in the navbar-->
+			<div class="navbar-header">
+				<a class="navbar-brand" href="https://github.com/shiplab/vesseljs">Github project page</a>
+			</div>
+			<!-- This is for the right part of the navbar. Reserved for Shiplab logo-->
+			<div class="nav navbar-nav navbar-right">
+				<div class="navbar-header">
+					<a class="navbar-brand" href="https://www.shiplab.hials.org/"><img src="images/barquinho.png" alt="Shiplab logo" style="height:150%">
+					</a>
+				</div>
+			</div>
+		</div>
+	</nav>
+	<!-- Container creates the space -->
+	<div class="container">
+		<!-- Row creates horizontal groups of columns -->
+		<div class="row">
+			<!-- No divisions in page. Only 1 column. -->
+			<div class="col-md-12 text-center">
+				<h2>Hull Definition and Hydrostatics</h2>
+			</div>
+			<div class="col-md-12 text-center">
+				<p>Define, visualize a hull and calculate its hydrostatic properties.</p>
+				<input type="button" value="Download Source" onClick="saveSource()">
+			</div>
+			<div class="col-md-12 text-left">
+				<p>A Ship object in the Vessel.js library is created from a specification object.
+					The specification below defines a prismatic hull, without any additional part.
+					The hull lines (stored in the halfBreadths property) are taken as symmetrical
+					and are defined proportionally to the ship's main dimensions (stored in the attributes property):
+				</p>
+				<pre id="source1"></pre>
+				<p>Then, we create a Ship object from this specification:</p>
+				<pre id="source2"></pre>
+				<p>The visualization is created with an interface built to transform the Ship object above in a <a href="https://threejs.org/" target="_blank">Three.js</a>
+					render (see <a href="Object_geom.html" target="_blank">here</a> for more details). The result is displayed below.
+					The different colors indicate the position of the design draft.
+				</p>
+			</div>
+			<div id="3d" class="col-md-12 text-left" style="min-height: 40vh">
+			</div>
+			<div class="col-md-12 text-left">
+				<p>To calculate the hydrostatic properties of the hull for a given draft, say, 2 m, the following method can be evoked:</p>
+				<pre id="source3"></pre>
+				<p>Which returns:</p>
+				<pre id="hydro"></pre>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		"use strict";
+
+		var objectTemplate, myObject, spec, ship, renderer, scene, camera, controls, ship3D, draft, hydro;
+	</script>
+
+<script id="script1">spec = {
+	"designState": {
+		"calculationParameters": {
+			"Draft_design": 2
+		}
+	},
+	"structure": {
+		"hull": {
+			"attributes": {
+				"LOA": 20,
+				"BOA": 8,
+				"Depth": 4
+			},
+			"halfBreadths": {
+				"waterlines": [0, 1],
+				"stations": [0, 1],
+				"table": [[0, 0], [1, 1]]
+			}
+		},
+		"decks": {},
+		"bulkheads": {}
+	},
+	"baseObjects": [],
+	"derivedObjects": []
+};
+</script>
+
+<script id="script2">var ship = new Vessel.Ship(spec);</script>
+
+<script id="script3">draft = 2;
+hydro = ship.structure.hull.calculateAttributesAtDraft(draft);
+</script>
+
+	<script>
+		document.getElementById("hydro").innerHTML = JSON.stringify(hydro, null, 4);
+
+		//Ready renderer and scene
+		(function() {
+			renderer = new THREE.WebGLRenderer({antialias: true});
+			renderer.setPixelRatio(window.devicePixelRatio);
+			renderer.setClearColor(0xA9CCE3, 1);
+
+			// get the div that will hold the renderer
+			var container = document.getElementById('3d');
+			container.appendChild(renderer.domElement);
+
+			scene = new THREE.Scene();
+
+			//Camera and controls:
+			camera = new THREE.PerspectiveCamera(50);
+			camera.up.set(0, 0, 1);
+			scene.add(camera);
+			controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+			//Respond to window resize:
+			function onResize() {
+				renderer.setSize(container.clientWidth, container.clientHeight);
+				camera.aspect = container.clientWidth / container.clientHeight;
+				camera.updateProjectionMatrix();
+			}
+			window.addEventListener("resize", onResize);
+			onResize(); //Ensure the initial setup is good too
+
+			//Add lights:
+			scene.add(new THREE.AmbientLight(0xffffff, 0.3));
+			scene.add(function() {
+				let sun = new THREE.DirectionalLight(0xffffff, 1);
+				sun.position.set(1, 1, 1);
+				return sun;
+			}());
+
+		})();
+
+		ship3D = new Ship3D(ship, "stl/");
+		scene.add(ship3D);
+
+		let LOA = ship.structure.hull.attributes.LOA;
+		camera.position.set(0.7 * LOA, 0.7 * LOA, 0.7 * LOA);
+		controls.target = new THREE.Vector3(LOA / 2, 0, 0);
+		controls.update();
+		animate();
+
+		function animate() {
+			requestAnimationFrame(animate);
+			renderer.render(scene, camera);
+		}
+	</script>
+
+	<script>
+		document.getElementById("source1").innerHTML = document.getElementById("script1").innerHTML;
+		document.getElementById("source2").innerHTML = document.getElementById("script2").innerHTML;
+		document.getElementById("source3").innerHTML = document.getElementById("script3").innerHTML;
+	</script>
+</body>
+
+</html>

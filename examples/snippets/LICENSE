@@ -1,0 +1,5 @@
+The following files:
+* parallelCoordinates.js (adapted from this page: https://bl.ocks.org/jasondavies/1341281)
+* lineChart.js and scatterPlot.js (adapted from this page: https://bl.ocks.org/mbostock/3887118)
+
+are licensed under the GNU Public License. See the links for more info.

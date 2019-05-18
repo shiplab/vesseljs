@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<title>Object Weight</title>
+	<!-- Bootstrap Core CSS -->
+	<link href="libs/bootstrap.min.css" rel="stylesheet">
+	<!-- jQuery Version 1.11.1 -->
+	<script src="libs/jquery.js"></script>
+	<!-- Bootstrap Core JavaScript -->
+	<script src="libs/bootstrap.min.js"></script>
+	<!--Import library-->
+	<script src="../build/Vessel.js"></script>
+	<!--Scripts to make an download zip from source-->
+	<script src="libs/jszip.js"></script>
+	<script src="libs/FileSaver.js"></script>
+	<script src="snippets/saveSource.js"></script>
+</head>
+
+<body>
+	<!-- Navigation -->
+	<nav class="navbar navbar-inverse">
+		<div class="container">
+			<!-- Add  the <div>[Something]</div> structure for each header in the navbar-->
+			<div class="navbar-header">
+				<a class="navbar-brand" href="https://github.com/shiplab/vesseljs">Github project page</a>
+			</div>
+			<!-- This is for the right part of the navbar. Reserved for Shiplab logo-->
+			<div class="nav navbar-nav navbar-right">
+				<div class="navbar-header">
+					<a class="navbar-brand" href="https://www.shiplab.hials.org/"><img src="images/barquinho.png" alt="Shiplab logo" style="height:150%">
+					</a>
+				</div>
+			</div>
+		</div>
+	</nav>
+	<!-- Container creates the space -->
+	<div class="container">
+		<!-- Row creates horizontal groups of columns -->
+		<div class="row">
+			<!-- No divisions in page. Only 1 column. -->
+			<div class="col-md-12 text-center">
+				<h2>Object Weight</h2>
+			</div>
+			<div class="col-md-12 text-center">
+				<p>Define and calculate a tank's weight and center of gravity.</p>
+				<input type="button" value="Download Source" onClick="saveSource()">
+			</div>
+			<div class="col-md-12 text-left">
+				<p>There are three ways to define the center of gravity of a tank object:
+					<ul>
+						<li>unspecified, which will default to the center of the geometric box.</li>
+						<li>fixed.</li>
+						<li>mapped to the level of fluid.</li>
+					</ul>
+					The following examples will illustrate how to perform calculations for each of the three cases.</p>
+			</div>
+			<div class="col-md-12 text-left">
+				<h4>Unspecified CG</h4>
+				<p>A base object can be created without specifying its center of gravity. First, create an empty BaseObject:</p>
+				<pre id="source1"></pre>
+				<p>Fill it with the identification tag, geometric and weight data:</p>
+				<pre id="source2"></pre>
+				<p>Now create an empty DerivedObject:</p>
+				<pre id="source3"></pre>
+				<p>Link it to the respective BaseObject and fill it with position (in relation to the vessel):</p>
+				<pre id="source4"></pre>
+				<p>To calculate the object's weight and CG, first we create a ShipState object to handle the simulated state:</p>
+				<pre id="source5"></pre>
+				<p>And then evoke the getWeight method with the state as argument:</p>
+				<pre id="source6"></pre>
+				<p>Which returns the full tank weight with the CG positioned in the center of the bounding box:</p>
+				<pre id="unspecified"></pre>
+			</div>
+			<div class="col-md-12 text-left">
+				<h4>Fixed CG</h4>
+				<p>To define a fixed CG, the weight information inside the base object above can be defined as:</p>
+				<pre id="source7"></pre>
+				<p>So, the getWeight method returns:
+					<pre id="fixed"></pre>
+				</p>
+			</div>
+			<div class="col-md-12 text-left">
+				<h4>Mapped CG</h4>
+				<p>To calculate the CG according to the fluid level, a CG mapping needs to be defined in the base object, for example:</p>
+				<pre id="source8"></pre>
+				<p>If the base state is kept as before (full, or fullness = 1), then the getWeight method yields the total weight with the maximum CG listed in the mapping above:</p>
+				<pre id="mapped1"></pre>
+				<p>Now, if the base state is changed to fullness = 0.7, the method will calculate the new weight and interpolate the corresponding CG from the valules listed in the mapping, returning:</p>
+				<pre id="mapped2"></pre>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		"use strict";
+
+		var objectTemplate, myObject, state, weightUns, weightFix, weightMap;
+	</script>
+
+<script id="script1">var objectTemplate = new Vessel.BaseObject();</script>
+
+<script id="script2">objectTemplate.id = "First Object";
+objectTemplate.boxDimensions = {
+	"length": 10,
+	"breadth": 4,
+	"height": 2
+};
+objectTemplate.weightInformation = {
+	"contentDensity": 1025,
+	"volumeCapacity": 70,
+	"lightweight": 5000
+};
+objectTemplate.baseState = {
+	"fullness": 1
+};
+</script>
+
+<script id="script3">myObject = new Vessel.DerivedObject();</script>
+
+<script id="script4">myObject.id = "Tank1";
+myObject.baseObject = objectTemplate;
+myObject.referenceState = {
+	"xCentre": 0,
+	"yCentre": 0,
+	"zBase": 0
+};
+myObject.affiliations = {};</script>
+
+<script id="script5">state = new Vessel.ShipState();</script>
+
+<script id="script6">weightUns = myObject.getWeight(state);</script>
+
+	<script>
+		document.getElementById("unspecified").innerHTML = JSON.stringify(weightUns, null, 4);
+	</script>
+
+<script id="script7">objectTemplate.weightInformation = {
+	"contentDensity": 1025,
+	"volumeCapacity": 70,
+	"lightweight": 5000,
+	"cg": [0, 0, 1.45]
+};
+</script>
+
+	<script>
+		weightFix = myObject.getWeight(state);
+
+		document.getElementById("fixed").innerHTML = JSON.stringify(weightFix, null, 4);
+	</script>
+
+<script id="script8">objectTemplate.weightInformation = {
+	"contentDensity": 1025,
+	"volumeCapacity": 70,
+	"lightweight": 5000,
+	"fullnessCGMapping": {
+		"fullnesses": [0, 0.25, 0.5, 0.75, 1],
+		"cgs": [
+			[0, 0, 1.00],
+			[0, 0, 0.41],
+			[0, 0, 0.56],
+			[0, 0, 0.77],
+			[0, 0, 1.00]
+		]
+	}
+};
+</script>
+
+	<script>
+		weightMap = myObject.getWeight(state);
+		document.getElementById("mapped1").innerHTML = JSON.stringify(weightMap, null, 4);
+
+		objectTemplate.baseState = {"fullness": 0.7};
+		state.version = 2;
+
+		weightMap = myObject.getWeight(state);
+		document.getElementById("mapped2").innerHTML = JSON.stringify(weightMap, null, 4);
+	</script>
+
+	<script>
+		document.getElementById("source1").innerHTML = document.getElementById("script1").innerHTML;
+		document.getElementById("source2").innerHTML = document.getElementById("script2").innerHTML;
+		document.getElementById("source3").innerHTML = document.getElementById("script3").innerHTML;
+		document.getElementById("source4").innerHTML = document.getElementById("script4").innerHTML;
+		document.getElementById("source5").innerHTML = document.getElementById("script5").innerHTML;
+		document.getElementById("source6").innerHTML = document.getElementById("script6").innerHTML;
+		document.getElementById("source7").innerHTML = document.getElementById("script7").innerHTML;
+		document.getElementById("source8").innerHTML = document.getElementById("script8").innerHTML;
+	</script>
+</body>
+
+</html>
