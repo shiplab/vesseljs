@@ -189,7 +189,9 @@ function DynamicalMovement(ship, states, userParameters, Ini, oceanDepth) {
 
     // Calculating Coriolis by Thor Eq. (8)
     var S1 = Smtrx([-m * vel[0], -m * vel[1], -m * vel[2]]);
-    var S2 = numeric.dot(Smtrx([m * vel[3], m * vel[4], m * vel[5]]), Smtrx(RG_system));
+    var S21 = numeric.dot(Smtrx([m * vel[3], m * vel[4], m * vel[5]]), Smtrx(RG_system));
+    var S22 = numeric.dot(Smtrx(RG_system), Smtrx([m * vel[3], m * vel[4], m * vel[5]]));
+    // Check if it is necessary to insert an S3?
     var SI = numeric.neg(Smtrx(numeric.dot(I0, [vel[3], vel[4], vel[5]])));
 
     // Coriolis Added Mass by Thor Eq. (40)

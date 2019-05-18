@@ -12,7 +12,7 @@
   		"MCR" : 10000,
   		"SFC" : 0.000215,
   		"Co" : 0.3,
-  		"tripDuration": 40
+  		"tripDuration": 0
   	},
   	"objectOverrides": {
       "derivedByGroup": {

@@ -28,7 +28,6 @@
 	<!--<script src="keyboard_arrow_input_Elias_Hasle.js"></script>-->
 
 	<script src="js/DynamicalMovementMooringWave.js"></script>
-	<!-- <script src="js/mooringSystem.js"></script> -->
 	<script src="js/libs/numeric-1.2.6.min.js"></script>
 </head>
 
@@ -39,7 +38,7 @@
 		//Globals
 		var renderer, camera, controls, gui, stats;
 		var scene, zUpCont, playback, bodies, ocean, ship3D, statMod;
-		var designDimention, floatingStates, mooring, line, hangedMooring;
+		var designDimension, floatingStates, mooring, line, hangedMooring;
 		var RG_system, g, MM, ADD_mass, AA, A_33, BB, B_33, B_44, B_55, B_66, CC, waveForce, C_D;
 		var mooring
 		var dynMov, wavMo, states, scale;
@@ -175,7 +174,7 @@
 				zUpCont.add(ship3D);
 
 				// Insert mooring lines
-				designDimention = ship.structure.hull.attributes;
+				designDimension = ship.structure.hull.attributes;
 				floatingStates = states.discrete.FloatingCondition.state;
 
 				states.continuous.mooring = {};
@@ -184,10 +183,10 @@
 				var anchorLength = 195; // Mooring line Length                   (m)
 
 				mooring.mooringPointOnShip = [
-					[floatingStates.LWL / 2, floatingStates.BWL / 2, designDimention.Depth - floatingStates.T],
-					[floatingStates.LWL / 2, -floatingStates.BWL / 2, designDimention.Depth - floatingStates.T],
-					[-floatingStates.LWL / 2, -floatingStates.BWL / 2, designDimention.Depth - floatingStates.T],
-					[-floatingStates.LWL / 2, floatingStates.BWL / 2, designDimention.Depth - floatingStates.T]
+					[floatingStates.LWL / 2, floatingStates.BWL / 2, designDimension.Depth - floatingStates.T],
+					[floatingStates.LWL / 2, -floatingStates.BWL / 2, designDimension.Depth - floatingStates.T],
+					[-floatingStates.LWL / 2, -floatingStates.BWL / 2, designDimension.Depth - floatingStates.T],
+					[-floatingStates.LWL / 2, floatingStates.BWL / 2, designDimension.Depth - floatingStates.T]
 				]; // Point of mooring line on ship          (m, m, m)
 
 				mooring.anchorPoint = []; // Point of mooring line on seabed        (m, m, m)
@@ -230,25 +229,10 @@
 				// var line = [];
 
 				for (var i = 0; i < mooring.mooringPointOnShip.length; i++) {
-					// geometryMooring[i].vertices.push(new THREE.Vector3(anchorPointOnShip[i][0], anchorPointOnShip[i][1], anchorPointOnShip[i][2]));
-					//
-					// for (var m = 0; m < hangedMooring[i].length; m++) {
-					//   geometryMooring[i].vertices.push(new THREE.Vector3(hangedMooring[i][m][0], hangedMooring[i][m][1], hangedMooring[i][m][2]));
-					// }
-					//
-					// geometryMooring[i].vertices.push(new THREE.Vector3(anchorPoint[i][0], anchorPoint[i][1], anchorPoint[i][2]));
-
-					// for (var h = 0; h < 55; i++) {
-					// 	geometryMooring[i].vertices[h].push(new THREE.Vector3(i ,h , 0));
-					// }
-
-					// geometryMooring[i].verticesNeedUpdate = true;
 					mooring.anchorLineGeometry[i] = new THREE.Line(geometryMooring[i], materialLine[i]);
 					mooring.anchorLineGeometry[i].geometry.verticesNeedUpdate = true;
 					scene.add(mooring.anchorLineGeometry[i]);
 				}
-
-				mooring.hangedMooring = []; // Point of hanged mooring line on seabed (m, m, m)
 
 				mooring.anchorLength = 195; // Mooring line Length                   (m)
 				mooring.w = 200; // Mooring line density                  (kg/m)
@@ -308,8 +292,8 @@
 				scale.add(userParameters, "B_55", 10000000, 90000000).step(5000);
 				scale.add(userParameters, "B_66", 1000000, 9000000).step(5000);
 				scale = gui.addFolder("Ship Information");
-				var controller = scale.add(states.objectOverrides.derivedByGroup["ballast tanks"], "fullness", 0, 1).step(0.01);
 
+				var controller = scale.add(states.objectOverrides.derivedByGroup["ballast tanks"], "fullness", 0, 1).step(0.01);
 				controller.onChange(function(newValue) {
 					states.objectOverrides.derivedByGroup["cargo tanks"].fullness = newValue;
 					states.version += 1;

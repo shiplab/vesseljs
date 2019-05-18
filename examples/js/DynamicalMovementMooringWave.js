@@ -11,13 +11,9 @@ function DynamicalMovement(ship, states, userParameters, Ini, oceanDepth) {
 
   var calculatedParameters = this.ship.designState.calculationParameters;
 
-  var options = {
-    valueNames: ['id', 'name', 'x_position', 'y_position', 'z_position', 'mass', 'l_mass', 'h_mass', 'w_mass']
-  };
-
   length = floatingStates.LWL;
   breadth = floatingStates.BWL;
-  depth = designDimention.Depth;
+  depth = designDimension.Depth;
   draft = floatingStates.T;
   Cb = calculatedParameters.Cb_design;
   KG = 0.5 * depth;
@@ -28,7 +24,7 @@ function DynamicalMovement(ship, states, userParameters, Ini, oceanDepth) {
   var m = floatingStates.w.mass; // Vessel Mass                    (kg)
   var a_33 = rho * g * breadth * draft;
   var A_WP = floatingStates.Awp; // Still Water Plane Area                (m2)
-  // Remenber to use recalculate the draft when the code allow add mass like bellow
+  // Remenber to use recalculate the draft when the code allow insert other masses like bellow
   // var draft_system = (LL[0][0]+rho*length*breadth*draft*Cb)/(rho*length*breadth*Cb); // draft vessel + body  (m)
   // var center_reference = -draft;
 
@@ -49,7 +45,7 @@ function DynamicalMovement(ship, states, userParameters, Ini, oceanDepth) {
       waveForce = [0, 0, 0, 0, 0, 0]
     }
 
-    mooringForce = this.InsertMooring(this.ship, this.states, motion, oceanDepth, mooring.anchorPoint);
+    mooringForce = this.MooringCalculation(this.ship, this.states, motion, oceanDepth, mooring.anchorPoint);
 
     // Inertia
     var I_46 = 0; //Small coupled term, was neglected.
@@ -82,12 +78,12 @@ function DynamicalMovement(ship, states, userParameters, Ini, oceanDepth) {
     var C_53 = 0; // Pitch-Heave Coupled Restoring Coeff.  (N)  // aproximmation to zero is valid if the water plane is symmetrical in relation to the mid section
 
     // Damping
-    var B_11 = rho * breadth * draft * userParameters.C_D; // Linear Sway Dampig Coeff.             (kg/s)
+    var B_11 = rho * breadth * draft * userParameters.C_D; // Linear Surge Dampig Coeff.             (kg/s)
     var B_22 = rho * length * draft * userParameters.C_D; // Linear Sway Dampig Coeff.             (kg/s)
     // var B_33 = rho*A_WP*userParameters.C_D;                    // Linear Heave Dampig Coeff.            (kg/s)
 
     var ADD_33 = a_33 * length;
-    var ADD_44 = 0.15 * I_44; // Equation 6.61a
+    var ADD_44 = 0.15 * I_44;
     var ADD_55 = a_33 * Math.pow(length, 3) / 12;
     ADD_mass = [
       [0, 0, 0, 0, 0, 0],
@@ -156,7 +152,7 @@ function DynamicalMovement(ship, states, userParameters, Ini, oceanDepth) {
     var costh = ocean.waves["0"].costh; //Cos of Wave Directions
     var sinth = ocean.waves["0"].sinth; //Sen of Wave Directions
 
-    // projection of trajectory for calculation of phase difference
+    // trajectory projection for calculating phase difference
     var projMag = ship3D.position.x * costh + ship3D.position.y * sinth; // magnitude of projection
 
     var omega = wavCre.waveDef.waveFreq; // wave frequencie
@@ -268,7 +264,9 @@ function DynamicalMovement(ship, states, userParameters, Ini, oceanDepth) {
 
     // Calculating Coriolis by Thor Eq. (8)
     var S1 = Smtrx([-m * vel[0], -m * vel[1], -m * vel[2]]);
-    var S2 = numeric.dot(Smtrx([m * vel[3], m * vel[4], m * vel[5]]), Smtrx(RG_system));
+    var S21 = numeric.dot(Smtrx([m * vel[3], m * vel[4], m * vel[5]]), Smtrx(RG_system));
+    var S22 = numeric.dot(Smtrx(RG_system), Smtrx([m * vel[3], m * vel[4], m * vel[5]]));
+    // Check if it is necessary to insert an S3?
     var SI = numeric.neg(Smtrx(numeric.dot(I0, [vel[3], vel[4], vel[5]])));
 
     // Coriolis Added Mass by Thor Eq. (40)
@@ -281,8 +279,8 @@ function DynamicalMovement(ship, states, userParameters, Ini, oceanDepth) {
 
     for (i = 0; i < 3; i++) {
       for (f = 0; f < 3; f++) {
-        C[i][3 + f] = S1[i][f] - S2[i][f];
-        C[3 + i][f] = S1[i][f] + S2[i][f];
+        C[i][3 + f] = S1[i][f] - S21[i][f];
+        C[3 + i][f] = S1[i][f] + S22[i][f];
         C[3 + i][3 + f] = S1[i][f];
 
         CA[i][f] = CAQuad1[i][f];
@@ -340,7 +338,7 @@ function DynamicalMovement(ship, states, userParameters, Ini, oceanDepth) {
     return m;
   }
 
-  this.InsertMooring = function(ship, states, motion, oceanDepth, anchorPoint) {
+  this.MooringCalculation = function(ship, states, motion, oceanDepth, anchorPoint) {
 
     var J = Euler2J1([motion.roll, motion.pitch, motion.yaw]);
 
@@ -391,12 +389,8 @@ function DynamicalMovement(ship, states, userParameters, Ini, oceanDepth) {
       FM[1] -= g * horizontalForce[i] * (anchorAngle[i][1]);
       FM[2] -= g * verticalForce[i];
       FM[3] += (g * horizontalForce[i] * (anchorAngle[i][1]))*(pos[i][2]+depth-draft/2) + (g * verticalForce[i])*pos[i][1];
-      // console.log(FM[3], (g * horizontalForce[i] * (anchorAngle[i][1]))*(pos[i][2]+depth-draft/2) + (g * verticalForce[i])*pos[i][1]);
       FM[4] += g * horizontalForce[i] * (anchorAngle[i][0])*(pos[i][2]+depth-draft/2) + g * verticalForce[i]*pos[i][0];
-      // console.log(FM[4], g * horizontalForce[i] * (anchorAngle[i][0])*(pos[i][2]+depth-draft/2) + g * verticalForce[i]*pos[i][0]);
       FM[5] += (-g * horizontalForce[i] * (anchorAngle[i][1]))*(pos[i][0]) + g * horizontalForce[i] * (anchorAngle[i][0])*(pos[i][1]);
-      // console.log(FM[5], (-g * horizontalForce[i] * (anchorAngle[i][1]))*(pos[i][0]) + g * horizontalForce[i] * (anchorAngle[i][0])*(pos[i][1]));
-      // debugger
     }
     // console.log(FM[4]);
 

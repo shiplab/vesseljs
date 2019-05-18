@@ -151,7 +151,7 @@ function Ocean(params) {
 		});
 		// this.conf.add(pcos, "A",0.0,10.0, 0.1);
 		// this.conf.add(pcos, "T",2.0,20.0, 0.1);
-		//this.conf.add(pcos, "L",6.0,700.0, 0.5);
+		// this.conf.add(pcos, "L",6.0,700.0, 0.5);
 		// this.conf.add(pcos, "theta", 0, 2*Math.PI, 0.01);
 		// this.conf.add(pcos, "phi", -Math.PI, Math.PI, 0.01);
 		//Dispose of temporary cosine wave object

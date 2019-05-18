@@ -4,24 +4,24 @@
 
 /*
 PLANS:
-Upgrading to (a possibly modified) 
-WaterShader2.js will remove the dependency 
-on Mirror.js as well as opening up 
-possibilities for visualizing approximate 
+Upgrading to (a possibly modified)
+WaterShader2.js will remove the dependency
+on Mirror.js as well as opening up
+possibilities for visualizing approximate
 water flows around vessels.
 
-A more profound change would be moving 
-calculations into shaders, such as is 
-done simply with one cosine wave in 
+A more profound change would be moving
+calculations into shaders, such as is
+done simply with one cosine wave in
 the newest version of the compit demo.
-For this to give a performance improvement 
-in the general case (of course accepting 
-some limits on the number of simultaneous 
-waves), the interpolation would also need 
+For this to give a performance improvement
+in the general case (of course accepting
+some limits on the number of simultaneous
+waves), the interpolation would also need
 to be reworked into doing the heavy-lifting
-on GPU, at least the time interpolation, 
-i.e. by maintaining three buffers with 
-vertex position data, and use a uniform 
+on GPU, at least the time interpolation,
+i.e. by maintaining three buffers with
+vertex position data, and use a uniform
 index to indicate the time order of the buffers,
 and a uniform interpolation parameter to do the
 time interpolation. The 2D Catmull-Rom interpolation
@@ -34,11 +34,11 @@ take three extra textures rather than three attributes.
 
 var Wave = function() {
 	var waveCount = 0;
-	
+
 	return function(waveType) {
 		this.waveId = waveCount;
 		waveCount++;
-		
+
 		this.waveType = waveType;
 	}
 }();
@@ -78,7 +78,7 @@ function DirectionalCosine(params) {
 	this.theta = typeof params.theta !== "undefined" ? params.theta : 0;
 	//phase shift
 	this.phi = typeof params.phi !== "undefined" ? params.phi : 0;
-	
+
 	this.updateWavelength();
 }
 Object.assign(DirectionalCosine.prototype, {
@@ -128,7 +128,7 @@ Object.assign(FakeSplash.prototype, {
 		let r = Math.sqrt(Math.pow(x-this.xc,2)+Math.pow(y-this.yc,2));
 		if (r>this.v*tm+0.5*this.L || r<this.v*tm-0.5*this.L) return 0;
 		let Am = this.A1/(r+1);
-		return Am*Math.cos((r-this.v*tm)*Math.PI/this.L);		
+		return Am*Math.cos((r-this.v*tm)*Math.PI/this.L);
 	}
 });
 
@@ -137,7 +137,7 @@ function Ocean(params) {
 	params = params || {};
 	this.size = params.size || 2048;
 	this.segments = params.segments || 127;
-	
+
 	/*
 	The WaterShader is from the THREE examples.
 	The mirror effect does not account for geometry, and there is no self-mirroring. But it mostly looks OK anyway. On tall waves, one can see that the rendered texture is stretched.
@@ -155,18 +155,18 @@ function Ocean(params) {
 			waterColor: 0x001e0f,
 			distortionScale: 50.0
 		} );
-		
-		THREE.Mesh.call(this, 
+
+		THREE.Mesh.call(this,
 			new THREE.PlaneBufferGeometry(this.size, this.size, this.segments, this.segments),
 			/*new THREE.MeshPhongMaterial({
 				color: 0x041020,
 				side: THREE.DoubleSide,
 				wireframe: true
-			})*/this.water.material);
+			}),*/this.water.material); //clear it to show the ocean
 
 		this.add(this.water);
 	} catch (e) {
-		THREE.Mesh.call(this, 
+		THREE.Mesh.call(this,
 			new THREE.PlaneBufferGeometry(this.size, this.size, this.segments, this.segments),
 			new THREE.MeshPhongMaterial({
 				color: 0x041020,
@@ -180,10 +180,10 @@ function Ocean(params) {
 		//Axes:
 		this.add(new THREE.AxisHelper(600));
 	}
-	
+
 	this.waves = [];
 	let scope = this;
-	
+
 	//Sampling
 	this.sampling = {
 		segments: 50,
@@ -218,11 +218,11 @@ function Ocean(params) {
 			//document.body.removeChild(link);
 		}
 	};
-	
+
 	if (params.parentGUI) {
 		this.conf = params.parentGUI.addFolder("Ocean");
 		this.conf.open();
-		
+
 		//Cos menu
 		this.currentCos = new DirectionalCosine();//{A:NaN,T:NaN,theta:NaN,phi:NaN}); //dummy object
 		let pcos = new Proxy(/*ptarget*/{}, {
@@ -244,7 +244,7 @@ function Ocean(params) {
 				if (scope.waves.length === 0) return;
 				let i = scope.waves.indexOf(scope.currentCos);
 				i = (i+1)%scope.waves.length;
-				while (i < 2*scope.waves.length 
+				while (i < 2*scope.waves.length
 					&& scope.waves[i%scope.waves.length].waveType !== "Cosine") {
 					i++;
 				}
@@ -282,7 +282,7 @@ function Ocean(params) {
 		//Dispose of temporary cosine wave object
 		this.currentCos = {};
 		this.cosConf.updateDisplay();
-		
+
 		//Splash menu
 		this.currentSplash = new FakeSplash();//{xc:NaN,yc:NaN,t0:NaN,A1:NaN,v:NaN,L:NaN}); //dummy object
 		let psplash = new Proxy({}, {
@@ -304,7 +304,7 @@ function Ocean(params) {
 				if (scope.waves.length === 0) return;
 				let i = scope.waves.indexOf(scope.currentSplash);
 				i = (i+1)%scope.waves.length;
-				while (i < 2*scope.waves.length 
+				while (i < 2*scope.waves.length
 					&& scope.waves[i%scope.waves.length].waveType !== "Fake splash") {
 					i++;
 				}
@@ -342,7 +342,7 @@ function Ocean(params) {
 		//Dispose of temporary splash object
 		this.currentSplash = {};
 		this.splashConf.updateDisplay();
-		
+
 		//Sampled wave menu
 		this.currentSampled = {filename: "No file"};
 		let psampled = new Proxy({}, {
@@ -363,7 +363,7 @@ function Ocean(params) {
 				if (scope.waves.length === 0) return;
 				let i = scope.waves.indexOf(scope.currentSampled);
 				i = (i+1)%scope.waves.length;
-				while (i < 2*scope.waves.length 
+				while (i < 2*scope.waves.length
 					&& scope.waves[i%scope.waves.length].waveType !== "From samples") {
 					i++;
 				}
@@ -393,7 +393,7 @@ function Ocean(params) {
 				}
 		}, "remove");
 		this.sampledConf.add(psampled,"filename").onChange(function() {scope.sampledConf.updateDisplay();});
-		
+
 		var guis = this.conf.addFolder("Sampling");
 		guis.add(this.sampling, "segments", 10, 100).onChange(function(value) {
 			this.sampling.segments = Math.round(value);
@@ -412,33 +412,33 @@ Object.assign(Ocean.prototype, {
 		this.waves.push(w);
 
 		this.currentCos = w;
-		
+
 		if (this.conf) {
 			this.cosConf.updateDisplay();
 			this.cosConf.open();
 			this.splashConf.close();
 			this.sampledConf.close();
 		}
-		
+
 		return w;
 	},
 	addFakeSplash: function(params) {
 		params = params || {};
 		params.parentGUI = this.conf;
 		params.size = this.size;
-				
+
 		let w = new FakeSplash(params);
 		this.waves.push(w);
-		
+
 		this.currentSplash = w;
-		
+
 		if (this.conf) {
 			this.splashConf.updateDisplay();
 			this.splashConf.open();
 			this.cosConf.close();
 			this.sampledConf.close();
 		}
-		
+
 		return w;
 	},
 	addSampled: function() {
@@ -452,9 +452,9 @@ Object.assign(Ocean.prototype, {
 					Wave.call(w, "From samples");
 					w.filename = file.name;
 					scope.waves.push(w);
-					
+
 					scope.currentSampled = w;
-					
+
 					if (scope.conf) {
 						scope.sampledConf.updateDisplay();
 						scope.sampledConf.open();
@@ -476,10 +476,10 @@ Object.assign(Ocean.prototype, {
 	//I fixed it, but am not sure how it was wrong.
 	update: function(t) {
 		let pos = this.geometry.getAttribute("position");
-		
+
 		let size = this.size;
 		let segs = this.segments;
-		
+
 		//REGULAR GRID:
 		let vSize = segs+1
 		for (let j = 0; j < vSize; j++) {
@@ -490,7 +490,7 @@ Object.assign(Ocean.prototype, {
 				pos.setZ(j*vSize+i, z);
 			}
 		}
-		
+
 		//IRREGULAR GRID TEST START
 		//The water rendering is broken, and modifying uv does not seem to help.
 		/*
@@ -510,16 +510,16 @@ Object.assign(Ocean.prototype, {
 			return Math.exp(-((10*r/size)**2));
 			//1/(r+0.001);//(1-r/(Math.sqrt(2)*size));
 		}
-		
+
 		for (let j=0; j<segs+1; j++) {
 			let y0 = (j/segs-0.5)*size;
 			for (let i=0; i<segs+1; i++) {
 				let x0 = (i/segs-0.5)*size;
-				
+
 				let w0 = 0.8; //the weight of the default point
 
 				let x=0,y=0,WX=0,WY=0;
-				
+
 				if ((i==0 || i==segs || j==0 || j==segs)) {
 					x = x0;
 					y = y0;
@@ -541,27 +541,27 @@ Object.assign(Ocean.prototype, {
 					let w = wFun(d);
 					x += w*size/2;
 					WX += w;
-					
+
 					d = Math.abs(x0+size/2);
 					w = wFun(d);
 					x += -w*size/2;
 					WX += w;
-					
+
 					d = Math.abs(y0-size/2);
 					w = wFun(d);
 					y += w*size/2;
 					WY += w;
-					
+
 					d = Math.abs(y+size/2);
 					w = wFun(d);
 					y += -w*size/2;
-					WY += w;	
-					
+					WY += w;
+
 				}
-				
+
 				x = w0*x0 + (1-w0)*x/WX;
 				y = w0*y0 + (1-w0)*y/WY;
-				
+
 				let z = calculateZ(x,y,t);
 
 				let k = (j*(segs+1) + i);
@@ -577,10 +577,10 @@ Object.assign(Ocean.prototype, {
 		uv.needsUpdate = true;
 		*/
 		//IRREGULAR GRID TEST END
-		
+
 		pos.needsUpdate = true;
 		this.geometry.computeVertexNormals();
-		
+
 		this.water.material.uniforms.time.value = t;
 	}
 });

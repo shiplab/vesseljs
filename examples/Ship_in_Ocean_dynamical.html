@@ -128,6 +128,7 @@ var userParameters = {C_D, B_44, B_55};
 						size: oSize, segments: 127});
 	playback.add(ocean);
 	zUpCont.add(ocean);
+	debugger
 
 	wavMo = [];
 	states = [];
@@ -182,7 +183,7 @@ var userParameters = {C_D, B_44, B_55};
 			states.continuous.motion.pitch = newValue;
 		});
 		scale.open();
-		scale = gui.addFolder("Damping Coeficients");
+		scale = gui.addFolder("Damping Coefficients");
 		scale.add(userParameters, "C_D", 0.1, 0.9).step(0.01);
 		scale.add(userParameters, "B_44", 1000000, 9000000).step(5000);
 		scale.add(userParameters, "B_55", 1000000, 9000000).step(5000);
@@ -220,6 +221,11 @@ var userParameters = {C_D, B_44, B_55};
 	});
 
 	//Initial configuration:
+	// let w = ocean.addCosineWave({
+	// 	A: 0,
+	// 	T: 11,
+	// 	theta: 1
+	// });
 	if (ocean.cosConf) ocean.cosConf.close();
 
 	playback.play();
