@@ -12,8 +12,8 @@ filepaths = list(map((lambda filename: "../source/math/"+filename), math)) \
 code = """
 /*
 Import like this in HTML:
-<script src="Vessel.js"></script>
-Then in javascript use classes and functions with a Vessel prefix. Example:
+<script src="vessel.js"></script>
+Then in javascript use classes and functions with a vessel prefix. Example:
 let ship = new Vessel.Ship(someSpecification);
 */
 
@@ -65,7 +65,7 @@ timestamp = str(datetime.today())
 #from hashlib import md5
 #codehash = md5(code.encode()).hexdigest()
 
-header = "//Vessel.js library, built " + timestamp# + ", Checksum: " + codehash
+header = "//vessel.js library, built " + timestamp# + ", Checksum: " + codehash
 
 output = header + code
 
