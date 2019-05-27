@@ -71,7 +71,7 @@ output = header + code
 
 #stamp = timestamp[0:17] + "." + codehash[0:5]
 
-oFile = open("../build/Vessel.js", "w")
+oFile = open("../build/vessel.js", "w")
 oFile.write(output)
 oFile.close()
 #oFile = open("archive/Vessel_"+stamp.replace("-","").replace(":","").replace(" ","")+".js", "w")
