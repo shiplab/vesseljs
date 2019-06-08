@@ -152,7 +152,8 @@ function Ocean(params) {
 		});
 		this.conf.add(pcos, "A", 0.0, 10.0, 0.1).name("Amplitude (A)");
 		this.conf.add(pcos, "T", 2.0, 20.0, 0.1).name("Period (T)");
-		this.conf.add(pcos, "L", 6.0, 700.0, 0.5).name("Length (L)");
+		//Wave length is a consequence of period due to dispersion relation
+		//this.conf.add(pcos, "L", 6.0, 700.0, 0.5).name("Length (L)");
 		this.conf.add(pcos, "theta", 0, 360, 0.01).name("<div>Direction (&theta;)</div>");
 		this.conf.add(pcos, "phi", -180, 180, 0.01).name("<div>Phase (&Phi;)</div>");
 		//Dispose of temporary cosine wave object
