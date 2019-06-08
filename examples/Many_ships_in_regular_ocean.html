@@ -165,17 +165,17 @@
 					//motion formula
 					let omega = wavCre.waveDef.waveFreq;
 					let k = 2 * Math.PI / ocean.waves["0"].L; // wave number
-					ship3D.heave = states[noShips].discrete.WaveMotion.state.heaveAmp * Math.cos(omega * t - ocean.waves["0"].phi - k * projMag);
+					ship3D.heave = states[noShips].discrete.WaveMotion.state.heaveAmp * Math.cos(omega * t - ocean.waves["0"].phi * Math.PI / 180 - k * projMag);
 
 					// a 90 degrees phase difference of pitch in relation to the wave makes the motion appear more natural
-					ship3D.pitch = states[noShips].discrete.WaveMotion.state.pitchAmp * Math.cos(omega * t - ocean.waves["0"].phi - k * projMag + 90 * Math.PI / 180);
+					ship3D.pitch = states[noShips].discrete.WaveMotion.state.pitchAmp * Math.cos(omega * t - ocean.waves["0"].phi * Math.PI / 180 - k * projMag + 90 * Math.PI / 180);
 
 					// pitch and roll may be negative depending on the direction of the waves in relation to the ship
 					if ((Math.abs(states[noShips].discrete.Heading.state.heading - wavCre.waveDef.heading) > 90) && (Math.abs(states[noShips].discrete.Heading.state.heading - wavCre.waveDef.heading) < 270)) {
 						ship3D.pitch = -ship3D.pitch;
 					}
 
-					let rollMag = states[noShips].discrete.WaveMotion.state.rollAmp * Math.cos(omega * t - ocean.waves["0"].phi - k * projMag);
+					let rollMag = states[noShips].discrete.WaveMotion.state.rollAmp * Math.cos(omega * t - ocean.waves["0"].phi * Math.PI / 180 - k * projMag);
 					if (wavCre.waveDef.heading > states[noShips].discrete.Heading.state.heading) {
 						if (Math.abs(states[noShips].discrete.Heading.state.heading - wavCre.waveDef.heading) < 180) {
 							ship3D.roll = -rollMag;
