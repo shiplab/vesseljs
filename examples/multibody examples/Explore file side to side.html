@@ -1,0 +1,1042 @@
+<html>
+
+<head>
+    
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1"> 
+    
+	<title>Ship in Ocean</title>
+	<script src="../../build/Vessel.js"></script>
+
+	<script src="../libs/three.js"></script>
+	<script src="../libs/STLLoader.js"></script>
+
+	<script src="../snippets/Ship3D_v2.js"></script>
+
+	<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+	<!-- Upgrading to WaterShader2.js will remove the dependency
+	on Mirror.js as well as open up possibilities for visualizing approximate water flows around vessels. -->
+	<script src="../libs/Mirror.js"></script>
+	<script src="../libs/Mirror.js"></script>
+	<script src="../libs/WaterShader.js"></script>
+
+	<script src="../libs/OrbitControls.js"></script>
+	<script src="../libs/dat.gui.min.js"></script>
+	<script src="../libs/skybox_from_examples.js"></script>
+
+	<script src="../libs/browse_files_Elias_Hasle.js"></script>
+	<script src="../snippets/Patch_interpolation.js"></script>
+	<!--<script src="Moving_bodies_Elias_Hasle.js"></script>-->
+	<script src="../snippets/Playback.js"></script>
+	<script src="snippets/Regular_ocean_final.js"></script>
+	<!--<script src="keyboard_arrow_input_Elias_Hasle.js"></script>-->
+
+	<script src="snippets/Explore%20file%20side%20to%20side.js"></script>
+	<!-- <script src="js/mooringSystem.js"></script> -->
+	<script src="../libs/numeric-1.2.6.min.js"></script>
+</head>
+
+<body>
+    
+    <input type="file" id="openFile" />
+    <br>
+    <pre id="fileContents"></pre> 
+    <div id="3d" class="col-md-12 text-left" style="min-height: 96vh">
+    </div>
+        
+    
+    
+    
+	<script>
+		"use strict";
+
+		//Globals
+		var renderer, camera, controls, gui, stats;
+		var scene, zUpCont, playback, bodies, ocean, ship3D, barge23D, statMod, statMod2;
+		var designDimention, designDimention2, floatingStates, floatingStates2, mooring, hawsers, line, hangedMooring, hangedMooring2;
+		var RG_system,
+			g,
+			MM,
+			ADD_mass,
+			AA,
+			A_33,
+			BB,
+			B_33,
+			B_44,
+			B_55,
+			B_66,
+			CC,
+			waveForce,
+			C_D,
+			seaDepth,
+			anchorLength, anchorLength2,
+			radialDistance, radialDistance2,
+			density, density2,
+			mooringAngle, mooringAngle2;
+		var mooring;
+		var dynMov, wavMo, states, scale;
+		var group;
+        		var mooring, hawsers;
+		var dynMov, wavMo, states, states2, scale;
+		var group;
+        var spec, spec2;
+        var ship, barge2, ship3D, barge23D;
+        var LOA1, LOA2, BOA1, BOA2, Depth1, Depth2, T1, T2, sep;
+        var motions, motions2;
+        var lin, output, res, res2, index, mat, rao, pha;
+        var J;
+        
+        
+        
+        
+spec = {
+  "attributes": {},
+  "designState": {
+  	"calculationParameters": {
+  		"LWL_design": 316.5,
+  		"Draft_design": 10,
+  		"Cb_design": 1,
+  		"K" : 0.032,
+  	},
+    "objectOverrides": {
+      "derivedByGroup": {
+        "cargo tanks": {
+          "fullness": 0
+        },
+        "ballast tanks": {
+          "fullness": 1
+        }
+      }
+    }
+
+  },
+  "structure": {
+  	"hull": {
+  		"attributes": {
+  			"LOA": 316.5,
+  			"BOA": 29,
+  			"Depth": 30,
+  			"APP": 0
+  		},
+  		"halfBreadths": {
+  			"waterlines": [0, 0, 1],
+  			"stations": [0, 1],
+  			"table": [[0, 0], [1, 1], [1, 1]]
+  		},
+  	},
+      "decks": {},
+      "bulkheads": {},
+  },
+  "baseObjects": [
+      {
+		"id": "Tanks",
+		"affiliations": {},
+		"boxDimensions": {
+			"length": 28.5,
+			"breadth": 28.5,
+			"height": 30
+		},
+		"capabilities": {},
+		"file3D": "aerial.stl",
+		"weightInformation": {
+			"lightweight": 0,
+			"cg": [0, 0, 1]
+		},
+  },{
+		"id": "Bridge",
+		"affiliations": {},
+		"boxDimensions": {
+			"length": 31,
+			"breadth": 14,
+			"height": 30
+		},
+		"capabilities": {},
+		"file3D": "Tank1.stl",
+		"weightInformation": {
+			"lightweight": 0,
+			"cg": [0, 0, 1]
+		},
+  },{
+		"id": "Bridge2",
+		"affiliations": {},
+		"boxDimensions": {
+			"length": 60,
+			"breadth": 28.5,
+			"height": 45
+		},
+		"capabilities": {},
+		"file3D": "Tank1.stl",
+		"weightInformation": {
+			"lightweight": 0,
+			"cg": [0, 0, 1]
+		},
+  },
+],
+  "derivedObjects": [
+      {
+		"id": "brigde",
+		"baseObject": "Bridge2",
+		"referenceState": {
+			"xCentre": 285,
+			"yCentre": 0,
+			"zBase": 0
+		},
+        "affiliations": {},
+	},{
+		"id": "Tank0",
+		"baseObject": "Bridge",
+		"referenceState": {
+			"xCentre": 239,
+			"yCentre": 7.125,
+			"zBase": 0
+		},
+        "affiliations": {},
+	},{
+		"id": "Tank0.1",
+		"baseObject": "Bridge",
+		"referenceState": {
+			"xCentre": 239,
+			"yCentre": -7.125,
+			"zBase": 0
+		},
+        "affiliations": {},
+	},{
+		"id": "Tank1",
+		"baseObject": "Bridge",
+		"referenceState": {
+			"xCentre": 207,
+			"yCentre": 7.125,
+			"zBase": 0
+		},
+        "affiliations": {},
+	},{
+		"id": "Tank1.2",
+		"baseObject": "Bridge",
+		"referenceState": {
+			"xCentre": 207,
+			"yCentre": -7.125,
+			"zBase": 0
+		},
+        "affiliations": {},
+	},{
+		"id": "Tank2",
+		"baseObject": "Bridge",
+		"referenceState": {
+			"xCentre": 175,
+			"yCentre": 7.125,
+			"zBase": 0
+		},
+        "affiliations": {},
+	}, {
+		"id": "Tank2.2",
+		"baseObject": "Bridge",
+		"referenceState": {
+			"xCentre": 175,
+			"yCentre": -7.125,
+			"zBase": 0
+		},
+        "affiliations": {},
+	},{
+		"id": "Tank3",
+		"baseObject": "Bridge",
+		"referenceState": {
+			"xCentre": 142,
+			"yCentre": 7.125,
+			"zBase":0
+		},
+        "affiliations": {},
+	}, {
+		"id": "Tank3.2",
+		"baseObject": "Bridge",
+		"referenceState": {
+			"xCentre": 142,
+			"yCentre": -7.125,
+			"zBase": 0
+		},
+        "affiliations": {},
+	},{
+		"id": "Tank4",
+		"baseObject": "Bridge",
+		"referenceState": {
+			"xCentre": 111,
+			"yCentre": 7.125,
+			"zBase": 0
+		},
+        "affiliations": {},
+	}, {
+		"id": "Tank4.2",
+		"baseObject": "Bridge",
+		"referenceState": {
+			"xCentre": 111,
+			"yCentre": -7.125,
+			"zBase": 0
+		},
+        "affiliations": {},
+	},{
+		"id": "Tank5",
+		"baseObject": "Bridge",
+		"referenceState": {
+			"xCentre": 79,
+			"yCentre": 7.125,
+			"zBase": 0
+		},
+        "affiliations": {},
+	},
+      {
+		"id": "Tank5.2",
+		"baseObject": "Bridge",
+		"referenceState": {
+			"xCentre": 79,
+			"yCentre": -7.125,
+			"zBase": 0
+		},
+        "affiliations": {},
+	},{
+		"id": "Tank6",
+		"baseObject": "Bridge",
+		"referenceState": {
+			"xCentre": 47,
+			"yCentre": 7.125,
+			"zBase": 0
+		},
+        "affiliations": {},
+	},{
+		"id": "Tank6.2",
+		"baseObject": "Bridge",
+		"referenceState": {
+			"xCentre": 47,
+			"yCentre": -7.125,
+			"zBase": 0
+		},
+        "affiliations": {},
+	},{
+		"id": "Tank8.2",
+		"baseObject": "Bridge",
+		"referenceState": {
+			"xCentre": 16,
+			"yCentre": -7.125,
+			"zBase": 0
+		},
+        "affiliations": {},
+	},{
+		"id": "Tank8",
+		"baseObject": "Bridge",
+		"referenceState": {
+			"xCentre": 16,
+			"yCentre": 7.125,
+			"zBase": 0
+		},
+        "affiliations": {},
+	}
+  ]
+};     
+        
+        
+spec2 = {
+  "attributes": {},
+  "designState": {
+  	"calculationParameters": {
+  		"LWL_design": 264.75,
+  		"Draft_design": 8,
+  		"Cb_design": 1,
+  		"K" : 0.032,
+  	},
+       "objectOverrides": {
+      "derivedByGroup": {
+        "cargo tanks": {
+          "fullness": 0
+        },
+        "ballast tanks": {
+          "fullness": 1
+        }
+      }
+    }
+
+
+  },
+  "structure": {
+  	"hull": {
+  		"attributes": {
+  			"LOA": 264.75,
+  			"BOA": 24,
+  			"Depth": 24,
+  			"APP": 0
+  		},
+  		"halfBreadths": {
+  			"waterlines": [0, 0, 1],
+  			"stations": [0, 1],
+  			"table": [[0, 0], [1, 1], [1, 1]]
+  		},
+  	},
+      "decks": {},
+      "bulkheads": {},
+  },
+  "baseObjects": [
+      {
+		"id": "Fenders",
+		"affiliations": {},
+		"boxDimensions": {
+			"length": 4,
+			"breadth": 4,
+			"height": 8
+		},
+		"capabilities": {},
+		"file3D": "aerial.stl",
+		"weightInformation": {
+			"lightweight": 0,
+			"cg": [0, 0, 1]
+		},
+  },{
+		"id": "Tanks",
+		"affiliations": {},
+		"boxDimensions": {
+			"length": 264.75,
+			"breadth": 23.8,
+			"height": 24
+		},
+		"capabilities": {},
+		"file3D": "Tank1.stl",
+		"weightInformation": {
+			"lightweight": 0,
+			"cg": [0, 0, 1]
+		},
+  },
+],
+  "derivedObjects": [
+      {
+		"id": "Tank1",
+		"baseObject": "Tanks",
+		"referenceState": {
+			"xCentre": 133,
+			"yCentre": 0,
+			"zBase": 0
+		},
+        "affiliations": {},
+	},{
+		"id": "Aerial1",
+		"baseObject": "Fenders",
+		"referenceState": {
+			"xCentre": 130,
+			"yCentre": -14,
+			"zBase": 9
+		},
+        "affiliations": {},
+	}, {
+		"id": "Aerial2",
+		"baseObject": "Fenders",
+		"referenceState": {
+			"xCentre": 93,
+			"yCentre": -14,
+			"zBase": 9
+		},
+        "affiliations": {},
+	}, {
+		"id": "Aerial3",
+		"baseObject": "Fenders",
+		"referenceState": {
+			"xCentre": 57,
+			"yCentre": -14,
+			"zBase": 9
+		},
+        "affiliations": {},
+	}, {
+		"id": "Aerial4",
+		"baseObject": "Fenders",
+		"referenceState": {
+			"xCentre": 20,
+			"yCentre": -14,
+			"zBase": 9
+		},
+        "affiliations": {},
+	},
+  ]
+};
+        
+        
+lin = [];
+    
+document.getElementById('openFile').addEventListener('change', function () {
+    var fr = new FileReader();
+    fr.onload = function(){
+       
+     
+index = 0;        
+output = this.result
+res = output.split(/[\s]+/).join(' ')
+res2 = res.substring(1)
+mat = res2.split(" ");
+
+for (i=0;i<mat.length;i++){
+    mat[i]=+mat[i]
+}
+
+        
+for(i=0;i<mat.length/7;i++){
+    
+   lin[i] = mat.slice(index,index+5)
+    
+index = index + 7;
+    
+}
+        
+rao = [];
+pha = [];
+
+        var dof = 12; // DoF
+        var per = 60; // Number of periods
+        var hea = 25; // Number of headings
+        
+        // allocate vector
+            for (i=0;i<dof;i++){
+                rao[i]= [];
+                pha[i]= [];
+                for (j=0;j<per;j++){
+                    rao[i][j]= [];
+                    pha[i][j]= [];
+                    for (k=0;k<hea;k++){
+                        rao[i][j][k]= [];
+                        pha[i][j][k]= [];
+                    }  
+                }  
+            } 
+        
+        
+var lineNumb, i, j, k, l;        
+for (l=0;l< lin.length -1;l++){
+    
+    lineNumb = l + 1;
+    i = ((l +1) % 12);
+    if (i===0) {i=12};
+    
+    j = Math.floor(lineNumb/(dof*hea));
+        
+    k = Math.floor(lineNumb/12) % 25;
+
+
+    rao[i-1][j][k] = lin[l][3];
+    pha[i-1][j][k] = lin[l][4];
+    
+
+}
+            
+
+        
+        }
+    fr.readAsText(this.files[0]);
+    
+
+});      
+
+		hangedMooring = []; // Point of hanged mooring line on seabed (m, m, m)
+        hangedMooring2 = [];
+
+		// Damping
+		C_D = 0.2; // Assumed Linear Resistance Coeff.	(m/s)
+		B_44 = 3000000; // Assumed Roll Linear Damping Coeff.	(kgm2/s)
+		B_55 = 60000000; // Assumed Roll Linear Damping Coeff.	(kgm2/s)
+		B_66 = 6000000; // Assumed Roll Linear Damping Coeff.	(kgm2/s)
+		seaDepth = 55; // Sea bottom depth (m)
+		anchorLength = 195; // Anchor length (m)
+		radialDistance = 200;
+		density = 200;
+		mooringAngle = 45;
+		var userParameters = {
+			C_D,
+			B_44,
+			B_55,
+			B_66,
+			seaDepth,
+			anchorLength,
+			radialDistance,
+			density,
+			mooringAngle
+		};
+
+		(function main() {
+			//Renderer setup
+			//document.body.style = "overflow: hidden;";
+			document.body.style.overflow = "hidden";
+			var container = document.getElementById('3d');
+			document.body.appendChild(container);
+			renderer = new THREE.WebGLRenderer({
+				antialias: true
+			});
+			//renderer.setSize(window.innerWidth, window.innerHeight);
+			renderer.setClearColor(0x99aadd);
+			container.appendChild(renderer.domElement);
+
+			//GUI setup (comment out to remove gui)
+			gui = new dat.GUI();
+
+			// add report to GUI controller
+			
+			playback = new Playback({
+				parentGUI: gui
+			});
+
+			//Scene setup:
+			scene = new THREE.Scene();
+			let sun = new THREE.DirectionalLight(0xffffff, 2);
+			sun.position.set(-512, 246, 128);
+			scene.add(sun);
+
+			//Ocean size
+			let oSize = 2048;
+
+			scene.add(new Skybox(oSize));
+
+			// Add the bottom of ocean
+			var geometry = new THREE.PlaneBufferGeometry(oSize, oSize, 32);
+			geometry.dynamic = true;
+			var texture = new THREE.TextureLoader().load("textures/bottom.jpg");
+			var material = new THREE.MeshBasicMaterial({
+				side: THREE.FrontSide,
+				map: texture,
+				transparent: true
+			});
+			var plane = new THREE.Mesh(geometry, material);
+			plane.rotation.set(-Math.PI / 2, 0, 0);
+			plane.position.setY(-userParameters.seaDepth);
+			plane.material.side = THREE.DoubleSide;
+			plane.material.opacity = 0.8;
+			scene.add(plane);
+
+			//Use Z up from now on:
+			THREE.Object3D.DefaultUp.set(0, 0, 1);
+			zUpCont = new THREE.Group();
+			zUpCont.rotation.x = -0.5 * Math.PI;
+			scene.add(zUpCont);
+
+			//Camera setup
+			camera = new THREE.PerspectiveCamera(
+				26,
+				window.innerWidth / window.innerHeight,
+				1,
+				1000000
+			);
+			let onResize = function () {
+				let w = container.clientWidth;
+				let h = container.clientHeight;
+				renderer.setSize(w, h);
+				camera.aspect = w / h;
+				camera.updateProjectionMatrix();
+			};
+			window.addEventListener("resize", onResize, false);
+			onResize();
+			camera.position.set(-474, 100, 200);
+			camera.lookAt(zUpCont.position);
+			zUpCont.add(camera);
+
+			controls = new THREE.OrbitControls(camera, renderer.domElement);
+			//controls.minDistance = 0;
+			controls.maxDistance = 0.5 * oSize;
+			controls.enablePan = false;
+			controls.maxPolarAngle = 3 * (Math.PI / 4);
+			controls.minPolarAngle = 0;
+
+			//zUpCont.add(new THREE.AxisHelper(1000));
+			zUpCont.add(new THREE.HemisphereLight(0xccccff, 0x666688, 1));
+
+			ocean = new Ocean({
+				parentGUI: gui, //remenber to insert back to see the waves
+				sunDir: sun.position.clone().normalize(),
+				size: oSize,
+				segments: 127
+			});
+			playback.add(ocean);
+			zUpCont.add(ocean);
+
+			wavMo = [];
+			states = [];
+
+			       ship = new Vessel.Ship(spec);  
+					states = ship.designState.clone();
+					
+					//console.log(states.objectCache);
+					statMod = new Vessel.StateModule(ship, states);
+					statMod.setDraft();
+					//console.log(states.shipCache.thisStateVer);
+					ship3D = new Ship3D(ship, {
+						shipState: states,
+						stlPath: "../specs/STL files",
+						upperColor: 0x33aa33,
+						lowerColor: 0xaa3333,
+						hullOpacity: 1,
+						deckOpacity: 1,
+						objectOpacity: 1
+					});
+					zUpCont.add(ship3D);
+            
+          barge2 = new Vessel.Ship(spec2);
+            states2 = barge2.designState.clone();      
+            
+            			statMod2 = new Vessel.StateModule(barge2, states2);
+			statMod2.setDraft();
+            
+                    barge23D = new Ship3D(barge2, {
+			shipState: states2,
+            stlPath: "../specs/STL files",
+			upperColor: 0x33aa33,
+			lowerColor: 0xaa3333,
+			hullOpacity: 1,
+			deckOpacity: 1,
+			objectOpacity: 0.5
+		});
+            
+            
+
+       LOA1 = ship.structure.hull.attributes.LOA;
+       LOA2 = barge2.structure.hull.attributes.LOA;
+       BOA1 = ship.structure.hull.attributes.BOA;
+       BOA2 = barge2.structure.hull.attributes.BOA;
+       /*T1 = states.discrete.FloatingCondition.state.T;
+       T2 = states2.discrete.FloatingCondition.state.T; */
+        T1 = ship.designState.calculationParameters.Draft_design;
+       T2 = barge2.designState.calculationParameters.Draft_design;
+
+
+       sep = {};
+       sep.x = 0
+       sep.y = 4
+       sep.z = 0
+
+       ship3D.position.x = 0;
+       ship3D.position.y = 0;
+       ship3D.position.z = -T1;
+
+       barge23D.position.x = 0;
+       barge23D.position.y = BOA1/2+BOA2/2+sep.y;
+       barge23D.position.z = -T2;
+            
+        zUpCont.add(barge23D);
+            
+            
+// INSERT HAWSERS------------------------------
+
+        states.continuous.hawsers = {};
+        hawsers = states.continuous.hawsers;
+
+        designDimention = ship.structure.hull.attributes;
+        floatingStates = states.discrete.FloatingCondition.state;
+        
+        designDimention2 = barge2.structure.hull.attributes;
+        floatingStates2 = states2.discrete.FloatingCondition.state;
+
+        states2.continuous.mooring = states.continuous.mooring;
+        states2.continuous.hawsers = states.continuous.hawsers;
+
+        hawsers.mooringPointOnShip = [
+        [floatingStates.LWL / 3.5 + 8, -floatingStates.BWL / 2, designDimention.Depth - T1],
+        [floatingStates.LWL / 3.5, -floatingStates.BWL / 2, designDimention.Depth - T1],
+        [-floatingStates.LWL / 3.5 + 8, -floatingStates.BWL / 2, designDimention.Depth - T1],
+        [-floatingStates.LWL / 3.5, -floatingStates.BWL / 2, designDimention.Depth - T1],
+        [-floatingStates.LWL / 3.5 - 8, -floatingStates.BWL / 2, designDimention.Depth - T1],
+        [floatingStates.LWL / 3.5 - 8, -floatingStates.BWL / 2, designDimention.Depth - T1],
+        [2, -floatingStates.BWL / 2, designDimention.Depth - T1],
+        [-2, -floatingStates.BWL / 2, designDimention.Depth - T1]
+        ]; // Point of mooring line on ship          (m, m, m)
+
+        hawsers.mooringPoint = [[-floatingStates2.LWL / 3,-sep.y-floatingStates.BWL / 2,  - T2-8],[-floatingStates2.LWL / 3 + 8,-sep.y - floatingStates.BWL / 2, -T2-8],[floatingStates2.LWL / 3-16,-sep.y - floatingStates.BWL / 2, -T2-8],[floatingStates2.LWL / 3 - 8,-sep.y - floatingStates.BWL / 2, -T2-8],[floatingStates2.LWL / 3 , -sep.y - floatingStates.BWL / 2, -T2-8],[-floatingStates2.LWL / 3 +16, -sep.y - floatingStates.BWL / 2, -T2-8],[-20,  -sep.y - floatingStates.BWL / 2, -T2-8],[20, -sep.y - floatingStates.BWL / 2, -T2-8]]
+         // Point of mooring line on seabed        (m, m, m)
+
+        hawsers.anchorLineGeometry = []; // Line geometry (global)        (m, m, m)
+            // Rope Material
+            
+         var materialLine = [new THREE.LineBasicMaterial({
+                color: 0xff0000,
+                linewidth: 2
+            }),
+            new THREE.LineBasicMaterial({
+                color: 0xff0000,
+                linewidth: 2
+            }),
+            new THREE.LineBasicMaterial({
+                color: 0xffffff,
+                linewidth: 2
+            }),
+            new THREE.LineBasicMaterial({
+                color: 0xffffff,
+                linewidth: 2
+            }),
+            new THREE.LineBasicMaterial({
+                color: 0xffffff,
+                linewidth: 2
+            }),
+            new THREE.LineBasicMaterial({
+                color: 0xff0000,
+                linewidth: 2
+            }),
+            new THREE.LineBasicMaterial({
+                color: 0x33cc33,
+                linewidth: 2
+            }),
+            new THREE.LineBasicMaterial({
+                color: 0x33cc33,
+                linewidth: 2
+            }),
+        ];           
+            
+            //Insert while functions
+        var geometryMooring = [new THREE.Geometry(), new THREE.Geometry(), new THREE.Geometry(), new THREE.Geometry(), new THREE.Geometry(), new THREE.Geometry(), new THREE.Geometry(), new THREE.Geometry()];            
+            
+                   for (var i = 0; i < geometryMooring.length; i++) {
+            for (var j = 0; j < 2; j++) {
+            geometryMooring[i].vertices.push(new THREE.Vector3(0,0,0));
+                }
+            }
+            
+        for (var i = 0; i < hawsers.mooringPointOnShip.length; i++) {
+
+                hawsers.anchorLineGeometry[i] = new THREE.Line(geometryMooring[i], materialLine[i]);
+                hawsers.anchorLineGeometry[i].geometry.verticesNeedUpdate = true;
+
+                scene.add(hawsers.anchorLineGeometry[i]);
+            }         
+            
+            hawsers.hangedMooring2 = []; // Point of hanged mooring line on seabed (m, m, m)
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+            
+
+// Insert mooring lines------------------------
+
+
+        states.continuous.mooring = {};
+        mooring = states.continuous.mooring;
+
+        // var anchorLength = 195; // Mooring line Length                   (m)
+
+        mooring.mooringPointOnShip = [
+            [
+                floatingStates.LWL / 2,
+                floatingStates.BWL / 2,
+                designDimention.Depth - T1
+            ],
+            [
+                floatingStates.LWL / 2,
+                -floatingStates.BWL / 2,
+                designDimention.Depth - T1
+            ],
+            [
+                -floatingStates.LWL / 2,
+                -floatingStates.BWL / 2,
+                designDimention.Depth - T1
+            ],
+            [
+                -floatingStates.LWL / 2,
+                floatingStates.BWL / 2,
+                designDimention.Depth - T1
+            ]
+        ]; // Point of mooring line on ship          (m, m, m)
+
+        mooring.anchorPoint = []; // Point of mooring line on seabed        (m, m, m)
+        mooring.anchorLineGeometry = []; // Line geometry (global)        (m, m, m)
+        mooring.radialDistance = radialDistance;
+        mooring.mooringAngle = mooringAngle;
+
+        // Anchoring point in seabed
+        for (var i = 0; i < mooring.mooringPointOnShip.length; i++) {
+            mooring.anchorPoint[i] = [
+                mooring.radialDistance *
+                Math.cos(
+                    (-i * Math.PI) / 2 + (mooring.mooringAngle * Math.PI) / 180
+                ),
+                -seaDepth,
+                mooring.radialDistance *
+                Math.sin(
+                    (-i * Math.PI) / 2 + (mooring.mooringAngle * Math.PI) / 180
+                )
+            ]; // Point of mooring line on seabed        (m, m, m)
+        }
+        //console.log(mooring.anchorPoint)
+
+        // Rope Material
+        var materialLine = [
+            new THREE.LineBasicMaterial({
+                color: 0xffffff,
+                linewidth: 2
+            }),
+            new THREE.LineBasicMaterial({
+                color: 0xff0000,
+                linewidth: 2
+            }),
+            new THREE.LineBasicMaterial({
+                color: 0x33cc33,
+                linewidth: 2
+            }),
+            new THREE.LineBasicMaterial({
+                color: 0x0066ff,
+                linewidth: 2
+            })
+        ];
+
+        //Insert while functions
+        var geometryMooring = [
+            new THREE.Geometry(),
+            new THREE.Geometry(),
+            new THREE.Geometry(),
+            new THREE.Geometry()
+        ];
+
+        for (var i = 0; i < geometryMooring.length; i++) {
+            for (var j = 0; j < 52; j++) {
+                geometryMooring[i].vertices.push(new THREE.Vector3(0, 0, 0));
+            }
+        }
+
+
+        for (var i = 0; i < mooring.mooringPointOnShip.length; i++) {
+
+            mooring.anchorLineGeometry[i] = new THREE.Line(
+                geometryMooring[i],
+                materialLine[i]
+            );
+            mooring.anchorLineGeometry[i].geometry.verticesNeedUpdate = true;
+            scene.add(mooring.anchorLineGeometry[i]);
+        }
+
+        mooring.hangedMooring = []; // Point of hanged mooring line on seabed (m, m, m)
+
+        mooring.anchorLength = anchorLength; // Mooring line Length                   (m)
+        mooring.w = density; // Mooring line density                  (kg/m)
+        mooring.radialDistance = radialDistance;
+        mooring.seaDepth = seaDepth;
+
+        var Ini = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+        states.continuous.motion = {
+            surge: Ini[0],
+            sway: Ini[1],
+            heave: Ini[2],
+            roll: Ini[3],
+            pitch: Ini[4],
+            yaw: Ini[5],
+            heave2: [6],
+            roll2: [7],
+            pitch2: [8]
+        };
+
+        var tprev = 0; // Initial time
+
+
+        scale = gui.addFolder("Mooring Configuration");
+        scale
+            .add(userParameters, "seaDepth", 10, 100)
+            .step(5)
+            .onChange(function (newValue) {
+                seaDepth = newValue;
+                mooring.seaDepth = newValue;
+                for (let i = scene.children.length - 1; i >= 0; i--) {
+                    if (scene.children[i].type === "Mesh")
+                        scene.remove(scene.children[i]);
+                }
+                var plane = new THREE.Mesh(geometry, material);
+                plane.rotation.set(-Math.PI / 2, 0, 0);
+                plane.position.setY(-userParameters.seaDepth);
+                plane.material.side = THREE.DoubleSide;
+                plane.material.opacity = 0.8;
+                scene.add(plane);
+            })
+            .name("Sea depth");
+        scale
+            .add(userParameters, "anchorLength", 50, 500)
+            .step(1)
+            .onChange(function (newValue) {
+                mooring.anchorLength = newValue;
+            })
+            .name("Mooring length");
+        scale
+            .add(userParameters, "radialDistance", 50, 500)
+            .step(1)
+            .onChange(function (newValue) {
+                mooring.radialDistance = newValue;
+                radialDistance = newValue;
+
+                //var rupture = Math.pow(((Math.pow(userParameters.radialDistance), 2) + (Math.pow(userParameters.seaDepth), 2)),
+                //	0.5);
+                //if (rupture < userParameters.anchorLength) {
+                //	alert("Mooring line is too short.");
+                //};
+            })
+            .name("Radial distance");
+        scale
+            .add(userParameters, "mooringAngle", 0, 90)
+            .step(1)
+            .onChange(function (newValue) {
+                mooring.mooringAngle = newValue;
+                mooringAngle = newValue;
+            })
+            .name("Mooring Angle");
+        scale
+            .add(userParameters, "density", 50, 500)
+            .step(1)
+            .onChange(function (newValue) {
+                mooring.w = newValue;
+            })
+            .name("Density");
+
+
+        // cylinderCil.setRotationFromAxisAngle ([0, 0.25, 0], -Math.PI/4);
+        dynMov = new DynamicalMovement(ship, states, userParameters, Ini);
+        scale.open();
+
+        //VERY approximate motion (for visualisation only)
+        playback.add(function (t) {
+            // let x = ship3D.position.x;
+            // let y = ship3D.position.y;
+            // let oCenter = ocean.calculateZ(x,y,t);
+            let dt = t - tprev;
+
+   dynMov.moveShip(tprev, dt);
+
+    tprev = t;                     
+                        
+        });
+		
+			//Initial configuration:
+			let w = ocean.addCosineWave({
+				A: 0,
+				T: 11,
+				theta: 1
+			});
+			if (ocean.cosConf) ocean.cosConf.close();
+			playback.play();
+			requestAnimationFrame(animate);
+		})();
+
+		function animate(millitime) {
+			ocean.water.render();
+			renderer.render(scene, camera);
+			let playing = playback.update();
+
+			// Disable this to freeze water when not playing
+			if (!playing) {
+				ocean.water.material.uniforms.time.value += 1 / 60;
+			}
+			requestAnimationFrame(animate);
+		}
+
+		function updateMotion() {
+			for (let i = 0; i < wavMo.length; i++) {
+				wavMo[i].writeOutput();
+			}
+		}
+	</script>
+</body>
+
+</html>
