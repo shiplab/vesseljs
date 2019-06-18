@@ -1,11 +1,11 @@
 <html>
 
 <head>
-    
+
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1"> 
-    
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
 	<title>Ship in Ocean</title>
 	<script src="../../build/Vessel.js"></script>
 
@@ -14,7 +14,7 @@
 
 	<script src="../snippets/Ship3D_v2.js"></script>
 
-	<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+	<script src="../libs/plotly-1.48.3.min.js"></script>
 
 	<!-- Upgrading to WaterShader2.js will remove the dependency
 	on Mirror.js as well as open up possibilities for visualizing approximate water flows around vessels. -->
@@ -33,22 +33,22 @@
 	<script src="snippets/Regular_ocean_final.js"></script>
 	<!--<script src="keyboard_arrow_input_Elias_Hasle.js"></script>-->
 
-	<script src="snippets/Explore%20file%20side%20to%20side.js"></script>
+	<script src="snippets/Explore_file_side_to_side.js"></script>
 	<!-- <script src="js/mooringSystem.js"></script> -->
 	<script src="../libs/numeric-1.2.6.min.js"></script>
 </head>
 
 <body>
-    
+
     <input type="file" id="openFile" />
     <br>
-    <pre id="fileContents"></pre> 
+    <pre id="fileContents"></pre>
     <div id="3d" class="col-md-12 text-left" style="min-height: 96vh">
     </div>
-        
-    
-    
-    
+
+
+
+
 	<script>
 		"use strict";
 
@@ -87,10 +87,10 @@
         var motions, motions2;
         var lin, output, res, res2, index, mat, rao, pha;
         var J;
-        
-        
-        
-        
+
+
+
+
 spec = {
   "attributes": {},
   "designState": {
@@ -331,9 +331,9 @@ spec = {
         "affiliations": {},
 	}
   ]
-};     
-        
-        
+};
+
+
 spec2 = {
   "attributes": {},
   "designState": {
@@ -453,16 +453,16 @@ spec2 = {
 	},
   ]
 };
-        
-        
+
+
 lin = [];
-    
+
 document.getElementById('openFile').addEventListener('change', function () {
     var fr = new FileReader();
     fr.onload = function(){
-       
-     
-index = 0;        
+
+
+index = 0;
 output = this.result
 res = output.split(/[\s]+/).join(' ')
 res2 = res.substring(1)
@@ -472,22 +472,22 @@ for (i=0;i<mat.length;i++){
     mat[i]=+mat[i]
 }
 
-        
+
 for(i=0;i<mat.length/7;i++){
-    
+
    lin[i] = mat.slice(index,index+5)
-    
+
 index = index + 7;
-    
+
 }
-        
+
 rao = [];
 pha = [];
 
         var dof = 12; // DoF
         var per = 60; // Number of periods
         var hea = 25; // Number of headings
-        
+
         // allocate vector
             for (i=0;i<dof;i++){
                 rao[i]= [];
@@ -498,36 +498,36 @@ pha = [];
                     for (k=0;k<hea;k++){
                         rao[i][j][k]= [];
                         pha[i][j][k]= [];
-                    }  
-                }  
-            } 
-        
-        
-var lineNumb, i, j, k, l;        
+                    }
+                }
+            }
+
+
+var lineNumb, i, j, k, l;
 for (l=0;l< lin.length -1;l++){
-    
+
     lineNumb = l + 1;
     i = ((l +1) % 12);
     if (i===0) {i=12};
-    
+
     j = Math.floor(lineNumb/(dof*hea));
-        
+
     k = Math.floor(lineNumb/12) % 25;
 
 
     rao[i-1][j][k] = lin[l][3];
     pha[i-1][j][k] = lin[l][4];
-    
+
 
 }
-            
 
-        
+
+
         }
     fr.readAsText(this.files[0]);
-    
 
-});      
+
+});
 
 		hangedMooring = []; // Point of hanged mooring line on seabed (m, m, m)
         hangedMooring2 = [];
@@ -571,7 +571,7 @@ for (l=0;l< lin.length -1;l++){
 			gui = new dat.GUI();
 
 			// add report to GUI controller
-			
+
 			playback = new Playback({
 				parentGUI: gui
 			});
@@ -651,9 +651,9 @@ for (l=0;l< lin.length -1;l++){
 			wavMo = [];
 			states = [];
 
-			       ship = new Vessel.Ship(spec);  
+			       ship = new Vessel.Ship(spec);
 					states = ship.designState.clone();
-					
+
 					//console.log(states.objectCache);
 					statMod = new Vessel.StateModule(ship, states);
 					statMod.setDraft();
@@ -668,13 +668,13 @@ for (l=0;l< lin.length -1;l++){
 						objectOpacity: 1
 					});
 					zUpCont.add(ship3D);
-            
+
           barge2 = new Vessel.Ship(spec2);
-            states2 = barge2.designState.clone();      
-            
+            states2 = barge2.designState.clone();
+
             			statMod2 = new Vessel.StateModule(barge2, states2);
 			statMod2.setDraft();
-            
+
                     barge23D = new Ship3D(barge2, {
 			shipState: states2,
             stlPath: "../specs/STL files",
@@ -684,8 +684,8 @@ for (l=0;l< lin.length -1;l++){
 			deckOpacity: 1,
 			objectOpacity: 0.5
 		});
-            
-            
+
+
 
        LOA1 = ship.structure.hull.attributes.LOA;
        LOA2 = barge2.structure.hull.attributes.LOA;
@@ -709,10 +709,10 @@ for (l=0;l< lin.length -1;l++){
        barge23D.position.x = 0;
        barge23D.position.y = BOA1/2+BOA2/2+sep.y;
        barge23D.position.z = -T2;
-            
+
         zUpCont.add(barge23D);
-            
-            
+
+
 // INSERT HAWSERS------------------------------
 
         states.continuous.hawsers = {};
@@ -720,7 +720,7 @@ for (l=0;l< lin.length -1;l++){
 
         designDimention = ship.structure.hull.attributes;
         floatingStates = states.discrete.FloatingCondition.state;
-        
+
         designDimention2 = barge2.structure.hull.attributes;
         floatingStates2 = states2.discrete.FloatingCondition.state;
 
@@ -743,7 +743,7 @@ for (l=0;l< lin.length -1;l++){
 
         hawsers.anchorLineGeometry = []; // Line geometry (global)        (m, m, m)
             // Rope Material
-            
+
          var materialLine = [new THREE.LineBasicMaterial({
                 color: 0xff0000,
                 linewidth: 2
@@ -776,43 +776,43 @@ for (l=0;l< lin.length -1;l++){
                 color: 0x33cc33,
                 linewidth: 2
             }),
-        ];           
-            
+        ];
+
             //Insert while functions
-        var geometryMooring = [new THREE.Geometry(), new THREE.Geometry(), new THREE.Geometry(), new THREE.Geometry(), new THREE.Geometry(), new THREE.Geometry(), new THREE.Geometry(), new THREE.Geometry()];            
-            
+        var geometryMooring = [new THREE.Geometry(), new THREE.Geometry(), new THREE.Geometry(), new THREE.Geometry(), new THREE.Geometry(), new THREE.Geometry(), new THREE.Geometry(), new THREE.Geometry()];
+
                    for (var i = 0; i < geometryMooring.length; i++) {
             for (var j = 0; j < 2; j++) {
             geometryMooring[i].vertices.push(new THREE.Vector3(0,0,0));
                 }
             }
-            
+
         for (var i = 0; i < hawsers.mooringPointOnShip.length; i++) {
 
                 hawsers.anchorLineGeometry[i] = new THREE.Line(geometryMooring[i], materialLine[i]);
                 hawsers.anchorLineGeometry[i].geometry.verticesNeedUpdate = true;
 
                 scene.add(hawsers.anchorLineGeometry[i]);
-            }         
-            
+            }
+
             hawsers.hangedMooring2 = []; // Point of hanged mooring line on seabed (m, m, m)
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
-            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // Insert mooring lines------------------------
 
@@ -1004,10 +1004,10 @@ for (l=0;l< lin.length -1;l++){
 
    dynMov.moveShip(tprev, dt);
 
-    tprev = t;                     
-                        
+    tprev = t;
+
         });
-		
+
 			//Initial configuration:
 			let w = ocean.addCosineWave({
 				A: 0,

@@ -1,11 +1,11 @@
 <html>
 
 <head>
-    
+
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1"> 
-    
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
 	<title>Side by side</title>
 	<script src="../../build/Vessel.js"></script>
 	<script src="../libs/three.js"></script>
@@ -20,7 +20,7 @@
 	<script src="../snippets/Patch_interpolation.js"></script>
 	<script src="../snippets/Playback.js"></script>
 	<script src="snippets/Regular_ocean_final.js"></script>
-	<script src="snippets/Side%20by%20side%20operation.js"></script>
+	<script src="snippets/Side_by_side_operation.js"></script>
     <script src="motion_data/rao.json"></script>
 	<script src="motion_data/pha.json"></script>
 	<script src="../libs/zingchart.min.js"></script>
@@ -37,24 +37,24 @@
 
 
 
-	
-		
+
+
 <!--		<table style="width:100%">
   <tr>
     <td><div id="Surge" style="position:fixed; bottom:0; float:left; width:25%; height:33%"></div></td>
-    <td><div id="Roll" style="position:fixed; bottom:0; float:left; width:100%; height:100%"></div></td> 
+    <td><div id="Roll" style="position:fixed; bottom:0; float:left; width:100%; height:100%"></div></td>
   </tr>
   <tr>
 	  <td><div id="Sway" style="position:fixed; bottom:0; float:left; width:25%; height:33%"></div></td>
-    <td><div id="Pitch" style="position:fixed; bottom:0; float:left; width:25%; height:33%"></div></td> 
+    <td><div id="Pitch" style="position:fixed; bottom:0; float:left; width:25%; height:33%"></div></td>
   </tr>
   <tr>
     <td><div id="Heave" style="position:fixed; bottom:0; float:left; width:25%; height:33%"></div></td>
-    <td><div id="Yaw" style="position:fixed; bottom:0; float:left; width:25%; height:33%"></div></td> 
+    <td><div id="Yaw" style="position:fixed; bottom:0; float:left; width:25%; height:33%"></div></td>
   </tr>
 </table>-->
-		
-	
+
+
 
 
 <style>
@@ -69,7 +69,7 @@
 }
 	</style>
 
-	
+
 	<script>
 		"use strict";
 
@@ -84,7 +84,7 @@
 	var ship, barge2, ship3D, barge23D, barge3, barge33D;
 	var LOA1, LOA2, BOA1, BOA2, Depth1, Depth2, T1, T2, sep;
 	var motions, motions2, motions3;
-	
+
 	var rao = rao_data;
 	var pha = phase_data;
 	var hangedMooring = []; // Point of hanged mooring line on seabed
@@ -101,11 +101,11 @@ var inilen = 11.751311259877795
 var tension = []
 var diameter = 0.063
 var k = 1090000
-    
-        
+
+
 	var userParameters = {seaDepth,anchorLength,radialDistance,density,mooringAngle,numShips,mooringLines,hawserLines};
-        
-// Ship specifications ---------------------------------  
+
+// Ship specifications ---------------------------------
 spec = {
   "attributes": {},
   "designState": {
@@ -345,9 +345,9 @@ spec = {
         "affiliations": {},
 	}
   ]
-};     
-        
-        
+};
+
+
 spec2 = {
   "attributes": {},
   "designState": {
@@ -429,10 +429,10 @@ spec2 = {
 	}
   ]
 };
-	
+
 
 // Render options ----------------------------------------------
-		
+
 	(function main() {
 		//Renderer setup
 		//document.body.style = "overflow: hidden;";
@@ -528,7 +528,7 @@ spec2 = {
 		zUpCont.add(ocean);
 
 // Ships definition------------------------------------------------
-		
+
 		wavMo = [];
 		states = [];
 		states2 = [];
@@ -538,7 +538,7 @@ spec2 = {
 		states = ship.designState.clone();
 		statMod = new Vessel.StateModule(ship, states);
 		statMod.setDraft();
-		
+
 		ship3D = new Ship3D(ship, {
 			shipState: states,
 			stlPath: "../specs/STL files",
@@ -551,10 +551,10 @@ spec2 = {
 		zUpCont.add(ship3D);
 
 	    barge2 = new Vessel.Ship(spec2); //Suezmax1
-		states2 = barge2.designState.clone();      
+		states2 = barge2.designState.clone();
 		statMod2 = new Vessel.StateModule(barge2, states2);
 		statMod2.setDraft();
-		
+
 		barge23D = new Ship3D(barge2, {
 			shipState: states2,
 			stlPath: "../specs/STL files",
@@ -566,7 +566,7 @@ spec2 = {
 		});
 
 		barge3 = new Vessel.Ship(spec2); //Suezmax2
-		states3 = barge3.designState.clone();      
+		states3 = barge3.designState.clone();
 		statMod3 = new Vessel.StateModule(barge3, states3);
 		statMod2.setDraft();
 
@@ -599,32 +599,32 @@ spec2 = {
        barge23D.position.x = 0;
        barge23D.position.y = BOA1/2+BOA2/2+sep.y;
        barge23D.position.z = -T2;
-            
+
        barge33D.position.x = 0;
        barge33D.position.y = -BOA1/2-BOA2/2-sep.y;
        barge33D.position.z = -T2;
-            
+
        zUpCont.add(barge23D);
        zUpCont.add(barge33D);
        barge33D.visible = false;
-      
-        
 
-            
+
+
+
 // INSERT HAWSERS------------------------------
 
         states.continuous.hawsers = {};
         hawsers = states.continuous.hawsers;
-            
+
         states.continuous.hawsers2 = {};
         hawsers2 = states.continuous.hawsers2;
 
         designDimention = ship.structure.hull.attributes;
         floatingStates = states.discrete.FloatingCondition.state;
-		
+
 		designDimention2 = barge2.structure.hull.attributes;
         floatingStates2 = states2.discrete.FloatingCondition.state;
-		
+
 		designDimention3 = barge3.structure.hull.attributes;
         floatingStates3 = states2.discrete.FloatingCondition.state;
 
@@ -632,7 +632,7 @@ spec2 = {
         states2.continuous.hawsers = states.continuous.hawsers;
         states3.continuous.mooring = states.continuous.mooring;
         states3.continuous.hawsers2 = states.continuous.hawsers2;
-        
+
         hawsers.mooringPointOnShip = [
         [floatingStates.LWL / 3.5 + 8, -floatingStates.BWL / 2, designDimention.Depth - T1],
         [floatingStates.LWL / 3.5, -floatingStates.BWL / 2, designDimention.Depth - T1],
@@ -646,7 +646,7 @@ spec2 = {
 
         hawsers.anchorPoint = [[floatingStates2.LWL / 3,-sep.y-floatingStates.BWL / 2,  T2+8],[floatingStates2.LWL / 3 - 8,-sep.y - floatingStates.BWL / 2, T2+8],[-floatingStates2.LWL / 3+16,-sep.y - floatingStates.BWL / 2, T2+8],[-floatingStates2.LWL / 3 +8,-sep.y - floatingStates.BWL / 2, T2+8],[-floatingStates2.LWL / 3 , -sep.y - floatingStates.BWL / 2, T2+8],[floatingStates2.LWL / 3 -16, -sep.y - floatingStates.BWL / 2, T2+8],[20,  -sep.y - floatingStates.BWL / 2, T2+8],[-20, -sep.y - floatingStates.BWL / 2, T2+8]]
          // Point of mooring line on seabed        (m, m, m)
-            
+
         hawsers2.mooringPointOnShip = [
         [floatingStates.LWL / 3.5 + 8, floatingStates.BWL / 2, designDimention.Depth - T1],
         [floatingStates.LWL / 3.5, floatingStates.BWL / 2, designDimention.Depth - T1],
@@ -657,13 +657,13 @@ spec2 = {
         [2, floatingStates.BWL / 2, designDimention.Depth - T1],
         [-2, floatingStates.BWL / 2, designDimention.Depth - T1]
         ]; // Point of mooring line on ship          (m, m, m)
-            
+
         hawsers2.anchorPoint = [[floatingStates2.LWL / 3,sep.y+floatingStates.BWL / 2,  T2+8],[floatingStates3.LWL / 3 - 8,sep.y + floatingStates.BWL / 2, T2+8],[-floatingStates3.LWL / 3+16,sep.y + floatingStates.BWL / 2, T2+8],[-floatingStates3.LWL / 3 +8,sep.y + floatingStates.BWL / 2, T2+8],[-floatingStates3.LWL / 3 , sep.y + floatingStates.BWL / 2, T2+8],[floatingStates2.LWL / 3 -16, sep.y + floatingStates.BWL / 2, T2+8],[20,  sep.y + floatingStates.BWL / 2, T2+8],[-20, sep.y + floatingStates.BWL / 2, T2+8]]
          // Point of mooring line on seabed        (m, m, m)
 
         hawsers.anchorLineGeometry = []; // Line geometry (global)        (m, m, m)
         hawsers2.anchorLineGeometry = []; // Line geometry (global)        (m, m, m)
-            
+
          var materialLine = [new THREE.LineBasicMaterial({
                 color: 0xff0000,
                 linewidth: 2
@@ -696,43 +696,43 @@ spec2 = {
                 color: 0x33cc33,
                 linewidth: 2
             }),
-        ];           
-            
+        ];
+
          //Insert while functions
-        var geometryMooring = [new THREE.Geometry(), new THREE.Geometry(), new THREE.Geometry(), new THREE.Geometry(), new THREE.Geometry(), new THREE.Geometry(), new THREE.Geometry(), new THREE.Geometry()];            
-            
+        var geometryMooring = [new THREE.Geometry(), new THREE.Geometry(), new THREE.Geometry(), new THREE.Geometry(), new THREE.Geometry(), new THREE.Geometry(), new THREE.Geometry(), new THREE.Geometry()];
+
          for (var i = 0; i < geometryMooring.length; i++) {
             for (var j = 0; j < 2; j++) {
             	geometryMooring[i].vertices.push(new THREE.Vector3(0,0,0));
             }
           }
-			
-		var geometryMooring2 = [new THREE.Geometry(), new THREE.Geometry(), new THREE.Geometry(), new THREE.Geometry(), new THREE.Geometry(), new THREE.Geometry(), new THREE.Geometry(), new THREE.Geometry()];            
-            
+
+		var geometryMooring2 = [new THREE.Geometry(), new THREE.Geometry(), new THREE.Geometry(), new THREE.Geometry(), new THREE.Geometry(), new THREE.Geometry(), new THREE.Geometry(), new THREE.Geometry()];
+
         for (var i = 0; i < geometryMooring2.length; i++) {
             for (var j = 0; j < 2; j++) {
             	geometryMooring2[i].vertices.push(new THREE.Vector3(0,0,0));
             }
         }
-            
+
         for (var i = 0; i < hawsers.mooringPointOnShip.length; i++) {
 
 			hawsers.anchorLineGeometry[i] = new THREE.Line(geometryMooring[i], materialLine[i]);
 			hawsers.anchorLineGeometry[i].geometry.verticesNeedUpdate = true;
 			scene.add(hawsers.anchorLineGeometry[i]);
-        }        
-             
+        }
+
         for (var i = 0; i < hawsers2.mooringPointOnShip.length; i++) {
 
 			hawsers2.anchorLineGeometry[i] = new THREE.Line(geometryMooring2[i], materialLine[i]);
 			hawsers2.anchorLineGeometry[i].geometry.verticesNeedUpdate = true;
-			scene.add(hawsers2.anchorLineGeometry[i]);         
-        }     
-		for (i=0;i<8;i++){         
+			scene.add(hawsers2.anchorLineGeometry[i]);
+        }
+		for (i=0;i<8;i++){
 			hawsers2.anchorLineGeometry[i].visible = false
         }
-        
-        
+
+
 //HAWSER TENSIONS -----------------------------
 
 
@@ -837,7 +837,7 @@ spec2 = {
             pitch: Ini[4],
             yaw: Ini[5],
         };
-            
+
         states2.continuous.motion = {
             surge: Ini[0],
             sway: Ini[1],
@@ -846,7 +846,7 @@ spec2 = {
             pitch: Ini[4],
             yaw: Ini[5],
         };
-            
+
         states3.continuous.motion = {
             surge: Ini[0],
             sway: Ini[1],
@@ -868,7 +868,7 @@ spec2 = {
 			numShips = newValue;
 			if (numShips == 1){
 			   barge23D.visible = false
-			   barge33D.visible = false 
+			   barge33D.visible = false
 			   for (i=0;i<8;i++){
 				   hawsers.anchorLineGeometry[i].visible = false
 				  hawsers2.anchorLineGeometry[i].visible = false
@@ -948,8 +948,8 @@ spec2 = {
 
    dynMov.moveShip(tprev, dt);
 
-    tprev = t;                     
-                        
+    tprev = t;
+
         });
 
 	//Initial configuration:

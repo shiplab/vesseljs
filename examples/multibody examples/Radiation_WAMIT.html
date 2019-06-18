@@ -9,7 +9,7 @@
 
 	<script src="../snippets/Ship3D_v2.js"></script>
 
-	<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+	<script src="../libs/plotly-1.48.3.min.js"></script>
 
 	<!-- Upgrading to WaterShader2.js will remove the dependency
 	on Mirror.js as well as open up possibilities for visualizing approximate water flows around vessels. -->
@@ -35,8 +35,8 @@
 </head>
 
 <body>
-<div id= "3d" class='orchid' style="position: absolute; top: 0px; height: 100%; right: 0px; width: 50%"></div> 
-    
+<div id= "3d" class='orchid' style="position: absolute; top: 0px; height: 100%; right: 0px; width: 50%"></div>
+
     	<div id = "heave_graph" style = "position: absolute; bottom: 66%; height: 40%; left: 0px; width: 50%"></div>
 		<div id = "roll_graph" style = "position: absolute; bottom: 33%; height: 40%; left: 0px; width: 50%"></div>
 		<div id = "pitch_graph" style = "position: absolute; bottom: 0%; height: 40%; left: 0px; width: 50%"></div>
@@ -194,7 +194,7 @@
 					states.continuous.motion.pitch = newValue;
 				});
 				scale.open();
-				
+
 
 				// cylinderCil.setRotationFromAxisAngle ([0, 0.25, 0], -Math.PI/4);
 				dynMov = new DynamicalMovement(ship, states, userParameters, Ini, oceanDepth);
@@ -217,8 +217,8 @@
 					ship3D.pitch = states.continuous.motion.pitch;
 					ship3D.yaw = states.continuous.motion.yaw;
 				});
-                
-                
+
+
                 function mo1(){
    return 0;
 }
@@ -232,7 +232,7 @@ function mo2(){
 		function mo4(){
     return states.continuous.motion.pitch
 }
-	
+
 Plotly.plot('roll_graph',
 [{
   y: [1,2,3].map(mo1),
@@ -243,7 +243,7 @@ Plotly.plot('roll_graph',
   mode: 'lines',
   line: {color: '#DF56F1'}
 }]);
-		
+
 		Plotly.plot('heave_graph',
 [{
   y: [1,2,3].map(mo1),
@@ -254,7 +254,7 @@ Plotly.plot('roll_graph',
   mode: 'lines',
   line: {color: '#DF56F1'}
 }]);
-		
+
 		Plotly.plot('pitch_graph',
 [{
   y: [1,2,3].map(mo1),
@@ -277,16 +277,16 @@ var interval = setInterval(function() {
 	 Plotly.extendTraces('heave_graph', {
     y: [[mo1()], [mo3()]]
   }, [0, 1])
-	
+
 	 Plotly.extendTraces('pitch_graph', {
     y: [[mo1()], [mo4()]]
   }, [0, 1])
   if(cnt === 1) clearInterval(interval);
 }, 10);
 			});
-            
-            
-            
+
+
+
 
 
 			//Initial configuration:

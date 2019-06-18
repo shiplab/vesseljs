@@ -1,11 +1,11 @@
 <html>
 
 <head>
-    
+
 <meta charset="utf-8">
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1"> 
-    
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
 	<title>Ship in Ocean</title>
 	<script src="../../build/Vessel.js"></script>
 
@@ -14,7 +14,7 @@
 
 	<script src="../snippets/Ship3D_v2.js"></script>
 
-	<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+	<script src="../libs/plotly-1.48.3.min.js"></script>
 
 	<script src="../libs/Mirror.js"></script>
 	<script src="../libs/WaterShader.js"></script>
@@ -31,23 +31,23 @@
 	<!--<script src="keyboard_arrow_input_Elias_Hasle.js"></script>-->
 	<script src="../libs/zingchart.min.js"></script>
 
-	<script src="snippets/Simple%20example.js"></script>
+	<script src="snippets/Simple_example.js"></script>
 	<script src="../libs/numeric-1.2.6.min.js"></script>
 </head>
 
 <body>
-    
+
     <input type="file" id="openFile" />
     <br>
-    <pre id="fileContents"></pre> 
+    <pre id="fileContents"></pre>
 <div id= "3d" class='orchid' style="position: absolute; top: 0px; height: 75%; right: 0px; width: 75%"></div>
 
 
 <div id="plotBottom" style="position:fixed; bottom:0%; float:left; width:100%; height:95%"></div>
-        
-    
-    
-    
+
+
+
+
 	<script>
 		"use strict";
 
@@ -87,8 +87,8 @@
         var J;
 		var cube;
 		var plane;
-        
-        
+
+
 spec2 = {
   "attributes": {},
   "designState": {
@@ -157,16 +157,16 @@ spec2 = {
         "affiliations": {},
 	}]
 };
-        
-        
+
+
 lin = [];
-    
+
 document.getElementById('openFile').addEventListener('change', function () {
     var fr = new FileReader();
     fr.onload = function(){
-       
-     
-index = 0;        
+
+
+index = 0;
 output = this.result
 res = output.split(/[\s]+/).join(' ')
 res2 = res.substring(1)
@@ -176,22 +176,22 @@ for (i=0;i<mat.length;i++){
     mat[i]=+mat[i]
 }
 
-        
+
 for(i=0;i<mat.length/7;i++){
-    
+
    lin[i] = mat.slice(index,index+5)
-    
+
 index = index + 7;
-    
+
 }
-        
+
 rao = [];
 pha = [];
 
         var dof = 12; // DoF
         var per = 60; // Number of periods
         var hea = 25; // Number of headings
-        
+
         // allocate vector
             for (i=0;i<dof;i++){
                 rao[i]= [];
@@ -202,36 +202,36 @@ pha = [];
                     for (k=0;k<hea;k++){
                         rao[i][j][k]= [];
                         pha[i][j][k]= [];
-                    }  
-                }  
-            } 
-        
-        
-var lineNumb, i, j, k, l;        
+                    }
+                }
+            }
+
+
+var lineNumb, i, j, k, l;
 for (l=0;l< lin.length -1;l++){
-    
+
     lineNumb = l + 1;
     i = ((l +1) % 12);
     if (i===0) {i=12};
-    
+
     j = Math.floor(lineNumb/(dof*hea));
-        
+
     k = Math.floor(lineNumb/12) % 25;
 
 
     rao[i-1][j][k] = lin[l][3];
     pha[i-1][j][k] = lin[l][4];
-    
+
 
 }
-            
 
-        
+
+
         }
     fr.readAsText(this.files[0]);
-    
 
-});      
+
+});
 
 		hangedMooring = []; // Point of hanged mooring line on seabed (m, m, m)
 
@@ -274,7 +274,7 @@ for (l=0;l< lin.length -1;l++){
 			gui = new dat.GUI();
 
 			// add report to GUI controller
-			
+
 			playback = new Playback({
 				parentGUI: gui
 			});
@@ -354,12 +354,12 @@ for (l=0;l< lin.length -1;l++){
 			wavMo = [];
 			states = [];
 
-			       ship = new Vessel.Ship(spec2); 
-                    buoy = new Vessel.Ship(spec2);  
+			       ship = new Vessel.Ship(spec2);
+                    buoy = new Vessel.Ship(spec2);
 					states = ship.designState.clone();
                     states2 = buoy.designState.clone();
-            
-					
+
+
 					//console.log(states.objectCache);
 					statMod = new Vessel.StateModule(ship, states);
 					statMod.setDraft();
@@ -375,8 +375,8 @@ for (l=0;l< lin.length -1;l++){
 					});
 					zUpCont.add(ship3D);
 
-            
-            
+
+
 
        LOA1 = ship.structure.hull.attributes.LOA;
 
@@ -401,17 +401,17 @@ for (l=0;l< lin.length -1;l++){
 		var material2 = new THREE.MeshBasicMaterial( {color: 0x33aa33} );
 		cube = new THREE.Mesh( geometry2, material2 );
 		scene.add( cube );
-            
+
 		cube.position.x = 315
 
 
 
         designDimention = ship.structure.hull.attributes;
         floatingStates = states.discrete.FloatingCondition.state;
-            
+
         states.continuous.mooring = {};
         mooring = states.continuous.mooring;
-		
+
         mooring.mooringPointOnShip = [
             [
                 (floatingStates.LWL / 2)-3,
@@ -433,7 +433,7 @@ geometry.vertices.push(
 
 line = new THREE.Line( geometry, material );
 scene.add( line );
-			
+
         var Ini = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
         states.continuous.motion = {
             surge: Ini[0],
@@ -443,23 +443,23 @@ scene.add( line );
             pitch: Ini[4],
             yaw: Ini[5],
         };
-            
+
 
         var tprev = 0; // Initial time
 
 
         dynMov = new DynamicalMovement(ship, states, states2, userParameters, Ini);
-    
+
         playback.add(function (t) {
 
             let dt = t - tprev;
 
             dynMov.moveShip(tprev, dt);
 
-			tprev = t;                     
-                        
+			tprev = t;
+
         });
-		
+
 			//Initial configuration:
 			let w = ocean.addCosineWave({
 				A: 0,
