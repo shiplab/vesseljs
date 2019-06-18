@@ -1,68 +1,68 @@
 function DynamicalMovement(ship, states, states2, states3, userParameters, Ini, seaDepth) {
 	this.ship = ship;
 	this.states = states;
-    this.states2 = states2;
-    this.states3 = states3;
+	this.states2 = states2;
+	this.states3 = states3;
 	var calculatedParameters = this.ship.designState.calculationParameters;
 
 	length = floatingStates.LWL;
 	breadth = floatingStates.BWL;
 	depth = designDimention.Depth;
 	draft = floatingStates.T;
-	
+
 	this.states.continuous.motion = {};
 	var motion = this.states.continuous.motion;
-    
-    
+
+
 	[motion.surge, motion.sway, motion.heave, motion.roll, motion.pitch, motion.yaw, motion.VSurge, motion.VSway, motion.VHeave, motion.VRoll, motion.VPitch, motion.VYaw, motion.EX, motion.EY, motion.EZ] = Ini;
-    
-
-	this.moveShip = function (tprev, dt) {
 
 
-	umbilicalForce = new InsertUmbilical(this.ship, this.states, motion, seaDepth, umbilical.anchorPoint, umbilical.PointOnShip, anchorLengthU, radialDistanceU, densityU, mooringAngleU);
-	
-	saltbForce = new InsertSaltb(this.ship, this.states, motion, seaDepth, saltb.anchorPoint, saltb.PointOnShip, anchorLengthSB, radialDistanceSB, densitySB, mooringAngleSB);
-        
-	catenaryForce = new InsertCatenary(this.ship, this.states, motion, catenary.anchorPoint, catenary.PointOnShip);
-        
-    mooringForce = new InsertMooring(this.ship, this.states, motion, seaDepth, mooring.anchorPoint, mooring.mooringPointOnShip, anchorLengthM, radialDistanceM, densityM, mooringAngleM);
-		
+	this.moveShip = function(tprev, dt) {
 
 
-	//	electricalForce = this.InsertMooring(this.ship, this.states, motion, seaDepth, mooring.anchorPoint); 
-		
-	// SRWL = this.InsertMooring(this.ship, this.states, motion, seaDepth, mooring.anchorPoint);
-        
-    var cos_mo2, cos_mo3, cos_mo4, cos_mo5, cos_mo8, cos_mo9, cos_mo10;    
-    let omega = wavCre.waveDef.waveFreq;    
-		
+		umbilicalForce = new InsertUmbilical(this.ship, this.states, motion, seaDepth, umbilical.anchorPoint, umbilical.PointOnShip, anchorLengthU, radialDistanceU, densityU, mooringAngleU);
 
-        
-playback.add(function(t) {
-	cos_mo0 =Math.cos(omega*t-pha[1][0][ocean.waves[0].T][ocean.waves[0].theta*4]);
-	cos_mo1 =Math.cos(omega*t-pha[1][1][ocean.waves[0].T][ocean.waves[0].theta*4]);
-	cos_mo2 =Math.cos(omega*t-pha[1][2][ocean.waves[0].T][ocean.waves[0].theta*4]);
-	cos_mo3 =Math.cos(omega*t-pha[1][3][ocean.waves[0].T][ocean.waves[0].theta*4]);
-	cos_mo4 =Math.cos(omega*t-pha[1][4][ocean.waves[0].T][ocean.waves[0].theta*4]);
-	cos_mo5 =Math.cos(omega*t-pha[1][5][ocean.waves[0].T][ocean.waves[0].theta*4]);
+		saltbForce = new InsertSaltb(this.ship, this.states, motion, seaDepth, saltb.anchorPoint, saltb.PointOnShip, anchorLengthSB, radialDistanceSB, densitySB, mooringAngleSB);
+
+		catenaryForce = new InsertCatenary(this.ship, this.states, motion, catenary.anchorPoint, catenary.PointOnShip);
+
+		mooringForce = new InsertMooring(this.ship, this.states, motion, seaDepth, mooring.anchorPoint, mooring.mooringPointOnShip, anchorLengthM, radialDistanceM, densityM, mooringAngleM);
 
 
-  motion.surge = (rao[1][0][ocean.waves[0].T][ocean.waves[0].theta*4]*[ocean.waves[0].A])*cos_mo0*0.01 
-  motion.sway = (rao[1][1][ocean.waves[0].T][ocean.waves[0].theta*4]*[ocean.waves[0].A])*cos_mo1*0.01 
-  motion.heave = (rao[1][2][ocean.waves[0].T][ocean.waves[0].theta*4]*[ocean.waves[0].A])*cos_mo2*0.01 
-  motion.roll = (rao[1][3][ocean.waves[0].T][ocean.waves[0].theta*4]*[ocean.waves[0].A])*cos_mo3*0.01 
-  motion.pitch = (rao[1][4][ocean.waves[0].T][ocean.waves[0].theta*4]*[ocean.waves[0].A])*cos_mo4*0.01 
-  motion.yaw = (rao[1][5][ocean.waves[0].T][ocean.waves[0].theta*4]*[ocean.waves[0].A])*cos_mo5*0.01     
-});    
-        
-        
-    ship3D.surge = motion.surge;
-    ship3D.sway = motion.sway;       
-    ship3D.heave = motion.heave;
-    ship3D.roll = motion.roll;
-    ship3D.pitch = motion.pitch;
-    ship3D.yaw = motion.yaw*0.5;
+
+		//	electricalForce = this.InsertMooring(this.ship, this.states, motion, seaDepth, mooring.anchorPoint);
+
+		// SRWL = this.InsertMooring(this.ship, this.states, motion, seaDepth, mooring.anchorPoint);
+
+		var cos_mo2, cos_mo3, cos_mo4, cos_mo5, cos_mo8, cos_mo9, cos_mo10;
+		let omega = wavCre.waveDef.waveFreq;
+
+
+
+		playback.add(function(t) {
+			cos_mo0 = Math.cos(omega * t - pha[1][0][ocean.waves[0].T][ocean.waves[0].theta * 4]);
+			cos_mo1 = Math.cos(omega * t - pha[1][1][ocean.waves[0].T][ocean.waves[0].theta * 4]);
+			cos_mo2 = Math.cos(omega * t - pha[1][2][ocean.waves[0].T][ocean.waves[0].theta * 4]);
+			cos_mo3 = Math.cos(omega * t - pha[1][3][ocean.waves[0].T][ocean.waves[0].theta * 4]);
+			cos_mo4 = Math.cos(omega * t - pha[1][4][ocean.waves[0].T][ocean.waves[0].theta * 4]);
+			cos_mo5 = Math.cos(omega * t - pha[1][5][ocean.waves[0].T][ocean.waves[0].theta * 4]);
+
+
+			motion.surge = (rao[1][0][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo0 * 0.01
+			motion.sway = (rao[1][1][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo1 * 0.01
+			motion.heave = (rao[1][2][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo2 * 0.01
+			motion.roll = (rao[1][3][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo3 * 0.01
+			motion.pitch = (rao[1][4][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo4 * 0.01
+			motion.yaw = (rao[1][5][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo5 * 0.01
+		});
+
+
+		ship3D.surge = motion.surge;
+		ship3D.sway = motion.sway;
+		ship3D.heave = motion.heave;
+		ship3D.roll = motion.roll;
+		ship3D.pitch = motion.pitch;
+		ship3D.yaw = motion.yaw * 0.5;
 
 	};
 
@@ -71,7 +71,7 @@ playback.add(function(t) {
 	// chapter 6 - motion for smal body approximation
 
 	//@ferrari212
-	this.WaveForce = function (rho, t, a_33) {
+	this.WaveForce = function(rho, t, a_33) {
 		var a = ocean.waves["0"].A; //Amplitude of Movement
 		var costh = ocean.waves["0"].costh; //Cos of Wave Directions
 		var sinth = ocean.waves["0"].sinth; //Sen of Wave Directions
@@ -83,7 +83,7 @@ playback.add(function(t) {
 		var k = 2 * Math.PI / ocean.waves["0"].L; // wave number
 		var phase = omega * t - ocean.waves["0"].phi - k * projMag;
 
-		
+
 
 		// Heave Forces Calculations
 		var A = 2 * Math.sin(Math.pow(omega, 2) * breadth / (2 * g)) * Math.exp(-Math.pow(omega, 2) * draft / g);
@@ -132,7 +132,7 @@ playback.add(function(t) {
 		return FW;
 	}
 
-	this.RungeKuttaSolver = function (t, y) {
+	this.RungeKuttaSolver = function(t, y) {
 		var J1 = Euler2J1(y.slice(3, 6));
 		var J2 = Euler2J2(y.slice(3, 6));
 
@@ -170,7 +170,7 @@ playback.add(function(t) {
 		return dy;
 	}
 
-	var Coriolis = function (M, AM, vel) {
+	var Coriolis = function(M, AM, vel) {
 		var c = numeric.dot(M, vel);
 		var C = numeric.rep([6, 6], 0);
 		var CA = numeric.rep([6, 6], 0);
@@ -206,7 +206,7 @@ playback.add(function(t) {
 		return numeric.add(C, CA);
 	}
 
-	var Euler2J1 = function (Eang) {
+	var Euler2J1 = function(Eang) {
 		Eang[0] = -Eang[0];
 		Eang[2] = -Eang[2];
 		rx = [
@@ -229,7 +229,7 @@ playback.add(function(t) {
 		return J1;
 	}
 
-	var Euler2J2 = function (Eang) {
+	var Euler2J2 = function(Eang) {
 		Eang[0] = -Eang[0];
 		Eang[2] = -Eang[2];
 		J2 = [
@@ -242,7 +242,7 @@ playback.add(function(t) {
 	}
 
 	// Returns the skew-symetrical of the matrix
-	var Smtrx = function (vec3) {
+	var Smtrx = function(vec3) {
 		var m = [
 			[0, -vec3[2], vec3[1]],
 			[vec3[2], 0, -vec3[0]],
@@ -251,30 +251,30 @@ playback.add(function(t) {
 
 		return m;
 	}
-	
 
-	
-// MOORING ----------------------------------------------
+
+
+	// MOORING ----------------------------------------------
 	function InsertMooring(ship, states, motion, seaDepth, anchorPoint, mooringPointOnShip, anchorLength, radialDistance, density, mooringAngle) {
-		
+
 		this.anchorLength = anchorLength
 		this.radialDistance = radialDistance
 		this.density = density
 		this.mooringAngle = mooringAngle
 		this.anchorPoint = anchorPoint
 		this.mooringPointOnShip = mooringPointOnShip
-		
+
 
 		var J = Euler2J1([motion.roll, motion.pitch, motion.yaw]);
 
-		if (mooringPointOnShip.length == 4){
-			
-		pos = [numeric.dot(J, mooringPointOnShip[0]), numeric.dot(J, mooringPointOnShip[1]), numeric.dot(J, mooringPointOnShip[2]), numeric.dot(J, mooringPointOnShip[3])];
-			
-		}else{
-		pos = [numeric.dot(J, mooringPointOnShip[0])]
-			}
-			
+		if (mooringPointOnShip.length == 4) {
+
+			pos = [numeric.dot(J, mooringPointOnShip[0]), numeric.dot(J, mooringPointOnShip[1]), numeric.dot(J, mooringPointOnShip[2]), numeric.dot(J, mooringPointOnShip[3])];
+
+		} else {
+			pos = [numeric.dot(J, mooringPointOnShip[0])]
+		}
+
 
 
 		// Variables Inserting
@@ -299,7 +299,7 @@ playback.add(function(t) {
 				radialDistance * Math.sin((-i * Math.PI) / 2 + (mooringAngle * Math.PI) / 180)
 			];
 
-            hangedMooringM[i] = []
+			hangedMooringM[i] = []
 			hangedMooringU[i] = []
 			anchorPointOnShip[i] = [pos[i][0] + motion.surge, pos[i][2] + motion.heave, pos[i][1] - motion.sway];
 			anchorDist[i] = Math.pow(Math.pow(anchorPoint[i][0] - anchorPointOnShip[i][0], 2) + Math.pow(anchorPoint[i][1] - anchorPointOnShip[i][1], 2) + Math.pow(anchorPoint[i][2] - anchorPointOnShip[i][2], 2), 0.5);
@@ -318,16 +318,18 @@ playback.add(function(t) {
 			const dx = xs / 50; // m (Distance variated)
 			var m = 0;
 			for (var d = xs; d >= 0; d -= dx) {
-				
-				if (mooringPointOnShip.length == 4){
-				hangedMooringM[i][m] = [anchorPointOnShip[i][0] + (xs - d) * (anchorAngle[i][0]),
+
+				if (mooringPointOnShip.length == 4) {
+					hangedMooringM[i][m] = [anchorPointOnShip[i][0] + (xs - d) * (anchorAngle[i][0]),
 					a[i] * (Math.cosh(d / a[i]) - 1) - userParameters.seaDepth,
 					anchorPointOnShip[i][2] + (xs - d) * (anchorAngle[i][1])
-				];}else{
-				hangedMooringU[i][m] = [anchorPointOnShip[i][0] + (xs - d) * (anchorAngle[i][0]),
+					];
+				} else {
+					hangedMooringU[i][m] = [anchorPointOnShip[i][0] + (xs - d) * (anchorAngle[i][0]),
 					a[i] * (Math.cosh(d / a[i]) - 1) - userParameters.seaDepth,
 					anchorPointOnShip[i][2] + (xs - d) * (anchorAngle[i][1])
-				];}
+					];
+				}
 				m++;
 			}
 
@@ -344,51 +346,51 @@ playback.add(function(t) {
 		}
 
 		for (var i = 0; i < pos.length; i++) {
-				mooring.anchorLineGeometry[i].geometry.vertices[0].x = anchorPointOnShip[i][0];
-				mooring.anchorLineGeometry[i].geometry.vertices[0].y = anchorPointOnShip[i][1];
-				mooring.anchorLineGeometry[i].geometry.vertices[0].z = anchorPointOnShip[i][2];
-			
+			mooring.anchorLineGeometry[i].geometry.vertices[0].x = anchorPointOnShip[i][0];
+			mooring.anchorLineGeometry[i].geometry.vertices[0].y = anchorPointOnShip[i][1];
+			mooring.anchorLineGeometry[i].geometry.vertices[0].z = anchorPointOnShip[i][2];
 
-		
+
+
 
 			for (var m = 0; m < hangedMooringM[i].length; m++) {
-		mooring.anchorLineGeometry[i].geometry.vertices[m + 1].x = hangedMooringM[i][m][0];
-					mooring.anchorLineGeometry[i].geometry.vertices[m + 1].y = hangedMooringM[i][m][1];
-					mooring.anchorLineGeometry[i].geometry.vertices[m + 1].z = hangedMooringM[i][m][2];
-								
-				
+				mooring.anchorLineGeometry[i].geometry.vertices[m + 1].x = hangedMooringM[i][m][0];
+				mooring.anchorLineGeometry[i].geometry.vertices[m + 1].y = hangedMooringM[i][m][1];
+				mooring.anchorLineGeometry[i].geometry.vertices[m + 1].z = hangedMooringM[i][m][2];
+
+
 			}
-	mooring.anchorLineGeometry[i].geometry.vertices[m].x = anchorPoint[i][0];
-				mooring.anchorLineGeometry[i].geometry.vertices[m].y = anchorPoint[i][1];
-				mooring.anchorLineGeometry[i].geometry.vertices[m].z = anchorPoint[i][2];
-		
+			mooring.anchorLineGeometry[i].geometry.vertices[m].x = anchorPoint[i][0];
+			mooring.anchorLineGeometry[i].geometry.vertices[m].y = anchorPoint[i][1];
+			mooring.anchorLineGeometry[i].geometry.vertices[m].z = anchorPoint[i][2];
+
 
 			mooring.anchorLineGeometry[i].geometry.verticesNeedUpdate = true;
-			
-			
+
+
 		}
 		// states.continuous.mooring = mooring;
 
 		return FM;
 	}
 
-	
-// UMBILICAL ----------------------------------------------
+
+	// UMBILICAL ----------------------------------------------
 	function InsertUmbilical(ship, states, motion, seaDepth, anchorPoint, mooringPointOnShip, anchorLength, radialDistance, density, mooringAngle) {
-		
+
 		this.anchorLength = anchorLength
 		this.radialDistance = radialDistance
 		this.density = density
 		this.mooringAngle = mooringAngle
 		this.anchorPoint = anchorPoint
 		this.mooringPointOnShip = mooringPointOnShip
-		
+
 
 		var J = Euler2J1([motion.roll, motion.pitch, motion.yaw]);
 
 
 		pos = [numeric.dot(J, mooringPointOnShip[0])]
-	
+
 
 
 		// Variables Inserting
@@ -431,10 +433,10 @@ playback.add(function(t) {
 			const dx = xs / 50; // m (Distance variated)
 			var m = 0;
 			for (var d = xs; d >= 0; d -= dx) {
-			
+
 				hangedMooringU[i][m] = [anchorPointOnShip[i][0] + (xs - d) * (anchorAngle[i][0]),
-					a[i] * (Math.cosh(d / a[i]) - 1) - userParameters.seaDepth,
-					anchorPointOnShip[i][2] + (xs - d) * (anchorAngle[i][1])
+				a[i] * (Math.cosh(d / a[i]) - 1) - userParameters.seaDepth,
+				anchorPointOnShip[i][2] + (xs - d) * (anchorAngle[i][1])
 				]
 				m++;
 			}
@@ -452,51 +454,51 @@ playback.add(function(t) {
 		}
 
 		for (var i = 0; i < pos.length; i++) {
-			
-				umbilical.anchorLineGeometry[0].geometry.vertices[0].x = anchorPointOnShip[0][0];
-				umbilical.anchorLineGeometry[0].geometry.vertices[0].y = anchorPointOnShip[0][1];
-				umbilical.anchorLineGeometry[0].geometry.vertices[0].z = anchorPointOnShip[0][2];
-		
+
+			umbilical.anchorLineGeometry[0].geometry.vertices[0].x = anchorPointOnShip[0][0];
+			umbilical.anchorLineGeometry[0].geometry.vertices[0].y = anchorPointOnShip[0][1];
+			umbilical.anchorLineGeometry[0].geometry.vertices[0].z = anchorPointOnShip[0][2];
+
 
 			for (var m = 0; m < hangedMooringU[i].length; m++) {
 
-					umbilical.anchorLineGeometry[0].geometry.vertices[m + 1].x = hangedMooringU[i][m][0];
-					umbilical.anchorLineGeometry[0].geometry.vertices[m + 1].y = hangedMooringU[i][m][1];
-					umbilical.anchorLineGeometry[0].geometry.vertices[m + 1].z = hangedMooringU[i][m][2];
-											 
-				
+				umbilical.anchorLineGeometry[0].geometry.vertices[m + 1].x = hangedMooringU[i][m][0];
+				umbilical.anchorLineGeometry[0].geometry.vertices[m + 1].y = hangedMooringU[i][m][1];
+				umbilical.anchorLineGeometry[0].geometry.vertices[m + 1].z = hangedMooringU[i][m][2];
+
+
 			}
-	
-				umbilical.anchorLineGeometry[0].geometry.vertices[m].x = anchorPointU[0][0];
-				umbilical.anchorLineGeometry[0].geometry.vertices[m].y = anchorPointU[0][1];
-				umbilical.anchorLineGeometry[0].geometry.vertices[m].z = anchorPointU[0][2];
-		
+
+			umbilical.anchorLineGeometry[0].geometry.vertices[m].x = anchorPointU[0][0];
+			umbilical.anchorLineGeometry[0].geometry.vertices[m].y = anchorPointU[0][1];
+			umbilical.anchorLineGeometry[0].geometry.vertices[m].z = anchorPointU[0][2];
+
 
 			umbilical.anchorLineGeometry[0].geometry.verticesNeedUpdate = true;
-				
-		
-		// states.continuous.mooring = mooring;
 
-		return FM;
-	}	
+
+			// states.continuous.mooring = mooring;
+
+			return FM;
+		}
 	}
 
-// UMBILICAL ----------------------------------------------
+	// UMBILICAL ----------------------------------------------
 	function InsertSaltb(ship, states, motion, seaDepth, anchorPoint, mooringPointOnShip, anchorLength, radialDistance, density, mooringAngle) {
-		
+
 		this.anchorLength = anchorLength
 		this.radialDistance = radialDistance
 		this.density = density
 		this.mooringAngle = mooringAngle
 		this.anchorPoint = anchorPoint
 		this.mooringPointOnShip = mooringPointOnShip
-		
 
-		var J = Euler2J1([motion.roll, -motion.pitch*0.8, motion.yaw]);
+
+		var J = Euler2J1([motion.roll, -motion.pitch * 0.8, motion.yaw]);
 
 
 		pos = [numeric.dot(J, mooringPointOnShip[0])]
-	
+
 
 
 		// Variables Inserting
@@ -539,10 +541,10 @@ playback.add(function(t) {
 			const dx = xs / 50; // m (Distance variated)
 			var m = 0;
 			for (var d = xs; d >= 0; d -= dx) {
-			
+
 				hangedMooringU[i][m] = [anchorPointOnShip[i][0] + (xs - d) * (anchorAngle[i][0]),
-					a[i] * (Math.cosh(d / a[i]) - 1) - userParameters.seaDepth,
-					anchorPointOnShip[i][2] + (xs - d) * (anchorAngle[i][1])
+				a[i] * (Math.cosh(d / a[i]) - 1) - userParameters.seaDepth,
+				anchorPointOnShip[i][2] + (xs - d) * (anchorAngle[i][1])
 				]
 				m++;
 			}
@@ -560,63 +562,63 @@ playback.add(function(t) {
 		}
 
 		for (var i = 0; i < pos.length; i++) {
-			
-				saltb.anchorLineGeometry[0].geometry.vertices[0].x = anchorPointOnShip[0][0];
-				saltb.anchorLineGeometry[0].geometry.vertices[0].y = anchorPointOnShip[0][1];
-				saltb.anchorLineGeometry[0].geometry.vertices[0].z = anchorPointOnShip[0][2];
-		
+
+			saltb.anchorLineGeometry[0].geometry.vertices[0].x = anchorPointOnShip[0][0];
+			saltb.anchorLineGeometry[0].geometry.vertices[0].y = anchorPointOnShip[0][1];
+			saltb.anchorLineGeometry[0].geometry.vertices[0].z = anchorPointOnShip[0][2];
+
 
 			for (var m = 0; m < hangedMooringU[i].length; m++) {
 
-					saltb.anchorLineGeometry[0].geometry.vertices[m + 1].x = hangedMooringU[i][m][0];
-					saltb.anchorLineGeometry[0].geometry.vertices[m + 1].y = hangedMooringU[i][m][1];
-					saltb.anchorLineGeometry[0].geometry.vertices[m + 1].z = hangedMooringU[i][m][2];
-											 
-				
+				saltb.anchorLineGeometry[0].geometry.vertices[m + 1].x = hangedMooringU[i][m][0];
+				saltb.anchorLineGeometry[0].geometry.vertices[m + 1].y = hangedMooringU[i][m][1];
+				saltb.anchorLineGeometry[0].geometry.vertices[m + 1].z = hangedMooringU[i][m][2];
+
+
 			}
-	
-				saltb.anchorLineGeometry[0].geometry.vertices[m].x = anchorPointU[0][0];
-				saltb.anchorLineGeometry[0].geometry.vertices[m].y = anchorPointU[0][1];
-				saltb.anchorLineGeometry[0].geometry.vertices[m].z = anchorPointU[0][2];
-		
+
+			saltb.anchorLineGeometry[0].geometry.vertices[m].x = anchorPointU[0][0];
+			saltb.anchorLineGeometry[0].geometry.vertices[m].y = anchorPointU[0][1];
+			saltb.anchorLineGeometry[0].geometry.vertices[m].z = anchorPointU[0][2];
+
 
 			saltb.anchorLineGeometry[0].geometry.verticesNeedUpdate = true;
-				
-		
-		// states.continuous.mooring = mooring;
 
-		return FM;
-	}	
+
+			// states.continuous.mooring = mooring;
+
+			return FM;
+		}
 	}
-    
-    
-    // CATENARY ----------------------------------------------
+
+
+	// CATENARY ----------------------------------------------
 	function InsertCatenary(ship, states, motion, anchorPoint, mooringPointOnShip) {
 
 		this.mooringPointOnShip = mooringPointOnShip
-        this.anchorPoint = anchorPoint
-		
+		this.anchorPoint = anchorPoint
+
 
 		var J = Euler2J1([0, 0, motion.pitch]);
-        
-        pos = [numeric.dot(J, mooringPointOnShip[0])]
-        
-        anchorPointOnShipC = []
+
+		pos = [numeric.dot(J, mooringPointOnShip[0])]
+
+		anchorPointOnShipC = []
 
 		anchorPointOnShipC = [pos[0][0] + motion.surge, pos[0][2] + motion.heave, pos[0][1] - motion.sway];
 
-        x1 = anchorPointOnShipC[0];
-        y1 = anchorPointOnShipC[2];
-        z1 = anchorPointOnShipC[1];
-  
+		x1 = anchorPointOnShipC[0];
+		y1 = anchorPointOnShipC[2];
+		z1 = anchorPointOnShipC[1];
+
 		updateCatenary();
-	
+
 	}
-    
+
 
 };
 
 
-// 
+//
 
 

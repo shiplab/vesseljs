@@ -1,8 +1,8 @@
 function DynamicalMovement(ship, states, states2, states3, userParameters, Ini, seaDepth) {
 	this.ship = ship;
 	this.states = states;
-    this.states2 = states2;
-    this.states3 = states3;
+	this.states2 = states2;
+	this.states3 = states3;
 	var calculatedParameters = this.ship.designState.calculationParameters;
 
 	var options = {
@@ -13,138 +13,138 @@ function DynamicalMovement(ship, states, states2, states3, userParameters, Ini, 
 	breadth = floatingStates.BWL;
 	depth = designDimention.Depth;
 	draft = floatingStates.T;
-	
+
 
 
 	this.states.continuous.motion = {};
 	var motion = this.states.continuous.motion;
-    
-    this.states2.continuous.motion = {};
+
+	this.states2.continuous.motion = {};
 	var motion2 = this.states2.continuous.motion;
-    
-    this.states3.continuous.motion = {};
+
+	this.states3.continuous.motion = {};
 	var motion3 = this.states3.continuous.motion;
-    
 
-	this.moveShip = function (tprev, dt) {
 
-    mooringForce = this.InsertMooring(this.ship, this.states, motion, motion2, seaDepth, mooring.anchorPoint);
-        
-    hawsersLine = this.InsertHawsers(this.ship, this.states2, motion, motion2, hawsers.anchorPoint);
-        
-    hawsersLine2 = this.InsertHawsers2(this.ship, this.states3, motion, motion3, seaDepth, hawsers2.anchorPoint);
-        
-    var cos_mo2, cos_mo3, cos_mo4, cos_mo5, cos_mo8, cos_mo9, cos_mo10;    
-    var omega = wavCre.waveDef.waveFreq;    
-		
-if (numShips == 1){
-	if(mooring.anchorLineGeometry[0].visible === false) {
-	    n = 0;
-	 }else{
-	   	n = 1;
-	 }
-}else if (numShips == 2){
-	if(mooring.anchorLineGeometry[0].visible === true && hawsers.anchorLineGeometry[0].visible === true) { 
-		n = 2;
-	}else if(mooring.anchorLineGeometry[0].visible === true && hawsers.anchorLineGeometry[0].visible === false) {
-		n = 3;
-	 }else if (mooring.anchorLineGeometry[0].visible === false && hawsers.anchorLineGeometry[0].visible === true){
-		n = 4;	 
-	 }else{
-		n = 5;
-	 }
-}else{
-	if(mooring.anchorLineGeometry[0].visible === true && hawsers.anchorLineGeometry[0].visible === true) { 
-		n = 6;
-	}else if(mooring.anchorLineGeometry[0].visible === true && hawsers.anchorLineGeometry[0].visible === false) {
-		n = 7;
-	 }else if (mooring.anchorLineGeometry[0].visible === false && hawsers.anchorLineGeometry[0].visible === true){
-		n = 8;	 
-	 }else{
-		n = 9;
-	 }
-	
-}
-        
-playback.add(function(t) {
-	
-	cos_mo0 =Math.cos(omega*t+pha[n][0][ocean.waves[0].T][ocean.waves[0].theta*4]);
-	cos_mo1 =Math.cos(omega*t+pha[n][1][ocean.waves[0].T][ocean.waves[0].theta*4]);
-	cos_mo2 =Math.cos(omega*t+pha[n][2][ocean.waves[0].T][ocean.waves[0].theta*4]);
-	cos_mo3 =Math.cos(omega*t+pha[n][3][ocean.waves[0].T][ocean.waves[0].theta*4]);
-	cos_mo4 =Math.cos(omega*t+pha[n][4][ocean.waves[0].T][ocean.waves[0].theta*4]);
-	cos_mo5 =Math.cos(omega*t+pha[n][5][ocean.waves[0].T][ocean.waves[0].theta*4]);
-	
-	if (numShips == 2 || numShips == 3){
-	cos_mo6 =Math.cos(omega*t-pha[n][6][ocean.waves[0].T][ocean.waves[0].theta*4]);
-	cos_mo7 =Math.cos(omega*t-pha[n][7][ocean.waves[0].T][ocean.waves[0].theta*4]);
-	cos_mo8 =Math.cos(omega*t-pha[n][8][ocean.waves[0].T][ocean.waves[0].theta*4]);
-	cos_mo9 =Math.cos(omega*t-pha[n][9][ocean.waves[0].T][ocean.waves[0].theta*4]);
-	cos_mo10 =Math.cos(omega*t-pha[n][10][ocean.waves[0].T][ocean.waves[0].theta*4]);
-	cos_mo11 =Math.cos(omega*t-pha[n][11][ocean.waves[0].T][ocean.waves[0].theta*4]);
-	} 
-	
-	if (numShips == 3){
-	cos_mo12 =Math.cos(omega*t+pha[n][12][ocean.waves[0].T][ocean.waves[0].theta*4]);
-	cos_mo13 =Math.cos(omega*t+pha[n][13][ocean.waves[0].T][ocean.waves[0].theta*4]);
-	cos_mo14 =Math.cos(omega*t+pha[n][14][ocean.waves[0].T][ocean.waves[0].theta*4]);
-	cos_mo15 =Math.cos(omega*t+pha[n][15][ocean.waves[0].T][ocean.waves[0].theta*4]);
-	cos_mo16 =Math.cos(omega*t+pha[n][16][ocean.waves[0].T][ocean.waves[0].theta*4]);
-	cos_mo17 =Math.cos(omega*t+pha[n][17][ocean.waves[0].T][ocean.waves[0].theta*4]);
-	}
+	this.moveShip = function(tprev, dt) {
 
-  motion.surge = (rao[n][0][ocean.waves[0].T][ocean.waves[0].theta*4]*[ocean.waves[0].A])*cos_mo0
-  motion.sway = (rao[n][1][ocean.waves[0].T][ocean.waves[0].theta*4]*[ocean.waves[0].A])*cos_mo1*0.6 
-  motion.heave = (rao[n][2][ocean.waves[0].T][ocean.waves[0].theta*4]*[ocean.waves[0].A])*cos_mo2*0.6 
-  motion.roll = (rao[n][3][ocean.waves[0].T][ocean.waves[0].theta*4]*[ocean.waves[0].A])*cos_mo3*2 
-  motion.pitch = (rao[n][4][ocean.waves[0].T][ocean.waves[0].theta*4]*[ocean.waves[0].A])*cos_mo4*0.6 
-  motion.yaw = (rao[n][5][ocean.waves[0].T][ocean.waves[0].theta*4]*[ocean.waves[0].A])*cos_mo5*0.6
-	
-  if (numShips == 2 || numShips == 3){
-  motion2.surge = (rao[n][6][ocean.waves[0].T][ocean.waves[0].theta*4]*[ocean.waves[0].A])*cos_mo6 
-  motion2.sway = (rao[n][7][ocean.waves[0].T][ocean.waves[0].theta*4]*[ocean.waves[0].A])*cos_mo7*0.4 
-  motion2.heave = (rao[n][8][ocean.waves[0].T][ocean.waves[0].theta*4]*[ocean.waves[0].A])*cos_mo8 
-  motion2.roll = (rao[n][9][ocean.waves[0].T][ocean.waves[0].theta*4]*[ocean.waves[0].A])*cos_mo9*2
-  motion2.pitch = (rao[n][10][ocean.waves[0].T][ocean.waves[0].theta*4]*[ocean.waves[0].A])*cos_mo10*2 
-  motion2.yaw = (rao[n][11][ocean.waves[0].T][ocean.waves[0].theta*4]*[ocean.waves[0].A])*cos_mo11*0.4
-  }
-  
-  if (numShips == 3){	
-  motion3.surge = (rao[n][12][ocean.waves[0].T][ocean.waves[0].theta*4]*[ocean.waves[0].A])*cos_mo12 
-  motion3.sway = (rao[n][13][ocean.waves[0].T][ocean.waves[0].theta*4]*[ocean.waves[0].A])*cos_mo13*0.4
-  motion3.heave = (rao[n][14][ocean.waves[0].T][ocean.waves[0].theta*4]*[ocean.waves[0].A])*cos_mo14 
-  motion3.roll = (rao[n][15][ocean.waves[0].T][ocean.waves[0].theta*4]*[ocean.waves[0].A])*cos_mo15*2 
-  motion3.pitch = (rao[n][16][ocean.waves[0].T][ocean.waves[0].theta*4]*[ocean.waves[0].A])*cos_mo16*2 
-  motion3.yaw = (rao[n][17][ocean.waves[0].T][ocean.waves[0].theta*4]*[ocean.waves[0].A])*cos_mo17*0.4   
-  }
-	
-});    
-        
-        
-    ship3D.surge = motion.surge;
-    ship3D.sway = motion.sway;       
-    ship3D.heave = motion.heave;
-    ship3D.roll = motion.roll;
-    ship3D.pitch = motion.pitch;
-    ship3D.yaw = motion.yaw*0.5;
+		mooringForce = this.InsertMooring(this.ship, this.states, motion, motion2, seaDepth, mooring.anchorPoint);
 
-	if (numShips == 2 || numShips == 3){	
-    barge23D.surge = motion2.surge;
-    barge23D.sway = motion2.sway; 
-    barge23D.heave = motion2.heave;
-    barge23D.roll = motion2.roll;
-    barge23D.pitch = motion2.pitch;  
-    barge23D.yaw = motion2.yaw*0.5; 
-	}
-	
-	if (numShips == 3){	
-    barge33D.surge = motion3.surge;
-    barge33D.sway = motion3.sway; 
-    barge33D.heave = motion3.heave;
-    barge33D.roll = motion3.roll;
-    barge33D.pitch = motion3.pitch;  
-    barge33D.yaw = motion3.yaw*0.5; 
-	}
+		hawsersLine = this.InsertHawsers(this.ship, this.states2, motion, motion2, hawsers.anchorPoint);
+
+		hawsersLine2 = this.InsertHawsers2(this.ship, this.states3, motion, motion3, seaDepth, hawsers2.anchorPoint);
+
+		var cos_mo2, cos_mo3, cos_mo4, cos_mo5, cos_mo8, cos_mo9, cos_mo10;
+		var omega = wavCre.waveDef.waveFreq;
+
+		if (numShips == 1) {
+			if (mooring.anchorLineGeometry[0].visible === false) {
+				n = 0;
+			} else {
+				n = 1;
+			}
+		} else if (numShips == 2) {
+			if (mooring.anchorLineGeometry[0].visible === true && hawsers.anchorLineGeometry[0].visible === true) {
+				n = 2;
+			} else if (mooring.anchorLineGeometry[0].visible === true && hawsers.anchorLineGeometry[0].visible === false) {
+				n = 3;
+			} else if (mooring.anchorLineGeometry[0].visible === false && hawsers.anchorLineGeometry[0].visible === true) {
+				n = 4;
+			} else {
+				n = 5;
+			}
+		} else {
+			if (mooring.anchorLineGeometry[0].visible === true && hawsers.anchorLineGeometry[0].visible === true) {
+				n = 6;
+			} else if (mooring.anchorLineGeometry[0].visible === true && hawsers.anchorLineGeometry[0].visible === false) {
+				n = 7;
+			} else if (mooring.anchorLineGeometry[0].visible === false && hawsers.anchorLineGeometry[0].visible === true) {
+				n = 8;
+			} else {
+				n = 9;
+			}
+
+		}
+
+		playback.add(function(t) {
+
+			cos_mo0 = Math.cos(omega * t + pha[n][0][ocean.waves[0].T][ocean.waves[0].theta * 4]);
+			cos_mo1 = Math.cos(omega * t + pha[n][1][ocean.waves[0].T][ocean.waves[0].theta * 4]);
+			cos_mo2 = Math.cos(omega * t + pha[n][2][ocean.waves[0].T][ocean.waves[0].theta * 4]);
+			cos_mo3 = Math.cos(omega * t + pha[n][3][ocean.waves[0].T][ocean.waves[0].theta * 4]);
+			cos_mo4 = Math.cos(omega * t + pha[n][4][ocean.waves[0].T][ocean.waves[0].theta * 4]);
+			cos_mo5 = Math.cos(omega * t + pha[n][5][ocean.waves[0].T][ocean.waves[0].theta * 4]);
+
+			if (numShips == 2 || numShips == 3) {
+				cos_mo6 = Math.cos(omega * t - pha[n][6][ocean.waves[0].T][ocean.waves[0].theta * 4]);
+				cos_mo7 = Math.cos(omega * t - pha[n][7][ocean.waves[0].T][ocean.waves[0].theta * 4]);
+				cos_mo8 = Math.cos(omega * t - pha[n][8][ocean.waves[0].T][ocean.waves[0].theta * 4]);
+				cos_mo9 = Math.cos(omega * t - pha[n][9][ocean.waves[0].T][ocean.waves[0].theta * 4]);
+				cos_mo10 = Math.cos(omega * t - pha[n][10][ocean.waves[0].T][ocean.waves[0].theta * 4]);
+				cos_mo11 = Math.cos(omega * t - pha[n][11][ocean.waves[0].T][ocean.waves[0].theta * 4]);
+			}
+
+			if (numShips == 3) {
+				cos_mo12 = Math.cos(omega * t + pha[n][12][ocean.waves[0].T][ocean.waves[0].theta * 4]);
+				cos_mo13 = Math.cos(omega * t + pha[n][13][ocean.waves[0].T][ocean.waves[0].theta * 4]);
+				cos_mo14 = Math.cos(omega * t + pha[n][14][ocean.waves[0].T][ocean.waves[0].theta * 4]);
+				cos_mo15 = Math.cos(omega * t + pha[n][15][ocean.waves[0].T][ocean.waves[0].theta * 4]);
+				cos_mo16 = Math.cos(omega * t + pha[n][16][ocean.waves[0].T][ocean.waves[0].theta * 4]);
+				cos_mo17 = Math.cos(omega * t + pha[n][17][ocean.waves[0].T][ocean.waves[0].theta * 4]);
+			}
+
+			motion.surge = (rao[n][0][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo0
+			motion.sway = (rao[n][1][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo1 * 0.6
+			motion.heave = (rao[n][2][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo2 * 0.6
+			motion.roll = (rao[n][3][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo3 * 2
+			motion.pitch = (rao[n][4][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo4 * 0.6
+			motion.yaw = (rao[n][5][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo5 * 0.6
+
+			if (numShips == 2 || numShips == 3) {
+				motion2.surge = (rao[n][6][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo6
+				motion2.sway = (rao[n][7][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo7 * 0.4
+				motion2.heave = (rao[n][8][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo8
+				motion2.roll = (rao[n][9][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo9 * 2
+				motion2.pitch = (rao[n][10][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo10 * 2
+				motion2.yaw = (rao[n][11][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo11 * 0.4
+			}
+
+			if (numShips == 3) {
+				motion3.surge = (rao[n][12][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo12
+				motion3.sway = (rao[n][13][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo13 * 0.4
+				motion3.heave = (rao[n][14][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo14
+				motion3.roll = (rao[n][15][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo15 * 2
+				motion3.pitch = (rao[n][16][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo16 * 2
+				motion3.yaw = (rao[n][17][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo17 * 0.4
+			}
+
+		});
+
+
+		ship3D.surge = motion.surge;
+		ship3D.sway = motion.sway;
+		ship3D.heave = motion.heave;
+		ship3D.roll = motion.roll;
+		ship3D.pitch = motion.pitch;
+		ship3D.yaw = motion.yaw * 0.5;
+
+		if (numShips == 2 || numShips == 3) {
+			barge23D.surge = motion2.surge;
+			barge23D.sway = motion2.sway;
+			barge23D.heave = motion2.heave;
+			barge23D.roll = motion2.roll;
+			barge23D.pitch = motion2.pitch;
+			barge23D.yaw = motion2.yaw * 0.5;
+		}
+
+		if (numShips == 3) {
+			barge33D.surge = motion3.surge;
+			barge33D.sway = motion3.sway;
+			barge33D.heave = motion3.heave;
+			barge33D.roll = motion3.roll;
+			barge33D.pitch = motion3.pitch;
+			barge33D.yaw = motion3.yaw * 0.5;
+		}
 	};
 
 
@@ -152,7 +152,7 @@ playback.add(function(t) {
 	// chapter 6 - motion for smal body approximation
 
 	//@ferrari212
-	this.WaveForce = function (rho, t, a_33) {
+	this.WaveForce = function(rho, t, a_33) {
 		var a = ocean.waves["0"].A; //Amplitude of Movement
 		var costh = ocean.waves["0"].costh; //Cos of Wave Directions
 		var sinth = ocean.waves["0"].sinth; //Sen of Wave Directions
@@ -210,7 +210,7 @@ playback.add(function(t) {
 		return FW;
 	}
 
-	this.RungeKuttaSolver = function (t, y) {
+	this.RungeKuttaSolver = function(t, y) {
 		var J1 = Euler2J1(y.slice(3, 6));
 		var J2 = Euler2J2(y.slice(3, 6));
 
@@ -248,7 +248,7 @@ playback.add(function(t) {
 		return dy;
 	}
 
-	var Coriolis = function (M, AM, vel) {
+	var Coriolis = function(M, AM, vel) {
 		var c = numeric.dot(M, vel);
 		var C = numeric.rep([6, 6], 0);
 		var CA = numeric.rep([6, 6], 0);
@@ -284,7 +284,7 @@ playback.add(function(t) {
 		return numeric.add(C, CA);
 	}
 
-	var Euler2J1 = function (Eang) {
+	var Euler2J1 = function(Eang) {
 		Eang[0] = -Eang[0];
 		Eang[2] = -Eang[2];
 		rx = [
@@ -307,7 +307,7 @@ playback.add(function(t) {
 		return J1;
 	}
 
-	var Euler2J2 = function (Eang) {
+	var Euler2J2 = function(Eang) {
 		Eang[0] = -Eang[0];
 		Eang[2] = -Eang[2];
 		J2 = [
@@ -320,7 +320,7 @@ playback.add(function(t) {
 	}
 
 	// Returns the skew-symetrical of the matrix
-	var Smtrx = function (vec3) {
+	var Smtrx = function(vec3) {
 		var m = [
 			[0, -vec3[2], vec3[1]],
 			[vec3[2], 0, -vec3[0]],
@@ -330,9 +330,9 @@ playback.add(function(t) {
 		return m;
 	}
 
-//Insert Mooring lines ------------------------------------
-    
-	this.InsertMooring = function (ship, states, motion, seaDepth, anchorPoint) {
+	//Insert Mooring lines ------------------------------------
+
+	this.InsertMooring = function(ship, states, motion, seaDepth, anchorPoint) {
 
 		var J = Euler2J1([motion.roll, motion.pitch, motion.yaw]);
 
@@ -352,7 +352,7 @@ playback.add(function(t) {
 		var anchorDist = []; // Max. horizontal distance of line       (m)
 		var mooringLengthSuspended; // Suspende line length                   (m)
 		var anchorPoint = [];
-        resultingForce = []
+		resultingForce = []
 
 		for (var i = 0; i < pos.length; i++) {
 			anchorPoint[i] = [
@@ -361,9 +361,9 @@ playback.add(function(t) {
 				userParameters.radialDistance * Math.sin((-i * Math.PI) / 2 + (mooring.mooringAngle * Math.PI) / 180)
 			];
 
-			
-            
-            hangedMooring[i] = []
+
+
+			hangedMooring[i] = []
 			anchorPointOnShip[i] = [pos[i][0] + motion.surge, pos[i][2] + motion.heave, pos[i][1] - motion.sway];
 			anchorDist[i] = Math.pow(Math.pow(anchorPoint[i][0] - anchorPointOnShip[i][0], 2) + Math.pow(anchorPoint[i][1] - anchorPointOnShip[i][1], 2) + Math.pow(anchorPoint[i][2] - anchorPointOnShip[i][2], 2), 0.5);
 			anchorAngle[i] = [(anchorPoint[i][0] - anchorPointOnShip[i][0]) / anchorDist[i], (anchorPoint[i][2] - anchorPointOnShip[i][2]) / anchorDist[i]];
@@ -382,16 +382,16 @@ playback.add(function(t) {
 			var m = 0;
 			for (var d = xs; d >= 0; d -= dx) {
 				hangedMooring[i][m] = [anchorPointOnShip[i][0] + (xs - d) * (anchorAngle[i][0]),
-					a[i] * (Math.cosh(d / a[i]) - 1) - userParameters.seaDepth,
-					anchorPointOnShip[i][2] + (xs - d) * (anchorAngle[i][1])
+				a[i] * (Math.cosh(d / a[i]) - 1) - userParameters.seaDepth,
+				anchorPointOnShip[i][2] + (xs - d) * (anchorAngle[i][1])
 				];
 				m++;
 			}
-            
-            Fx = g * horizontalForce[i] * (anchorAngle[i][0]);
+
+			Fx = g * horizontalForce[i] * (anchorAngle[i][0]);
 			Fy = g * horizontalForce[i] * (anchorAngle[i][1]);
 			Fz = g * verticalForce[i];
-			resultingForce[i] = Math.pow(Math.pow(Fx, 2) + Math.pow(Fy, 2) + Math.pow(Fz, 2), 0.5)/1000;
+			resultingForce[i] = Math.pow(Math.pow(Fx, 2) + Math.pow(Fy, 2) + Math.pow(Fz, 2), 0.5) / 1000;
 
 		}
 
@@ -434,259 +434,260 @@ playback.add(function(t) {
 
 		return FM;
 	}
-//INSERT Hawsers --------------------------------------------
-    
-    this.InsertHawsers = function (ship, states, motion, motion2, seaDepth, anchorPoint) {
-        this.anchorPoint = anchorPoint
-        this.motion = motion;
-        this.motion2 = motion2;
+	//INSERT Hawsers --------------------------------------------
 
-       var J = Euler2J1([motion.roll, motion.pitch, motion.yaw]);
-        
-       var J_2 = Euler2J1([motion2.roll, motion2.pitch, 0.5*motion2.yaw]);
-        
-        posT = [numeric.dot(J,hawsers.mooringPointOnShip[0]), numeric.dot(J, hawsers.mooringPointOnShip[1]), numeric.dot(J, hawsers.mooringPointOnShip[2]), numeric.dot(J, hawsers.mooringPointOnShip[3]), numeric.dot(J, hawsers.mooringPointOnShip[4]), numeric.dot(J, hawsers.mooringPointOnShip[5]), numeric.dot(J, hawsers.mooringPointOnShip[6]), numeric.dot(J, hawsers.mooringPointOnShip[7])];
-  
+	this.InsertHawsers = function(ship, states, motion, motion2, seaDepth, anchorPoint) {
+		this.anchorPoint = anchorPoint
+		this.motion = motion;
+		this.motion2 = motion2;
 
-        posB = [numeric.dot(J_2, hawsers.anchorPoint[0]), numeric.dot(J_2, hawsers.anchorPoint[1]), 
-        numeric.dot(J_2, hawsers.anchorPoint[2]), 
-        numeric.dot(J_2, hawsers.anchorPoint[3]), 
-        numeric.dot(J_2, hawsers.anchorPoint[4]), 
-        numeric.dot(J_2, hawsers.anchorPoint[5]), 
-        numeric.dot(J_2, hawsers.anchorPoint[6]), 
-        numeric.dot(J_2, hawsers.anchorPoint[7])];
+		var J = Euler2J1([motion.roll, motion.pitch, motion.yaw]);
 
-	    
-		var anchorPointOnShip1 = []; // Line geometry (global)   
+		var J_2 = Euler2J1([motion2.roll, motion2.pitch, 0.5 * motion2.yaw]);
+
+		posT = [numeric.dot(J, hawsers.mooringPointOnShip[0]), numeric.dot(J, hawsers.mooringPointOnShip[1]), numeric.dot(J, hawsers.mooringPointOnShip[2]), numeric.dot(J, hawsers.mooringPointOnShip[3]), numeric.dot(J, hawsers.mooringPointOnShip[4]), numeric.dot(J, hawsers.mooringPointOnShip[5]), numeric.dot(J, hawsers.mooringPointOnShip[6]), numeric.dot(J, hawsers.mooringPointOnShip[7])];
+
+
+		posB = [numeric.dot(J_2, hawsers.anchorPoint[0]), numeric.dot(J_2, hawsers.anchorPoint[1]),
+		numeric.dot(J_2, hawsers.anchorPoint[2]),
+		numeric.dot(J_2, hawsers.anchorPoint[3]),
+		numeric.dot(J_2, hawsers.anchorPoint[4]),
+		numeric.dot(J_2, hawsers.anchorPoint[5]),
+		numeric.dot(J_2, hawsers.anchorPoint[6]),
+		numeric.dot(J_2, hawsers.anchorPoint[7])];
+
+
+		var anchorPointOnShip1 = []; // Line geometry (global)
 		var anchorPointOnShip2 = [];
 
 		for (var i = 0; i < posT.length; i++) {
 
-            anchorPointOnShip1[i] = [posT[i][0] + motion.surge, posT[i][2] + motion.heave, posT[i][1] - motion.sway];
-        
-            anchorPointOnShip2[i] = [posB[i][0] + motion2.surge, posB[i][2] + motion2.heave, posB[i][1] - motion2.sway]; 
+			anchorPointOnShip1[i] = [posT[i][0] + motion.surge, posT[i][2] + motion.heave, posT[i][1] - motion.sway];
 
-		 }
+			anchorPointOnShip2[i] = [posB[i][0] + motion2.surge, posB[i][2] + motion2.heave, posB[i][1] - motion2.sway];
+
+		}
 
 		for (var i = 0; i < posT.length; i++) {
-	
+
 			hawsers.anchorLineGeometry[i].geometry.vertices[0].x = anchorPointOnShip1[i][0];
 			hawsers.anchorLineGeometry[i].geometry.vertices[0].y = anchorPointOnShip1[i][1];
 			hawsers.anchorLineGeometry[i].geometry.vertices[0].z = anchorPointOnShip1[i][2];
 
-			 hawsers.anchorLineGeometry[i].geometry.vertices[1].x = anchorPointOnShip2[i][0];
+			hawsers.anchorLineGeometry[i].geometry.vertices[1].x = anchorPointOnShip2[i][0];
 
 			hawsers.anchorLineGeometry[i].geometry.vertices[1].y = anchorPointOnShip2[i][1];
 
 			hawsers.anchorLineGeometry[i].geometry.vertices[1].z = anchorPointOnShip2[i][2];
-            
-    hawsers.anchorLineGeometry[i].geometry.verticesNeedUpdate = true;
-            
-//Calculate hawsers tensions---------------------------            
-    hawsers.anchorLineGeometry[i].geometry.linelength = Math.sqrt((Math.pow((hawsers.anchorLineGeometry[i].geometry.vertices[0].x -hawsers.anchorLineGeometry[i].geometry.vertices[1].x),2))+(Math.pow((hawsers.anchorLineGeometry[i].geometry.vertices[0].y -hawsers.anchorLineGeometry[i].geometry.vertices[1].y),2))+(Math.pow((hawsers.anchorLineGeometry[i].geometry.vertices[0].z -hawsers.anchorLineGeometry[i].geometry.vertices[1].z),2)));
+
+			hawsers.anchorLineGeometry[i].geometry.verticesNeedUpdate = true;
+
+			//Calculate hawsers tensions---------------------------
+			hawsers.anchorLineGeometry[i].geometry.linelength = Math.sqrt((Math.pow((hawsers.anchorLineGeometry[i].geometry.vertices[0].x - hawsers.anchorLineGeometry[i].geometry.vertices[1].x), 2)) + (Math.pow((hawsers.anchorLineGeometry[i].geometry.vertices[0].y - hawsers.anchorLineGeometry[i].geometry.vertices[1].y), 2)) + (Math.pow((hawsers.anchorLineGeometry[i].geometry.vertices[0].z - hawsers.anchorLineGeometry[i].geometry.vertices[1].z), 2)));
 
 
 
-    }
-        
-    for (i=0; i<8; i++){
-        if (i<6){
-            inilen = 11.751311259877795
-        }else{
-            inilen = 18.933832153053434
-        }
-        tension[i] = (hawsers.anchorLineGeometry[i].geometry.linelength-inilen)*Math.pow((diameter*0.1),2)*k*0.5
-        
-        if ((hawsers.anchorLineGeometry[i].geometry.linelength-inilen)<0){tension[i]=0}
-    } 
+		}
 
-}
-//Insert Hawsers 2 -------------------------------------   
-    
-    this.InsertHawsers2 = function (ship, states, motion, motion3, seaDepth, anchorPoint) {
-        this.motion = motion;
-        this.motion3 = motion3;
-        this.anchorPoint = anchorPoint;
+		for (i = 0; i < 8; i++) {
+			if (i < 6) {
+				inilen = 11.751311259877795
+			} else {
+				inilen = 18.933832153053434
+			}
+			tension[i] = (hawsers.anchorLineGeometry[i].geometry.linelength - inilen) * Math.pow((diameter * 0.1), 2) * k * 0.5
 
-       var J = Euler2J1([motion.roll, motion.pitch, motion.yaw]);
-        
-       var J_2 = Euler2J1([motion3.roll, motion3.pitch, 0.5*motion3.yaw]);
-        
-        posT2 = [numeric.dot(J,hawsers2.mooringPointOnShip[0]), numeric.dot(J, hawsers2.mooringPointOnShip[1]), numeric.dot(J, hawsers2.mooringPointOnShip[2]), numeric.dot(J, hawsers2.mooringPointOnShip[3]), numeric.dot(J, hawsers2.mooringPointOnShip[4]), numeric.dot(J, hawsers2.mooringPointOnShip[5]), numeric.dot(J, hawsers2.mooringPointOnShip[6]), numeric.dot(J, hawsers2.mooringPointOnShip[7])];
-   
-        posB2 = [numeric.dot(J_2, anchorPoint[0]), numeric.dot(J_2, anchorPoint[1]), 
-        numeric.dot(J_2, anchorPoint[2]), 
-        numeric.dot(J_2, anchorPoint[3]), 
-        numeric.dot(J_2, anchorPoint[4]), 
-        numeric.dot(J_2, anchorPoint[5]), 
-        numeric.dot(J_2, anchorPoint[6]), 
-        numeric.dot(J_2, anchorPoint[7])];
+			if ((hawsers.anchorLineGeometry[i].geometry.linelength - inilen) < 0) {tension[i] = 0}
+		}
 
-	    
-		var anchorPointOnShip2 = []; // Line geometry (global)   
+	}
+	//Insert Hawsers 2 -------------------------------------
+
+	this.InsertHawsers2 = function(ship, states, motion, motion3, seaDepth, anchorPoint) {
+		this.motion = motion;
+		this.motion3 = motion3;
+		this.anchorPoint = anchorPoint;
+
+		var J = Euler2J1([motion.roll, motion.pitch, motion.yaw]);
+
+		var J_2 = Euler2J1([motion3.roll, motion3.pitch, 0.5 * motion3.yaw]);
+
+		posT2 = [numeric.dot(J, hawsers2.mooringPointOnShip[0]), numeric.dot(J, hawsers2.mooringPointOnShip[1]), numeric.dot(J, hawsers2.mooringPointOnShip[2]), numeric.dot(J, hawsers2.mooringPointOnShip[3]), numeric.dot(J, hawsers2.mooringPointOnShip[4]), numeric.dot(J, hawsers2.mooringPointOnShip[5]), numeric.dot(J, hawsers2.mooringPointOnShip[6]), numeric.dot(J, hawsers2.mooringPointOnShip[7])];
+
+		posB2 = [numeric.dot(J_2, anchorPoint[0]), numeric.dot(J_2, anchorPoint[1]),
+		numeric.dot(J_2, anchorPoint[2]),
+		numeric.dot(J_2, anchorPoint[3]),
+		numeric.dot(J_2, anchorPoint[4]),
+		numeric.dot(J_2, anchorPoint[5]),
+		numeric.dot(J_2, anchorPoint[6]),
+		numeric.dot(J_2, anchorPoint[7])];
+
+
+		var anchorPointOnShip2 = []; // Line geometry (global)
 		var anchorPointz = [];
 
 		for (var i = 0; i < posT2.length; i++) {
 
-            anchorPointOnShip2[i] = [posT2[i][0] + motion.surge, posT2[i][2] + motion.heave, posT2[i][1] - motion.sway];
-        
-            anchorPointz[i] = [posB2[i][0] + motion3.surge, posB2[i][2] + motion3.heave, posB2[i][1] - motion3.sway]; 
+			anchorPointOnShip2[i] = [posT2[i][0] + motion.surge, posT2[i][2] + motion.heave, posT2[i][1] - motion.sway];
 
-		 }
+			anchorPointz[i] = [posB2[i][0] + motion3.surge, posB2[i][2] + motion3.heave, posB2[i][1] - motion3.sway];
+
+		}
 
 		for (var i = 0; i < posT2.length; i++) {
-	
+
 			hawsers2.anchorLineGeometry[i].geometry.vertices[0].x = anchorPointOnShip2[i][0];
 			hawsers2.anchorLineGeometry[i].geometry.vertices[0].y = anchorPointOnShip2[i][1];
 			hawsers2.anchorLineGeometry[i].geometry.vertices[0].z = anchorPointOnShip2[i][2];
 
-			 hawsers2.anchorLineGeometry[i].geometry.vertices[1].x = anchorPointz[i][0];
+			hawsers2.anchorLineGeometry[i].geometry.vertices[1].x = anchorPointz[i][0];
 
 			hawsers2.anchorLineGeometry[i].geometry.vertices[1].y = anchorPointz[i][1];
 
 			hawsers2.anchorLineGeometry[i].geometry.vertices[1].z = anchorPointz[i][2];
-            
-            
-            
-			
-hawsers2.anchorLineGeometry[i].geometry.verticesNeedUpdate = true;
-		}
-		
-//PLOTS for motion and tensions --------------------------
 
-	}    
- 		window.feedMotionHeave = function(callback) {
-			var tick = {};
-			tick.plot0 = motion.heave;
-			tick.plot1 = motion2.heave;
-			tick.plot2 = motion3.heave;
-			callback(JSON.stringify(tick));
-		};
-		window.feedMotionRoll = function(callback) {
-			var tick = {};
-			tick.plot0 = motion.roll * 180 / Math.PI;
-			tick.plot1 = motion2.roll * 180 / Math.PI;
-			tick.plot2 = motion3.roll * 180 / Math.PI;
-			callback(JSON.stringify(tick));
-		};
-		window.feedMotionSurge = function(callback) {
-			var tick = {};
-			tick.plot0 = motion.surge;
-			tick.plot1 = motion2.surge;
-			tick.plot2 = motion3.surge;
-			callback(JSON.stringify(tick));
-		};
-		window.feedMotionSway = function(callback) {
-			var tick = {};
-			tick.plot0 = motion.sway;
-			tick.plot1 = motion2.sway;
-			tick.plot2 = motion3.sway;
-			callback(JSON.stringify(tick));
-		};
-		window.feedMotionPitch = function(callback) {
-			var tick = {};
-			tick.plot0 = motion.pitch * 180 / Math.PI;
-			tick.plot1 = motion2.pitch * 180 / Math.PI;
-			tick.plot2 = motion3.pitch * 180 / Math.PI;
-			callback(JSON.stringify(tick));
-		};
-		window.feedMotionYaw = function(callback) {
-			var tick = {};
-			tick.plot0 = motion.yaw;
-			tick.plot1 = motion2.yaw;
-			tick.plot2 = motion3.yaw;
-			callback(JSON.stringify(tick));
-		};
-    
-        window.tensions = function(callback) {
-			var tick = {};
-			tick.plot0 = resultingForce[0];
-			tick.plot1 = resultingForce[1];
-			tick.plot2 = resultingForce[2];
-            tick.plot3 = resultingForce[3];
-			callback(JSON.stringify(tick));
-		};
-    
-        window.tensionsHawsers = function(callback) {
-			var tick = {};
-			tick.plot0 = tension[0];
-			tick.plot1 = tension[1];
-			tick.plot2 = tension[2];
-            tick.plot3 = tension[3];
-            tick.plot4 = tension[4];
-			tick.plot5 = tension[5];
-			tick.plot6 = tension[6];
-            tick.plot7 = tension[7];
-			callback(JSON.stringify(tick));
-		};
-				
-var myDashboardMooring = {
-			"graphset":[
-{//---------- TENSIONS HAWSERS-----------//
-				"type":"line",
-				"plotarea":{
-					"adjust-layout":true
+
+
+
+			hawsers2.anchorLineGeometry[i].geometry.verticesNeedUpdate = true;
+		}
+
+		//PLOTS for motion and tensions --------------------------
+
+	}
+	window.feedMotionHeave = function(callback) {
+		var tick = {};
+		tick.plot0 = motion.heave;
+		tick.plot1 = motion2.heave;
+		tick.plot2 = motion3.heave;
+		callback(JSON.stringify(tick));
+	};
+	window.feedMotionRoll = function(callback) {
+		var tick = {};
+		tick.plot0 = motion.roll * 180 / Math.PI;
+		tick.plot1 = motion2.roll * 180 / Math.PI;
+		tick.plot2 = motion3.roll * 180 / Math.PI;
+		callback(JSON.stringify(tick));
+	};
+	window.feedMotionSurge = function(callback) {
+		var tick = {};
+		tick.plot0 = motion.surge;
+		tick.plot1 = motion2.surge;
+		tick.plot2 = motion3.surge;
+		callback(JSON.stringify(tick));
+	};
+	window.feedMotionSway = function(callback) {
+		var tick = {};
+		tick.plot0 = motion.sway;
+		tick.plot1 = motion2.sway;
+		tick.plot2 = motion3.sway;
+		callback(JSON.stringify(tick));
+	};
+	window.feedMotionPitch = function(callback) {
+		var tick = {};
+		tick.plot0 = motion.pitch * 180 / Math.PI;
+		tick.plot1 = motion2.pitch * 180 / Math.PI;
+		tick.plot2 = motion3.pitch * 180 / Math.PI;
+		callback(JSON.stringify(tick));
+	};
+	window.feedMotionYaw = function(callback) {
+		var tick = {};
+		tick.plot0 = motion.yaw;
+		tick.plot1 = motion2.yaw;
+		tick.plot2 = motion3.yaw;
+		callback(JSON.stringify(tick));
+	};
+
+	window.tensions = function(callback) {
+		var tick = {};
+		tick.plot0 = resultingForce[0];
+		tick.plot1 = resultingForce[1];
+		tick.plot2 = resultingForce[2];
+		tick.plot3 = resultingForce[3];
+		callback(JSON.stringify(tick));
+	};
+
+	window.tensionsHawsers = function(callback) {
+		var tick = {};
+		tick.plot0 = tension[0];
+		tick.plot1 = tension[1];
+		tick.plot2 = tension[2];
+		tick.plot3 = tension[3];
+		tick.plot4 = tension[4];
+		tick.plot5 = tension[5];
+		tick.plot6 = tension[6];
+		tick.plot7 = tension[7];
+		callback(JSON.stringify(tick));
+	};
+
+	var myDashboardMooring = {
+		"graphset": [
+			{//---------- TENSIONS HAWSERS-----------//
+				"type": "line",
+				"plotarea": {
+					"adjust-layout": true
 				},
-				"height":"25%",
-				"width":"25%",
-				"x":"75%",
-				"y":"48%",
-				"plot":{ 
-					"aspect":"spline", 
-					"marker":{"visible":false},
+				"height": "25%",
+				"width": "25%",
+				"x": "75%",
+				"y": "48%",
+				"plot": {
+					"aspect": "spline",
+					"marker": {"visible": false},
 				},
-				"series":[{
-					"values":[0],
+				"series": [{
+					"values": [0],
 					"text": "Line 1"
 				}, {
-					"values":[0],
+					"values": [0],
 					"text": "Line 2"
-				},{
-					"values":[0],
+				}, {
+					"values": [0],
 					"text": "Line 3"
-                },{
-					"values":[0],
+				}, {
+					"values": [0],
 					"text": "Line 4"
-                },{
-					"values":[0],
+				}, {
+					"values": [0],
 					"text": "Line 5"
 				}, {
-					"values":[0],
+					"values": [0],
 					"text": "Line 6"
-				},{
-					"values":[0],
+				}, {
+					"values": [0],
 					"text": "Line 7"
-                },{
-					"values":[0],
-					"text": "Line 8"}],
-				"refresh":{
-					"type":"feed",
-					"transport":"js",
-					"url":"tensionsHawsers()",
-					"method":"pull",
-					"interval":500,
-					"adjust-scale":true
+				}, {
+					"values": [0],
+					"text": "Line 8"
+				}],
+				"refresh": {
+					"type": "feed",
+					"transport": "js",
+					"url": "tensionsHawsers()",
+					"method": "pull",
+					"interval": 500,
+					"adjust-scale": true
 				},
 				scaleY: {
 					label: {
-					  text: 'Tensions [kN]',
-					  fontStyle: 'normal',
-      				  fontWeight: 'normal',
+						text: 'Tensions [kN]',
+						fontStyle: 'normal',
+						fontWeight: 'normal',
 					},
 				},
-				title:{
-					text:"Hawser tensions",
+				title: {
+					text: "Hawser tensions",
 					marginBottom: "0",
-					fontFamily:"Helvetica",
-					fontWeight:"none",
+					fontFamily: "Helvetica",
+					fontWeight: "none",
 					fontSize: 12,
-                    "offset-y":25,
-                    "offset-x":120,
-                    "width":100,
-                    "heigh":30,
-                    "background-color":"#333",
-                    "color":"#FFF",
-                    "border-radius":"4px"
+					"offset-y": 25,
+					"offset-x": 120,
+					"width": 100,
+					"heigh": 30,
+					"background-color": "#333",
+					"color": "#FFF",
+					"border-radius": "4px"
 				},
 				plotarea: {
 					"margin": "20% 10% 15% dynamic",
@@ -696,68 +697,69 @@ var myDashboardMooring = {
 					"background-color": "none",
 					"border-width": 0,
 					"shadow": 0,
-					"text-align":"middle",
+					"text-align": "middle",
 					"offsetY": 25,
 					"align": "center",
-                    visible: false,
+					visible: false,
 					"item": {
 						"font-color": "#black",
 						"font-size": "10px"
 					}
 				},
-			  },{//---------- TENSIONS-----------//
-				"type":"line",
-				"plotarea":{
-					"adjust-layout":true
+			}, {//---------- TENSIONS-----------//
+				"type": "line",
+				"plotarea": {
+					"adjust-layout": true
 				},
-				"height":"25%",
-				"width":"25%",
-				"x":"75%",
-				"y":"72%",
-				"plot":{ 
-					"aspect":"spline", 
-					"marker":{"visible":false},
+				"height": "25%",
+				"width": "25%",
+				"x": "75%",
+				"y": "72%",
+				"plot": {
+					"aspect": "spline",
+					"marker": {"visible": false},
 				},
-				"series":[{
-					"values":[0],
+				"series": [{
+					"values": [0],
 					"text": "Line 1"
 				}, {
-					"values":[0],
+					"values": [0],
 					"text": "Line 2"
-				},{
-					"values":[0],
+				}, {
+					"values": [0],
 					"text": "Line 3"
-                },{
-					"values":[0],
-					"text": "Line 4"}],
-				"refresh":{
-					"type":"feed",
-					"transport":"js",
-					"url":"tensions()",
-					"method":"pull",
-					"interval":500,
-					"adjust-scale":true
+				}, {
+					"values": [0],
+					"text": "Line 4"
+				}],
+				"refresh": {
+					"type": "feed",
+					"transport": "js",
+					"url": "tensions()",
+					"method": "pull",
+					"interval": 500,
+					"adjust-scale": true
 				},
 				scaleY: {
 					label: {
-					  text: 'Tensions [kN]',
-					  fontStyle: 'normal',
-      				  fontWeight: 'normal',
+						text: 'Tensions [kN]',
+						fontStyle: 'normal',
+						fontWeight: 'normal',
 					},
 				},
-				title:{
-					text:"Mooring tensions",
+				title: {
+					text: "Mooring tensions",
 					marginBottom: "0",
-					fontFamily:"Helvetica",
-					fontWeight:"none",
+					fontFamily: "Helvetica",
+					fontWeight: "none",
 					fontSize: 12,
-                    "offset-y":25,
-                    "offset-x":120,
-                    "width":100,
-                    "heigh":30,
-                    "background-color":"#333",
-                    "color":"#FFF",
-                    "border-radius":"4px"
+					"offset-y": 25,
+					"offset-x": 120,
+					"width": 100,
+					"heigh": 30,
+					"background-color": "#333",
+					"color": "#FFF",
+					"border-radius": "4px"
 				},
 				plotarea: {
 					"margin": "20% 10% 15% dynamic",
@@ -767,66 +769,67 @@ var myDashboardMooring = {
 					"background-color": "none",
 					"border-width": 0,
 					"shadow": 0,
-					"text-align":"middle",
+					"text-align": "middle",
 					"offsetY": 25,
 					"align": "center",
-                    visible: false,
+					visible: false,
 					"item": {
 						"font-color": "#black",
 						"font-size": "10px"
 					}
 				},
-			  },
-			  {//---------- ROLL MOTION-----------//
-				"type":"line",
-				"plotarea":{
-					"adjust-layout":true
+			},
+			{//---------- ROLL MOTION-----------//
+				"type": "line",
+				"plotarea": {
+					"adjust-layout": true
 				},
-				"height":"25%",
-				"width":"25%",
-				"x":"0%",
-				"y":"72%",
-				"plot":{ 
-					"aspect":"spline", 
-					"marker":{"visible":false},
+				"height": "25%",
+				"width": "25%",
+				"x": "0%",
+				"y": "72%",
+				"plot": {
+					"aspect": "spline",
+					"marker": {"visible": false},
 				},
-				"series":[{
-					"values":[0],
+				"series": [{
+					"values": [0],
 					"text": "FLNG[m]"
 				}, {
-					"values":[0],
+					"values": [0],
 					"text": "Suez[m]"
-				},{
-					"values":[0],
-					"text": "Suez[m]"}],
-				"refresh":{
-					"type":"feed",
-					"transport":"js",
-					"url":"feedMotionRoll()",
-					"method":"pull",
-					"interval":500,
-					"adjust-scale":true
+				}, {
+					"values": [0],
+					"text": "Suez[m]"
+				}],
+				"refresh": {
+					"type": "feed",
+					"transport": "js",
+					"url": "feedMotionRoll()",
+					"method": "pull",
+					"interval": 500,
+					"adjust-scale": true
 				},
 				scaleY: {
 					label: {
-					  text: 'Roll angle [deg]',
-					  fontStyle: 'normal',
-      				  fontWeight: 'normal',
+						text: 'Roll angle [deg]',
+						fontStyle: 'normal',
+						fontWeight: 'normal',
 					},
 				},
-				title:{
-					text:"Roll motion",
+				title: {
+					text: "Roll motion",
 					marginBottom: "0",
-					fontFamily:"Helvetica",
-					fontWeight:"none",
+					fontFamily: "Helvetica",
+					fontWeight: "none",
 					fontSize: 12,
-                    "offset-y":25,
-                    "offset-x":120,
-                    "width":100,
-                    "heigh":30,
-                    "background-color":"#333",
-                    "color":"#FFF",
-                    "border-radius":"4px"
+					"offset-y": 25,
+					"offset-x": 120,
+					"width": 100,
+					"heigh": 30,
+					"background-color": "#333",
+					"color": "#FFF",
+					"border-radius": "4px"
 				},
 				plotarea: {
 					"margin": "20% 10% 15% dynamic",
@@ -836,63 +839,64 @@ var myDashboardMooring = {
 					"background-color": "none",
 					"border-width": 0,
 					"shadow": 0,
-					"text-align":"middle",
+					"text-align": "middle",
 					"offsetY": 25,
 					"align": "center",
-                    visible: false,
+					visible: false,
 					"item": {
 						"font-color": "#black",
 						"font-size": "10px"
 					}
 				},
-			  },
-			  {//---------- PITCH MOTION -----------//
-				"type":"line",
-				"height":"25%",
-				"width":"25%",
-				"x":"25%",
-				"y":"72%",
-				"plot":{ 
-					"aspect":"spline", 
-					"marker":{"visible":false},
+			},
+			{//---------- PITCH MOTION -----------//
+				"type": "line",
+				"height": "25%",
+				"width": "25%",
+				"x": "25%",
+				"y": "72%",
+				"plot": {
+					"aspect": "spline",
+					"marker": {"visible": false},
 				},
-				"series":[{
-					"values":[0],
+				"series": [{
+					"values": [0],
 					"text": "FLNG[deg]"
 				}, {
-					"values":[0],
+					"values": [0],
 					"text": "Suez[deg]"
-				},{
-					"values":[0],
-					"text": "Suez[deg]"}],
-				"refresh":{
-					"type":"feed",
-					"transport":"js",
-					"url":"feedMotionPitch()",
-					"method":"pull",
-					"interval":500,
-					"adjust-scale":true
+				}, {
+					"values": [0],
+					"text": "Suez[deg]"
+				}],
+				"refresh": {
+					"type": "feed",
+					"transport": "js",
+					"url": "feedMotionPitch()",
+					"method": "pull",
+					"interval": 500,
+					"adjust-scale": true
 				},
 				scaleY: {
 					label: {
-					  text: 'Pitch translation [m]',
-					  fontStyle: 'normal',
-      				  fontWeight: 'normal',
+						text: 'Pitch translation [m]',
+						fontStyle: 'normal',
+						fontWeight: 'normal',
 					},
 				},
-				title:{
-					text:"Pitch Motion",
+				title: {
+					text: "Pitch Motion",
 					marginBottom: "0",
-					fontFamily:"Helvetica",
-					fontWeight:"none",
+					fontFamily: "Helvetica",
+					fontWeight: "none",
 					fontSize: 12,
-                    "offset-y":25,
-                    "offset-x":120,
-                    "width":100,
-                    "heigh":30,
-                    "background-color":"#333",
-                    "color":"#FFF",
-                    "border-radius":"4px"
+					"offset-y": 25,
+					"offset-x": 120,
+					"width": 100,
+					"heigh": 30,
+					"background-color": "#333",
+					"color": "#FFF",
+					"border-radius": "4px"
 				},
 				plotarea: {
 					"margin": "20% 5% 15% dynamic",
@@ -902,63 +906,64 @@ var myDashboardMooring = {
 					"background-color": "none",
 					"border-width": 0,
 					"shadow": 0,
-					"text-align":"middle",
+					"text-align": "middle",
 					"offsetY": 25,
 					"align": "center",
-                    visible: false,
+					visible: false,
 					"item": {
 						"font-color": "#black",
 						"font-size": "10px"
 					}
 				},
-			  },
-			  {//---------- YAW MATION -----------//
-				"type":"line",
-				"height":"25%",
-				"width":"25%",
-				"x":"50%",
-				"y":"72%",
-				"plot":{ 
-					"aspect":"spline", 
-					"marker":{"visible":false},
+			},
+			{//---------- YAW MATION -----------//
+				"type": "line",
+				"height": "25%",
+				"width": "25%",
+				"x": "50%",
+				"y": "72%",
+				"plot": {
+					"aspect": "spline",
+					"marker": {"visible": false},
 				},
-				"series":[{
-					"values":[0],
+				"series": [{
+					"values": [0],
 					"text": "FLNG[deg]"
 				}, {
-					"values":[0],
+					"values": [0],
 					"text": "Suez[deg]"
-				},{
-					"values":[0],
-					"text": "Suez[deg]"}],
-				"refresh":{
-					"type":"feed",
-					"transport":"js",
-					"url":"feedMotionYaw()",
-					"method":"pull",
-					"interval":500,
-					"adjust-scale":true
+				}, {
+					"values": [0],
+					"text": "Suez[deg]"
+				}],
+				"refresh": {
+					"type": "feed",
+					"transport": "js",
+					"url": "feedMotionYaw()",
+					"method": "pull",
+					"interval": 500,
+					"adjust-scale": true
 				},
 				scaleY: {
 					label: {
-					  text: 'Yaw angle [deg]',
-					  fontStyle: 'normal',
-      				  fontWeight: 'normal',
+						text: 'Yaw angle [deg]',
+						fontStyle: 'normal',
+						fontWeight: 'normal',
 					},
 				},
-				title:{
-					text:"Yaw Motion",
+				title: {
+					text: "Yaw Motion",
 					marginBottom: "0",
-					fontFamily:"Helvetica",
-					fontWeight:"none",
+					fontFamily: "Helvetica",
+					fontWeight: "none",
 					fontSize: 12,
-                    "offset-y":25,
-                    "offset-x":120,
-                    "width":100,
-                    "heigh":30,
-                    "background-color":"#333",
-                    "color":"#FFF",
-                    "border-radius":"4px"
+					"offset-y": 25,
+					"offset-x": 120,
+					"width": 100,
+					"heigh": 30,
+					"background-color": "#333",
+					"color": "#FFF",
+					"border-radius": "4px"
 				},
 				plotarea: {
 					"margin": "20% 0% 15% dynamic",
@@ -968,63 +973,64 @@ var myDashboardMooring = {
 					"background-color": "none",
 					"border-width": 0,
 					"shadow": 0,
-					"text-align":"middle",
+					"text-align": "middle",
 					"offsetY": 25,
 					"align": "center",
-                    visible: false,
+					visible: false,
 					"item": {
 						"font-color": "#black",
 						"font-size": "10px"
 					}
 				},
-			  },
-			  {//---------- SURGE MOTION -----------//
-				"type":"line",
-				"height":"25%",
-				"width":"25%",
-				"x":"0%",
-				"y":"0%",
-				"plot":{ 
-					"aspect":"spline", 
-					"marker":{"visible":false},
+			},
+			{//---------- SURGE MOTION -----------//
+				"type": "line",
+				"height": "25%",
+				"width": "25%",
+				"x": "0%",
+				"y": "0%",
+				"plot": {
+					"aspect": "spline",
+					"marker": {"visible": false},
 				},
-				"series":[{
-					"values":[0],
+				"series": [{
+					"values": [0],
 					"text": "FLNG"
 				}, {
-					"values":[0],
+					"values": [0],
 					"text": "Suezmax 1"
-				},{
-					"values":[0],
-					"text": "Suezmax 2"}],
-				"refresh":{
-					"type":"feed",
-					"transport":"js",
-					"url":"feedMotionSurge()",
-					"method":"pull",
-					"interval":500,
-					"adjust-scale":true
+				}, {
+					"values": [0],
+					"text": "Suezmax 2"
+				}],
+				"refresh": {
+					"type": "feed",
+					"transport": "js",
+					"url": "feedMotionSurge()",
+					"method": "pull",
+					"interval": 500,
+					"adjust-scale": true
 				},
 				scaleY: {
 					label: {
-					  text: 'Surge translation [m]',
-					  fontStyle: 'normal',
-      				  fontWeight: 'normal',
+						text: 'Surge translation [m]',
+						fontStyle: 'normal',
+						fontWeight: 'normal',
 					},
 				},
-				title:{
-					text:"Surge Motion",
+				title: {
+					text: "Surge Motion",
 					marginBottom: "0",
-					fontFamily:"Helvetica",
-					fontWeight:"none",
+					fontFamily: "Helvetica",
+					fontWeight: "none",
 					fontSize: 12,
-                    "offset-y":10,
-                    "offset-x":120,
-                    "width":100,
-                    "heigh":30,
-                    "background-color":"#333",
-                    "color":"#FFF",
-                    "border-radius":"4px"
+					"offset-y": 10,
+					"offset-x": 120,
+					"width": 100,
+					"heigh": 30,
+					"background-color": "#333",
+					"color": "#FFF",
+					"border-radius": "4px"
 				},
 				plotarea: {
 					"margin": "20% 10% 15% dynamic",
@@ -1034,63 +1040,64 @@ var myDashboardMooring = {
 					"background-color": "none",
 					"border-width": 0,
 					"shadow": 0,
-					"text-align":"middle",
+					"text-align": "middle",
 					"offsetY": 25,
 					"align": "center",
-                    visible: true,
+					visible: true,
 					"item": {
 						"font-color": "#black",
 						"font-size": "10px"
 					}
 				},
-			  },
-			  {//---------- SWAY MOTION -----------//
-				"type":"line",
-				"height":"25%",
-				"width":"25%",
-				"x":"0%",
-				"y":"25%",
-				"plot":{ 
-					"aspect":"spline", 
-					"marker":{"visible":false},
+			},
+			{//---------- SWAY MOTION -----------//
+				"type": "line",
+				"height": "25%",
+				"width": "25%",
+				"x": "0%",
+				"y": "25%",
+				"plot": {
+					"aspect": "spline",
+					"marker": {"visible": false},
 				},
-				"series":[{
-					"values":[0],
+				"series": [{
+					"values": [0],
 					"text": "FLNG[Sway]"
 				}, {
-					"values":[0],
+					"values": [0],
 					"text": "Suez[Sway]"
-				},{
-					"values":[0],
-					"text": "Suez[Sway]"}],
-				"refresh":{
-					"type":"feed",
-					"transport":"js",
-					"url":"feedMotionSway()",
-					"method":"pull",
-					"interval":500,
-					"adjust-scale":true
+				}, {
+					"values": [0],
+					"text": "Suez[Sway]"
+				}],
+				"refresh": {
+					"type": "feed",
+					"transport": "js",
+					"url": "feedMotionSway()",
+					"method": "pull",
+					"interval": 500,
+					"adjust-scale": true
 				},
 				scaleY: {
 					label: {
-					  text: 'Sway translation[m]',
-					  fontStyle: 'normal',
-      				  fontWeight: 'normal',
+						text: 'Sway translation[m]',
+						fontStyle: 'normal',
+						fontWeight: 'normal',
 					},
 				},
-				title:{
-					text:"Sway Motion",
+				title: {
+					text: "Sway Motion",
 					marginBottom: "0",
-					fontFamily:"Helvetica",
-					fontWeight:"none",
+					fontFamily: "Helvetica",
+					fontWeight: "none",
 					fontSize: 12,
-                    "offset-y":25,
-                    "offset-x":120,
-                    "width":100,
-                    "heigh":30,
-                    "background-color":"#333",
-                    "color":"#FFF",
-                    "border-radius":"4px"
+					"offset-y": 25,
+					"offset-x": 120,
+					"width": 100,
+					"heigh": 30,
+					"background-color": "#333",
+					"color": "#FFF",
+					"border-radius": "4px"
 				},
 				plotarea: {
 					"margin": "20% 10% 15% dynamic",
@@ -1100,64 +1107,65 @@ var myDashboardMooring = {
 					"background-color": "none",
 					"border-width": 0,
 					"shadow": 0,
-					"text-align":"middle",
+					"text-align": "middle",
 					"offsetY": 25,
 					"align": "center",
-                    visible: false,
+					visible: false,
 					"item": {
 						"font-color": "#black",
 						"font-size": "10px"
 					}
 				},
-			  },
-			  {//---------- HEAVE MOTION -----------//
-				"type":"line",
-				"height":"25%",
-				"width":"25%",
-				"x":"0%",
-				"y":"50%",
-				"plot":{ 
-					"aspect":"spline", 
-					
-                    "marker":{"visible":false},
+			},
+			{//---------- HEAVE MOTION -----------//
+				"type": "line",
+				"height": "25%",
+				"width": "25%",
+				"x": "0%",
+				"y": "50%",
+				"plot": {
+					"aspect": "spline",
+
+					"marker": {"visible": false},
 				},
-				"series":[{
-					"values":[0],
+				"series": [{
+					"values": [0],
 					"text": "FLNG[m]"
 				}, {
-					"values":[0],
+					"values": [0],
 					"text": "Suez[m]"
-				},{
-					"values":[0],
-					"text": "Suez[m]"}],
-				"refresh":{
-					"type":"feed",
-					"transport":"js",
-					"url":"feedMotionHeave()",
-					"method":"pull",
-					"interval":500,
-					"adjust-scale":true
+				}, {
+					"values": [0],
+					"text": "Suez[m]"
+				}],
+				"refresh": {
+					"type": "feed",
+					"transport": "js",
+					"url": "feedMotionHeave()",
+					"method": "pull",
+					"interval": 500,
+					"adjust-scale": true
 				},
 				scaleY: {
 					label: {
-					  text: 'Heave translation [m]',
-					  fontStyle: 'normal',
-      				  fontWeight: 'normal',
+						text: 'Heave translation [m]',
+						fontStyle: 'normal',
+						fontWeight: 'normal',
 					},
 				},
-				title:{
-					text:"Heave Motion",
+				title: {
+					text: "Heave Motion",
 					marginBottom: "0",
-					fontFamily:"Helvetica",
-					fontWeight:"none",
+					fontFamily: "Helvetica",
+					fontWeight: "none",
 					fontSize: 12,
-                    "offset-y":25,
-                    "offset-x":120,
-                    "width":100,
-                    "heigh":30,
-                    "background-color":"#333",
-                    "color":"#FFF",
-                    "border-radius":"4px"
+					"offset-y": 25,
+					"offset-x": 120,
+					"width": 100,
+					"heigh": 30,
+					"background-color": "#333",
+					"color": "#FFF",
+					"border-radius": "4px"
 				},
 				plotarea: {
 					"margin": "20% 10% 15% dynamic",
@@ -1167,28 +1175,28 @@ var myDashboardMooring = {
 					"background-color": "none",
 					"border-width": 0,
 					"shadow": 0,
-					"text-align":"middle",
+					"text-align": "middle",
 					"offsetY": 25,
 					"align": "center",
-                    visible:false,
+					visible: false,
 					"item": {
 						"font-color": "#black",
 						"font-size": "10px"
 					}
 				},
-			  }
-			]
-		};
-	
-	
-			window.onload=function(){
-			 zingchart.render({ 
-				id:'plotBottom',
-				height:"100%",
-				width:"100%",
-				data: myDashboardMooring,
-			});
-			
-		};
-	
+			}
+		]
+	};
+
+
+	window.onload = function() {
+		zingchart.render({
+			id: 'plotBottom',
+			height: "100%",
+			width: "100%",
+			data: myDashboardMooring,
+		});
+
+	};
+
 };

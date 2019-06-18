@@ -80,12 +80,12 @@ function DynamicalMovement(ship, states, userParameters, Ini, oceanDepth) {
 		var ADD_44 = 0.15 * I_44; // Equation 6.61a
 		var ADD_55 = a_33 * Math.pow(length, 3) / 12;
 		ADD_mass = [
-         [1.44E+05,0,0,0,0,0],
-            [0,1.44E+05,0,0,0,0],
-            [0,0,1.44E+05,0,0,0],
-            [0,0,0,5.93E+07,0,0],
-            [0,0,0,0,9.97E+08,0],
-            [0,0,0,0,0,1.06E+09]
+			[1.44E+05, 0, 0, 0, 0, 0],
+			[0, 1.44E+05, 0, 0, 0, 0],
+			[0, 0, 1.44E+05, 0, 0, 0],
+			[0, 0, 0, 5.93E+07, 0, 0],
+			[0, 0, 0, 0, 9.97E+08, 0],
+			[0, 0, 0, 0, 0, 1.06E+09]
 		]; // Vessel's added mass
 		AA = numeric.add(MM, ADD_mass); // System's total inertia tensor
 
@@ -94,12 +94,12 @@ function DynamicalMovement(ship, states, userParameters, Ini, oceanDepth) {
 
 		//Dynamic Equations
 		BB = [
-            [2.86E+06,0,0,0,0,0],
-            [0,4.46E+05,0,0,0,0],
-            [0,0,5.50E+05,0,0,0],
-            [0,0,0,1.04E+07,0,0],
-            [0,0,0,0,5.50E+07,0],
-            [0,0,0,0,0,5.50E+06]
+			[2.86E+06, 0, 0, 0, 0, 0],
+			[0, 4.46E+05, 0, 0, 0, 0],
+			[0, 0, 5.50E+05, 0, 0, 0],
+			[0, 0, 0, 1.04E+07, 0, 0],
+			[0, 0, 0, 0, 5.50E+07, 0],
+			[0, 0, 0, 0, 0, 5.50E+06]
 
 		]; // Damping Matrix
 		CC = [
@@ -245,9 +245,9 @@ function DynamicalMovement(ship, states, userParameters, Ini, oceanDepth) {
 
 		return m;
 	}
-    
-    		
-   
-   
+
+
+
+
 
 };

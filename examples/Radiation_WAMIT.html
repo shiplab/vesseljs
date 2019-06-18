@@ -30,16 +30,16 @@
 	<script src="snippets/Radiation_WAMIT.js"></script>
 	<!-- <script src="js/mooringSystem.js"></script> -->
 	<script src="libs/numeric-1.2.6.min.js"></script>
-    <script src="libs/zingchart.min.js"></script>
+	<script src="libs/zingchart.min.js"></script>
 
 </head>
 
 <body>
-<div id= "3d" class='orchid' style="position: absolute; top: 0px; height: 100%; right: 0px; width: 50%"></div>
+	<div id="3d" class='orchid' style="position: absolute; top: 0px; height: 100%; right: 0px; width: 50%"></div>
 
-    	<div id = "heave_graph" style = "position: absolute; bottom: 66%; height: 40%; left: 0px; width: 50%"></div>
-		<div id = "roll_graph" style = "position: absolute; bottom: 33%; height: 40%; left: 0px; width: 50%"></div>
-		<div id = "pitch_graph" style = "position: absolute; bottom: 0%; height: 40%; left: 0px; width: 50%"></div>
+	<div id="heave_graph" style="position: absolute; bottom: 66%; height: 40%; left: 0px; width: 50%"></div>
+	<div id="roll_graph" style="position: absolute; bottom: 33%; height: 40%; left: 0px; width: 50%"></div>
+	<div id="pitch_graph" style="position: absolute; bottom: 0%; height: 40%; left: 0px; width: 50%"></div>
 	<script>
 		"use strict";
 
@@ -61,7 +61,7 @@
 			//document.body.style = "overflow: hidden;";
 			document.body.style.overflow = "hidden";
 			var container = document.getElementById('3d');
-	        document.body.appendChild(container);
+			document.body.appendChild(container);
 
 			renderer = new THREE.WebGLRenderer({antialias: true});
 			//renderer.setSize(window.innerWidth, window.innerHeight);
@@ -145,7 +145,7 @@
 			states = [];
 
 
-			Vessel.loadShip("../specs/ship_specifications/mississipiBarge.json", function(ship) {
+			Vessel.loadShip("specs/ship_specifications/mississipiBarge.json", function(ship) {
 				states = ship.designState.clone();
 				states.objectOverrides.derivedByGroup["ballast tanks"].fullness = 0.5;
 				states.objectOverrides.derivedByGroup["cargo tanks"].fullness = 0.5;
@@ -219,70 +219,70 @@
 				});
 
 
-                function mo1(){
-   return 0;
-}
+				function mo1() {
+					return 0;
+				}
 
-function mo2(){
-    return states.continuous.motion.roll
-}
-		function mo3(){
-    return states.continuous.motion.heave
-}
-		function mo4(){
-    return states.continuous.motion.pitch
-}
+				function mo2() {
+					return states.continuous.motion.roll
+				}
+				function mo3() {
+					return states.continuous.motion.heave
+				}
+				function mo4() {
+					return states.continuous.motion.pitch
+				}
 
-Plotly.plot('roll_graph',
-[{
-  y: [1,2,3].map(mo1),
-  mode: 'lines',
-  line: {color: '#80CAF6'}
-}, {
-  y: [1,2,3].map(mo2),
-  mode: 'lines',
-  line: {color: '#DF56F1'}
-}]);
+				Plotly.plot('roll_graph',
+					[{
+						y: [1, 2, 3].map(mo1),
+						mode: 'lines',
+						line: {color: '#80CAF6'}
+					}, {
+						y: [1, 2, 3].map(mo2),
+						mode: 'lines',
+						line: {color: '#DF56F1'}
+					}]);
 
-		Plotly.plot('heave_graph',
-[{
-  y: [1,2,3].map(mo1),
-  mode: 'lines',
-  line: {color: '#80CAF6'}
-}, {
-  y: [1,2,3].map(mo3),
-  mode: 'lines',
-  line: {color: '#DF56F1'}
-}]);
+				Plotly.plot('heave_graph',
+					[{
+						y: [1, 2, 3].map(mo1),
+						mode: 'lines',
+						line: {color: '#80CAF6'}
+					}, {
+						y: [1, 2, 3].map(mo3),
+						mode: 'lines',
+						line: {color: '#DF56F1'}
+					}]);
 
-		Plotly.plot('pitch_graph',
-[{
-  y: [1,2,3].map(mo1),
-  mode: 'lines',
-  line: {color: '#80CAF6'}
-}, {
-  y: [1,2,3].map(mo4),
-  mode: 'lines',
-  line: {color: '#DF56F1'}
-}]);
+				Plotly.plot('pitch_graph',
+					[{
+						y: [1, 2, 3].map(mo1),
+						mode: 'lines',
+						line: {color: '#80CAF6'}
+					}, {
+						y: [1, 2, 3].map(mo4),
+						mode: 'lines',
+						line: {color: '#DF56F1'}
+					}]);
 
-var cnt = 0;
+				var cnt = 0;
 
-var interval = setInterval(function() {
+				var interval = setInterval(function() {
 
-  Plotly.extendTraces('roll_graph', {
-    y: [[mo1()], [mo2()]]
-  }, [0, 1])
+					Plotly.extendTraces('roll_graph', {
+						y: [[mo1()], [mo2()]]
+					}, [0, 1])
 
-	 Plotly.extendTraces('heave_graph', {
-    y: [[mo1()], [mo3()]]
-  }, [0, 1])
+					Plotly.extendTraces('heave_graph', {
+						y: [[mo1()], [mo3()]]
+					}, [0, 1])
 
-	 Plotly.extendTraces('pitch_graph', {
-    y: [[mo1()], [mo4()]]
-  }, [0, 1])
-  if(cnt === 1) clearInterval(interval);
-}, 10);
+					Plotly.extendTraces('pitch_graph', {
+						y: [[mo1()], [mo4()]]
+					}, [0, 1])
+					if (cnt === 1) clearInterval(interval);
+				}, 10);
 			});
 
 

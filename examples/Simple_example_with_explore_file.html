@@ -2,9 +2,9 @@
 
 <head>
 
-<meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
 
 	<title>Ship in Ocean</title>
 	<script src="../build/vessel.js"></script>
@@ -37,13 +37,13 @@
 
 <body>
 
-    <input type="file" id="openFile" />
-    <br>
-    <pre id="fileContents"></pre>
-<div id= "3d" class='orchid' style="position: absolute; top: 0px; height: 75%; right: 0px; width: 75%"></div>
+	<input type="file" id="openFile" />
+	<br>
+	<pre id="fileContents"></pre>
+	<div id="3d" class='orchid' style="position: absolute; top: 0px; height: 75%; right: 0px; width: 75%"></div>
 
 
-<div id="plotBottom" style="position:fixed; bottom:0%; float:left; width:100%; height:95%"></div>
+	<div id="plotBottom" style="position:fixed; bottom:0%; float:left; width:100%; height:95%"></div>
 
 
 
@@ -76,162 +76,162 @@
 			mooringAngle, mooringAngle2;
 		var mooring;
 		var group;
-        		var mooring, hawsers;
+		var mooring, hawsers;
 		var dynMov, wavMo, states, states2, scale;
 		var group;
-        var spec, spec2;
-        var ship, barge2, ship3D, barge23D;
-        var LOA1, LOA2, BOA1, BOA2, Depth1, Depth2, T1, T2, sep;
-        var motions, motions2;
-        var lin, output, res, res2, index, mat, rao, pha;
-        var J;
+		var spec, spec2;
+		var ship, barge2, ship3D, barge23D;
+		var LOA1, LOA2, BOA1, BOA2, Depth1, Depth2, T1, T2, sep;
+		var motions, motions2;
+		var lin, output, res, res2, index, mat, rao, pha;
+		var J;
 		var cube;
 		var plane;
 
 
-spec2 = {
-  "attributes": {},
-  "designState": {
-  	"calculationParameters": {
-  		"LWL_design": 264.75,
-  		"Draft_design": 8,
-  		"Cb_design": 1,
-  		"K" : 0.032,
-  	},
-       "objectOverrides": {
-      "derivedByGroup": {
-        "cargo tanks": {
-          "fullness": 0
-        },
-        "ballast tanks": {
-          "fullness": 1
-        }
-      }
-    }
+		spec2 = {
+			"attributes": {},
+			"designState": {
+				"calculationParameters": {
+					"LWL_design": 264.75,
+					"Draft_design": 8,
+					"Cb_design": 1,
+					"K": 0.032,
+				},
+				"objectOverrides": {
+					"derivedByGroup": {
+						"cargo tanks": {
+							"fullness": 0
+						},
+						"ballast tanks": {
+							"fullness": 1
+						}
+					}
+				}
 
 
-  },
-  "structure": {
-  	"hull": {
-  		"attributes": {
-  			"LOA": 264.75,
-  			"BOA": 24,
-  			"Depth": 24,
-  			"APP": 0
-  		},
-  		"halfBreadths": {
-  			"waterlines": [0, 0, 1],
-  			"stations": [0, 1],
-  			"table": [[0, 0], [1, 1], [1, 1]]
-  		},
-  	},
-      "decks": {},
-      "bulkheads": {},
-  },
-  "baseObjects": [
-      {
-		"id": "Tanks",
-		"affiliations": {},
-		"boxDimensions": {
-			"length": 264.75,
-			"breadth": 23.8,
-			"height": 24
-		},
-		"capabilities": {},
-		"file3D": "Tank1.stl",
-		"weightInformation": {
-			"lightweight": 0,
-			"cg": [0, 0, 1]
-		},
-  },
-],
-  "derivedObjects": [
-      {
-		"id": "Tank1",
-		"baseObject": "Tanks",
-		"referenceState": {
-			"xCentre": 133,
-			"yCentre": 0,
-			"zBase": 0
-		},
-        "affiliations": {},
-	}]
-};
+			},
+			"structure": {
+				"hull": {
+					"attributes": {
+						"LOA": 264.75,
+						"BOA": 24,
+						"Depth": 24,
+						"APP": 0
+					},
+					"halfBreadths": {
+						"waterlines": [0, 0, 1],
+						"stations": [0, 1],
+						"table": [[0, 0], [1, 1], [1, 1]]
+					},
+				},
+				"decks": {},
+				"bulkheads": {},
+			},
+			"baseObjects": [
+				{
+					"id": "Tanks",
+					"affiliations": {},
+					"boxDimensions": {
+						"length": 264.75,
+						"breadth": 23.8,
+						"height": 24
+					},
+					"capabilities": {},
+					"file3D": "Tank1.stl",
+					"weightInformation": {
+						"lightweight": 0,
+						"cg": [0, 0, 1]
+					},
+				},
+			],
+			"derivedObjects": [
+				{
+					"id": "Tank1",
+					"baseObject": "Tanks",
+					"referenceState": {
+						"xCentre": 133,
+						"yCentre": 0,
+						"zBase": 0
+					},
+					"affiliations": {},
+				}]
+		};
 
 
-lin = [];
+		lin = [];
 
-document.getElementById('openFile').addEventListener('change', function () {
-    var fr = new FileReader();
-    fr.onload = function(){
-
-
-index = 0;
-output = this.result
-res = output.split(/[\s]+/).join(' ')
-res2 = res.substring(1)
-mat = res2.split(" ");
-
-for (i=0;i<mat.length;i++){
-    mat[i]=+mat[i]
-}
+		document.getElementById('openFile').addEventListener('change', function() {
+			var fr = new FileReader();
+			fr.onload = function() {
 
 
-for(i=0;i<mat.length/7;i++){
+				index = 0;
+				output = this.result
+				res = output.split(/[\s]+/).join(' ')
+				res2 = res.substring(1)
+				mat = res2.split(" ");
 
-   lin[i] = mat.slice(index,index+5)
-
-index = index + 7;
-
-}
-
-rao = [];
-pha = [];
-
-        var dof = 12; // DoF
-        var per = 60; // Number of periods
-        var hea = 25; // Number of headings
-
-        // allocate vector
-            for (i=0;i<dof;i++){
-                rao[i]= [];
-                pha[i]= [];
-                for (j=0;j<per;j++){
-                    rao[i][j]= [];
-                    pha[i][j]= [];
-                    for (k=0;k<hea;k++){
-                        rao[i][j][k]= [];
-                        pha[i][j][k]= [];
-                    }
-                }
-            }
+				for (i = 0; i < mat.length; i++) {
+					mat[i] = +mat[i]
+				}
 
 
-var lineNumb, i, j, k, l;
-for (l=0;l< lin.length -1;l++){
+				for (i = 0; i < mat.length / 7; i++) {
 
-    lineNumb = l + 1;
-    i = ((l +1) % 12);
-    if (i===0) {i=12};
+					lin[i] = mat.slice(index, index + 5)
 
-    j = Math.floor(lineNumb/(dof*hea));
+					index = index + 7;
 
-    k = Math.floor(lineNumb/12) % 25;
+				}
+
+				rao = [];
+				pha = [];
+
+				var dof = 12; // DoF
+				var per = 60; // Number of periods
+				var hea = 25; // Number of headings
+
+				// allocate vector
+				for (i = 0; i < dof; i++) {
+					rao[i] = [];
+					pha[i] = [];
+					for (j = 0; j < per; j++) {
+						rao[i][j] = [];
+						pha[i][j] = [];
+						for (k = 0; k < hea; k++) {
+							rao[i][j][k] = [];
+							pha[i][j][k] = [];
+						}
+					}
+				}
 
 
-    rao[i-1][j][k] = lin[l][3];
-    pha[i-1][j][k] = lin[l][4];
+				var lineNumb, i, j, k, l;
+				for (l = 0; l < lin.length - 1; l++) {
+
+					lineNumb = l + 1;
+					i = ((l + 1) % 12);
+					if (i === 0) {i = 12};
+
+					j = Math.floor(lineNumb / (dof * hea));
+
+					k = Math.floor(lineNumb / 12) % 25;
 
 
-}
+					rao[i - 1][j][k] = lin[l][3];
+					pha[i - 1][j][k] = lin[l][4];
+
+
+				}
 
 
 
-        }
-    fr.readAsText(this.files[0]);
+			}
+			fr.readAsText(this.files[0]);
 
 
-});
+		});
 
 		hangedMooring = []; // Point of hanged mooring line on seabed (m, m, m)
 
@@ -299,7 +299,7 @@ for (l=0;l< lin.length -1;l++){
 				map: texture,
 				transparent: true
 			});
-		plane = new THREE.Mesh(geometry, material);
+			plane = new THREE.Mesh(geometry, material);
 			plane.rotation.set(-Math.PI / 2, 0, 0);
 			plane.position.setY(-userParameters.seaDepth);
 			plane.material.side = THREE.DoubleSide;
@@ -319,7 +319,7 @@ for (l=0;l< lin.length -1;l++){
 				1,
 				1000000
 			);
-			let onResize = function () {
+			let onResize = function() {
 				let w = container.clientWidth;
 				let h = container.clientHeight;
 				renderer.setSize(w, h);
@@ -328,7 +328,7 @@ for (l=0;l< lin.length -1;l++){
 			};
 			window.addEventListener("resize", onResize, false);
 			onResize();
-			camera.position.set(519,-62, -32);
+			camera.position.set(519, -62, -32);
 			camera.lookAt(zUpCont.position);
 			zUpCont.add(camera);
 
@@ -354,111 +354,111 @@ for (l=0;l< lin.length -1;l++){
 			wavMo = [];
 			states = [];
 
-			       ship = new Vessel.Ship(spec2);
-                    buoy = new Vessel.Ship(spec2);
-					states = ship.designState.clone();
-                    states2 = buoy.designState.clone();
+			ship = new Vessel.Ship(spec2);
+			buoy = new Vessel.Ship(spec2);
+			states = ship.designState.clone();
+			states2 = buoy.designState.clone();
 
 
-					//console.log(states.objectCache);
-					statMod = new Vessel.StateModule(ship, states);
-					statMod.setDraft();
-					//console.log(states.shipCache.thisStateVer);
-					ship3D = new Ship3D(ship, {
-						shipState: states,
-						stlPath: "../specs/STL files",
-						upperColor: 0x33aa33,
-						lowerColor: 0xaa3333,
-						hullOpacity: 1,
-						deckOpacity: 1,
-						objectOpacity: 1
-					});
-					zUpCont.add(ship3D);
-
-
-
-
-       LOA1 = ship.structure.hull.attributes.LOA;
-
-       BOA1 = ship.structure.hull.attributes.BOA;
-
-
-        T1 = ship.designState.calculationParameters.Draft_design;
+			//console.log(states.objectCache);
+			statMod = new Vessel.StateModule(ship, states);
+			statMod.setDraft();
+			//console.log(states.shipCache.thisStateVer);
+			ship3D = new Ship3D(ship, {
+				shipState: states,
+				stlPath: "specs/STL files",
+				upperColor: 0x33aa33,
+				lowerColor: 0xaa3333,
+				hullOpacity: 1,
+				deckOpacity: 1,
+				objectOpacity: 1
+			});
+			zUpCont.add(ship3D);
 
 
 
-       sep = {};
-       sep.x = 0
-       sep.y = 4
-       sep.z = 0
 
-       ship3D.position.x = 0;
-       ship3D.position.y = 0;
-       ship3D.position.z = -T1;
+			LOA1 = ship.structure.hull.attributes.LOA;
+
+			BOA1 = ship.structure.hull.attributes.BOA;
 
 
-		var geometry2 = new THREE.BoxGeometry( 50, 20, 50 );
-		var material2 = new THREE.MeshBasicMaterial( {color: 0x33aa33} );
-		cube = new THREE.Mesh( geometry2, material2 );
-		scene.add( cube );
-
-		cube.position.x = 315
+			T1 = ship.designState.calculationParameters.Draft_design;
 
 
 
-        designDimention = ship.structure.hull.attributes;
-        floatingStates = states.discrete.FloatingCondition.state;
+			sep = {};
+			sep.x = 0
+			sep.y = 4
+			sep.z = 0
 
-        states.continuous.mooring = {};
-        mooring = states.continuous.mooring;
-
-        mooring.mooringPointOnShip = [
-            [
-                (floatingStates.LWL / 2)-3,
-                0,
-                designDimention.Depth - T1
-            ]
-        ]; // Point of mooring line on ship          (m, m, m)
+			ship3D.position.x = 0;
+			ship3D.position.y = 0;
+			ship3D.position.z = -T1;
 
 
-        var material = new THREE.LineBasicMaterial({
-	color: 0x0000ff
-});
+			var geometry2 = new THREE.BoxGeometry(50, 20, 50);
+			var material2 = new THREE.MeshBasicMaterial({color: 0x33aa33});
+			cube = new THREE.Mesh(geometry2, material2);
+			scene.add(cube);
 
-var geometry = new THREE.Geometry();
-geometry.vertices.push(
-	new THREE.Vector3(130,16,0),
-	new THREE.Vector3( 300, 5, 0 ),
-);
-
-line = new THREE.Line( geometry, material );
-scene.add( line );
-
-        var Ini = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-        states.continuous.motion = {
-            surge: Ini[0],
-            sway: Ini[1],
-            heave: Ini[2],
-            roll: Ini[3],
-            pitch: Ini[4],
-            yaw: Ini[5],
-        };
+			cube.position.x = 315
 
 
-        var tprev = 0; // Initial time
+
+			designDimention = ship.structure.hull.attributes;
+			floatingStates = states.discrete.FloatingCondition.state;
+
+			states.continuous.mooring = {};
+			mooring = states.continuous.mooring;
+
+			mooring.mooringPointOnShip = [
+				[
+					(floatingStates.LWL / 2) - 3,
+					0,
+					designDimention.Depth - T1
+				]
+			]; // Point of mooring line on ship          (m, m, m)
 
 
-        dynMov = new DynamicalMovement(ship, states, states2, userParameters, Ini);
+			var material = new THREE.LineBasicMaterial({
+				color: 0x0000ff
+			});
 
-        playback.add(function (t) {
+			var geometry = new THREE.Geometry();
+			geometry.vertices.push(
+				new THREE.Vector3(130, 16, 0),
+				new THREE.Vector3(300, 5, 0),
+			);
 
-            let dt = t - tprev;
+			line = new THREE.Line(geometry, material);
+			scene.add(line);
 
-            dynMov.moveShip(tprev, dt);
+			var Ini = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+			states.continuous.motion = {
+				surge: Ini[0],
+				sway: Ini[1],
+				heave: Ini[2],
+				roll: Ini[3],
+				pitch: Ini[4],
+				yaw: Ini[5],
+			};
 
-			tprev = t;
 
-        });
+			var tprev = 0; // Initial time
+
+
+			dynMov = new DynamicalMovement(ship, states, states2, userParameters, Ini);
+
+			playback.add(function(t) {
+
+				let dt = t - tprev;
+
+				dynMov.moveShip(tprev, dt);
+
+				tprev = t;
+
+			});
 
 			//Initial configuration:
 			let w = ocean.addCosineWave({
