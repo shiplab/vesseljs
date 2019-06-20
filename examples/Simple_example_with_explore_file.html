@@ -158,80 +158,75 @@
 				}]
 		};
 
-
 		lin = [];
 
 		document.getElementById('openFile').addEventListener('change', function() {
 			var fr = new FileReader();
 			fr.onload = function() {
+				output = this.result;
+				useRAO(output);
+			};
+			fr.readAsText(this.files[0]);
+		});
 
+		var raoReq = new XMLHttpRequest();
+		raoReq.open("GET", "motion_data/Simple_file_motion.4", true);
+		raoReq.addEventListener("load", function(event) {
+			output = event.target.response;
+			useRAO(output);
+		});
+		raoReq.send(null);
 
-				index = 0;
-				output = this.result
-				res = output.split(/[\s]+/).join(' ')
-				res2 = res.substring(1)
-				mat = res2.split(" ");
+		var useRAO = function(result) {
+			index = 0;
+			res = result.split(/[\s]+/).join(' ')
+			res2 = res.substring(1)
+			mat = res2.split(" ");
 
-				for (i = 0; i < mat.length; i++) {
-					mat[i] = +mat[i]
-				}
+			for (i = 0; i < mat.length; i++) {
+				mat[i] = +mat[i]
+			}
 
+			for (i = 0; i < mat.length / 7; i++) {
+				lin[i] = mat.slice(index, index + 5)
+				index = index + 7;
+			}
 
-				for (i = 0; i < mat.length / 7; i++) {
+			rao = [];
+			pha = [];
 
-					lin[i] = mat.slice(index, index + 5)
+			var dof = 12; // DoF
+			var per = 60; // Number of periods
+			var hea = 25; // Number of headings
 
-					index = index + 7;
-
-				}
-
-				rao = [];
-				pha = [];
-
-				var dof = 12; // DoF
-				var per = 60; // Number of periods
-				var hea = 25; // Number of headings
-
-				// allocate vector
-				for (i = 0; i < dof; i++) {
-					rao[i] = [];
-					pha[i] = [];
-					for (j = 0; j < per; j++) {
-						rao[i][j] = [];
-						pha[i][j] = [];
-						for (k = 0; k < hea; k++) {
-							rao[i][j][k] = [];
-							pha[i][j][k] = [];
-						}
+			// allocate vector
+			for (i = 0; i < dof; i++) {
+				rao[i] = [];
+				pha[i] = [];
+				for (j = 0; j < per; j++) {
+					rao[i][j] = [];
+					pha[i][j] = [];
+					for (k = 0; k < hea; k++) {
+						rao[i][j][k] = [];
+						pha[i][j][k] = [];
 					}
 				}
-
-
-				var lineNumb, i, j, k, l;
-				for (l = 0; l < lin.length - 1; l++) {
-
-					lineNumb = l + 1;
-					i = ((l + 1) % 12);
-					if (i === 0) {i = 12};
-
-					j = Math.floor(lineNumb / (dof * hea));
-
-					k = Math.floor(lineNumb / 12) % 25;
-
-
-					rao[i - 1][j][k] = lin[l][3];
-					pha[i - 1][j][k] = lin[l][4];
-
-
-				}
-
-
-
 			}
-			fr.readAsText(this.files[0]);
 
+			var lineNumb, i, j, k, l;
+			for (l = 0; l < lin.length - 1; l++) {
 
-		});
+				lineNumb = l + 1;
+				i = ((l + 1) % 12);
+				if (i === 0) {i = 12};
+
+				j = Math.floor(lineNumb / (dof * hea));
+				k = Math.floor(lineNumb / 12) % 25;
+
+				rao[i - 1][j][k] = lin[l][3];
+				pha[i - 1][j][k] = lin[l][4];
+			}
+		}
 
 		hangedMooring = []; // Point of hanged mooring line on seabed (m, m, m)
 
