@@ -12,14 +12,15 @@ filepaths = list(map((lambda filename: "../source/math/"+filename), math)) \
 code = """
 /*
 Import like this in HTML:
-<script src="Vessel.js"></script>
-Then in javascript use classes and functions with a Vessel prefix. Example:
-let ship = new Vessel.Ship(someSpecification);
+<script src="vessel.js"></script>
+Then in javascript use classes and functions with a vessel prefix. Example:
+let ship = new vessel.Ship(someSpecification);
 */
 
 "use strict";
 
-var Vessel = {};
+var vessel = {};
+var Vessel = vessel;
 (function() {
 """
 
@@ -33,7 +34,7 @@ for filepath in filepaths:
 #I just don't want to maintain a long list manually.
 #Maybe there is an easier way...
 code += """
-Object.assign(Vessel, {
+Object.assign(vessel, {
 	/*JSONSpecObject: JSONSpecObject,*/
 	Ship: Ship,
 	Structure: Structure,
@@ -58,15 +59,15 @@ timestamp = str(datetime.today())
 #from hashlib import md5
 #codehash = md5(code.encode()).hexdigest()
 
-header = "//Vessel.js library, built " + timestamp# + ", Checksum: " + codehash
+header = "//vessel.js library, built " + timestamp# + ", Checksum: " + codehash
 
 output = header + code
 
 #stamp = timestamp[0:17] + "." + codehash[0:5]
 
-oFile = open("Vessel.js", "w")
+oFile = open("vessel.js", "w")
 oFile.write(output)
 oFile.close()
-#oFile = open("archive/Vessel_"+stamp.replace("-","").replace(":","").replace(" ","")+".js", "w")
+#oFile = open("archive/vessel_"+stamp.replace("-","").replace(":","").replace(" ","")+".js", "w")
 #oFile.write(output)
 #oFile.close()
