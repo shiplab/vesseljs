@@ -12,12 +12,10 @@
 	<link href="libs/bootstrap.min.css" rel="stylesheet">
 	<!-- jQuery Version 1.11.1 -->
 	<script src="libs/jquery.js"></script>
-	<!-- Gist Embed -->
-	<script src="libs/gist-embed.min.js"></script>
 	<!-- Bootstrap Core JavaScript -->
 	<script src="libs/bootstrap.min.js"></script>
 	<!--Import library-->
-	<script src="../build/Vessel.js"></script>
+	<script src="../build/vessel.js"></script>
 	<!--Scripts to make an download zip from source-->
 	<script src="libs/jszip.js"></script>
 	<script src="libs/FileSaver.js"></script>
@@ -50,7 +48,7 @@
 				<h2>Object Weight</h2>
 			</div>
 			<div class="col-md-12 text-center">
-				<p>Define and calculate a tank's weight and center of gravity. <a href="https://gist.github.com/icarofonseca/4a80f1d46c0be0c690f16fb559ed76a4">View source.</a></p>
+				<p>Define and calculate a tank's weight and center of gravity.</p>
 				<input type="button" value="Download Source" onClick="saveSource()">
 			</div>
 			<div class="col-md-12 text-left">
@@ -65,24 +63,24 @@
 			<div class="col-md-12 text-left">
 				<h4>Unspecified CG</h4>
 				<p>A base object can be created without specifying its center of gravity. First, create an empty BaseObject:</p>
-				<code data-gist-id="4a80f1d46c0be0c690f16fb559ed76a4" data-gist-file="object_weight.js" data-gist-hide-footer="true" data-gist-hide-line-numbers="true" data-gist-line="5"></code>
+				<pre id="source1"></pre>
 				<p>Fill it with the identification tag, geometric and weight data:</p>
-				<code data-gist-id="4a80f1d46c0be0c690f16fb559ed76a4" data-gist-file="object_weight.js" data-gist-hide-footer="true" data-gist-hide-line-numbers="true" data-gist-line="7-20"></code>
+				<pre id="source2"></pre>
 				<p>Now create an empty DerivedObject:</p>
-				<code data-gist-id="4a80f1d46c0be0c690f16fb559ed76a4" data-gist-file="object_weight.js" data-gist-hide-footer="true" data-gist-hide-line-numbers="true" data-gist-line="22"></code>
+				<pre id="source3"></pre>
 				<p>Link it to the respective BaseObject and fill it with position (in relation to the vessel):</p>
-				<code data-gist-id="4a80f1d46c0be0c690f16fb559ed76a4" data-gist-file="object_weight.js" data-gist-hide-footer="true" data-gist-hide-line-numbers="true" data-gist-line="24-31"></code>
+				<pre id="source4"></pre>
 				<p>To calculate the object's weight and CG, first we create a ShipState object to handle the simulated state:</p>
-				<code data-gist-id="4a80f1d46c0be0c690f16fb559ed76a4" data-gist-file="object_weight.js" data-gist-hide-footer="true" data-gist-hide-line-numbers="true" data-gist-line="33"></code>
+				<pre id="source5"></pre>
 				<p>And then evoke the getWeight method with the state as argument:</p>
-				<code data-gist-id="4a80f1d46c0be0c690f16fb559ed76a4" data-gist-file="object_weight.js" data-gist-hide-footer="true" data-gist-hide-line-numbers="true" data-gist-line="34"></code>
+				<pre id="source6"></pre>
 				<p>Which returns the full tank weight with the CG positioned in the center of the bounding box:</p>
 				<pre id="unspecified"></pre>
 			</div>
 			<div class="col-md-12 text-left">
 				<h4>Fixed CG</h4>
 				<p>To define a fixed CG, the weight information inside the base object above can be defined as:</p>
-				<code data-gist-id="4a80f1d46c0be0c690f16fb559ed76a4" data-gist-file="object_weight.js" data-gist-hide-footer="true" data-gist-hide-line-numbers="true" data-gist-line="38-43"></code>
+				<pre id="source7"></pre>
 				<p>So, the getWeight method returns:
 					<pre id="fixed"></pre>
 				</p>
@@ -90,7 +88,7 @@
 			<div class="col-md-12 text-left">
 				<h4>Mapped CG</h4>
 				<p>To calculate the CG according to the fluid level, a CG mapping needs to be defined in the base object, for example:</p>
-				<code data-gist-id="4a80f1d46c0be0c690f16fb559ed76a4" data-gist-file="object_weight.js" data-gist-hide-footer="true" data-gist-hide-line-numbers="true" data-gist-line="48-62"></code>
+				<pre id="source8"></pre>
 				<p>If the base state is kept as before (full, or fullness = 1), then the getWeight method yields the total weight with the maximum CG listed in the mapping above:</p>
 				<pre id="mapped1"></pre>
 				<p>Now, if the base state is changed to fullness = 0.7, the method will calculate the new weight and interpolate the corresponding CG from the valules listed in the mapping, returning:</p>
@@ -98,7 +96,102 @@
 			</div>
 		</div>
 	</div>
-	<script src="object_weight.js"></script>
+
+	<script>
+		"use strict";
+
+		var objectTemplate, myObject, state, weightUns, weightFix, weightMap;
+	</script>
+
+<script id="script1">var objectTemplate = new Vessel.BaseObject();</script>
+
+<script id="script2">objectTemplate.id = "First Object";
+objectTemplate.boxDimensions = {
+	"length": 10,
+	"breadth": 4,
+	"height": 2
+};
+objectTemplate.weightInformation = {
+	"contentDensity": 1025,
+	"volumeCapacity": 70,
+	"lightweight": 5000
+};
+objectTemplate.baseState = {
+	"fullness": 1
+};
+</script>
+
+<script id="script3">myObject = new Vessel.DerivedObject();</script>
+
+<script id="script4">myObject.id = "Tank1";
+myObject.baseObject = objectTemplate;
+myObject.referenceState = {
+	"xCentre": 0,
+	"yCentre": 0,
+	"zBase": 0
+};
+myObject.affiliations = {};</script>
+
+<script id="script5">state = new Vessel.ShipState();</script>
+
+<script id="script6">weightUns = myObject.getWeight(state);</script>
+
+	<script>
+		document.getElementById("unspecified").innerHTML = JSON.stringify(weightUns, null, 4);
+	</script>
+
+<script id="script7">objectTemplate.weightInformation = {
+	"contentDensity": 1025,
+	"volumeCapacity": 70,
+	"lightweight": 5000,
+	"cg": [0, 0, 1.45]
+};
+</script>
+
+	<script>
+		weightFix = myObject.getWeight(state);
+
+		document.getElementById("fixed").innerHTML = JSON.stringify(weightFix, null, 4);
+	</script>
+
+<script id="script8">objectTemplate.weightInformation = {
+	"contentDensity": 1025,
+	"volumeCapacity": 70,
+	"lightweight": 5000,
+	"fullnessCGMapping": {
+		"fullnesses": [0, 0.25, 0.5, 0.75, 1],
+		"cgs": [
+			[0, 0, 1.00],
+			[0, 0, 0.41],
+			[0, 0, 0.56],
+			[0, 0, 0.77],
+			[0, 0, 1.00]
+		]
+	}
+};
+</script>
+
+	<script>
+		weightMap = myObject.getWeight(state);
+		document.getElementById("mapped1").innerHTML = JSON.stringify(weightMap, null, 4);
+
+		objectTemplate.baseState = {"fullness": 0.7};
+		state.version = 2;
+
+		weightMap = myObject.getWeight(state);
+		document.getElementById("mapped2").innerHTML = JSON.stringify(weightMap, null, 4);
+	</script>
+
+	<script>
+		document.getElementById("source1").innerHTML = document.getElementById("script1").innerHTML;
+		document.getElementById("source2").innerHTML = document.getElementById("script2").innerHTML;
+		document.getElementById("source3").innerHTML = document.getElementById("script3").innerHTML;
+		document.getElementById("source4").innerHTML = document.getElementById("script4").innerHTML;
+		document.getElementById("source5").innerHTML = document.getElementById("script5").innerHTML;
+		document.getElementById("source6").innerHTML = document.getElementById("script6").innerHTML;
+		document.getElementById("source7").innerHTML = document.getElementById("script7").innerHTML;
+		document.getElementById("source8").innerHTML = document.getElementById("script8").innerHTML;
+	</script>
 </body>
 
 </html>

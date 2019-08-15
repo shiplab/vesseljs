@@ -12,12 +12,10 @@
 	<link href="libs/bootstrap.min.css" rel="stylesheet">
 	<!-- jQuery Version 1.11.1 -->
 	<script src="libs/jquery.js"></script>
-	<!-- Gist Embed -->
-	<script src="libs/gist-embed.min.js"></script>
 	<!-- Bootstrap Core JavaScript -->
 	<script src="libs/bootstrap.min.js"></script>
 	<!--Import library-->
-	<script src="../build/Vessel.js"></script>
+	<script src="../build/vessel.js"></script>
 	<!--Scripts to make an download zip from source-->
 	<script src="libs/jszip.js"></script>
 	<script src="libs/FileSaver.js"></script>
@@ -50,19 +48,35 @@
 				<h2>Load a Vessel Specification</h2>
 			</div>
 			<div class="col-md-12 text-center">
-				<p>Load a JSON vessel specification with the Vessel.js library. <a href="https://gist.github.com/icarofonseca/97d5b05e7925b9c6e3b3b0c5d172d759">View source.</a></p>
+				<p>Load a JSON vessel specification with the Vessel.js library.</p>
 				<input type="button" value="Download Source" onClick="saveSource()">
 			</div>
 			<div class="col-md-12 text-left">
 				<p>A JSON specification can be imported to an application and then be used to create a Ship object with the library.
 					This can be done with the following commands (the localhost needs to be active for the file to be loaded):
 				</p>
-				<code data-gist-id="97d5b05e7925b9c6e3b3b0c5d172d759" data-gist-file="load_spec.js" data-gist-hide-footer="true" data-gist-hide-line-numbers="true" data-gist-line="3-11"></code>
+				<pre id="source1"></pre>
 				<p>The "ship" object is created inside the function and logged to the console.</p>
 			</div>
 		</div>
 	</div>
-	<script src="load_spec.js"></script>
+
+<script id="script1">"use strict";
+
+var filePath;
+
+// define  path of the file in the server
+filePath = "specs/ship_specifications/PX121.json"
+
+Vessel.loadShip(filePath, function(ship) {
+	// ship loaded in the local scope
+	console.log(ship);
+});
+</script>
+
+	<script>
+		document.getElementById("source1").innerHTML = document.getElementById("script1").innerHTML;
+	</script>
 </body>
 
 </html>
