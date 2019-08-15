@@ -1,0 +1,1500 @@
+<html>
+
+<head>
+	<title>Ship in Ocean</title>
+	<script src="../build/Vessel.js"></script>
+
+	<script src="libs/three.js"></script>
+	<script src="libs/STLLoader.js"></script>
+	<script src="libs/OBJLoader.js"></script>
+
+	<script src="snippets/Ship3D_v2.js"></script>
+
+	<!-- Upgrading to WaterShader2.js will remove the dependency
+	on Mirror.js as well as open up possibilities for visualizing approximate water flows around vessels. -->
+	<script src="libs/Mirror.js"></script>
+	<script src="libs/WaterShader.js"></script>
+	<script src="libs/OrbitControls.js"></script>
+	<script src="libs/skybox_from_examples.js"></script>
+	<script src="libs/browse_files_Elias_Hasle.js"></script>
+
+	<script src="snippets/Patch_interpolation.js"></script>
+	<script src="snippets/Playback.js"></script>
+	<script src="snippets/Regular_ocean.js"></script>
+	<script src="snippets/DynamicalMovementMooringWaveParametric.js"></script>
+	<!--<script src="Moving_bodies_Elias_Hasle.js"></script>-->
+	<!--<script src="keyboard_arrow_input_Elias_Hasle.js"></script>-->
+
+	<script src="libs/dat.gui.min.js"></script>
+	<script src="libs/numeric-1.2.6.min.js"></script>
+	<script src="libs/zingchart.min.js"></script>
+</head>
+
+<style>
+
+.button-reload{
+	border:none;
+	display:inline-block;
+	padding:8px 16px;
+	vertical-align:middle;
+	overflow:hidden;
+	text-decoration:none;
+	color:white;
+	background-color:black;
+	text-align:center;
+	cursor:pointer;
+	white-space:nowrap}
+
+.hover-red:hover{
+	color:#fff!important;
+	background-color:#f44336!important}
+
+</style>
+
+<body>
+	<script>
+		"use strict";
+		// globals
+		var renderer, camera, controls, gui, stats;
+		var scene, zUpCont, playback, bodies, ocean, ship3D, statMod;
+		var designDimension, floatingStates, mooring, line, hangedMooring;
+		var RG_system,
+			g,
+			MM,
+			ADD_mass,
+			AA,
+			A_33,
+			BB,
+			B_33,
+			B_44,
+			B_55,
+			B_66,
+			C_D,
+			CC,
+			waveForce,
+			seaDepth,
+			anchorLength,
+			anchorLengthB,
+			anchorLengthC,
+			radialDistance,
+			radialDistanceB,
+			radialDistanceC,
+			density,
+			mooringAngle,
+			mooringAngle2,
+			mooringAngle2C,
+			mooringAngle3,
+			mooringAngle4,
+			breakingLoad,
+			addPrimary, 
+			addSecondary,
+			addTertiary;
+		var mooring;
+		var geometryMooring, materialLine; 
+		var dynMov, wavMo, states, scale, scalePrimary, scaleSecondary, scaleTertiary;
+		var menuA1, menuA2, menuA3, menuA4, menuA5, menuA6, menuA7, menuA8, menuA9, menuB0, menuB00, menuB1, menuB2, menuB3, menuB4, menuB5, menuB6, menuC0, menuC00, menuC1, menuC2, menuC3, menuC4;
+		var percentageLwlA, percentageBwlA, percentageLwlB, percentageLwlB1, percentageLwlB2, percentageLwlB3, percentageBwlB, percentageBwlB1, percentageBwlB2, numberOfMooringPerpendicular, numberOfMooringLongitudinal;
+		var group;
+		var clock = new THREE.Clock();
+
+		hangedMooring = []; // Point of hanged mooring line on seabed (m, m, m)
+		geometryMooring = [];
+		materialLine = [];
+		// Damping
+		C_D = 0.2; // Assumed Linear Resistance Coefficient (m/s)
+		B_44 = 3000000; // Assumed Roll Linear Damping Coefficient (kgm2/s)
+		B_55 = 60000000; // Assumed Roll Linear Damping Coefficient (kgm2/s)
+		B_66 = 6000000; // Assumed Roll Linear Damping Coefficient (kgm2/s)
+		seaDepth = 40; // Sea bottom depth (m)
+		anchorLength = 222; // Anchor length (m)
+		anchorLengthB = 222;
+		anchorLengthC = 222;
+		radialDistance = 200;
+		radialDistanceB = 200;
+		radialDistanceC = 200;
+		density = 200;
+		mooringAngle = 45;
+		mooringAngle2 = 0;
+		mooringAngle2C = 0;
+		mooringAngle3 = 0;
+		mooringAngle4 = 0;
+		breakingLoad = 500;
+		addPrimary = true;
+		addSecondary = true;
+		addTertiary = false;
+		percentageLwlA = 100;
+		percentageBwlA = 100;
+		percentageLwlB = [];
+		percentageLwlB1 = 0;
+		percentageLwlB2 = 0;
+		percentageLwlB3 = 0;
+		percentageBwlB =[];
+		percentageBwlB1 = 0;
+		percentageBwlB2 = 0;
+		numberOfMooringPerpendicular = 0;
+		numberOfMooringLongitudinal = 0;
+		var userParameters = {
+			C_D,
+			B_44,
+			B_55,
+			B_66,
+			seaDepth,
+			anchorLength,
+			anchorLengthB,
+			anchorLengthC,
+			radialDistance,
+			radialDistanceB,
+			radialDistanceC,
+			density,
+			mooringAngle,
+			mooringAngle2,
+			mooringAngle2C,
+			mooringAngle3,
+			mooringAngle4,
+			breakingLoad,
+			addPrimary,
+			addSecondary,
+			addTertiary,
+			percentageLwlA,
+			percentageBwlA,
+			percentageLwlB,
+			percentageLwlB1,
+			percentageLwlB2,
+			percentageLwlB3,
+			percentageBwlB,
+			percentageBwlB1,
+			percentageBwlB2,
+			numberOfMooringPerpendicular,
+			numberOfMooringLongitudinal,
+		};
+
+
+		// Ship specifications ---------------------------------  
+		var spec = {
+		"attributes": {},
+		"designState": {
+			"calculationParameters": {
+				"LWL_design": 316.5,
+				"Draft_design": 10,
+				"Cb_design": 1,
+				"K" : 0.032,
+			},
+			"objectOverrides": {
+			"derivedByGroup": {
+				"cargo tanks": {
+				"fullness": 0
+				},
+				"ballast tanks": {
+				"fullness": 1
+				}
+			}
+			}
+		},
+		"structure": {
+			"hull": {
+				"attributes": {
+					"LOA": 316.5,
+					"BOA": 29,
+					"Depth": 30,
+					"APP": 0
+				},
+				"halfBreadths": {
+					"waterlines": [0, 0, 1],
+					"stations": [0, 1],
+					"table": [[0, 0], [1, 1], [1, 1]]
+				},
+			},
+			"decks": {},
+			"bulkheads": {},
+		},
+		"baseObjects": [
+			{
+				"id": "Tanks",
+				"affiliations": {},
+				"boxDimensions": {
+					"length": 28.5,
+					"breadth": 28.5,
+					"height": 30
+				},
+				"capabilities": {},
+				"file3D": "aerial.stl",
+				"weightInformation": {
+					"lightweight": 0,
+					"cg": [0, 0, 1]
+				},
+		},{
+				"id": "Bridge",
+				"affiliations": {},
+				"boxDimensions": {
+					"length": 31,
+					"breadth": 14,
+					"height": 30
+				},
+				"capabilities": {},
+				"file3D": "tank1.stl",
+				"weightInformation": {
+					"lightweight": 0,
+					"cg": [0, 0, 1]
+				},
+		},{
+				"id": "Bridge2",
+				"affiliations": {},
+				"boxDimensions": {
+					"length": 60,
+					"breadth": 28.5,
+					"height": 45
+				},
+				"capabilities": {},
+				"file3D": "tank1.stl",
+				"weightInformation": {
+					"lightweight": 0,
+					"cg": [0, 0, 1]
+				},
+		},
+		],
+		"derivedObjects": [
+			{
+				"id": "brigde",
+				"baseObject": "Bridge2",
+				"referenceState": {
+					"xCentre": 285,
+					"yCentre": 0,
+					"zBase": 0
+				},
+				"affiliations": {},
+			},{
+				"id": "Tank0",
+				"baseObject": "Bridge",
+				"referenceState": {
+					"xCentre": 239,
+					"yCentre": 7.125,
+					"zBase": 0
+				},
+				"affiliations": {},
+			},{
+				"id": "Tank0.1",
+				"baseObject": "Bridge",
+				"referenceState": {
+					"xCentre": 239,
+					"yCentre": -7.125,
+					"zBase": 0
+				},
+				"affiliations": {},
+			},{
+				"id": "tank1",
+				"baseObject": "Bridge",
+				"referenceState": {
+					"xCentre": 207,
+					"yCentre": 7.125,
+					"zBase": 0
+				},
+				"affiliations": {},
+			},{
+				"id": "tank1.2",
+				"baseObject": "Bridge",
+				"referenceState": {
+					"xCentre": 207,
+					"yCentre": -7.125,
+					"zBase": 0
+				},
+				"affiliations": {},
+			},{
+				"id": "Tank2",
+				"baseObject": "Bridge",
+				"referenceState": {
+					"xCentre": 175,
+					"yCentre": 7.125,
+					"zBase": 0
+				},
+				"affiliations": {},
+			}, {
+				"id": "Tank2.2",
+				"baseObject": "Bridge",
+				"referenceState": {
+					"xCentre": 175,
+					"yCentre": -7.125,
+					"zBase": 0
+				},
+				"affiliations": {},
+			},{
+				"id": "Tank3",
+				"baseObject": "Bridge",
+				"referenceState": {
+					"xCentre": 142,
+					"yCentre": 7.125,
+					"zBase":0
+				},
+				"affiliations": {},
+			}, {
+				"id": "Tank3.2",
+				"baseObject": "Bridge",
+				"referenceState": {
+					"xCentre": 142,
+					"yCentre": -7.125,
+					"zBase": 0
+				},
+				"affiliations": {},
+			},{
+				"id": "Tank4",
+				"baseObject": "Bridge",
+				"referenceState": {
+					"xCentre": 111,
+					"yCentre": 7.125,
+					"zBase": 0
+				},
+				"affiliations": {},
+			}, {
+				"id": "Tank4.2",
+				"baseObject": "Bridge",
+				"referenceState": {
+					"xCentre": 111,
+					"yCentre": -7.125,
+					"zBase": 0
+				},
+				"affiliations": {},
+			},{
+				"id": "Tank5",
+				"baseObject": "Bridge",
+				"referenceState": {
+					"xCentre": 79,
+					"yCentre": 7.125,
+					"zBase": 0
+				},
+				"affiliations": {},
+			},
+			{
+				"id": "Tank5.2",
+				"baseObject": "Bridge",
+				"referenceState": {
+					"xCentre": 79,
+					"yCentre": -7.125,
+					"zBase": 0
+				},
+				"affiliations": {},
+			},{
+				"id": "Tank6",
+				"baseObject": "Bridge",
+				"referenceState": {
+					"xCentre": 47,
+					"yCentre": 7.125,
+					"zBase": 0
+				},
+				"affiliations": {},
+			},{
+				"id": "Tank6.2",
+				"baseObject": "Bridge",
+				"referenceState": {
+					"xCentre": 47,
+					"yCentre": -7.125,
+					"zBase": 0
+				},
+				"affiliations": {},
+			},{
+				"id": "Tank8.2",
+				"baseObject": "Bridge",
+				"referenceState": {
+					"xCentre": 16,
+					"yCentre": -7.125,
+					"zBase": 0
+				},
+				"affiliations": {},
+			},{
+				"id": "Tank8",
+				"baseObject": "Bridge",
+				"referenceState": {
+					"xCentre": 16,
+					"yCentre": 7.125,
+					"zBase": 0
+				},
+				"affiliations": {},
+			}
+		]
+		};     
+				
+				
+		var spec2 = {
+		"attributes": {},
+		"designState": {
+			"calculationParameters": {
+				"LWL_design": 264.75,
+				"Draft_design": 8,
+				"Cb_design": 1,
+				"K" : 0.032,
+			},
+			"objectOverrides": {
+			"derivedByGroup": {
+				"cargo tanks": {
+				"fullness": 0
+				},
+				"ballast tanks": {
+				"fullness": 1
+				}
+			}
+			}
+		},
+		"structure": {
+			"hull": {
+				"attributes": {
+					"LOA": 264.75,
+					"BOA": 24,
+					"Depth": 24,
+					"APP": 0
+				},
+				"halfBreadths": {
+					"waterlines": [0, 0, 1],
+					"stations": [0, 1],
+					"table": [[0, 0], [1, 1], [1, 1]]
+				},
+			},
+			"decks": {},
+			"bulkheads": {},
+		},
+		"baseObjects": [
+			{
+				"id": "Fenders",
+				"affiliations": {},
+				"boxDimensions": {
+					"length": 4,
+					"breadth": 4,
+					"height": 8
+				},
+				"capabilities": {},
+				"file3D": "aerial.stl",
+				"weightInformation": {
+					"lightweight": 0,
+					"cg": [0, 0, 1]
+				},
+		},{
+				"id": "Tanks",
+				"affiliations": {},
+				"boxDimensions": {
+					"length": 264.75,
+					"breadth": 23.8,
+					"height": 24
+				},
+				"capabilities": {},
+				"file3D": "tank1.stl",
+				"weightInformation": {
+					"lightweight": 0,
+					"cg": [0, 0, 1]
+				},
+		},
+		],
+		"derivedObjects": [
+			{
+				"id": "tank1",
+				"baseObject": "Tanks",
+				"referenceState": {
+					"xCentre": 133,
+					"yCentre": 0,
+					"zBase": 0
+				},
+				"affiliations": {},
+			},{
+				"id": "Aerial1",
+				"baseObject": "Fenders",
+				"referenceState": {
+					"xCentre": 130,
+					"yCentre": -14,
+					"zBase": 9
+				},
+				"affiliations": {},
+			}, {
+				"id": "Aerial2",
+				"baseObject": "Fenders",
+				"referenceState": {
+					"xCentre": 93,
+					"yCentre": -14,
+					"zBase": 9
+				},
+				"affiliations": {},
+			}, {
+				"id": "Aerial3",
+				"baseObject": "Fenders",
+				"referenceState": {
+					"xCentre": 57,
+					"yCentre": -14,
+					"zBase": 9
+				},
+				"affiliations": {},
+			}, {
+				"id": "Aerial4",
+				"baseObject": "Fenders",
+				"referenceState": {
+					"xCentre": 20,
+					"yCentre": -14,
+					"zBase": 9
+				},
+				"affiliations": {},
+			},
+		]
+		};
+
+		(function main() {
+			//Renderer setup
+			document.body.style.overflow = "hidden";
+			var container = document.createElement("div");
+			//container.style = "position: absolute; top: 0; left: 0;"
+			Object.assign(container.style, {
+				position: "absolute",
+				top: 0,
+				left: 0,
+				width: "100vw",
+				height: "75vh"
+			});
+			document.body.appendChild(container);
+			renderer = new THREE.WebGLRenderer({
+				antialias: true
+			});
+			//renderer.setSize(window.innerWidth, window.innerHeight);
+			renderer.setClearColor(0x99aadd);
+			container.appendChild(renderer.domElement);
+
+			//GUI setup (comment out to remove gui)
+			gui = new dat.GUI();
+
+			//add report to GUI controller
+			var obj = {
+				"Click to read paper": function() {
+					window.open("https://vesseljs.org/papers/open_6_DOF.pdf");
+				}
+			};
+			gui.add(obj, "Click to read paper");
+
+			playback = new Playback({
+				parentGUI: gui
+			});
+
+			//Scene setup
+			scene = new THREE.Scene();
+			let sun = new THREE.DirectionalLight(0xffffff, 2);
+			sun.position.set(-512, 246, 128);
+			scene.add(sun);
+
+			//Add ship model OBJ
+			//var loader = new THREE.OBJLoader();
+			//loader.load(
+			//	'specs/oiltanker.obj',
+			//	function ( object ) {
+			//		scene.add( object );
+			//	},
+			//);
+
+			//Ocean size
+			let oSize = 2048;
+
+			scene.add(new Skybox(oSize));
+
+			//Add the bottom of ocean
+			var geometry = new THREE.PlaneBufferGeometry(oSize, oSize, 32);
+			geometry.dynamic = true;
+			var texture = new THREE.TextureLoader().load("textures/bottom.jpg");
+			var material = new THREE.MeshBasicMaterial({
+				side: THREE.FrontSide,
+				map: texture,
+				transparent: true	//visible from below
+			});
+			var plane = new THREE.Mesh(geometry, material);
+			plane.rotation.set(-Math.PI / 2, 0, 0);
+			plane.position.setY(-userParameters.seaDepth);
+			plane.material.side = THREE.DoubleSide;   //visible both sides
+			plane.material.opacity = 0.8;
+			scene.add(plane);
+
+			//Use Z up from now on
+			THREE.Object3D.DefaultUp.set(0, 0, 1);
+			zUpCont = new THREE.Group();
+			zUpCont.rotation.x = -0.5 * Math.PI;
+			scene.add(zUpCont);
+
+			//Camera setup
+			camera = new THREE.PerspectiveCamera(26, window.innerWidth / window.innerHeight, 1, 1000000);
+			let onResize = function() {
+				let w = container.clientWidth;
+				let h = container.clientHeight;
+				renderer.setSize(w, h);
+				camera.aspect = w / h;
+				camera.updateProjectionMatrix();
+			};
+			window.addEventListener("resize", onResize, false);
+			onResize();
+			camera.position.set(oSize * 0.05, -oSize * 0.05, oSize * 0.02);
+			camera.lookAt(zUpCont.position);
+			zUpCont.add(camera);
+
+			controls = new THREE.OrbitControls(camera, renderer.domElement);
+			//controls.minDistance = 0;
+			controls.maxDistance = 0.5 * oSize;
+			controls.enablePan = false;
+			controls.maxPolarAngle = 3 * (Math.PI / 4);
+			controls.minPolarAngle = 0;
+
+			//zUpCont.add(new THREE.AxisHelper(1000));
+			zUpCont.add(new THREE.HemisphereLight(0xccccff, 0x666688, 1));
+
+			ocean = new Ocean({
+				parentGUI: gui,
+				sunDir: sun.position.clone().normalize(),
+				size: oSize,
+				segments: 127
+			});
+			playback.add(ocean);
+			zUpCont.add(ocean);
+
+			wavMo = [];
+			states = [];
+
+			var ship = new Vessel.Ship(spec);  //FLNG
+			states = ship.designState.clone();
+			statMod = new Vessel.StateModule(ship, states);
+			statMod.setDraft();
+			
+			ship3D = new Ship3D(ship, {
+				shipState: states,
+				stlPath: "specs/STL files",
+				upperColor: 0x33aa33,
+				lowerColor: 0xaa3333,
+				hullOpacity: 1,
+				deckOpacity: 1,
+				objectOpacity: 1
+			});
+			//zUpCont.add(ship3D);
+			
+			//Load the ship specifications
+			Vessel.loadShip(
+				"specs/ship_specifications/mississipiBarge.json",
+				// http://www.navioseportos.com.br/site/index.php/uteis/biblioteca-digital/navios/927-pedreiras-1993
+				function (ship) {
+					states = ship.designState.clone();
+					states.objectOverrides.derivedByGroup["ballast tanks"].fullness = 0.5;
+					states.objectOverrides.derivedByGroup["cargo tanks"].fullness = 0.5;
+					statMod = new Vessel.StateModule(ship, states);
+					statMod.setDraft();
+					ship3D = new Ship3D(ship, {
+						shipState: states,
+						stlPath: "specs/STL files",
+						upperColor: 0x33aa33,
+						lowerColor: 0xaa3333,
+						hullOpacity: 1,
+						deckOpacity: 1,
+						objectOpacity: 1
+					});
+					zUpCont.add(ship3D);
+					console.log("oi");
+
+					//Insert mooring lines
+					designDimension = ship.structure.hull.attributes;
+					floatingStates = states.discrete.FloatingCondition.state;
+
+					states.continuous.mooring = {};
+					mooring = states.continuous.mooring;
+					
+					//Point of mooring line on ship (m, m, m)
+					//Trim added to correct misplacement of mooring node
+					mooring.addPrimary = addPrimary;
+					mooring.addSecondary = addSecondary;
+					mooring.addTertiary = addTertiary;
+					mooring.percentageLwlA = percentageLwlA;
+					mooring.percentageBwlA = percentageBwlA;
+					mooring.percentageLwlB = percentageLwlB;
+					mooring.percentageLwlB1 = percentageLwlB1;
+					mooring.percentageLwlB2 = percentageLwlB2;
+					mooring.percentageLwlB3 = percentageLwlB3;
+					mooring.percentageBwlB = percentageBwlB;
+					mooring.percentageBwlB1 = percentageBwlB1;
+					mooring.percentageBwlB2 = percentageBwlB2;
+					mooring.numberOfMooringPerpendicular = numberOfMooringPerpendicular;
+					mooring.numberOfMooringLongitudinal = numberOfMooringLongitudinal;
+
+					// Rope Material
+					var colorMooring = [0xffffff, 0xff0000, 0x33cc33, 0x0066ff, 0x762a83, 0x762a83, 0xfdb863, 0xfdb863, 0x80cdc1, 0x80cdc1];
+					for (var i = 0; i < pos.length; i++) {
+						materialLine[i] = new THREE.LineBasicMaterial({color: colorMooring[i], linewidth: 2})
+					};
+
+					function createMooringLine() {
+						for (var i = 0; i < pos.length; i++) {
+							geometryMooring[i] = new THREE.Geometry()
+						};
+
+						for (var i = 0; i < geometryMooring.length; i++) {
+							for (var j = 0; j < 52; j++) {
+								geometryMooring[i].vertices.push(new THREE.Vector3(0, 0, 0));
+							}
+						};
+						for (var i = 0; i < mooring.mooringPointOnShip.length; i++) {
+							mooring.anchorLineGeometry[i] = new THREE.Line(
+								geometryMooring[i],
+								materialLine[i]
+							);
+							mooring.anchorLineGeometry[i].geometry.verticesNeedUpdate = true;
+							scene.add(mooring.anchorLineGeometry[i]);
+						};
+					};
+
+					function insertMooringPointOnShip() {
+						var mooringPointOnShip = [];
+						// Add first 4 corner mooring lines
+						mooringPointOnShip = [
+							[
+								(floatingStates.LWL / 2 + floatingStates.trim) * mooring.percentageLwlA / 100,
+								(floatingStates.BWL / 2) * mooring.percentageBwlA / 100,
+								designDimension.Depth - floatingStates.T
+							],
+							[
+								(floatingStates.LWL / 2 + floatingStates.trim) * mooring.percentageLwlA / 100,
+								(-floatingStates.BWL / 2) * mooring.percentageBwlA / 100,
+								designDimension.Depth - floatingStates.T
+							],
+							[
+								(-floatingStates.LWL / 2 + floatingStates.trim) * mooring.percentageLwlA / 100,
+								(-floatingStates.BWL / 2) * mooring.percentageBwlA/100,
+								designDimension.Depth - floatingStates.T
+							],
+							[
+								(-floatingStates.LWL / 2 + floatingStates.trim) * mooring.percentageLwlA / 100,
+								(floatingStates.BWL / 2) * mooring.percentageBwlA / 100,
+								designDimension.Depth - floatingStates.T
+							]
+						];
+						// Add portside and starboard mooring lines
+						if (mooring.numberOfMooringPerpendicular > 0) {
+							for (var i = 4; i < (4+2*mooring.numberOfMooringPerpendicular); i+=2) {
+								mooringPointOnShip[i] = 
+									[
+										(floatingStates.LWL / 2 + floatingStates.trim) * mooring.percentageLwlB[(i-4)/2]/100,
+										(-floatingStates.BWL / 2),
+										designDimension.Depth - floatingStates.T
+									],
+								mooringPointOnShip[i+1] = 
+									[
+										(floatingStates.LWL / 2 + floatingStates.trim) * mooring.percentageLwlB[(i-4)/2]/100,
+										(floatingStates.BWL / 2),
+										designDimension.Depth - floatingStates.T
+									]
+							}
+						};
+						// Add stern and bow mooring lines
+						if (mooring.numberOfMooringLongitudinal > 0) {
+							for (var i = (4+2*mooring.numberOfMooringPerpendicular); i < (4+2*(mooring.numberOfMooringPerpendicular+mooring.numberOfMooringLongitudinal)); i+=2) {
+								var getPos = 0; 
+								if (mooring.numberOfMooringLongitudinal == 2) {
+									getPos = 1
+								};
+								mooringPointOnShip[i] = 
+									[
+										(floatingStates.LWL / 2 + floatingStates.trim),
+										(floatingStates.BWL / 2) * mooring.percentageBwlB[getPos]/100,
+										designDimension.Depth - floatingStates.T
+									],
+								mooringPointOnShip[i+1] = 
+									[
+										(-floatingStates.LWL / 2 + floatingStates.trim),
+										(floatingStates.BWL / 2) * mooring.percentageBwlB[getPos]/100,
+										designDimension.Depth - floatingStates.T
+									]
+							}
+						};
+						mooring.mooringPointOnShip = mooringPointOnShip;
+						if (mooring.anchorLineGeometry != undefined) { // skip deleting lines if they do not exist (e.g. t=0)
+							for (var i = 0; i < (4 + mooring.numberOfMooringPerpendicular*2 + mooring.numberOfMooringLongitudinal*2); i++) {
+								scene.remove(mooring.anchorLineGeometry[i]);
+							};
+							createMooringLine();
+						};
+					};
+					// Insert moooring lines in the beginning
+					insertMooringPointOnShip();
+
+					// Add properties to the mooring
+					mooring.anchorPoint = []; // Point of mooring line on seabed (m, m, m)
+					mooring.anchorLineGeometry = []; // Line geometry (global) (m, m, m)
+					mooring.radialDistance = radialDistance; // Distance between point on ship and anchoring(m)
+					mooring.radialDistanceB = radialDistanceB; 
+					mooring.radialDistanceC = radialDistanceC;
+					mooring.mooringAngle = mooringAngle; // Radial angle - mooring rotation (degrees)
+					mooring.mooringAngle2 = mooringAngle2;
+					mooring.mooringAngle2C = mooringAngle2C;
+					mooring.mooringAngle3 = mooringAngle3;
+					mooring.mooringAngle4 = mooringAngle4;
+					mooring.breakingLoad = breakingLoad; // Load limit for mooring line (kN)
+					mooring.anchorLength = anchorLength; // Mooring line Length (m)
+					mooring.anchorLengthB = anchorLengthB;
+					mooring.anchorLengthC = anchorLengthC;
+					mooring.w = density; // Mooring line density (kg/m)
+					mooring.seaDepth = seaDepth; // Sea depth from sea surface (m)
+					mooring.hangedMooring = []; // Point of hanged mooring line on seabed (m, m, m)
+					mooring.mooringStatus = [];
+					mooring.mooringStatus = {
+						mooringNE: 'OK',
+						mooringNW: 'OK',
+						mooringSE: 'OK',
+						mooringSW: 'OK',
+					} // Check if the mooring failed or not
+
+					// Anchoring point in seabed
+					for (var i = 0; i < pos.length; i++) {
+						var baseangle, bwl, lwl;
+						lwl = 0;
+						bwl = 0;
+						baseangle = 0;
+						if (i==0 || i==1) {
+							lwl = floatingStates.LWL/2;
+						};
+						if (i==3 || i==2) {
+							baseangle = Math.PI;
+							lwl = -floatingStates.LWL/2;
+						};
+						if (i==0 || i==3) {
+							bwl = floatingStates.BWL/2;
+						};
+						if (i==1 || i==2) {
+							bwl = -floatingStates.BWL/2;
+						};
+						mooring.anchorPoint[i] = [
+							mooring.radialDistance * Math.cos((baseangle) + Math.pow((-1), i) * (mooring.mooringAngle * Math.PI) / 180) + lwl,
+							-seaDepth,
+							mooring.radialDistance * Math.sin((baseangle) + Math.pow((-1), i) * (mooring.mooringAngle * Math.PI) / 180) + bwl,
+						];
+					};
+					// Calculate and insert mooring lines
+					createMooringLine();
+					
+					// Initial Velocities: BF-Surge, BF-Sway, BF-Heave, BF-Roll, BF-Pitch, BF-Yaw
+					// Initial Euler Angle X,  Angle Y, Angle Z
+					// [Surge, Sway, Heave, VSurge, VSway, VHeave, VRoll, VPitch, VYaw, EX, EY, EZ]
+					var Ini = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+					states.continuous.motion = {
+						surge: Ini[0],
+						sway: Ini[1],
+						heave: Ini[2],
+						roll: Ini[3],
+						pitch: Ini[4],
+						yaw: Ini[5]
+					};
+
+					
+					var tprev = 0; // Initial time
+
+					scale = gui.addFolder("Initial State");
+					scale
+						.add(states.continuous.motion, "surge", -2, 2)
+						.step(0.01)
+						.onChange(function (newValue) {
+							ship3D.surge = newValue;
+							states.continuous.motion.surge = newValue;
+						})
+						.name("Surge");
+					scale
+						.add(states.continuous.motion, "sway", -2, 2)
+						.step(0.01)
+						.onChange(function (newValue) {
+							ship3D.sway = newValue;
+							states.continuous.motion.sway = newValue;
+						})
+						.name("Sway");
+					scale
+						.add(states.continuous.motion, "heave", -0.5, 0.5)
+						.step(0.01)
+						.onChange(function (newValue) {
+							ship3D.heave = newValue;
+							states.continuous.motion.heave = newValue;
+						})
+						.name("Heave");
+					scale
+						.add(states.continuous.motion, "roll", -0.5, 0.5)
+						.step(0.01)
+						.onChange(function (newValue) {
+							ship3D.roll = newValue;
+							states.continuous.motion.roll = newValue;
+						})
+						.name("Roll");
+					scale
+						.add(states.continuous.motion, "pitch", -0.1, 0.1)
+						.step(0.01)
+						.onChange(function (newValue) {
+							ship3D.pitch = newValue;
+							states.continuous.motion.pitch = newValue;
+						})
+						.name("Pitch");
+					scale
+						.add(states.continuous.motion, "yaw", -0.25, 0.25)
+						.step(0.01)
+						.onChange(function (newValue) {
+							ship3D.yaw = newValue;
+							states.continuous.motion.yaw = newValue;
+						})
+						.name("Yaw");
+					scale = gui.addFolder("Damping Coefficients");
+					scale
+						.add(userParameters, "C_D", 0.1, 0.9)
+						.step(0.01)
+						.name("<div>C<sub>D</sub></div>");
+					scale
+						.add(userParameters, "B_44", 1000000, 9000000)
+						.step(5000)
+						.name("<div>B<sub>44</sub></div>");
+					scale
+						.add(userParameters, "B_55", 10000000, 90000000)
+						.step(5000)
+						.name("<div>B<sub>55</sub></div>");
+					scale
+						.add(userParameters, "B_66", 1000000, 9000000)
+						.step(5000)
+						.name("<div>B<sub>66</sub></div>");
+						scale = gui.addFolder("Ship Information");
+					var controller = scale
+						.add(states.objectOverrides.derivedByGroup["ballast tanks"], "fullness", 0, 1)
+						.step(0.01)
+						.name("Fullness");
+					scale = gui.addFolder("Mooring Configuration");
+					scale
+						.add(userParameters, "density", 50, 500)
+						.step(1)
+						.onChange(function (newValue) {
+							mooring.w = newValue;
+						})
+						.name("Density");
+					scale
+						.add(userParameters, "breakingLoad", 0, 1000)
+						.step(1)
+						.onChange(function (newValue) {
+							mooring.breakingLoad = newValue;
+						})
+						.name("Breaking Load");
+					scale
+						.add(userParameters, "seaDepth", 10, 100)
+						.step(1)
+						.onChange(function (newValue) {
+							mooring.seaDepth = newValue;
+
+							// Define a new approximate anchorLength whenever the seaDepth is changed
+							//var pointHeight = mooring.mooringPointOnShip[0][2];
+							//var minimumLength = Math.pow(Math.pow(seaDepth+pointHeight, 2) + Math.pow(userParameters.radialDistance, 2), 0.5) + 10;
+							//var maximumLength = seaDepth+pointHeight + userParameters.radialDistance;
+							//userParameters.anchorLength = (minimumLength+maximumLength) * 0.5
+							// Remove the original anchorLength and replaces by a new one with the update value
+							//insertAnchorLengthGui.remove();
+							//insertAnchorLengthGui = scale.add(userParameters, "anchorLength").min(minimumLength).max(maximumLength).name("Mooring length").onChange(function (newValue) {
+							//mooring.anchorLength = newValue});
+							
+							// Remove the sea bottom
+							for (let i = scene.children.length - 1; i >= 0; i--) {
+								if (scene.children[i].type === "Mesh")
+									scene.remove(scene.children[i]);
+							}
+							// Adds a sea bottom with the new seaDepth value
+							var plane = new THREE.Mesh(geometry, material);
+							plane.rotation.set(-Math.PI / 2, 0, 0);
+							plane.position.setY(-userParameters.seaDepth);
+							plane.material.side = THREE.DoubleSide;
+							plane.material.opacity = 0.8;
+							scene.add(plane);
+							let sun = new THREE.DirectionalLight(0xffffff, 2);
+							scene.add(new Skybox(oSize));
+						})
+						.name("Sea depth");
+					scale.open();
+					scalePrimary = gui.addFolder("Mooring Primary");
+					//scalePrimary
+					//	.add(userParameters, 'addPrimary').listen()
+					//	.name("Insert Lines")
+					//	.onChange(function (newValue) {
+					//		mooring.addPrimary = newValue;
+					//		if (mooring.addPrimary == true) {
+					//			menuA1 = scalePrimary
+					//				.add(mooring.mooringStatus, 'mooringNE').listen()
+					//				.name("Anchor NE");
+					//			menuA2 = scalePrimary
+					//				.add(mooring.mooringStatus, 'mooringNW').listen()
+					//				.name("Anchor NW");
+					//			menuA3 = scalePrimary
+					//				.add(mooring.mooringStatus, 'mooringSE').listen()
+					//				.name("Anchor SE");
+					//			menuA4 = scalePrimary
+					//				.add(mooring.mooringStatus, 'mooringSW').listen()
+					//				.name("Anchor SW");
+					//			menuA7 = scalePrimary
+					//				.add(userParameters, "mooringAngle", 0, 90)
+					//				.step(1)
+					//				.onChange(function (newValue) {
+					//					mooring.mooringAngle = newValue;
+					//				})
+					//				.name("Mooring Angle");
+					//			menuA8 = scalePrimary
+					//				.add(userParameters, "percentageLwlA", 0, 100)
+					//				.onChange(function (newValue) {
+					//					mooring.percentageLwlA = newValue;
+					//					insertMooringPointOnShip();
+					//				})
+					//				.step(1)
+					//				.name("LWL %");
+					//			menuA9 = scalePrimary
+					//				.add(userParameters, "percentageBwlA", 0, 100)
+					//				.step(1)
+					//				.onChange(function (newValue) {
+					//					mooring.percentageBwlA = newValue;
+					//					insertMooringPointOnShip();
+					//				})
+					//				.name("BWL %");
+					//		} else {
+					//			menuA1.remove();
+					//			menuA2.remove();
+					//			menuA3.remove();
+					//			menuA4.remove();
+					//			menuA7.remove();
+					//			menuA8.remove();
+					//			menuA9.remove();
+					//		}});
+					menuA1 = scalePrimary
+						.add(mooring.mooringStatus, 'mooringNE').listen()
+						.name("Anchor NE");
+					menuA2 = scalePrimary
+						.add(mooring.mooringStatus, 'mooringNW').listen()
+						.name("Anchor NW");
+					menuA3 = scalePrimary
+						.add(mooring.mooringStatus, 'mooringSE').listen()
+						.name("Anchor SE");
+					menuA4 = scalePrimary
+						.add(mooring.mooringStatus, 'mooringSW').listen()
+						.name("Anchor SW");
+					menuA8 = scalePrimary
+						.add(userParameters, "percentageLwlA", 0, 100)
+						.onChange(function (newValue) {
+							mooring.percentageLwlA = newValue;
+							insertMooringPointOnShip();
+						})
+						.step(1)
+						.name("LWL %");
+					menuA9 = scalePrimary
+						.add(userParameters, "percentageBwlA", 0, 100)
+						.step(1)
+						.onChange(function (newValue) {
+							mooring.percentageBwlA = newValue;
+							insertMooringPointOnShip();
+						})
+						.name("BWL %");
+					menuA7 = scalePrimary
+						.add(userParameters, "mooringAngle", 0, 90)
+						.step(1)
+						.onChange(function (newValue) {
+							mooring.mooringAngle = newValue;
+						})
+						.name("Mooring Angle");
+					scalePrimary
+						.add(userParameters, "anchorLength")
+						.min(150)
+						.max(250)
+						.step(1)
+						.onChange(function (newValue) {
+							mooring.anchorLength = newValue;
+						})
+						.name("Mooring Length");
+					scalePrimary
+						.add(userParameters, "radialDistance", 50, 500)
+						.step(1)
+						.onChange(function (newValue) {
+							mooring.radialDistance = newValue;
+						})
+						.name("Radial Distance");
+					scaleSecondary = gui.addFolder("Mooring Secondary (Starboard and portside)");
+					scaleSecondary
+						.add(userParameters, 'numberOfMooringPerpendicular', ['0', '1', '2', '3' ] ).listen()
+						.name("Number of Lines")
+						.onChange(function (newValue) {
+							mooring.numberOfMooringPerpendicular = newValue;
+							if (mooring.numberOfMooringPerpendicular == 0) {
+								insertMooringPointOnShip()
+							};
+							if (mooring.numberOfMooringPerpendicular == 1) {
+								mooring.percentageLwlB[0] = 0;
+								insertMooringPointOnShip()
+							};
+							if (mooring.numberOfMooringPerpendicular == 2) {
+								mooring.percentageLwlB[0] = 33;
+								mooring.percentageLwlB[1] = -33;
+								insertMooringPointOnShip()
+							};
+							if (mooring.numberOfMooringPerpendicular == 3) {
+								mooring.percentageLwlB[0] = 50;
+								mooring.percentageLwlB[1] = 0;
+								mooring.percentageLwlB[2] = -50;
+								insertMooringPointOnShip()
+							};
+							if (menuB1 != undefined) {
+								menuB1.remove();
+							};
+							if (menuB2 != undefined) {
+								menuB2.remove();
+							};
+							if (menuB3 != undefined) {
+								menuB3.remove();
+							};
+							if (menuB4 != undefined) {
+								menuB4.remove();
+							};
+							if (menuB5 != undefined) {
+								menuB5.remove();
+							};
+							if (menuB6 != undefined) {
+								menuB6.remove();
+							};
+							if (menuB0 != undefined) {
+								menuB0.remove();
+							};
+							if (menuB00 != undefined) {
+								menuB00.remove();
+							};
+							if (mooring.numberOfMooringPerpendicular == 1) {
+								menuB1 = scaleSecondary
+									.add(userParameters, "mooringAngle2", -45, 45)
+									.step(1)
+									.onChange(function (newValue) {
+										mooring.mooringAngle2 = newValue;
+									})
+									.name("Angle #1");
+								menuB2 = scaleSecondary
+									.add(userParameters, "percentageLwlB1", -100, 100)
+									.onChange(function (newValue) {
+										mooring.percentageLwlB1 = newValue;
+										mooring.percentageLwlB[0] = newValue;
+										insertMooringPointOnShip();
+									})
+									.step(1)
+									.name("LWL%");
+								menuB0 = scaleSecondary
+									.add(userParameters, "anchorLengthB")
+									.min(150)
+									.max(250)
+									.step(1)
+									.onChange(function (newValue) {
+										mooring.anchorLengthB = newValue;
+									})
+									.name("Mooring length");
+								menuB00 = scaleSecondary
+									.add(userParameters, "radialDistanceB", 50, 500)
+									.step(1)
+									.onChange(function (newValue) {
+										mooring.radialDistanceB = newValue;
+									})
+									.name("Radial distance");
+							} else if (mooring.numberOfMooringPerpendicular == 2) {
+								menuB1 = scaleSecondary
+									.add(userParameters, "mooringAngle2", -45, 45)
+									.step(1)
+									.onChange(function (newValue) {
+										mooring.mooringAngle2 = newValue;
+									})
+									.name("Angle #1");
+								menuB2 = scaleSecondary
+									.add(userParameters, "percentageLwlB1", -100, 100)
+									.onChange(function (newValue) {
+										mooring.percentageLwlB1 = newValue;
+										mooring.percentageLwlB[0] = newValue;
+										insertMooringPointOnShip();
+									})
+									.step(1)
+									.name("LWL%");
+								menuB3 = scaleSecondary
+									.add(userParameters, "mooringAngle3", -45, 45)
+									.step(1)
+									.onChange(function (newValue) {
+										mooring.mooringAngle3 = newValue;
+									})
+									.name("Angle #2");
+								menuB4 = scaleSecondary
+									.add(userParameters, "percentageLwlB2", -100, 100)
+									.onChange(function (newValue) {
+										mooring.percentageLwlB2 = newValue;
+										mooring.percentageLwlB[1] = newValue;
+										insertMooringPointOnShip();
+									})
+									.step(1)
+									.name("LWL%");
+								menuB0 = scaleSecondary
+									.add(userParameters, "anchorLengthB")
+									.min(150)
+									.max(250)
+									.step(1)
+									.onChange(function (newValue) {
+										mooring.anchorLengthB = newValue;
+									})
+									.name("Mooring length");
+								menuB00 = scaleSecondary
+									.add(userParameters, "radialDistanceB", 50, 500)
+									.step(1)
+									.onChange(function (newValue) {
+										mooring.radialDistanceB = newValue;
+									})
+									.name("Radial distance");
+							} else if (mooring.numberOfMooringPerpendicular == 3) {
+								menuB1 = scaleSecondary
+									.add(userParameters, "mooringAngle2", -45, 45)
+									.step(1)
+									.onChange(function (newValue) {
+										mooring.mooringAngle2 = newValue;
+									})
+									.name("Angle #1");
+								menuB2 = scaleSecondary
+									.add(userParameters, "percentageLwlB1", -100, 100)
+									.onChange(function (newValue) {
+										mooring.percentageLwlB1 = newValue;
+										mooring.percentageLwlB[0] = newValue;
+										insertMooringPointOnShip();
+									})
+									.step(1)
+									.name("LWL%");
+								menuB3 = scaleSecondary
+									.add(userParameters, "mooringAngle3", -45, 45)
+									.step(1)
+									.onChange(function (newValue) {
+										mooring.mooringAngle3 = newValue;
+									})
+									.name("Angle #2");
+								menuB4 = scaleSecondary
+									.add(userParameters, "percentageLwlB2", -100, 100)
+									.onChange(function (newValue) {
+										mooring.percentageLwlB2 = newValue;
+										mooring.percentageLwlB[1] = newValue;
+										insertMooringPointOnShip();
+									})
+									.step(1)
+									.name("LWL%");
+								menuB5 = scaleSecondary
+									.add(userParameters, "mooringAngle4", -45, 45)
+									.step(1)
+									.onChange(function (newValue) {
+										mooring.mooringAngle4 = newValue;
+									})
+									.name("Angle #3");
+								menuB6 = scaleSecondary
+									.add(userParameters, "percentageLwlB3", -100, 100)
+									.onChange(function (newValue) {
+										mooring.percentageLwlB3 = newValue;
+										mooring.percentageLwlB[2] = newValue;
+										insertMooringPointOnShip();
+									})
+									.step(1)
+									.name("LWL%");
+								menuB0 = scaleSecondary
+									.add(userParameters, "anchorLengthB")
+									.min(150)
+									.max(250)
+									.step(1)
+									.onChange(function (newValue) {
+										mooring.anchorLengthB = newValue;
+									})
+									.name("Mooring length");
+								menuB00 = scaleSecondary
+									.add(userParameters, "radialDistanceB", 50, 500)
+									.step(1)
+									.onChange(function (newValue) {
+										mooring.radialDistanceB = newValue;
+									})
+									.name("Radial distance");
+							} else {};
+						});
+					scaleTertiary = gui.addFolder("Mooring Tertiary (Stern and Bow)");
+					scaleTertiary
+						.add(userParameters, 'numberOfMooringLongitudinal', ['0', '1', '2'] ).listen()
+						.name("Number of Lines")
+						.onChange(function (newValue) {
+							mooring.numberOfMooringLongitudinal = newValue;
+							if (mooring.numberOfMooringLongitudinal == 0) {
+								insertMooringPointOnShip()
+							};
+							if (mooring.numberOfMooringLongitudinal == 1) {
+								mooring.percentageBwlB[0] = 0;
+								insertMooringPointOnShip()
+							};
+							if (mooring.numberOfMooringLongitudinal == 2) {
+								mooring.percentageBwlB[0] = 33;
+								mooring.percentageBwlB[1] = -33;
+								insertMooringPointOnShip()
+							};
+							if (menuC1 != undefined) {
+								menuC1.remove();
+							};
+							if (menuC2 != undefined) {
+								menuC2.remove();
+							};
+							if (menuC3 != undefined) {
+								menuC3.remove();
+							};
+							if (menuC4 != undefined) {
+								menuC4.remove();
+							};
+							if (menuC0 != undefined) {
+								menuC0.remove();
+							};
+							if (menuC00 != undefined) {
+								menuC00.remove();
+							};
+							if (mooring.numberOfMooringLongitudinal == 1) {
+								menuC1 = scaleTertiary
+									.add(userParameters, "mooringAngle2C", -45, 45)
+									.step(1)
+									.onChange(function (newValue) {
+										mooring.mooringAngle2C = newValue;
+									})
+									.name("Angle #1");
+								menuC2 = scaleTertiary
+									.add(userParameters, "percentageBwlB1", -100, 100)
+									.onChange(function (newValue) {
+										mooring.percentageBwlB1 = newValue;
+										mooring.percentageBwlB[0] = newValue;
+										insertMooringPointOnShip();
+									})
+									.step(1)
+									.name("BWL%");
+								menuC0 = scaleTertiary
+									.add(userParameters, "anchorLengthC")
+									.min(150)
+									.max(250)
+									.step(1)
+									.onChange(function (newValue) {
+										mooring.anchorLengthC = newValue;
+									})
+									.name("Mooring length");
+								menuC00 = scaleTertiary
+									.add(userParameters, "radialDistanceC", 50, 500)
+									.step(1)
+									.onChange(function (newValue) {
+										mooring.radialDistanceC = newValue;
+									})
+									.name("Radial distance");
+							} else if (mooring.numberOfMooringLongitudinal == 2) {
+								menuC1 = scaleTertiary
+									.add(userParameters, "mooringAngle2C", -45, 45)
+									.step(1)
+									.onChange(function (newValue) {
+										mooring.mooringAngle2C = newValue;
+									})
+									.name("Angle #1");
+								menuC2 = scaleTertiary
+									.add(userParameters, "percentageBwlB1", -100, 100)
+									.onChange(function (newValue) {
+										mooring.percentageBwlB1 = newValue;
+										mooring.percentageBwlB[0] = newValue;
+										insertMooringPointOnShip();
+									})
+									.step(1)
+									.name("BWL%");
+								menuC3 = scaleTertiary
+									.add(userParameters, "mooringAngle2C", -45, 45)
+									.step(1)
+									.onChange(function (newValue) {
+										mooring.mooringAngle2C = newValue;
+									})
+									.name("Angle #2");
+								menuC4 = scaleTertiary
+									.add(userParameters, "percentageBwlB2", -100, 100)
+									.onChange(function (newValue) {
+										mooring.percentageBwlB2 = newValue;
+										mooring.percentageBwlB[1] = newValue;
+										insertMooringPointOnShip();
+									})
+									.step(1)
+									.name("BWL%");
+								menuC0 = scaleTertiary
+									.add(userParameters, "anchorLengthC")
+									.min(150)
+									.max(250)
+									.step(1)
+									.onChange(function (newValue) {
+										mooring.anchorLengthC = newValue;
+									})
+									.name("Mooring length");
+								menuC00 = scaleTertiary
+									.add(userParameters, "radialDistanceC", 50, 500)
+									.step(1)
+									.onChange(function (newValue) {
+										mooring.radialDistanceC = newValue;
+									})
+									.name("Radial distance");
+							};;
+						});
+
+					gui.remember(userParameters); // Allows to save the data in preset json
+					
+					// Change the GUI color to match the mooring line color on simulation
+					// Number 32, 33, 34, 35 are the position in the menu
+					var change = document.getElementsByTagName("LI").item(37);
+					change.style.borderLeft = '3px solid #FFFFFF';
+					var change = document.getElementsByTagName("LI").item(38);
+					change.style.borderLeft = '3px solid #FF0000';
+					var change = document.getElementsByTagName("LI").item(39);
+					change.style.borderLeft = '3px solid #66FF';
+					var change = document.getElementsByTagName("LI").item(40);
+					change.style.borderLeft = '3px solid #33CC33';
+
+					// Update draft when changing the fullness aspect
+					controller.onChange(function (newValue) {	
+						states.objectOverrides.derivedByGroup["cargo tanks"].fullness = newValue;
+						states.version += 1;
+						statMod.setDraft();
+						floatingStates.T = states.discrete.FloatingCondition.state.T;
+					});
+
+					// Call the main function at DynamicalMovementMooringWave.js to run the simulation
+					dynMov = new DynamicalMovement(ship, states, userParameters, Ini);
+					scale.open();
+
+					// VERY approximate motion (for visualisation only)
+					playback.add(function (t) {
+						// let x = ship3D.position.x;
+						// let y = ship3D.position.y;
+						// let oCenter = ocean.calculateZ(x,y,t);
+						let dt = t - tprev;
+						dynMov.moveShip(tprev, dt);
+						tprev = t;
+
+						ship3D.surge = states.continuous.motion.surge;
+						ship3D.sway = states.continuous.motion.sway;
+						ship3D.heave = states.continuous.motion.heave;
+						ship3D.roll = states.continuous.motion.roll;
+						ship3D.pitch = states.continuous.motion.pitch;
+						ship3D.yaw = states.continuous.motion.yaw;
+					});
+				}
+			);
+
+			// Initial configuration
+			let w = ocean.addCosineWave({
+				A: 0.5,	// Amplitude (m)
+				T: 11, // Period (s)
+				theta: 0 // Direction (degrees)
+			});
+			if (ocean.cosConf) ocean.cosConf.close();
+			playback.play();
+			requestAnimationFrame(animate);
+		})();
+
+		function animate(millitime) {
+			var t = clock.getElapsedTime();
+			ocean.water.render();
+			renderer.render(scene, camera);
+			let playing = playback.update();
+
+			// Disable this to freeze water when not playing
+			if (!playing) {
+				ocean.water.material.uniforms.time.value += 1 / 60;
+			}
+			requestAnimationFrame(animate);
+		}
+
+		function updateMotion() {
+			for (let i = 0; i < wavMo.length; i++) {
+				wavMo[i].writeOutput();
+			}
+		}
+	</script>
+
+<!-- Reload button to refresh page -->
+<input type="button" value="Reload Simulation" onClick="document.location.reload(true)" class="button-reload hover-red" style="position:fixed; bottom:24%; width:15%">
+<!-- Real time plots for motion response and tension -->
+<div id="plotMooringTension" style="position:fixed; bottom:0; float:left; width:80%; height:23%"></div>
+
+</body>
+
+</html>
