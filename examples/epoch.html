@@ -96,7 +96,8 @@
 			var material = new THREE.MeshBasicMaterial({
 				side: THREE.FrontSide,
 				map: texture,
-				transparent: true	// visible from below
+				transparent: true,	// visible from below
+				opacity: 0.25
 			});
 			var plane = new THREE.Mesh(geometry, material);
 			plane.rotateX(-Math.PI / 2);
@@ -121,7 +122,7 @@
 			};
 			window.addEventListener('resize', onResize, false);
 			onResize();
-			camera.position.set(0, oSize * 0.05, oSize * 0.01);
+			camera.position.set(0, -oSize * 0.1, oSize * 0.01);
 			camera.lookAt(zUpCont.position);
 			zUpCont.add(camera);
 
@@ -131,6 +132,8 @@
 			controls.enablePan = false;
 			controls.maxPolarAngle = 3 * (Math.PI / 4);
 			controls.minPolarAngle = 0;
+			controls.maxAzimuthAngle  = Math.PI / 2;
+			controls.minAzimuthAngle  = -Math.PI / 2;
 
 			//zUpCont.add(new THREE.AxisHelper(1000));
 			zUpCont.add(new THREE.HemisphereLight(0xccccff, 0x666688, 1));
