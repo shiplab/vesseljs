@@ -1,0 +1,23 @@
+{
+  "name": "ntnu-vessel",
+  "version": "0.1.1",
+  "description": "Library for conceptual ship design with an object-oriented approach.",
+  "main": "vessel.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/shiplab/vesseljs.git"
+  },
+  "keywords": [
+    "ship",
+    "design"
+  ],
+  "author": "NTNU",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/shiplab/vesseljs/issues"
+  },
+  "homepage": "https://github.com/shiplab/vesseljs#readme"
+}
