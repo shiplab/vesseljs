@@ -95,7 +95,12 @@
 
 			// Add the bottom of ocean
 			var geometry = new THREE.PlaneBufferGeometry(oSize, oSize, 32);
-			var material = new THREE.MeshBasicMaterial({color: 0xffff00, side: THREE.DoubleSide, transparent: true, opacity: 0.5});
+			var texture = new THREE.TextureLoader().load("textures/bottom.jpg");
+			var material = new THREE.MeshBasicMaterial({
+				side: THREE.FrontSide,
+				map: texture,
+				transparent: true	// visible from below
+			});
 			var plane = new THREE.Mesh(geometry, material);
 			plane.rotateX(-Math.PI / 2);
 			var oceanDepth = 30;
