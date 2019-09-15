@@ -276,7 +276,7 @@ Object.assign(Ship3D.prototype, {
 				},
 				undefined,
 				function onError() {
-					console.warn("Specified file " + e.File + " not found. Falling back on placeholder.");
+					console.warn("Error loading STL file " + bo.file3D + ". Falling back on placeholder.");
 					let m = new THREE.Mesh(this.boxGeom, mat);
 					m.position.set(x, y, z);
 					m.scale.set(d.length, d.breadth, d.height);
