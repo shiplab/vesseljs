@@ -109,7 +109,7 @@
 
 			//Use Z up from now on:
 			THREE.Object3D.DefaultUp.set(0, 0, 1);
-			zUpCont = new THREE.Group();
+			zUpCont = new  onkeyup=""();
 			zUpCont.rotation.x = -0.5 * Math.PI;
 			scene.add(zUpCont);
 
@@ -130,10 +130,11 @@
 
 			controls = new THREE.OrbitControls(camera, renderer.domElement);
 			//controls.minDistance = 0;
-			controls.maxDistance = 0.5 * oSize;
+			controls.maxDistance = 0.25 * oSize;
 			controls.enablePan = false;
 			controls.maxPolarAngle = Math.PI;
 			controls.minPolarAngle = 0;
+
 
 			//zUpCont.add(new THREE.AxisHelper(1000));
 			zUpCont.add(new THREE.HemisphereLight(0xccccff, 0x666688, 1));

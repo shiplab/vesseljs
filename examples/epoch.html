@@ -30,24 +30,24 @@
 </head>
 
 <style>
+	.button-reload {
+		border: none;
+		display: inline-block;
+		padding: 8px 16px;
+		vertical-align: middle;
+		overflow: hidden;
+		text-decoration: none;
+		color: white;
+		background-color: black;
+		text-align: center;
+		cursor: pointer;
+		white-space: nowrap
+	}
 
-.button-reload{
-	border:none;
-	display:inline-block;
-	padding:8px 16px;
-	vertical-align:middle;
-	overflow:hidden;
-	text-decoration:none;
-	color:white;
-	background-color:black;
-	text-align:center;
-	cursor:pointer;
-	white-space:nowrap}
-
-.hover-red:hover{
-	color:#fff!important;
-	background-color:#f44336!important}
-
+	.hover-red:hover {
+		color: #fff !important;
+		background-color: #f44336 !important
+	}
 </style>
 
 <body>
@@ -57,6 +57,7 @@
 		//Globals
 		var renderer, camera, controls, gui, stats;
 		var scene, zUpCont, playback, bodies, ocean, ship3D;
+		var ship3D, states, epoch, stractionEquipments;
 
 		(function main() {
 			//Renderer setup
@@ -72,12 +73,16 @@
 				height: "100vh"
 			});
 			document.body.appendChild(container);
-			renderer = new THREE.WebGLRenderer({antialias: true});
+			renderer = new THREE.WebGLRenderer({
+				antialias: true
+			});
 			//renderer.setSize(window.innerWidth, window.innerHeight);
 			renderer.setClearColor(0x99aadd);
 			container.appendChild(renderer.domElement);
 
-			playback = new Playback({parentGUI: gui});
+			playback = new Playback({
+				parentGUI: gui
+			});
 
 			//Scene setup:
 			scene = new THREE.Scene();
@@ -90,26 +95,25 @@
 
 			scene.add(new Skybox(oSize));
 
+			//Use Z up from now on:
+			THREE.Object3D.DefaultUp.set(0, 0, 1);
+			zUpCont = new THREE.Group();
+			zUpCont.rotation.x = -0.5 * Math.PI;
+			scene.add(zUpCont);
+
 			// Add the bottom of ocean
 			var geometry = new THREE.PlaneBufferGeometry(oSize, oSize, 32);
 			var texture = new THREE.TextureLoader().load("textures/bottom.jpg");
 			var material = new THREE.MeshBasicMaterial({
 				side: THREE.FrontSide,
 				map: texture,
-				transparent: true,	// visible from below
-				opacity: 0.25
+				transparent: true, // visible from below
+				opacity: 0.5
 			});
 			var plane = new THREE.Mesh(geometry, material);
-			plane.rotateX(-Math.PI / 2);
 			var oceanDepth = 30;
 			plane.translateZ(-oceanDepth);
-			scene.add(plane);
-
-			//Use Z up from now on:
-			THREE.Object3D.DefaultUp.set(0, 0, 1);
-			zUpCont = new THREE.Group();
-			zUpCont.rotation.x = -0.5 * Math.PI;
-			scene.add(zUpCont);
+			zUpCont.add(plane);
 
 			//Camera setup
 			camera = new THREE.PerspectiveCamera(26, window.innerWidth / window.innerHeight, 1, 1000000);
@@ -122,7 +126,7 @@
 			};
 			window.addEventListener('resize', onResize, false);
 			onResize();
-			camera.position.set(0, -oSize * 0.1, oSize * 0.01);
+			camera.position.set(0, -oSize * 0.15, -oSize * 0.01);
 			camera.lookAt(zUpCont.position);
 			zUpCont.add(camera);
 
@@ -132,8 +136,8 @@
 			controls.enablePan = false;
 			controls.maxPolarAngle = 3 * (Math.PI / 4);
 			controls.minPolarAngle = 0;
-			controls.maxAzimuthAngle  = Math.PI / 2;
-			controls.minAzimuthAngle  = -Math.PI / 2;
+			controls.maxAzimuthAngle = Math.PI / 2;
+			controls.minAzimuthAngle = -Math.PI / 2;
 
 			//zUpCont.add(new THREE.AxisHelper(1000));
 			zUpCont.add(new THREE.HemisphereLight(0xccccff, 0x666688, 1));
@@ -141,16 +145,110 @@
 			ocean = new Ocean({
 				parentGUI: gui,
 				sunDir: sun.position.clone().normalize(),
-				size: oSize, segments: 127
+				size: oSize,
+				segments: 127
 			});
 			playback.add(ocean);
 			zUpCont.add(ocean);
 
-			Vessel.loadShip(/*"specs/ship_specifications/PX121.json"*/
+			// Creating Epoch
+			epoch = ({
+				"geometry": {
+					"radius": 20,
+				},
+				"position": {
+					"x": 50,
+					"y": 0,
+					"depth": 25,
+				}
+			});
+
+			var geometry = new THREE.SphereGeometry(epoch.geometry.radius, 32, 32);
+			var material = new THREE.MeshBasicMaterial({
+				color: 0xffff00
+			});
+			epoch.mesh = new THREE.Mesh(geometry, material);
+			[epoch.mesh.position.x, epoch.mesh.position.y, epoch.mesh.position.z] = [
+				epoch.position.x, epoch.position.y,
+				-(epoch.position.depth + oceanDepth)
+			];
+			zUpCont.add(epoch.mesh);
+
+			// Straction Equipment
+			stractionEquipments = ({
+				"xmastree": {
+					"position": {
+						"x": 0,
+						"y": 0,
+						"depth": 0
+					},
+					"dimensions": {
+						"radius": 1,
+						"height": 10
+					}
+				},
+				"well": {},
+				"brine_disposal": {},
+				"sonar": {},
+				"umbilical": {},
+				"sub_pump": {
+					"position": {
+						"x": -2,
+						"y": 0,
+						"depth": 0
+					},
+					"dimensions": {
+						"length": .5,
+						"width": .5,
+						"height": .5,
+					}
+				},
+				"brine_subpump": {
+					"position": {
+						"x": 2,
+						"y": 0,
+						"depth": 25
+					},
+					"dimensions": {
+						"length": .5,
+						"width": .5,
+						"height": .5,
+					}
+				},
+				"energy_generator": {},
+				"energy_generator": {},
+				"position": {
+					"x": 50,
+					"y": 0,
+					"depth": 25
+				}
+			});
+
+			var geometry = new THREE.CylinderGeometry(
+				stractionEquipments.xmastree.dimensions.radius,
+				stractionEquipments.xmastree.dimensions.radius,
+				stractionEquipments.xmastree.dimensions.height,
+				32
+			);
+			var material = new THREE.MeshBasicMaterial({
+				color: 0x00000
+			});
+			stractionEquipments.xmastree.mesh  = new THREE.Mesh(geometry, material);
+			[stractionEquipments.xmastree.mesh.position.x, stractionEquipments.xmastree.mesh.position.y, stractionEquipments.xmastree.mesh.position.z] = [
+				epoch.position.x, epoch.position.y,
+				-(oceanDepth-stractionEquipments.xmastree.dimensions.height/2)
+			];
+			stractionEquipments.xmastree.mesh.rotateX(-Math.PI / 2);
+			zUpCont.add(stractionEquipments.xmastree.mesh);
+
+
+			Vessel.loadShip( /*"specs/ship_specifications/PX121.json"*/
 				/*"specs/ship_specifications/blockCase.json"*/
 				/*"specs/ship_specifications/prismaticHull.json"*/
 				"specs/ship_specifications/top-down.json",
 				function(ship) {
+					console.log(ship.designState);
+
 					ship3D = new Ship3D(ship, {
 						stlPath: "specs/STL files",
 						upperColor: 0x33aa33,
@@ -160,6 +258,9 @@
 						objectOpacity: 1
 					});
 					zUpCont.add(ship3D);
+
+					// Setting the position
+					ship3D.position.x = -50;
 				});
 
 			playback.play();
