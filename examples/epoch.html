@@ -57,7 +57,8 @@
 		//Globals
 		var renderer, camera, controls, gui, stats;
 		var scene, zUpCont, playback, bodies, ocean, ship3D;
-		var ship3D, states, epoch, stractionEquipments;
+		var ship3D, states, epoch, epochEquipments, eletricCable, umbilical;
+		var designDimension, floatingStates, eletricCable, line, hangedeletricCable;
 
 		(function main() {
 			//Renderer setup
@@ -108,7 +109,7 @@
 				side: THREE.FrontSide,
 				map: texture,
 				transparent: true, // visible from below
-				opacity: 0.5
+				opacity: 0.65
 			});
 			var plane = new THREE.Mesh(geometry, material);
 			var oceanDepth = 30;
@@ -174,8 +175,8 @@
 			];
 			zUpCont.add(epoch.mesh);
 
-			// Straction Equipment
-			stractionEquipments = ({
+			// Straction Equipments
+			epochEquipments = ({
 				"xmastree": {
 					"position": {
 						"x": 0,
@@ -193,26 +194,26 @@
 				"umbilical": {},
 				"sub_pump": {
 					"position": {
-						"x": -2,
+						"x": -10,
 						"y": 0,
 						"depth": 0
 					},
 					"dimensions": {
-						"length": .5,
-						"width": .5,
-						"height": .5,
+						"length": 1,
+						"width": 1,
+						"height": 1,
 					}
 				},
 				"brine_subpump": {
 					"position": {
-						"x": 2,
+						"x": 10,
 						"y": 0,
 						"depth": 25
 					},
 					"dimensions": {
-						"length": .5,
-						"width": .5,
-						"height": .5,
+						"length": 1,
+						"width": 1,
+						"height": 1,
 					}
 				},
 				"energy_generator": {},
@@ -225,30 +226,75 @@
 			});
 
 			var geometry = new THREE.CylinderGeometry(
-				stractionEquipments.xmastree.dimensions.radius,
-				stractionEquipments.xmastree.dimensions.radius,
-				stractionEquipments.xmastree.dimensions.height,
+				epochEquipments.xmastree.dimensions.radius,
+				epochEquipments.xmastree.dimensions.radius,
+				epochEquipments.xmastree.dimensions.height,
 				32
 			);
 			var material = new THREE.MeshBasicMaterial({
-				color: 0x00000
+				color: 0xff6699
 			});
-			stractionEquipments.xmastree.mesh  = new THREE.Mesh(geometry, material);
-			[stractionEquipments.xmastree.mesh.position.x, stractionEquipments.xmastree.mesh.position.y, stractionEquipments.xmastree.mesh.position.z] = [
+			epochEquipments.xmastree.mesh = new THREE.Mesh(geometry, material);
+			[epochEquipments.xmastree.mesh.position.x, epochEquipments.xmastree.mesh.position.y, epochEquipments.xmastree.mesh.position.z] = [
 				epoch.position.x, epoch.position.y,
-				-(oceanDepth-stractionEquipments.xmastree.dimensions.height/2)
+				-(oceanDepth - epochEquipments.xmastree.dimensions.height / 2)
 			];
-			stractionEquipments.xmastree.mesh.rotateX(-Math.PI / 2);
-			zUpCont.add(stractionEquipments.xmastree.mesh);
+			epochEquipments.xmastree.mesh.rotateX(-Math.PI / 2);
+			zUpCont.add(epochEquipments.xmastree.mesh);
 
+			var geometry = new THREE.BoxGeometry(
+				epochEquipments.sub_pump.dimensions.length,
+				epochEquipments.sub_pump.dimensions.width,
+				epochEquipments.sub_pump.dimensions.height,
+			);
+			var material = new THREE.MeshBasicMaterial({
+				color: 0x00ff00
+			});
+			epochEquipments.sub_pump.mesh = new THREE.Mesh(geometry, material);
+			[epochEquipments.sub_pump.mesh.position.x, epochEquipments.sub_pump.mesh.position.y, epochEquipments.sub_pump.mesh.position.z] = [
+				epoch.position.x + epochEquipments.sub_pump.position.x,
+				epoch.position.y + epochEquipments.sub_pump.position.y,
+				-(oceanDepth - epochEquipments.sub_pump.dimensions.height / 2)
+			];
+			zUpCont.add(epochEquipments.sub_pump.mesh);
+
+			var geometry = new THREE.BoxGeometry(
+				epochEquipments.brine_subpump.dimensions.length,
+				epochEquipments.brine_subpump.dimensions.width,
+				epochEquipments.brine_subpump.dimensions.height,
+			);
+			var material = new THREE.MeshBasicMaterial({
+				color: 0xff0000
+			});
+			epochEquipments.brine_subpump.mesh = new THREE.Mesh(geometry, material);
+			[epochEquipments.brine_subpump.mesh.position.x, epochEquipments.brine_subpump.mesh.position.y, epochEquipments.brine_subpump.mesh.position.z] = [
+				epoch.position.x + epochEquipments.brine_subpump.position.x,
+				epoch.position.y + epochEquipments.brine_subpump.position.y,
+				-(oceanDepth - epochEquipments.brine_subpump.dimensions.height / 2)
+			];
+			zUpCont.add(epochEquipments.brine_subpump.mesh);
+
+			// Object for Eletric Cables
+			eletricCable = ({
+				"states": {},
+				"mooringPointOnShip": [],
+				"anchorPoint": [],
+				"anchorLineGeometry": [],
+				"hangedMooring": [],
+				"radialDistance": 200,
+				"mooringAngle": 45,
+				"breakingLoad": 200,
+				"anchorLength": 225,
+				"w": 200, // Mooring line density (kg/m)
+				"oceanDepth": 200,
+			});
 
 			Vessel.loadShip( /*"specs/ship_specifications/PX121.json"*/
 				/*"specs/ship_specifications/blockCase.json"*/
 				/*"specs/ship_specifications/prismaticHull.json"*/
 				"specs/ship_specifications/top-down.json",
 				function(ship) {
-					console.log(ship.designState);
-
+					states = ship.designState.clone();
 					ship3D = new Ship3D(ship, {
 						stlPath: "specs/STL files",
 						upperColor: 0x33aa33,
@@ -258,6 +304,23 @@
 						objectOpacity: 1
 					});
 					zUpCont.add(ship3D);
+
+					// For the Lines Purpose
+					designDimension = ship.structure.hull.attributes;
+					floatingStates = states.calculationParameters;
+
+					states.continuous.eletricCable = {};
+					eletricCable.states = states.continuous.eletricCable;
+
+					//Point of mooring line on ship (m, m, m)
+					//Trim added to correct misplacement of mooring node
+					eletricCable.mooringPointOnShip = [
+						[
+							floatingStates.LWL_design / 2,
+							floatingStates.BWL / 2,
+							designDimension.Depth
+						]
+					];
 
 					// Setting the position
 					ship3D.position.x = -50;
