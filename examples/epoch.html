@@ -21,7 +21,7 @@
 	<script src="snippets/Playback.js"></script>
 	<script src="snippets/Regular_ocean.js"></script>
 	<script src="snippets/DynamicalMovementMooringWave.js"></script>
-	<script src="js/InsertCatenary.js"></script>
+	<script src="snippets/InsertCatenary.js"></script>
 	<!--<script src="Moving_bodies_Elias_Hasle.js"></script>-->
 	<!--<script src="keyboard_arrow_input_Elias_Hasle.js"></script>-->
 
@@ -60,6 +60,7 @@
 		var scene, zUpCont, playback, bodies, ocean, ship3D;
 		var ship3D, states, epoch, epochEquipments, eletricCable, umbilical;
 		var designDimension, floatingStates, eletricCable, line, hangedeletricCable;
+		var catenaryFunction;
 
 		(function main() {
 			//Renderer setup
@@ -279,7 +280,7 @@
 				"states": {},
 				"geometry": {},
 				"anchorPointOnShip": {
-					"x": -10,
+					"x": 0,
 					"y": 0,
 					"z": 0
 				},
@@ -293,9 +294,9 @@
 				// "radialDistance": 200,
 				// "mooringAngle": 45,
 				"breakingLoad": 200,
-				"anchorLength": 225,
-				"horizontalForce": 225,
-				"w": 200, // Mooring line density (kg/m)
+				"anchorLength": 200,
+				"horizontalForce": 200, // Horizontal Force on the ship (kgf)
+				"w": 10, // Mooring line density (kg/m)
 				"oceanDepth": oceanDepth,
 			});
 
@@ -315,6 +316,9 @@
 					});
 					zUpCont.add(ship3D);
 
+					// Setting the position of the ship
+					ship3D.position.x = -50;
+
 					// For the Lines Purpose
 					designDimension = ship.structure.hull.attributes;
 					floatingStates = states.calculationParameters;
@@ -324,13 +328,9 @@
 
 					//Point of mooring line on ship (m, m, m)
 					//Trim added to correct misplacement of mooring node
-					// eletricCable.anchorPointOnShip = [
-					// 	[
-					// 		floatingStates.LWL_design / 3,
-					// 		floatingStates.BWL / 2,
-					// 		designDimension.Depth
-					// 	]
-					// ];
+					eletricCable.anchorPointOnShip.x = designDimension.LOA/4 + ship3D.position.x;
+					eletricCable.anchorPointOnShip.y = -designDimension.BOA/4 + ship3D.position.y;
+					eletricCable.anchorPointOnShip.z = ship3D.position.z;
 
 					// eletricCable.anchorPointSeaBottom = [
 					// 	// mooring.radialDistance * Math.cos((baseangle) + Math.pow((-1), i) * (mooring.mooringAngle * Math.PI) / 180) + lwl,
@@ -339,30 +339,30 @@
 					// ];
 
 					// Creating the mooring line 3D Object
-					var materialLine = new THREE.LineBasicMaterial({color: 0x0000ff, linewidth: 2});
+					eletricCable.materialLine = new THREE.LineBasicMaterial({
+				    color: 0xffffff,
+				    linewidth: 1
+				  });
 
 					// Insert geometry
 					eletricCable.geometry = new THREE.Geometry();
 
-					InsertCatenary (eletricCable.anchorPointOnShip, eletricCable.anchorPointSeaBottom, eletricCable, 100);
+					catenaryFunction = new InsertCatenary (eletricCable.anchorPointOnShip, eletricCable.anchorPointSeaBottom, eletricCable, 100);
 
 					// Creating 60 subdivision
-					for (var j = 0; j < 60; j++) {
-						eletricCable.geometry.vertices.push(new THREE.Vector3(j, 2*j, -5));
-					}
+					// for (var j = 0; j < 60; j++) {
+					// 	eletricCable.geometry.vertices.push(new THREE.Vector3(j, 2*j, -5));
+					// }
 
 					// Anchoring point in seabed
 					// mooring.radialDistance = eletricCable.anchorPointOnShip - epochEquipments.xmastree.mesh
-					eletricCable.anchorLineGeometry = new THREE.Line(
-						eletricCable.geometry,
-						materialLine
-					);
+					// eletricCable.anchorLineGeometry = new THREE.Line(
+					// 	eletricCable.geometry,
+					// 	materialLine
+					// );
 
-					eletricCable.anchorLineGeometry.geometry.verticesNeedUpdate = true;
-					zUpCont.add(eletricCable.anchorLineGeometry);
-
-					// Setting the position
-					ship3D.position.x = -50;
+					// eletricCable.anchorLineGeometry.geometry.verticesNeedUpdate = true;
+					// zUpCont.add(eletricCable.anchorLineGeometry);
 				});
 
 			playback.play();
