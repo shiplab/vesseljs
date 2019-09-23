@@ -162,7 +162,7 @@ function Ocean(params) {
 				color: 0x041020,
 				side: THREE.DoubleSide,
 				wireframe: true
-			})*/this.water.material);
+			}),*/this.water.material); //clear it to show the ocean
 
 		this.add(this.water);
 	} catch (e) {

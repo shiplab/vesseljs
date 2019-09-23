@@ -85,11 +85,11 @@
 			mooringAngle3,
 			mooringAngle4,
 			breakingLoad,
-			addPrimary, 
+			addPrimary,
 			addSecondary,
 			addTertiary;
 		var mooring;
-		var geometryMooring, materialLine; 
+		var geometryMooring, materialLine;
 		var dynMov, wavMo, states, scale, scalePrimary, scaleSecondary, scaleTertiary;
 		var menuA1, menuA2, menuA3, menuA4, menuA5, menuA6, menuA7, menuA8, menuA9, menuB0, menuB00, menuB1, menuB2, menuB3, menuB4, menuB5, menuB6, menuC0, menuC00, menuC1, menuC2, menuC3, menuC4;
 		var percentageLwlA, percentageBwlA, percentageLwlB, percentageLwlB1, percentageLwlB2, percentageLwlB3, percentageBwlB, percentageBwlB1, percentageBwlB2, numberOfMooringPerpendicular, numberOfMooringLongitudinal;
@@ -168,7 +168,7 @@
 		};
 
 
-		// Ship specifications ---------------------------------  
+		// Ship specifications ---------------------------------
 		var spec = {
 		"attributes": {},
 		"designState": {
@@ -408,9 +408,9 @@
 				"affiliations": {},
 			}
 		]
-		};     
-				
-				
+		};
+
+
 		var spec2 = {
 		"attributes": {},
 		"designState": {
@@ -647,7 +647,7 @@
 			states = ship.designState.clone();
 			statMod = new Vessel.StateModule(ship, states);
 			statMod.setDraft();
-			
+
 			ship3D = new Ship3D(ship, {
 				shipState: states,
 				stlPath: "specs/STL files",
@@ -658,7 +658,7 @@
 				objectOpacity: 1
 			});
 			//zUpCont.add(ship3D);
-			
+
 			//Load the ship specifications
 			Vessel.loadShip(
 				"specs/ship_specifications/mississipiBarge.json",
@@ -687,7 +687,7 @@
 
 					states.continuous.mooring = {};
 					mooring = states.continuous.mooring;
-					
+
 					//Point of mooring line on ship (m, m, m)
 					//Trim added to correct misplacement of mooring node
 					mooring.addPrimary = addPrimary;
@@ -759,13 +759,13 @@
 						// Add portside and starboard mooring lines
 						if (mooring.numberOfMooringPerpendicular > 0) {
 							for (var i = 4; i < (4+2*mooring.numberOfMooringPerpendicular); i+=2) {
-								mooringPointOnShip[i] = 
+								mooringPointOnShip[i] =
 									[
 										(floatingStates.LWL / 2 + floatingStates.trim) * mooring.percentageLwlB[(i-4)/2]/100,
 										(-floatingStates.BWL / 2),
 										designDimension.Depth - floatingStates.T
 									],
-								mooringPointOnShip[i+1] = 
+								mooringPointOnShip[i+1] =
 									[
 										(floatingStates.LWL / 2 + floatingStates.trim) * mooring.percentageLwlB[(i-4)/2]/100,
 										(floatingStates.BWL / 2),
@@ -776,17 +776,17 @@
 						// Add stern and bow mooring lines
 						if (mooring.numberOfMooringLongitudinal > 0) {
 							for (var i = (4+2*mooring.numberOfMooringPerpendicular); i < (4+2*(mooring.numberOfMooringPerpendicular+mooring.numberOfMooringLongitudinal)); i+=2) {
-								var getPos = 0; 
+								var getPos = 0;
 								if (mooring.numberOfMooringLongitudinal == 2) {
 									getPos = 1
 								};
-								mooringPointOnShip[i] = 
+								mooringPointOnShip[i] =
 									[
 										(floatingStates.LWL / 2 + floatingStates.trim),
 										(floatingStates.BWL / 2) * mooring.percentageBwlB[getPos]/100,
 										designDimension.Depth - floatingStates.T
 									],
-								mooringPointOnShip[i+1] = 
+								mooringPointOnShip[i+1] =
 									[
 										(-floatingStates.LWL / 2 + floatingStates.trim),
 										(floatingStates.BWL / 2) * mooring.percentageBwlB[getPos]/100,
@@ -809,7 +809,7 @@
 					mooring.anchorPoint = []; // Point of mooring line on seabed (m, m, m)
 					mooring.anchorLineGeometry = []; // Line geometry (global) (m, m, m)
 					mooring.radialDistance = radialDistance; // Distance between point on ship and anchoring(m)
-					mooring.radialDistanceB = radialDistanceB; 
+					mooring.radialDistanceB = radialDistanceB;
 					mooring.radialDistanceC = radialDistanceC;
 					mooring.mooringAngle = mooringAngle; // Radial angle - mooring rotation (degrees)
 					mooring.mooringAngle2 = mooringAngle2;
@@ -858,7 +858,7 @@
 					};
 					// Calculate and insert mooring lines
 					createMooringLine();
-					
+
 					// Initial Velocities: BF-Surge, BF-Sway, BF-Heave, BF-Roll, BF-Pitch, BF-Yaw
 					// Initial Euler Angle X,  Angle Y, Angle Z
 					// [Surge, Sway, Heave, VSurge, VSway, VHeave, VRoll, VPitch, VYaw, EX, EY, EZ]
@@ -872,7 +872,7 @@
 						yaw: Ini[5]
 					};
 
-					
+
 					var tprev = 0; // Initial time
 
 					scale = gui.addFolder("Initial State");
@@ -976,7 +976,7 @@
 							//insertAnchorLengthGui.remove();
 							//insertAnchorLengthGui = scale.add(userParameters, "anchorLength").min(minimumLength).max(maximumLength).name("Mooring length").onChange(function (newValue) {
 							//mooring.anchorLength = newValue});
-							
+
 							// Remove the sea bottom
 							for (let i = scene.children.length - 1; i >= 0; i--) {
 								if (scene.children[i].type === "Mesh")
@@ -1415,7 +1415,7 @@
 						});
 
 					gui.remember(userParameters); // Allows to save the data in preset json
-					
+
 					// Change the GUI color to match the mooring line color on simulation
 					// Number 32, 33, 34, 35 are the position in the menu
 					var change = document.getElementsByTagName("LI").item(37);
@@ -1428,7 +1428,7 @@
 					change.style.borderLeft = '3px solid #33CC33';
 
 					// Update draft when changing the fullness aspect
-					controller.onChange(function (newValue) {	
+					controller.onChange(function (newValue) {
 						states.objectOverrides.derivedByGroup["cargo tanks"].fullness = newValue;
 						states.version += 1;
 						statMod.setDraft();

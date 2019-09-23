@@ -211,7 +211,7 @@
 
 			wavMo = [];
 			states = [];
-			
+
 			//Load the ship specifications
 			Vessel.loadShip(
 				"specs/ship_specifications/mississipiBarge.json",
@@ -238,7 +238,7 @@
 
 					states.continuous.mooring = {};
 					mooring = states.continuous.mooring;
-					
+
 					//Point of mooring line on ship (m, m, m)
 					//Trim added to correct misplacement of mooring node
 					mooring.mooringPointOnShip = [
@@ -262,7 +262,7 @@
 							floatingStates.BWL / 2,
 							designDimension.Depth - floatingStates.T
 						]
-					]; 
+					];
 
 					// Add properties to the mooring
 					mooring.anchorPoint = []; // Point of mooring line on seabed (m, m, m)
@@ -310,7 +310,7 @@
 					var colorMooring = [0xffffff, 0xff0000, 0x33cc33, 0x0066ff];
 					var materialLine = [
 						new THREE.LineBasicMaterial({
-							color: colorMooring[0], 
+							color: colorMooring[0],
 							linewidth: 2})
 						,
 						new THREE.LineBasicMaterial({
@@ -349,7 +349,7 @@
 						mooring.anchorLineGeometry[i].geometry.verticesNeedUpdate = true;
 						scene.add(mooring.anchorLineGeometry[i]);
 					}
-					
+
 					// Initial Velocities: BF-Surge, BF-Sway, BF-Heave, BF-Roll, BF-Pitch, BF-Yaw
 					// Initial Euler Angle X,  Angle Y, Angle Z
 					// [Surge, Sway, Heave, VSurge, VSway, VHeave, VRoll, VPitch, VYaw, EX, EY, EZ]
@@ -492,7 +492,7 @@
 							insertAnchorLengthGui.remove();
 							insertAnchorLengthGui = scale.add(userParameters, "anchorLength").min(minimumLength).max(maximumLength).name("Mooring length").onChange(function (newValue) {
 							mooring.anchorLength = newValue});
-							
+
 							// Remove the sea bottom
 							for (let i = scene.children.length - 1; i >= 0; i--) {
 								if (scene.children[i].type === "Mesh")
@@ -520,7 +520,7 @@
 						.name("Mooring length");
 					scale.open();
 					gui.remember(userParameters); // Allows to save the data in preset json
-					
+
 					// Change the GUI color to match the mooring line color on simulation
 					// Number 32, 33, 34, 35 are the position in the menu
 					var change = document.getElementsByTagName("LI").item(32);
@@ -533,7 +533,7 @@
 					change.style.borderLeft = '3px solid #33CC33';
 
 					// Update draft when changing the fullness aspect
-					controller.onChange(function (newValue) {	
+					controller.onChange(function (newValue) {
 						states.objectOverrides.derivedByGroup["cargo tanks"].fullness = newValue;
 						states.version += 1;
 						statMod.setDraft();
