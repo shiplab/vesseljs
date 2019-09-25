@@ -179,6 +179,11 @@
 
 			// Straction Equipments
 			epochEquipments = ({
+				"position": {
+					"x": 50,
+					"y": 0,
+					"depth": 25
+				},
 				"xmastree": {
 					"position": {
 						"x": 0,
@@ -218,12 +223,7 @@
 						"height": 1,
 					}
 				},
-				"energy_generator": {},
-				"position": {
-					"x": 50,
-					"y": 0,
-					"depth": 25
-				}
+				"energy_generator": {}
 			});
 
 			var geometry = new THREE.CylinderGeometry(
@@ -237,7 +237,8 @@
 			});
 			epochEquipments.xmastree.mesh = new THREE.Mesh(geometry, material);
 			[epochEquipments.xmastree.mesh.position.x, epochEquipments.xmastree.mesh.position.y, epochEquipments.xmastree.mesh.position.z] = [
-				epoch.position.x, epoch.position.y,
+				epoch.position.x + epochEquipments.xmastree.position.x,
+				epoch.position.y + epochEquipments.xmastree.position.y,
 				-(oceanDepth - epochEquipments.xmastree.dimensions.height / 2)
 			];
 			epochEquipments.xmastree.mesh.rotateX(-Math.PI / 2);
@@ -285,8 +286,8 @@
 					"z": 0
 				},
 				"anchorPointSeaBottom": {
-					"x": 20,
-					"y": 2,
+					"x": epochEquipments.xmastree.mesh.position.x,
+					"y": epochEquipments.xmastree.mesh.position.y,
 					"z": -oceanDepth
 				},
 				"anchorLineGeometry": {},
@@ -297,6 +298,31 @@
 				"anchorLength": 200,
 				"horizontalForce": 200, // Horizontal Force on the ship (kgf)
 				"w": 10, // Mooring line density (kg/m)
+				"oceanDepth": oceanDepth,
+			});
+
+			// Object for Umbilical
+			umbilical = ({
+				"states": {},
+				"geometry": {},
+				"anchorPointOnShip": {
+					"x": 0,
+					"y": 0,
+					"z": 0
+				},
+				"anchorPointSeaBottom": {
+					"x": epochEquipments.sub_pump.mesh.position.x,
+					"y": epochEquipments.sub_pump.mesh.position.y,
+					"z": -oceanDepth
+				},
+				"anchorLineGeometry": {},
+				"hangedMooring": {},
+				// "radialDistance": 200,
+				// "mooringAngle": 45,
+				"breakingLoad": 300,
+				"anchorLength": 200,
+				"horizontalForce": 200, // Horizontal Force on the ship (kgf)
+				"w": 5, // Mooring line density (kg/m)
 				"oceanDepth": oceanDepth,
 			});
 
@@ -332,12 +358,6 @@
 					eletricCable.anchorPointOnShip.y = -designDimension.BOA/4 + ship3D.position.y;
 					eletricCable.anchorPointOnShip.z = ship3D.position.z;
 
-					// eletricCable.anchorPointSeaBottom = [
-					// 	// mooring.radialDistance * Math.cos((baseangle) + Math.pow((-1), i) * (mooring.mooringAngle * Math.PI) / 180) + lwl,
-					// 	// -seaDepth,
-					// 	// mooring.radialDistance * Math.sin((baseangle) + Math.pow((-1), i) * (mooring.mooringAngle * Math.PI) / 180) + bwl,
-					// ];
-
 					// Creating the mooring line 3D Object
 					eletricCable.materialLine = new THREE.LineBasicMaterial({
 				    color: 0xffffff,
@@ -348,21 +368,30 @@
 					eletricCable.geometry = new THREE.Geometry();
 
 					catenaryFunction = new InsertCatenary (eletricCable.anchorPointOnShip, eletricCable.anchorPointSeaBottom, eletricCable, 100);
-
-					// Creating 60 subdivision
-					// for (var j = 0; j < 60; j++) {
-					// 	eletricCable.geometry.vertices.push(new THREE.Vector3(j, 2*j, -5));
-					// }
-
-					// Anchoring point in seabed
-					// mooring.radialDistance = eletricCable.anchorPointOnShip - epochEquipments.xmastree.mesh
-					// eletricCable.anchorLineGeometry = new THREE.Line(
-					// 	eletricCable.geometry,
-					// 	materialLine
-					// );
-
 					// eletricCable.anchorLineGeometry.geometry.verticesNeedUpdate = true;
 					// zUpCont.add(eletricCable.anchorLineGeometry);
+
+					//Point of mooring line on ship (m, m, m)
+					//Trim added to correct misplacement of mooring node
+					umbilical.anchorPointOnShip.x = designDimension.LOA/4 + ship3D.position.x;
+					umbilical.anchorPointOnShip.y = designDimension.BOA/4 + ship3D.position.y;
+					umbilical.anchorPointOnShip.z = ship3D.position.z;
+
+					// Creating the mooring line 3D Object
+					umbilical.materialLine = new THREE.LineBasicMaterial({
+				    color: 0xffff00,
+				    linewidth: 1
+				  });
+
+					// Insert geometry
+					umbilical.geometry = new THREE.Geometry();
+
+					catenaryFunction = new InsertCatenary (umbilical.anchorPointOnShip, umbilical.anchorPointSeaBottom, umbilical, 100);
+					// eletricCable.anchorLineGeometry.geometry.verticesNeedUpdate = true;
+					// zUpCont.add(eletricCable.anchorLineGeometry);
+
+
+
 				});
 
 			playback.play();
