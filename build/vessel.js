@@ -1,14 +1,16 @@
-//Vessel.js library, built 2019-05-27 17:51:15.217448
+//vessel.js library, built 2019-09-29 11:30:38.937761
 /*
 Import like this in HTML:
-<script src="Vessel.js"></script>
-Then in javascript use classes and functions with a Vessel prefix. Example:
-let ship = new Vessel.Ship(someSpecification);
+<script src="vessel.js"></script>
+Then in javascript use classes and functions with a vessel prefix. Example:
+let ship = new vessel.Ship(someSpecification);
 */
 
 "use strict";
 
-var Vessel = {};
+var vessel = {};
+var Vessel = vessel; //alias for backwards compatibility
+
 (function() {
 //@EliasHasle
 
@@ -2749,7 +2751,7 @@ function downloadShip(ship) {
 	link.target = "_blank";
 	link.click();
 }
-Object.assign(Vessel, {
+Object.assign(vessel, {
 	/*JSONSpecObject: JSONSpecObject,*/
 	Ship: Ship,
 	Structure: Structure,
