@@ -1,14 +1,16 @@
-//Vessel.js library, built 2019-05-27 17:51:15.217448
+//vessel.js library, built 2019-09-29 13:43:45.187788
 /*
 Import like this in HTML:
-<script src="Vessel.js"></script>
-Then in javascript use classes and functions with a Vessel prefix. Example:
-let ship = new Vessel.Ship(someSpecification);
+<script src="vessel.js"></script>
+Then in javascript use classes and functions with a vessel prefix. Example:
+let ship = new vessel.Ship(someSpecification);
 */
 
 "use strict";
 
-var Vessel = {};
+var vessel = {};
+var Vessel = vessel; //alias for backwards compatibility
+
 (function() {
 //@EliasHasle
 
@@ -16,6 +18,10 @@ var Vessel = {};
 //A vector is simply defined as an object with properties x,y,z.
 
 var Vectors = {
+	clone: function(v) {
+		return {x:v.x, y:v.y, z:v.z};
+	},
+	
 	scale: function(v, s) {
 		return {x: s * v.x, y: s * v.y, z: s * v.z};
 	},
@@ -70,8 +76,52 @@ var Vectors = {
 			y: u.z * v.x - u.x * v.z,
 			z: u.x * v.y - u.y * v.x
 		};
+	},
+
+	mulComponents: function(u,v) {
+		return {
+			x: u.x*v.x,
+			y: u.y*v.y,
+			z: u.z*v.z
+		};
+	},
+	
+	//Return the result of rotating the vector v by angles r={x,y,z} in radians.
+	//Intrinsic ZYX order (yaw,pitch,roll) is achieved by applying world axis rotations in XYZ order.
+	rotateTaitBryan: function(v, r) {
+		let c,s;
+		
+		//Rotate around x axis
+		c = Math.cos(r.x);
+		s = Math.sin(r.x);
+		v = {
+			x: v.x,
+			y: v.y*c-v.z*s,
+			z: v.y*s+v.z*c
+		};
+		
+		//Then around y axis
+		c = Math.cos(r.y);
+		s = Math.sin(r.y);
+		v = {
+			x: v.z*s+v.x*c,
+			y: v.y,
+			z: v.z*c-v.x*s
+		};
+		
+		//Then around z axis
+		c = Math.cos(r.z);
+		s = Math.sin(r.z);
+		v = {
+			x: v.x*c-v.y*s,
+			y: v.x*s+v.y*c,
+			z: v.z
+		};
+		
+		return v;
 	}
-}//@EliasHasle
+}
+//@EliasHasle
 
 //Some interpolation helpers. Only linear and bilinear for now.
 
@@ -2749,7 +2799,7 @@ function downloadShip(ship) {
 	link.target = "_blank";
 	link.click();
 }
-Object.assign(Vessel, {
+Object.assign(vessel, {
 	/*JSONSpecObject: JSONSpecObject,*/
 	Ship: Ship,
 	Structure: Structure,
