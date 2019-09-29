@@ -30,6 +30,7 @@ function InsertCatenary(PointA, PointB, line, divisions) {
 
   line.object = new THREE.Line(line.geometry, line.materialLine);
   line.object.geometry.verticesNeedUpdate = true;
+  // insert zUpCont as variable
   zUpCont.add(line.object);
 
   return this.Geometry,  this.Geometry
