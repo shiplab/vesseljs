@@ -1,7 +1,7 @@
 // This function will conect point A to point B
 // it will have as variable other specification about the Cables
 // it will return the geometry and the forces if appliable and
-// hanged geometry
+// hanged line geometry
 function InsertCatenary(PointA, PointB, line, divisions) {
 
   // var hangedMooring
