@@ -215,9 +215,9 @@
 				"umbilical": {},
 				"sub_pump": {
 					"position": {
-						"x": -10,
-						"y": 0,
-						"depth": 0
+						"x": epoch.position.x - 20,
+						"y": epoch.position.y,
+						"z": -(oceanDepth)
 					},
 					"dimensions": {
 						"length": 1,
@@ -227,9 +227,9 @@
 				},
 				"brine_subpump": {
 					"position": {
-						"x": 10,
-						"y": 0,
-						"depth": 25
+						"x": epoch.position.x + 20,
+						"y": epoch.position.y,
+						"z": -(oceanDepth)
 					},
 					"dimensions": {
 						"length": 1,
@@ -262,13 +262,24 @@
 
 			// Adding STL
 			var loader = new THREE.STLLoader();
-			loader.load('./specs/STL files/xtree.stl', function(geometrySTL) {
-				var material = new THREE.MeshPhongMaterial({
-					color: 0x303030,
-					emissive: 0x494949,
-					specular: 0x6b6b6b,
-					shininess: 100
-				});
+			loader.load('./specs/STL files/xtree2.stl', function(geometrySTL) {
+
+				if (geometrySTL.hasColors) {
+					var material = new THREE.MeshPhongMaterial({
+						opacity: geometry.alpha,
+						vertexColors: THREE.VertexColors
+					});
+				} else {
+					var material = new THREE.MeshPhongMaterial({
+						// color: 0xffff00,
+						color: 0x303030,
+						emissive: 0x494949,
+						specular: 0x6b6b6b,
+						shininess: 100
+					});
+					console.info('There is no color in geometrySTL: ', geometrySTL.hasColors);
+				}
+
 				// new THREE.Mesh( geometry, material );
 
 				epochEquipments.xmastree.mesh = new THREE.Mesh(geometrySTL, material);
@@ -285,37 +296,62 @@
 				// zUpCont.add(new THREE.Mesh(geometrySTL, material));
 			});
 
-			var geometry = new THREE.BoxGeometry(
-				epochEquipments.sub_pump.dimensions.length,
-				epochEquipments.sub_pump.dimensions.width,
-				epochEquipments.sub_pump.dimensions.height,
-			);
-			var material = new THREE.MeshBasicMaterial({
-				color: 0x00ff00
-			});
-			epochEquipments.sub_pump.mesh = new THREE.Mesh(geometry, material);
-			[epochEquipments.sub_pump.mesh.position.x, epochEquipments.sub_pump.mesh.position.y, epochEquipments.sub_pump.mesh.position.z] = [
-				epoch.position.x + epochEquipments.sub_pump.position.x,
-				epoch.position.y + epochEquipments.sub_pump.position.y,
-				-(oceanDepth - epochEquipments.sub_pump.dimensions.height / 2)
-			];
-			zUpCont.add(epochEquipments.sub_pump.mesh);
+			loader.load('./specs/STL files/eletric.stl', function(geometrySTL) {
 
-			var geometry = new THREE.BoxGeometry(
-				epochEquipments.brine_subpump.dimensions.length,
-				epochEquipments.brine_subpump.dimensions.width,
-				epochEquipments.brine_subpump.dimensions.height,
-			);
-			var material = new THREE.MeshBasicMaterial({
-				color: 0xff0000
+				if (geometrySTL.hasColors) {
+					var material = new THREE.MeshPhongMaterial({
+						opacity: geometry.alpha,
+						vertexColors: THREE.VertexColors
+					});
+				} else {
+					var material = new THREE.MeshPhongMaterial({
+						color: 0xffff00,
+						emissive: 0x494949,
+						specular: 0x6b6b6b,
+						shininess: 100
+					});
+					console.info('There is no color in geometrySTL: ', geometrySTL.hasColors);
+				}
+
+				epochEquipments.sub_pump.mesh = new THREE.Mesh(geometrySTL, material);
+				[epochEquipments.sub_pump.mesh.position.x, epochEquipments.sub_pump.mesh.position.y, epochEquipments.sub_pump.mesh.position.z] = [
+					epochEquipments.sub_pump.position.x,
+					epochEquipments.sub_pump.position.y,
+					epochEquipments.sub_pump.position.z
+				];
+				zUpCont.add(epochEquipments.sub_pump.mesh);
+
 			});
-			epochEquipments.brine_subpump.mesh = new THREE.Mesh(geometry, material);
-			[epochEquipments.brine_subpump.mesh.position.x, epochEquipments.brine_subpump.mesh.position.y, epochEquipments.brine_subpump.mesh.position.z] = [
-				epoch.position.x + epochEquipments.brine_subpump.position.x,
-				epoch.position.y + epochEquipments.brine_subpump.position.y,
-				-(oceanDepth - epochEquipments.brine_subpump.dimensions.height / 2)
-			];
-			zUpCont.add(epochEquipments.brine_subpump.mesh);
+
+			// console.log(epochEquipments.sub_pump.mesh.position);
+
+			loader.load('./specs/STL files/eletric.stl', function(geometrySTL) {
+
+				if (geometrySTL.hasColors) {
+					var material = new THREE.MeshPhongMaterial({
+						opacity: geometry.alpha,
+						vertexColors: THREE.VertexColors
+					});
+				} else {
+					var material = new THREE.MeshPhongMaterial({
+						color: 0xffff00,
+						emissive: 0x494949,
+						specular: 0x6b6b6b,
+						shininess: 100
+					});
+					console.info('There is no color in geometrySTL: ', geometrySTL.hasColors);
+				}
+
+				epochEquipments.brine_subpump.mesh = new THREE.Mesh(geometrySTL, material);
+				[epochEquipments.brine_subpump.mesh.position.x, epochEquipments.brine_subpump.mesh.position.y, epochEquipments.brine_subpump.mesh.position.z] = [
+					epochEquipments.brine_subpump.position.x,
+					epochEquipments.brine_subpump.position.y,
+					epochEquipments.brine_subpump.position.z
+				];
+				zUpCont.add(epochEquipments.brine_subpump.mesh);
+
+			});
+
 
 			// Object for Eletric Cables
 			eletricCable = ({
@@ -352,8 +388,8 @@
 					"z": 0
 				},
 				"anchorPointSeaBottom": {
-					"x": epochEquipments.sub_pump.mesh.position.x,
-					"y": epochEquipments.sub_pump.mesh.position.y,
+					"x": epochEquipments.sub_pump.position.x,
+					"y": epochEquipments.sub_pump.position.y,
 					"z": -oceanDepth
 				},
 				"anchorLineGeometry": {},
@@ -495,7 +531,6 @@
 			renderer.render(scene, camera);
 			requestAnimationFrame(animate);
 		}
-
 	</script>
 </body>
 
