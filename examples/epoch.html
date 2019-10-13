@@ -150,13 +150,12 @@
 			zUpCont.add(camera);
 
 			controls = new THREE.OrbitControls(camera, renderer.domElement);
-			//controls.minDistance = 0;
 			controls.maxDistance = 0.5 * oSize;
 			controls.enablePan = false;
 			controls.maxPolarAngle = 3 * (Math.PI / 4);
 			controls.minPolarAngle = 0;
-			controls.maxAzimuthAngle = Math.PI / 2;
-			controls.minAzimuthAngle = -Math.PI / 2;
+			// controls.maxAzimuthAngle = Math.PI / 2;
+			// controls.minAzimuthAngle = -Math.PI / 2;
 
 			//zUpCont.add(new THREE.AxisHelper(1000));
 			zUpCont.add(new THREE.HemisphereLight(0xccccff, 0x666688, 1));
@@ -179,17 +178,35 @@
 				}
 			});
 
+			// Space for a epoch
 			var geometrySphere = new THREE.SphereGeometry(1, 32, 32);
 			var material = new THREE.MeshBasicMaterial({
 				color: 0xffff00,
 				opacity: 0.75
 			});
-			epoch.mesh = new THREE.Mesh(geometrySphere, material);
-			[epoch.mesh.position.x, epoch.mesh.position.y, epoch.mesh.position.z] = [
+			epoch.mesh = [];
+			epoch.mesh.push(new THREE.Mesh(geometrySphere, material));
+			[epoch.mesh[0].position.x, epoch.mesh[0].position.y, epoch.mesh[0].position.z] = [
 				epoch.position.x, epoch.position.y,
 				-(epoch.position.depth + oceanDepth)
 			];
-			zUpCont.add(epoch.mesh);
+			zUpCont.add(epoch.mesh[0]);
+
+			// Space for a oil in epoch
+			var geometrySphere = new THREE.SphereGeometry(50, 32, 32, 0, Math.PI * 2, 0, Math.PI/4);
+			var material = new THREE.MeshBasicMaterial({
+				color: 0x000000,
+				side: THREE.DoubleSide,
+				opacity: 1
+			});
+			epoch.mesh.push(new THREE.Mesh(geometrySphere, material));
+			[epoch.mesh[1].position.x, epoch.mesh[1].position.y, epoch.mesh[1].position.z] = [
+				epoch.position.x, epoch.position.y,
+				-(epoch.position.depth + oceanDepth)
+			];
+			epoch.mesh[1].name = "oil_epoch";
+			epoch.mesh[1].rotation.x = -Math.PI/2;
+			zUpCont.add(epoch.mesh[1]);
 
 			// Straction Equipments
 			epochEquipments = ({
@@ -469,6 +486,7 @@
 					// zUpCont.add(eletricCable.anchorLineGeometry);
 
 					// Gui interface
+
 					scale = gui.addFolder("Dissolution Parameters");
 					scale
 						.add(epochEquipments.dissolution_parameters, "dissolution_flowrate", 500, 700)
@@ -494,13 +512,30 @@
 						})
 						.name("Rate (m3/h)");
 					scale.open();
-					scale = gui.addFolder("Simulation");
+					scale = gui.addFolder("Epoch Simulation");
+					scale
+						.add(epoch.simulation, 'play')
+						.name("Play");
+					scale
+						.add(epoch.simulation, 'pause')
+						.name("Pause");
+					scale
+						.add(epoch.simulation, 'restart')
+						.name("Restart");
+					scale
+						.add(epoch.simulation, 'speed', {
+							Slow: 0.5,
+							Normal: 1,
+							Fast: 2
+						})
+						.name("Speed");
 					scale
 						.add(epoch.simulation, 'time', 0, 100).listen()
 						.name("Time (weeks)");
 					scale.open();
 
 				});
+			// epoch.simulation.speed = "0";
 
 			playback.play();
 
@@ -509,7 +544,7 @@
 
 		function animate(millitime) {
 			var t = clock.getElapsedTime();
-			epoch.simulation.updateVolume(t)
+
 
 			let playing = playback.update();
 
@@ -518,12 +553,18 @@
 				ocean.water.material.uniforms.time.value += 1 / 60;
 			}
 
-			// epoch.mesh.geometry.radius += 0.01;
-			if (epoch.mesh.scale.x < 20) {
-				epoch.mesh.scale.x = epoch.simulation.radius;
-				epoch.mesh.scale.y = epoch.simulation.radius;
-				epoch.mesh.scale.z = epoch.simulation.radius;
-				epoch.mesh.geometry.verticesNeedUpdate = true;
+			// epoch.mesh[0].geometry.radius += 0.01;
+			if (epoch.simulation.playing) {
+
+				epoch.simulation.updateVolume(t);
+
+				if (epoch.mesh[0].scale.x < 40) {
+					epoch.mesh[0].scale.x = epoch.simulation.radius;
+					epoch.mesh[0].scale.y = epoch.simulation.radius;
+					epoch.mesh[0].scale.z = epoch.simulation.radius;
+					epoch.mesh[0].geometry.verticesNeedUpdate = true;
+				}
+
 			}
 
 			ocean.water.render();
