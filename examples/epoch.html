@@ -144,7 +144,7 @@
 			};
 			window.addEventListener('resize', onResize, false);
 			onResize();
-			camera.position.set(0, -oSize * 0.15, -oSize * 0.01);
+			camera.position.set(0, -oSize * 0.25, -oSize * 0.01);
 			camera.translateZ = -oceanDepth / 2;
 			camera.lookAt(zUpCont.position);
 			zUpCont.add(camera);
@@ -174,7 +174,7 @@
 				"position": {
 					"x": 50,
 					"y": 0,
-					"depth": 25,
+					"z": -(35 + oceanDepth),
 				}
 			});
 
@@ -182,31 +182,43 @@
 			var geometrySphere = new THREE.SphereGeometry(1, 32, 32);
 			var material = new THREE.MeshBasicMaterial({
 				color: 0xffff00,
-				opacity: 0.75
+				transparent: true,
+				opacity: 0.4
 			});
 			epoch.mesh = [];
 			epoch.mesh.push(new THREE.Mesh(geometrySphere, material));
 			[epoch.mesh[0].position.x, epoch.mesh[0].position.y, epoch.mesh[0].position.z] = [
-				epoch.position.x, epoch.position.y,
-				-(epoch.position.depth + oceanDepth)
+				epoch.position.x,
+				epoch.position.y,
+				epoch.position.z,
 			];
 			zUpCont.add(epoch.mesh[0]);
 
-			// Space for a oil in epoch
-			var geometrySphere = new THREE.SphereGeometry(50, 32, 32, 0, Math.PI * 2, 0, Math.PI/4);
-			var material = new THREE.MeshBasicMaterial({
-				color: 0x000000,
-				side: THREE.DoubleSide,
-				opacity: 1
-			});
-			epoch.mesh.push(new THREE.Mesh(geometrySphere, material));
-			[epoch.mesh[1].position.x, epoch.mesh[1].position.y, epoch.mesh[1].position.z] = [
-				epoch.position.x, epoch.position.y,
-				-(epoch.position.depth + oceanDepth)
-			];
-			epoch.mesh[1].name = "oil_epoch";
-			epoch.mesh[1].rotation.x = -Math.PI/2;
-			zUpCont.add(epoch.mesh[1]);
+			// Insert Oil reservoir Temporary
+			// var geometrySphere = new THREE.SphereGeometry(
+			// 	30, //Turn off this 1.1
+			// 	32,
+			// 	32,
+			// 	0,
+			// 	Math.PI * 2,
+			// 	0,
+			// 	Math.PI / 4
+			// );
+			//
+			// var oilMaterial = new THREE.MeshBasicMaterial({
+			// 	color: 0x000000,
+			// 	side: THREE.DoubleSide,
+			// 	opacity: 1
+			// });
+			//
+			// epoch.mesh.push(new THREE.Mesh(geometrySphere, oilMaterial));
+			// [epoch.mesh[1].position.x, epoch.mesh[1].position.y, epoch.mesh[1].position.z] = [
+			// 	epoch.position.x,
+			// 	epoch.position.y,
+			// 	epoch.position.z
+			// ];
+			// epoch.mesh[1].rotation.x = -Math.PI / 2;
+			// zUpCont.add(epoch.mesh[1]);
 
 			// Straction Equipments
 			epochEquipments = ({
@@ -524,9 +536,9 @@
 						.name("Restart");
 					scale
 						.add(epoch.simulation, 'speed', {
-							Slow: 0.5,
-							Normal: 1,
-							Fast: 2
+							Slow: 1,
+							Normal: 7,
+							Fast: 50
 						})
 						.name("Speed");
 					scale
@@ -558,13 +570,49 @@
 
 				epoch.simulation.updateVolume(t);
 
-				if (epoch.mesh[0].scale.x < 40) {
+				if (!epoch.simulation.storingPhase) {
 					epoch.mesh[0].scale.x = epoch.simulation.radius;
 					epoch.mesh[0].scale.y = epoch.simulation.radius;
 					epoch.mesh[0].scale.z = epoch.simulation.radius;
 					epoch.mesh[0].geometry.verticesNeedUpdate = true;
-				}
+				} else if(epoch.simulation.maxVolume > epoch.simulation.oilVolume) {
 
+					// Insert Oil reservoir
+					var geometrySphere = new THREE.SphereGeometry(
+						epoch.simulation.maxRadius*0.96, //Turn off this 1.1
+						32,
+						32,
+						0,
+						Math.PI * 2,
+						0,
+						epoch.simulation.oilAngle
+						// Math.PI / 4
+					);
+
+					var oilMaterial = new THREE.MeshBasicMaterial({
+						color: 0x000000,
+						side: THREE.DoubleSide,
+						opacity: 1
+					});
+
+					epoch.mesh.push(new THREE.Mesh(geometrySphere, oilMaterial));
+					[epoch.mesh[epoch.mesh.length-1].position.x, epoch.mesh[epoch.mesh.length-1].position.y, epoch.mesh[epoch.mesh.length-1].position.z] = [
+						epoch.position.x,
+						epoch.position.y,
+						epoch.position.z
+					];
+					epoch.mesh[epoch.mesh.length-1].name = "oil_epoch";
+					epoch.mesh[epoch.mesh.length-1].rotation.x = -Math.PI / 2;
+					zUpCont.add(epoch.mesh[epoch.mesh.length-1]);
+
+					if (epoch.mesh.length >= 3) {
+						zUpCont.children.splice(zUpCont.children.length-2, 1);
+						epoch.mesh.splice(epoch.mesh.length-2, 1);
+					}
+
+				} else {
+					epoch.simulation.pause();
+				}
 			}
 
 			ocean.water.render();

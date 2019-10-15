@@ -6,18 +6,26 @@ class Epoch {
     this.diss_time = diss_time; // [days]
     this.flowrate = flowrate; // [m3/h]
     this.time = 0; // day
+    this.initialMaturingTime = 0; // day
     this.radius = 0; // [m]
     this.volume = 0; // [m3]
-    this.playing = false; //
-    this.paused = false;
-    this.storingPhase = false;
-    this.speed = "1";
-    this.maxVolume = 7 * 24 * this.diss_time * this.diss_rate;
-    this.maxRadius = Math.pow(0.75 * this.maxVolume / Math.PI, 1 / 3) * 0.1;
-    this.oilAngle = 0;
-    this.possibleValues = this.volumeArray(this.maxRadius);
+    this.playing = false; // playing or not
+    this.paused = false; // paused or not
+    this.storingPhase = false; // in the storing phase or not
+    this.speed = "50"; // Current speed
+    this.maxVolume = 7 * 24 * this.diss_time * this.diss_rate; // [m3]
+    this.maxRadius = Math.pow(0.75 * this.maxVolume / Math.PI, 1 / 3) * 0.1; // [10m]
+    this.oilVolume = 0; // angle of oil
+    this.oilAngle = 0; // angle of oil
+    this.possibleValues = this.volumeArray(this.maxRadius*10); // possible volumes in array
   }
   play() {
+
+    if (this.mesh.length >= 2) {
+      zUpCont.children.splice(zUpCont.children.length-1, 1);
+      this.mesh.splice(this.mesh.length-1, 1);
+    }
+
 
     if (!this.paused) {
 
@@ -28,6 +36,8 @@ class Epoch {
 
       var t = clock.getElapsedTime();
 
+      this.radius = 0;
+      this.volume = 0;
       this.playing = true;
       clock.start();
 
@@ -43,18 +53,39 @@ class Epoch {
   restart() {
     this.playing = false;
     this.paused = false;
+    this.storingPhase = false;
     clock.stop();
     this.play();
   }
   updateVolume(time) {
-    if (this.radius > this.maxRadius) {
-      this.time = parseFloat(this.speed) * Math.floor(time); // weeks (speed is the multplyer)
+    this.time = parseFloat(this.speed) * Math.floor(time); // weeks (speed is the multplyer)
+
+    // Function check if we are in the creation or maturing phase
+    if (this.radius < this.maxRadius) {
+
       this.volume = parseFloat(this.speed) * 7 * 24 * time * this.diss_rate; // [m3]
       this.radius = Math.pow(0.75 * this.volume / Math.PI, 1 / 3) * 0.1; // [10m]
-    } else {
-      // console.log(this.bisectionSearch(this.possibleValues.volume, this.maxVolume/2));
 
-      this.storingPhase = true;
+    } else if (this.oilAngle < Math.PI) {
+
+      if (!this.storingPhase) {
+        this.storingPhase = true;
+        this.initialMaturingTime  = time;
+      }
+
+      this.oilVolume = parseFloat(this.speed) * 7 * 24 * (time - this.initialMaturingTime) * this.flowrate; // [m3]
+      var results = this.bisectionSearch(this.possibleValues.volume, this.oilVolume);
+      var delta = this.possibleValues.angle[results.index+1] - this.possibleValues.angle[results.index];
+
+      if (results.mu == null) {
+        this.oilAngle = Math.PI;
+      } else {
+        this.oilAngle = this.possibleValues.angle[results.index] + results.mu*delta; // [rad]
+      }
+
+
+    } else {
+      this.pause();
     }
   }
   volumeArray(radius) {
@@ -72,7 +103,7 @@ class Epoch {
     return {volume: volume, angle: angle};
   }
   // Reproducing bissectioSearch from Vessel Js. Ivestigate later if this func.
-  // can be extracted from Vessel.js
+  // can be extracted from Vessel.js. Function altered
   bisectionSearch(array, value) {
   	if (value < array[0]) {
   		console.warn("bisectionSearch: requested value below lowest array element. Returning undefined.");
