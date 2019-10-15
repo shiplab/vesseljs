@@ -21,10 +21,10 @@ class Epoch {
   }
   play() {
 
-    if (this.mesh.length >= 2) {
-      zUpCont.children.splice(zUpCont.children.length-1, 1);
-      this.mesh.splice(this.mesh.length-1, 1);
-    }
+    // if (this.mesh.length >= 2) {
+    //   zUpCont.children.splice(zUpCont.children.length-1, 1);
+    //   this.mesh.splice(this.mesh.length-1, 1);
+    // }
 
 
     if (!this.paused) {
