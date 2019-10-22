@@ -670,7 +670,7 @@ function combineWeights(array) {
 	return {mass: M, cg: CG};
 }//@EliasHasle
 
-/*Base class for objects that are constructed from
+/*Base class for objects that are constructed from 
 a literal object.
 
 Constructors can take more parameters than the specification, but the specification must be the first parameter.
@@ -830,7 +830,7 @@ Object.assign(Ship.prototype, {
 		}
 		//change the trim for angles
 		trim = Math.atan(trim) * 180 / Math.PI;
-		// console.log(trimd);
+		console.log(trimd);
 
 		let heel = w.cg.y / GMt;
 		//change the hell for meters
