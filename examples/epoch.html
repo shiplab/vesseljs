@@ -59,7 +59,7 @@
 		//Globals
 		var renderer, camera, controls, gui, stats;
 		var scene, zUpCont, playback, bodies, ocean, ship3D;
-		var ship3D, states, epoch, epochEquipments, eletricCable, umbilical;
+		var ship3D, states, epoch, epochEquipments, shipSTL, eletricCable, umbilical;
 		var designDimension, floatingStates, eletricCable, line, hangedeletricCable;
 		var catenaryFunction;
 		var scale;
@@ -125,8 +125,8 @@
 			var material = new THREE.MeshBasicMaterial({
 				side: THREE.FrontSide,
 				map: texture,
-				transparent: true, // visible from below
-				opacity: 0.65
+				// transparent: true, // visible from below
+				// opacity: 0.65
 			});
 			var plane = new THREE.Mesh(geometry, material);
 			var oceanDepth = 30;
@@ -174,51 +174,33 @@
 				"position": {
 					"x": 50,
 					"y": 0,
-					"z": -(35 + oceanDepth),
-				}
+					"z": -(30 + oceanDepth),
+				},
+				"height": 27.5,
+				"conicalPercentage": 0.2
 			});
 
 			// Space for a epoch
-			var geometrySphere = new THREE.SphereGeometry(1, 32, 32);
+			var geometryCylinder = new THREE.CylinderGeometry(
+				1 + epoch.conicalPercentage, // Radius Maximun
+				1 - epoch.conicalPercentage, // Radius Minimun
+				epoch.height,
+				32
+			);
 			var material = new THREE.MeshBasicMaterial({
 				color: 0xffff00,
 				transparent: true,
 				opacity: 0.4
 			});
 			epoch.mesh = [];
-			epoch.mesh.push(new THREE.Mesh(geometrySphere, material));
+			epoch.mesh.push(new THREE.Mesh(geometryCylinder, material));
 			[epoch.mesh[0].position.x, epoch.mesh[0].position.y, epoch.mesh[0].position.z] = [
 				epoch.position.x,
 				epoch.position.y,
 				epoch.position.z,
 			];
+			epoch.mesh[0].rotation.x = -Math.PI / 2;
 			zUpCont.add(epoch.mesh[0]);
-
-			// Insert Oil reservoir Temporary
-			// var geometrySphere = new THREE.SphereGeometry(
-			// 	30, //Turn off this 1.1
-			// 	32,
-			// 	32,
-			// 	0,
-			// 	Math.PI * 2,
-			// 	0,
-			// 	Math.PI / 4
-			// );
-			//
-			// var oilMaterial = new THREE.MeshBasicMaterial({
-			// 	color: 0x000000,
-			// 	side: THREE.DoubleSide,
-			// 	opacity: 1
-			// });
-			//
-			// epoch.mesh.push(new THREE.Mesh(geometrySphere, oilMaterial));
-			// [epoch.mesh[1].position.x, epoch.mesh[1].position.y, epoch.mesh[1].position.z] = [
-			// 	epoch.position.x,
-			// 	epoch.position.y,
-			// 	epoch.position.z
-			// ];
-			// epoch.mesh[1].rotation.x = -Math.PI / 2;
-			// zUpCont.add(epoch.mesh[1]);
 
 			// Straction Equipments
 			epochEquipments = ({
@@ -287,6 +269,7 @@
 				epochEquipments.dissolution_parameters.dissolution_flowrate,
 				epochEquipments.dissolution_parameters.dissolution_time,
 				epochEquipments.co2_flowrate.flowrate_capacity,
+				epoch.height
 			);
 
 			// Adding STL
@@ -381,6 +364,54 @@
 
 			});
 
+			// Inserting Ship
+			shipSTL = ({
+				"bow": {
+					"position": {
+						"x": -50,
+						"y": 0,
+						"z": -3
+					}
+				},
+				"attributes": {
+					"LOA": 24,
+					"BOA": 7.4,
+					"Depth": 3.4,
+				}
+			});
+
+			// Adding STL
+			var loader = new THREE.STLLoader();
+			loader.load('./specs/STL files/ship.stl', function(geometrySTL) {
+
+				if (geometrySTL.hasColors) {
+					var material = new THREE.MeshPhongMaterial({
+						opacity: geometry.alpha,
+						vertexColors: THREE.VertexColors
+					});
+				} else {
+					var material = new THREE.MeshPhongMaterial({
+						// color: 0xffff00,
+						color: 0x303030,
+						emissive: 0x494949,
+						specular: 0x6b6b6b,
+						shininess: 100
+					});
+					console.info('There is no color in geometrySTL: ', geometrySTL.hasColors);
+				}
+
+				// new THREE.Mesh( geometry, material );
+
+				shipSTL.bow.mesh = new THREE.Mesh(geometrySTL, material);
+				shipSTL.bow.mesh.scale.set(0.25, 0.25, 0.25);
+				shipSTL.bow.mesh.position.x = shipSTL.bow.position.x;
+				shipSTL.bow.mesh.position.y = shipSTL.bow.position.y;
+				shipSTL.bow.mesh.position.z = shipSTL.bow.position.z;
+
+				zUpCont.add(shipSTL.bow.mesh);
+				// zUpCont.add(new THREE.Mesh(geometrySTL, material));
+			});
+
 
 			// Object for Eletric Cables
 			eletricCable = ({
@@ -446,23 +477,19 @@
 						deckOpacity: 1,
 						objectOpacity: 1
 					});
-					zUpCont.add(ship3D);
-
-					// Setting the position of the ship
-					ship3D.position.x = -50;
-
-					// For the Lines Purpose
-					designDimension = ship.structure.hull.attributes;
-					floatingStates = states.calculationParameters;
+					// zUpCont.add(ship3D);
+					// Inserting Lines
+					designDimension = shipSTL.attributes;
+					floatingStates = shipSTL.bow.position;
 
 					states.continuous.eletricCable = {};
 					eletricCable.states = states.continuous.eletricCable;
 
 					//Point of mooring line on ship (m, m, m)
 					//Trim added to correct misplacement of mooring node
-					eletricCable.anchorPointOnShip.x = designDimension.LOA / 4 + ship3D.position.x;
-					eletricCable.anchorPointOnShip.y = -designDimension.BOA / 4 + ship3D.position.y;
-					eletricCable.anchorPointOnShip.z = ship3D.position.z;
+					eletricCable.anchorPointOnShip.x = designDimension.LOA / 4 + floatingStates.x;
+					eletricCable.anchorPointOnShip.y = -designDimension.BOA / 4 + floatingStates.y;
+					eletricCable.anchorPointOnShip.z = floatingStates.z;
 
 					// Creating the mooring line 3D Object
 					eletricCable.materialLine = new THREE.LineBasicMaterial({
@@ -480,9 +507,9 @@
 
 					//Point of mooring line on ship (m, m, m)
 					//Trim added to correct misplacement of mooring node
-					umbilical.anchorPointOnShip.x = designDimension.LOA / 4 + ship3D.position.x;
-					umbilical.anchorPointOnShip.y = designDimension.BOA / 4 + ship3D.position.y;
-					umbilical.anchorPointOnShip.z = ship3D.position.z;
+					umbilical.anchorPointOnShip.x = designDimension.LOA / 4 + floatingStates.x;
+					umbilical.anchorPointOnShip.y = designDimension.BOA / 4 + floatingStates.y;
+					umbilical.anchorPointOnShip.z = floatingStates.z;
 
 					// Creating the mooring line 3D Object
 					umbilical.materialLine = new THREE.LineBasicMaterial({
@@ -543,7 +570,7 @@
 						.name("Speed");
 					scale
 						.add(epoch.simulation, 'time', 0, 100).listen()
-						.name("Time (weeks)");
+						.name("Time (days)");
 					scale.open();
 
 				});
@@ -570,46 +597,40 @@
 
 				epoch.simulation.updateVolume(t);
 
+			}
+
+			if (epoch.simulation.playing) {
+				epoch.simulation.updateVolume(t);
 				if (!epoch.simulation.storingPhase) {
 					epoch.mesh[0].scale.x = epoch.simulation.radius;
-					epoch.mesh[0].scale.y = epoch.simulation.radius;
 					epoch.mesh[0].scale.z = epoch.simulation.radius;
 					epoch.mesh[0].geometry.verticesNeedUpdate = true;
-				} else if(epoch.simulation.maxVolume > epoch.simulation.oilVolume) {
-
+				} else if (epoch.simulation.maxVolume > epoch.simulation.oilVolume) {
 					// Insert Oil reservoir
-					var geometrySphere = new THREE.SphereGeometry(
-						epoch.simulation.maxRadius*0.96, //Turn off this 1.1
-						32,
-						32,
-						0,
-						Math.PI * 2,
-						0,
-						epoch.simulation.oilAngle
-						// Math.PI / 4
+					var geometrySphere = new THREE.CylinderGeometry(
+						epoch.simulation.bottomRadius*0.95, // Radius Maximun
+						epoch.simulation.oilRadius*0.95, // Radius at oil section
+						epoch.simulation.oilHeight*0.95,
+						32
 					);
-
 					var oilMaterial = new THREE.MeshBasicMaterial({
 						color: 0x000000,
 						side: THREE.DoubleSide,
 						opacity: 1
 					});
-
 					epoch.mesh.push(new THREE.Mesh(geometrySphere, oilMaterial));
-					[epoch.mesh[epoch.mesh.length-1].position.x, epoch.mesh[epoch.mesh.length-1].position.y, epoch.mesh[epoch.mesh.length-1].position.z] = [
+					[epoch.mesh[epoch.mesh.length - 1].position.x, epoch.mesh[epoch.mesh.length - 1].position.y, epoch.mesh[epoch.mesh.length - 1].position.z] = [
 						epoch.position.x,
 						epoch.position.y,
-						epoch.position.z
+						epoch.position.z - (epoch.height - epoch.simulation.oilHeight)/2
 					];
-					epoch.mesh[epoch.mesh.length-1].name = "oil_epoch";
-					epoch.mesh[epoch.mesh.length-1].rotation.x = -Math.PI / 2;
-					zUpCont.add(epoch.mesh[epoch.mesh.length-1]);
-
+					epoch.mesh[epoch.mesh.length - 1].name = "oil_epoch";
+					epoch.mesh[epoch.mesh.length - 1].rotation.x = -Math.PI / 2;
+					zUpCont.add(epoch.mesh[epoch.mesh.length - 1]);
 					if (epoch.mesh.length >= 3) {
-						zUpCont.children.splice(zUpCont.children.length-2, 1);
-						epoch.mesh.splice(epoch.mesh.length-2, 1);
+						zUpCont.children.splice(zUpCont.children.length - 2, 1);
+						epoch.mesh.splice(epoch.mesh.length - 2, 1);
 					}
-
 				} else {
 					epoch.simulation.pause();
 				}
