@@ -16,18 +16,19 @@
 	<script src="libs/OrbitControls.js"></script>
 	<script src="libs/skybox_from_examples.js"></script>
 	<script src="libs/browse_files_Elias_Hasle.js"></script>
+	<script src="libs/STLLoader.js"></script>
 
 	<script src="snippets/Patch_interpolation.js"></script>
 	<script src="snippets/Playback.js"></script>
 	<script src="snippets/Regular_ocean.js"></script>
-	<script src="snippets/DynamicalMovementMooringWave.js"></script>
-	<script src="js/InsertCatenary.js"></script>
+	<script src="snippets/InsertCatenary.js"></script>
+	<script src="snippets/epoch.js"></script>
 	<!--<script src="Moving_bodies_Elias_Hasle.js"></script>-->
 	<!--<script src="keyboard_arrow_input_Elias_Hasle.js"></script>-->
 
 	<script src="libs/dat.gui.min.js"></script>
 	<script src="libs/numeric-1.2.6.min.js"></script>
-	<script src="libs/zingchart.min.js"></script>
+	<!-- <script src="libs/zingchart.min.js"></script> -->
 </head>
 
 <style>
@@ -58,8 +59,12 @@
 		//Globals
 		var renderer, camera, controls, gui, stats;
 		var scene, zUpCont, playback, bodies, ocean, ship3D;
-		var ship3D, states, epoch, epochEquipments, eletricCable, umbilical;
+		var ship3D, states, epoch, epochEquipments, shipSTL, eletricCable, umbilical;
 		var designDimension, floatingStates, eletricCable, line, hangedeletricCable;
+		var catenaryFunction;
+		var scale;
+
+		var clock = new THREE.Clock();
 
 		(function main() {
 			//Renderer setup
@@ -81,6 +86,17 @@
 			//renderer.setSize(window.innerWidth, window.innerHeight);
 			renderer.setClearColor(0x99aadd);
 			container.appendChild(renderer.domElement);
+
+			//GUI setup (comment out to remove gui)
+			gui = new dat.GUI();
+
+			//add report to GUI controller
+			var obj = {
+				"Click to read paper": function() {
+					window.open("https://observablehq.com/d/54d7081bc6ef0429");
+				}
+			};
+			gui.add(obj, "Click to read paper");
 
 			playback = new Playback({
 				parentGUI: gui
@@ -109,8 +125,8 @@
 			var material = new THREE.MeshBasicMaterial({
 				side: THREE.FrontSide,
 				map: texture,
-				transparent: true, // visible from below
-				opacity: 0.65
+				// transparent: true, // visible from below
+				// opacity: 0.65
 			});
 			var plane = new THREE.Mesh(geometry, material);
 			var oceanDepth = 30;
@@ -128,24 +144,24 @@
 			};
 			window.addEventListener('resize', onResize, false);
 			onResize();
-			camera.position.set(0, -oSize * 0.15, -oSize * 0.01);
+			camera.position.set(0, -oSize * 0.25, -oSize * 0.01);
+			camera.translateZ = -oceanDepth / 2;
 			camera.lookAt(zUpCont.position);
 			zUpCont.add(camera);
 
 			controls = new THREE.OrbitControls(camera, renderer.domElement);
-			//controls.minDistance = 0;
 			controls.maxDistance = 0.5 * oSize;
 			controls.enablePan = false;
 			controls.maxPolarAngle = 3 * (Math.PI / 4);
 			controls.minPolarAngle = 0;
-			controls.maxAzimuthAngle = Math.PI / 2;
-			controls.minAzimuthAngle = -Math.PI / 2;
+			// controls.maxAzimuthAngle = Math.PI / 2;
+			// controls.minAzimuthAngle = -Math.PI / 2;
 
 			//zUpCont.add(new THREE.AxisHelper(1000));
 			zUpCont.add(new THREE.HemisphereLight(0xccccff, 0x666688, 1));
 
 			ocean = new Ocean({
-				parentGUI: gui,
+				// parentGUI: gui,
 				sunDir: sun.position.clone().normalize(),
 				size: oSize,
 				segments: 127
@@ -155,29 +171,44 @@
 
 			// Creating Epoch
 			epoch = ({
-				"geometry": {
-					"radius": 20,
-				},
 				"position": {
 					"x": 50,
 					"y": 0,
-					"depth": 25,
-				}
+					"z": -(30 + oceanDepth),
+				},
+				"height": 27.5,
+				"conicalPercentage": 0.2
 			});
 
-			var geometry = new THREE.SphereGeometry(epoch.geometry.radius, 32, 32);
+			// Space for a epoch
+			var geometryCylinder = new THREE.CylinderGeometry(
+				1 + epoch.conicalPercentage, // Radius Maximun
+				1 - epoch.conicalPercentage, // Radius Minimun
+				epoch.height,
+				32
+			);
 			var material = new THREE.MeshBasicMaterial({
-				color: 0xffff00
+				color: 0xffff00,
+				transparent: true,
+				opacity: 0.4
 			});
-			epoch.mesh = new THREE.Mesh(geometry, material);
-			[epoch.mesh.position.x, epoch.mesh.position.y, epoch.mesh.position.z] = [
-				epoch.position.x, epoch.position.y,
-				-(epoch.position.depth + oceanDepth)
+			epoch.mesh = [];
+			epoch.mesh.push(new THREE.Mesh(geometryCylinder, material));
+			[epoch.mesh[0].position.x, epoch.mesh[0].position.y, epoch.mesh[0].position.z] = [
+				epoch.position.x,
+				epoch.position.y,
+				epoch.position.z,
 			];
-			zUpCont.add(epoch.mesh);
+			epoch.mesh[0].rotation.x = -Math.PI / 2;
+			zUpCont.add(epoch.mesh[0]);
 
 			// Straction Equipments
 			epochEquipments = ({
+				"position": {
+					"x": 50,
+					"y": 0,
+					"depth": 25
+				},
 				"xmastree": {
 					"position": {
 						"x": 0,
@@ -195,9 +226,9 @@
 				"umbilical": {},
 				"sub_pump": {
 					"position": {
-						"x": -10,
-						"y": 0,
-						"depth": 0
+						"x": epoch.position.x - 20,
+						"y": epoch.position.y,
+						"z": -(oceanDepth)
 					},
 					"dimensions": {
 						"length": 1,
@@ -207,9 +238,9 @@
 				},
 				"brine_subpump": {
 					"position": {
-						"x": 10,
-						"y": 0,
-						"depth": 25
+						"x": epoch.position.x + 20,
+						"y": epoch.position.y,
+						"z": -(oceanDepth)
 					},
 					"dimensions": {
 						"length": 1,
@@ -218,74 +249,182 @@
 					}
 				},
 				"energy_generator": {},
-				"position": {
-					"x": 50,
-					"y": 0,
-					"depth": 25
+				"dissolution_parameters": {
+					"dissolution_flowrate": 640,
+					"dissolution_time": 850
+				},
+				"co2_flowrate": {
+					"flowrate_capacity": 640
 				}
 			});
 
-			var geometry = new THREE.CylinderGeometry(
-				epochEquipments.xmastree.dimensions.radius,
-				epochEquipments.xmastree.dimensions.radius,
-				epochEquipments.xmastree.dimensions.height,
-				32
-			);
-			var material = new THREE.MeshBasicMaterial({
-				color: 0xff6699
-			});
-			epochEquipments.xmastree.mesh = new THREE.Mesh(geometry, material);
-			[epochEquipments.xmastree.mesh.position.x, epochEquipments.xmastree.mesh.position.y, epochEquipments.xmastree.mesh.position.z] = [
-				epoch.position.x, epoch.position.y,
-				-(oceanDepth - epochEquipments.xmastree.dimensions.height / 2)
+			[epochEquipments.xmastree.position.x, epochEquipments.xmastree.position.y, epochEquipments.xmastree.position.z] = [
+				epoch.position.x + epochEquipments.xmastree.position.x,
+				epoch.position.y + epochEquipments.xmastree.position.y,
+				-oceanDepth
 			];
-			epochEquipments.xmastree.mesh.rotateX(-Math.PI / 2);
-			zUpCont.add(epochEquipments.xmastree.mesh);
 
-			var geometry = new THREE.BoxGeometry(
-				epochEquipments.sub_pump.dimensions.length,
-				epochEquipments.sub_pump.dimensions.width,
-				epochEquipments.sub_pump.dimensions.height,
+			// parameters for simulation
+			epoch.simulation = new Epoch(
+				epochEquipments.dissolution_parameters.dissolution_flowrate,
+				epochEquipments.dissolution_parameters.dissolution_time,
+				epochEquipments.co2_flowrate.flowrate_capacity,
+				epoch.height
 			);
-			var material = new THREE.MeshBasicMaterial({
-				color: 0x00ff00
-			});
-			epochEquipments.sub_pump.mesh = new THREE.Mesh(geometry, material);
-			[epochEquipments.sub_pump.mesh.position.x, epochEquipments.sub_pump.mesh.position.y, epochEquipments.sub_pump.mesh.position.z] = [
-				epoch.position.x + epochEquipments.sub_pump.position.x,
-				epoch.position.y + epochEquipments.sub_pump.position.y,
-				-(oceanDepth - epochEquipments.sub_pump.dimensions.height / 2)
-			];
-			zUpCont.add(epochEquipments.sub_pump.mesh);
 
-			var geometry = new THREE.BoxGeometry(
-				epochEquipments.brine_subpump.dimensions.length,
-				epochEquipments.brine_subpump.dimensions.width,
-				epochEquipments.brine_subpump.dimensions.height,
-			);
-			var material = new THREE.MeshBasicMaterial({
-				color: 0xff0000
+			// Adding STL
+			var loader = new THREE.STLLoader();
+			loader.load('./specs/STL files/xtree2.stl', function(geometrySTL) {
+
+				if (geometrySTL.hasColors) {
+					var material = new THREE.MeshPhongMaterial({
+						opacity: geometry.alpha,
+						vertexColors: THREE.VertexColors
+					});
+				} else {
+					var material = new THREE.MeshPhongMaterial({
+						// color: 0xffff00,
+						color: 0x303030,
+						emissive: 0x494949,
+						specular: 0x6b6b6b,
+						shininess: 100
+					});
+					console.info('There is no color in geometrySTL: ', geometrySTL.hasColors);
+				}
+
+				// new THREE.Mesh( geometry, material );
+
+				epochEquipments.xmastree.mesh = new THREE.Mesh(geometrySTL, material);
+				[epochEquipments.xmastree.mesh.position.x, epochEquipments.xmastree.mesh.position.y, epochEquipments.xmastree.mesh.position.z] = [
+					epochEquipments.xmastree.position.x,
+					epochEquipments.xmastree.position.y,
+					epochEquipments.xmastree.position.z
+				];
+
+				epochEquipments.xmastree.mesh.rotation.set(0, 0, -Math.PI / 2)
+
+
+				zUpCont.add(epochEquipments.xmastree.mesh);
+				// zUpCont.add(new THREE.Mesh(geometrySTL, material));
 			});
-			epochEquipments.brine_subpump.mesh = new THREE.Mesh(geometry, material);
-			[epochEquipments.brine_subpump.mesh.position.x, epochEquipments.brine_subpump.mesh.position.y, epochEquipments.brine_subpump.mesh.position.z] = [
-				epoch.position.x + epochEquipments.brine_subpump.position.x,
-				epoch.position.y + epochEquipments.brine_subpump.position.y,
-				-(oceanDepth - epochEquipments.brine_subpump.dimensions.height / 2)
-			];
-			zUpCont.add(epochEquipments.brine_subpump.mesh);
+
+			loader.load('./specs/STL files/eletric.stl', function(geometrySTL) {
+
+				if (geometrySTL.hasColors) {
+					var material = new THREE.MeshPhongMaterial({
+						opacity: geometry.alpha,
+						vertexColors: THREE.VertexColors
+					});
+				} else {
+					var material = new THREE.MeshPhongMaterial({
+						color: 0xffff00,
+						emissive: 0x494949,
+						specular: 0x6b6b6b,
+						shininess: 100
+					});
+					console.info('There is no color in geometrySTL: ', geometrySTL.hasColors);
+				}
+
+				epochEquipments.sub_pump.mesh = new THREE.Mesh(geometrySTL, material);
+				[epochEquipments.sub_pump.mesh.position.x, epochEquipments.sub_pump.mesh.position.y, epochEquipments.sub_pump.mesh.position.z] = [
+					epochEquipments.sub_pump.position.x,
+					epochEquipments.sub_pump.position.y,
+					epochEquipments.sub_pump.position.z
+				];
+				zUpCont.add(epochEquipments.sub_pump.mesh);
+
+			});
+
+			// console.log(epochEquipments.sub_pump.mesh.position);
+
+			loader.load('./specs/STL files/eletric.stl', function(geometrySTL) {
+
+				if (geometrySTL.hasColors) {
+					var material = new THREE.MeshPhongMaterial({
+						opacity: geometry.alpha,
+						vertexColors: THREE.VertexColors
+					});
+				} else {
+					var material = new THREE.MeshPhongMaterial({
+						color: 0xffff00,
+						emissive: 0x494949,
+						specular: 0x6b6b6b,
+						shininess: 100
+					});
+					console.info('There is no color in geometrySTL: ', geometrySTL.hasColors);
+				}
+
+				epochEquipments.brine_subpump.mesh = new THREE.Mesh(geometrySTL, material);
+				[epochEquipments.brine_subpump.mesh.position.x, epochEquipments.brine_subpump.mesh.position.y, epochEquipments.brine_subpump.mesh.position.z] = [
+					epochEquipments.brine_subpump.position.x,
+					epochEquipments.brine_subpump.position.y,
+					epochEquipments.brine_subpump.position.z
+				];
+				zUpCont.add(epochEquipments.brine_subpump.mesh);
+
+			});
+
+			// Inserting Ship
+			shipSTL = ({
+				"bow": {
+					"position": {
+						"x": -50,
+						"y": 0,
+						"z": -3
+					}
+				},
+				"attributes": {
+					"LOA": 24,
+					"BOA": 7.4,
+					"Depth": 3.4,
+				}
+			});
+
+			// Adding STL
+			var loader = new THREE.STLLoader();
+			loader.load('./specs/STL files/ship.stl', function(geometrySTL) {
+
+				if (geometrySTL.hasColors) {
+					var material = new THREE.MeshPhongMaterial({
+						opacity: geometry.alpha,
+						vertexColors: THREE.VertexColors
+					});
+				} else {
+					var material = new THREE.MeshPhongMaterial({
+						// color: 0xffff00,
+						color: 0x303030,
+						emissive: 0x494949,
+						specular: 0x6b6b6b,
+						shininess: 100
+					});
+					console.info('There is no color in geometrySTL: ', geometrySTL.hasColors);
+				}
+
+				// new THREE.Mesh( geometry, material );
+
+				shipSTL.bow.mesh = new THREE.Mesh(geometrySTL, material);
+				shipSTL.bow.mesh.scale.set(0.25, 0.25, 0.25);
+				shipSTL.bow.mesh.position.x = shipSTL.bow.position.x;
+				shipSTL.bow.mesh.position.y = shipSTL.bow.position.y;
+				shipSTL.bow.mesh.position.z = shipSTL.bow.position.z;
+
+				zUpCont.add(shipSTL.bow.mesh);
+				// zUpCont.add(new THREE.Mesh(geometrySTL, material));
+			});
+
 
 			// Object for Eletric Cables
 			eletricCable = ({
 				"states": {},
 				"geometry": {},
 				"anchorPointOnShip": {
-					"x": -10,
+					"x": 0,
 					"y": 0,
 					"z": 0
 				},
 				"anchorPointSeaBottom": {
-					"x": 20,
-					"y": 2,
+					"x": epochEquipments.xmastree.position.x,
+					"y": epochEquipments.xmastree.position.y,
 					"z": -oceanDepth
 				},
 				"anchorLineGeometry": {},
@@ -293,9 +432,34 @@
 				// "radialDistance": 200,
 				// "mooringAngle": 45,
 				"breakingLoad": 200,
-				"anchorLength": 225,
-				"horizontalForce": 225,
-				"w": 200, // Mooring line density (kg/m)
+				"anchorLength": 200,
+				"horizontalForce": 200, // Horizontal Force on the ship (kgf)
+				"w": 10, // Mooring line density (kg/m)
+				"oceanDepth": oceanDepth,
+			});
+
+			// Object for Umbilical
+			umbilical = ({
+				"states": {},
+				"geometry": {},
+				"anchorPointOnShip": {
+					"x": 0,
+					"y": 0,
+					"z": 0
+				},
+				"anchorPointSeaBottom": {
+					"x": epochEquipments.sub_pump.position.x,
+					"y": epochEquipments.sub_pump.position.y,
+					"z": -oceanDepth
+				},
+				"anchorLineGeometry": {},
+				"hangedMooring": {},
+				// "radialDistance": 200,
+				// "mooringAngle": 45,
+				"breakingLoad": 300,
+				"anchorLength": 200,
+				"horizontalForce": 200, // Horizontal Force on the ship (kgf)
+				"w": 5, // Mooring line density (kg/m)
 				"oceanDepth": oceanDepth,
 			});
 
@@ -313,57 +477,104 @@
 						deckOpacity: 1,
 						objectOpacity: 1
 					});
-					zUpCont.add(ship3D);
-
-					// For the Lines Purpose
-					designDimension = ship.structure.hull.attributes;
-					floatingStates = states.calculationParameters;
+					// zUpCont.add(ship3D);
+					// Inserting Lines
+					designDimension = shipSTL.attributes;
+					floatingStates = shipSTL.bow.position;
 
 					states.continuous.eletricCable = {};
 					eletricCable.states = states.continuous.eletricCable;
 
 					//Point of mooring line on ship (m, m, m)
 					//Trim added to correct misplacement of mooring node
-					// eletricCable.anchorPointOnShip = [
-					// 	[
-					// 		floatingStates.LWL_design / 3,
-					// 		floatingStates.BWL / 2,
-					// 		designDimension.Depth
-					// 	]
-					// ];
-
-					// eletricCable.anchorPointSeaBottom = [
-					// 	// mooring.radialDistance * Math.cos((baseangle) + Math.pow((-1), i) * (mooring.mooringAngle * Math.PI) / 180) + lwl,
-					// 	// -seaDepth,
-					// 	// mooring.radialDistance * Math.sin((baseangle) + Math.pow((-1), i) * (mooring.mooringAngle * Math.PI) / 180) + bwl,
-					// ];
+					eletricCable.anchorPointOnShip.x = designDimension.LOA / 4 + floatingStates.x;
+					eletricCable.anchorPointOnShip.y = -designDimension.BOA / 4 + floatingStates.y;
+					eletricCable.anchorPointOnShip.z = floatingStates.z;
 
 					// Creating the mooring line 3D Object
-					var materialLine = new THREE.LineBasicMaterial({color: 0x0000ff, linewidth: 2});
+					eletricCable.materialLine = new THREE.LineBasicMaterial({
+						color: 0xffffff,
+						linewidth: 1
+					});
 
 					// Insert geometry
 					eletricCable.geometry = new THREE.Geometry();
+					eletricCable.object = new THREE.Line(eletricCable.geometry, eletricCable.materialLine);
 
-					InsertCatenary (eletricCable.anchorPointOnShip, eletricCable.anchorPointSeaBottom, eletricCable, 100);
+					catenaryFunction = new InsertCatenary(eletricCable.anchorPointOnShip, eletricCable.anchorPointSeaBottom, eletricCable, 100);
+					// eletricCable.anchorLineGeometry.geometry.verticesNeedUpdate = true;
+					// zUpCont.add(eletricCable.anchorLineGeometry);
 
-					// Creating 60 subdivision
-					for (var j = 0; j < 60; j++) {
-						eletricCable.geometry.vertices.push(new THREE.Vector3(j, 2*j, -5));
-					}
+					//Point of mooring line on ship (m, m, m)
+					//Trim added to correct misplacement of mooring node
+					umbilical.anchorPointOnShip.x = designDimension.LOA / 4 + floatingStates.x;
+					umbilical.anchorPointOnShip.y = designDimension.BOA / 4 + floatingStates.y;
+					umbilical.anchorPointOnShip.z = floatingStates.z;
 
-					// Anchoring point in seabed
-					// mooring.radialDistance = eletricCable.anchorPointOnShip - epochEquipments.xmastree.mesh
-					eletricCable.anchorLineGeometry = new THREE.Line(
-						eletricCable.geometry,
-						materialLine
-					);
+					// Creating the mooring line 3D Object
+					umbilical.materialLine = new THREE.LineBasicMaterial({
+						color: 0xffff00,
+						linewidth: 1
+					});
 
-					eletricCable.anchorLineGeometry.geometry.verticesNeedUpdate = true;
-					zUpCont.add(eletricCable.anchorLineGeometry);
+					// Insert geometry
+					umbilical.geometry = new THREE.Geometry();
 
-					// Setting the position
-					ship3D.position.x = -50;
+					catenaryFunction = new InsertCatenary(umbilical.anchorPointOnShip, umbilical.anchorPointSeaBottom, umbilical, 100);
+					// eletricCable.anchorLineGeometry.geometry.verticesNeedUpdate = true;
+					// zUpCont.add(eletricCable.anchorLineGeometry);
+
+					// Gui interface
+
+					scale = gui.addFolder("Dissolution Parameters");
+					scale
+						.add(epochEquipments.dissolution_parameters, "dissolution_flowrate", 500, 700)
+						.step(1)
+						.onChange(function(newValue) {
+							epochEquipments.dissolution_parameters.dissolution_flowrate = newValue;
+						})
+						.name("Rate (m3/h)");
+					scale
+						.add(epochEquipments.dissolution_parameters, "dissolution_time", 730, 1095)
+						.step(1)
+						.onChange(function(newValue) {
+							epochEquipments.dissolution_parameters.dissolution_time = newValue;
+						})
+						.name("Time (days)");
+					scale.open();
+					scale = gui.addFolder("CO2 Flow");
+					scale
+						.add(epochEquipments.co2_flowrate, "flowrate_capacity", 500, 700)
+						.step(1)
+						.onChange(function(newValue) {
+							epochEquipments.co2_flowrate.flowrate_capacity = newValue;
+						})
+						.name("Rate (m3/h)");
+					scale.open();
+					scale = gui.addFolder("Epoch Simulation");
+					scale
+						.add(epoch.simulation, 'play')
+						.name("Play");
+					scale
+						.add(epoch.simulation, 'pause')
+						.name("Pause");
+					scale
+						.add(epoch.simulation, 'restart')
+						.name("Restart");
+					scale
+						.add(epoch.simulation, 'speed', {
+							Slow: 1,
+							Normal: 7,
+							Fast: 50
+						})
+						.name("Speed");
+					scale
+						.add(epoch.simulation, 'time', 0, 100).listen()
+						.name("Time (days)");
+					scale.open();
+
 				});
+			// epoch.simulation.speed = "0";
 
 			playback.play();
 
@@ -371,12 +582,58 @@
 		})();
 
 		function animate(millitime) {
+			var t = clock.getElapsedTime();
+
 
 			let playing = playback.update();
 
 			//Disable this to freeze water when not playing
 			if (!playing) {
 				ocean.water.material.uniforms.time.value += 1 / 60;
+			}
+
+			// epoch.mesh[0].geometry.radius += 0.01;
+			if (epoch.simulation.playing) {
+
+				epoch.simulation.updateVolume(t);
+
+			}
+
+			if (epoch.simulation.playing) {
+				epoch.simulation.updateVolume(t);
+				if (!epoch.simulation.storingPhase) {
+					epoch.mesh[0].scale.x = epoch.simulation.radius;
+					epoch.mesh[0].scale.z = epoch.simulation.radius;
+					epoch.mesh[0].geometry.verticesNeedUpdate = true;
+				} else if (epoch.simulation.maxVolume > epoch.simulation.oilVolume) {
+					// Insert Oil reservoir
+					var geometrySphere = new THREE.CylinderGeometry(
+						epoch.simulation.bottomRadius*0.95, // Radius Maximun
+						epoch.simulation.oilRadius*0.95, // Radius at oil section
+						epoch.simulation.oilHeight*0.95,
+						32
+					);
+					var oilMaterial = new THREE.MeshBasicMaterial({
+						color: 0x000000,
+						side: THREE.DoubleSide,
+						opacity: 1
+					});
+					epoch.mesh.push(new THREE.Mesh(geometrySphere, oilMaterial));
+					[epoch.mesh[epoch.mesh.length - 1].position.x, epoch.mesh[epoch.mesh.length - 1].position.y, epoch.mesh[epoch.mesh.length - 1].position.z] = [
+						epoch.position.x,
+						epoch.position.y,
+						epoch.position.z - (epoch.height - epoch.simulation.oilHeight)/2
+					];
+					epoch.mesh[epoch.mesh.length - 1].name = "oil_epoch";
+					epoch.mesh[epoch.mesh.length - 1].rotation.x = -Math.PI / 2;
+					zUpCont.add(epoch.mesh[epoch.mesh.length - 1]);
+					if (epoch.mesh.length >= 3) {
+						zUpCont.children.splice(zUpCont.children.length - 2, 1);
+						epoch.mesh.splice(epoch.mesh.length - 2, 1);
+					}
+				} else {
+					epoch.simulation.pause();
+				}
 			}
 
 			ocean.water.render();
