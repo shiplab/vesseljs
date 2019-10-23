@@ -144,8 +144,7 @@
 			};
 			window.addEventListener('resize', onResize, false);
 			onResize();
-			camera.position.set(0, -oSize * 0.25, -oSize * 0.01);
-			camera.translateZ = -oceanDepth / 2;
+			camera.position.set(0, -oSize * 0.15, -oSize * 0.01);
 			camera.lookAt(zUpCont.position);
 			zUpCont.add(camera);
 
@@ -366,7 +365,7 @@
 
 			// Inserting Ship
 			shipSTL = ({
-				"bow": {
+				"hull": {
 					"position": {
 						"x": -50,
 						"y": 0,
@@ -402,13 +401,13 @@
 
 				// new THREE.Mesh( geometry, material );
 
-				shipSTL.bow.mesh = new THREE.Mesh(geometrySTL, material);
-				shipSTL.bow.mesh.scale.set(0.25, 0.25, 0.25);
-				shipSTL.bow.mesh.position.x = shipSTL.bow.position.x;
-				shipSTL.bow.mesh.position.y = shipSTL.bow.position.y;
-				shipSTL.bow.mesh.position.z = shipSTL.bow.position.z;
+				shipSTL.hull.mesh = new THREE.Mesh(geometrySTL, material);
+				shipSTL.hull.mesh.scale.set(0.25, 0.25, 0.25);
+				shipSTL.hull.mesh.position.x = shipSTL.hull.position.x;
+				shipSTL.hull.mesh.position.y = shipSTL.hull.position.y;
+				shipSTL.hull.mesh.position.z = shipSTL.hull.position.z;
 
-				zUpCont.add(shipSTL.bow.mesh);
+				zUpCont.add(shipSTL.hull.mesh);
 				// zUpCont.add(new THREE.Mesh(geometrySTL, material));
 			});
 
@@ -480,7 +479,7 @@
 					// zUpCont.add(ship3D);
 					// Inserting Lines
 					designDimension = shipSTL.attributes;
-					floatingStates = shipSTL.bow.position;
+					floatingStates = shipSTL.hull.position;
 
 					states.continuous.eletricCable = {};
 					eletricCable.states = states.continuous.eletricCable;
@@ -532,6 +531,8 @@
 						.step(1)
 						.onChange(function(newValue) {
 							epochEquipments.dissolution_parameters.dissolution_flowrate = newValue;
+							epoch.simulation.diss_rate = newValue;
+							epoch.simulation.setMaxVolume(epoch.simulation.diss_time, epoch.simulation.diss_rate);
 						})
 						.name("Rate (m3/h)");
 					scale
@@ -539,6 +540,8 @@
 						.step(1)
 						.onChange(function(newValue) {
 							epochEquipments.dissolution_parameters.dissolution_time = newValue;
+							epoch.simulation.diss_time = newValue;
+							epoch.simulation.setMaxVolume(epoch.simulation.diss_time, epoch.simulation.diss_rate);
 						})
 						.name("Time (days)");
 					scale.open();
@@ -548,10 +551,74 @@
 						.step(1)
 						.onChange(function(newValue) {
 							epochEquipments.co2_flowrate.flowrate_capacity = newValue;
+							epoch.simulation.flowrate = newValue;
 						})
 						.name("Rate (m3/h)");
 					scale.open();
 					scale = gui.addFolder("Epoch Simulation");
+					scale
+						.add(epoch.simulation, 'view', {
+							Lateral: 0,
+							Perspective: 1,
+							Epoch: 2,
+							Ship: 3,
+							xtree: 4,
+							sub_pump: 5,
+							brine: 6
+						})
+						.onChange(function(newValue) {
+							switch (newValue) {
+								case '0':
+									camera.position.set(0, -oSize * 0.15, -oSize * 0.01);
+									camera.lookAt(zUpCont.position);
+									controls.target.set(0, 0, 0);
+									controls.update();
+									break;
+								case '1':
+									camera.position.set(oSize * 0.08, -oSize * 0.08, -oSize * 0.08);
+									camera.lookAt(zUpCont.position);
+									controls.target.set(0, 0, 0);
+									controls.update();
+									break;
+								case '2':
+									camera.position.set(oSize * 0.08, -oSize * 0.08, -oSize * 0.08);
+									camera.lookAt(zUpCont.position);
+									controls.target.set(epoch.position.x, epoch.position.y, epoch.position.z);
+									controls.update();
+									break;
+								case '3':
+									camera.position.set(oSize * 0.08, -oSize * 0.08, oSize * 0.08);
+									camera.lookAt(zUpCont.position);
+									var position = shipSTL.hull.position
+									controls.target.set(position.x, position.y, position.z);
+									controls.update();
+									break;
+								case '4':
+									camera.position.set(oSize * 0.03, -oSize * 0.03, -oSize * 0.01);
+									camera.lookAt(zUpCont.position);
+									var position = epochEquipments.xmastree.position
+									controls.target.set(position.x, position.y, position.z+4);
+									controls.update();
+									break;
+								case '5':
+									camera.position.set(oSize * 0.03, -oSize * 0.03, -oSize * 0.01);
+									camera.lookAt(zUpCont.position);
+									var position = epochEquipments.sub_pump.position
+									controls.target.set(position.x, position.y, position.z+4);
+									controls.update();
+									break;
+								case '6':
+									camera.position.set(oSize * 0.03, -oSize * 0.03, -oSize * 0.01);
+									camera.lookAt(zUpCont.position);
+									var position = epochEquipments.brine_subpump.position
+									controls.target.set(position.x, position.y, position.z+4);
+									controls.update();
+									break;
+								default:
+									console.log('View ' + newValue + ' not found.');
+							}
+						})
+						.name("view");
 					scale
 						.add(epoch.simulation, 'play')
 						.name("Play");
@@ -608,9 +675,9 @@
 				} else if (epoch.simulation.maxVolume > epoch.simulation.oilVolume) {
 					// Insert Oil reservoir
 					var geometrySphere = new THREE.CylinderGeometry(
-						epoch.simulation.bottomRadius*0.95, // Radius Maximun
-						epoch.simulation.oilRadius*0.95, // Radius at oil section
-						epoch.simulation.oilHeight*0.95,
+						epoch.simulation.bottomRadius * 0.95, // Radius Maximun
+						epoch.simulation.oilRadius * 0.95, // Radius at oil section
+						epoch.simulation.oilHeight * 0.95,
 						32
 					);
 					var oilMaterial = new THREE.MeshBasicMaterial({
@@ -622,7 +689,7 @@
 					[epoch.mesh[epoch.mesh.length - 1].position.x, epoch.mesh[epoch.mesh.length - 1].position.y, epoch.mesh[epoch.mesh.length - 1].position.z] = [
 						epoch.position.x,
 						epoch.position.y,
-						epoch.position.z - (epoch.height - epoch.simulation.oilHeight)/2
+						epoch.position.z - (epoch.height - epoch.simulation.oilHeight) / 2
 					];
 					epoch.mesh[epoch.mesh.length - 1].name = "oil_epoch";
 					epoch.mesh[epoch.mesh.length - 1].rotation.x = -Math.PI / 2;
