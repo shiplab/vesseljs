@@ -20,6 +20,7 @@ class Epoch {
     this.oilHeight = 0; // angle of oil
     this.oilRadius = 0; // radius of oil secctio
     this.setMaxVolume(this.diss_time, this.diss_rate);
+    this.setMaxTime(this.diss_time, this.flowrate);
   }
   play() {
 
@@ -59,7 +60,7 @@ class Epoch {
     // Function check if we are in the creation or maturing phase
     if (this.radius < this.maxRadius) {
 
-      this.volume = parseFloat(this.speed) * 7 * 24 * time * this.diss_rate; // [m3]
+      this.volume = parseFloat(this.speed) * 24 * time * this.diss_rate; // [m3]
       this.radius = Math.pow(this.volume / (10 * Math.PI * this.height), 1 / 2) * 0.1; // [10 km]
 
     } else if (this.oilHeight < this.height) {
@@ -69,7 +70,7 @@ class Epoch {
         this.initialMaturingTime = time;
       }
 
-      this.oilVolume = parseFloat(this.speed) * 7 * 24 * (time - this.initialMaturingTime) * this.flowrate; // [m3]
+      this.oilVolume = parseFloat(this.speed) * 24 * (time - this.initialMaturingTime) * this.flowrate; // [m3]
       var results = this.bisectionSearch(this.possibleValues.volume, this.oilVolume);
       var deltaHeight = this.possibleValues.height[results.index + 1] - this.possibleValues.height[results.index];
       var deltaRadius = this.possibleValues.oilRadius[results.index + 1] - this.possibleValues.oilRadius[results.index];
@@ -86,13 +87,16 @@ class Epoch {
       this.pause();
     }
   }
-  setMaxVolume(diss_time, diss_rate) {
-    this.maxVolume = 7 * 24 * diss_time * diss_rate; // [m3]
+  setMaxVolume(diss_time, diss_rate, flowrate) {
+    this.maxVolume = 24 * diss_time * diss_rate; // [m3]
     this.maxRadius = Math.pow(this.maxVolume / (10 * Math.PI * this.height), 1 / 2) * 0.1; // [10 m]
     this.bottomRadius = this.maxRadius * (1 + this.deltaRadius / 2); // Base radius [10 m]
 
     this.possibleValues = this.volumeArray(this.maxRadius * 10, this.height * 10, this.deltaRadius, this.bottomRadius * 10); // possible volumes in array
 
+  }
+  setMaxTime(diss_time, flowrate) {
+    this.maxTime = diss_time + this.maxVolume / (flowrate * 24); // Days for finishing operation [days]
   }
   volumeArray(radius, maxHeight, deltaRadius, bottomRadius) {
     // @ferrari212

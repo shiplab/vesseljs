@@ -17,6 +17,7 @@
 	<script src="libs/skybox_from_examples.js"></script>
 	<script src="libs/browse_files_Elias_Hasle.js"></script>
 	<script src="libs/STLLoader.js"></script>
+	<!-- <script src="libs/bootstrap.min.css"></script> -->
 
 	<script src="snippets/Patch_interpolation.js"></script>
 	<script src="snippets/Playback.js"></script>
@@ -32,6 +33,27 @@
 </head>
 
 <style>
+	h3 {
+		margin-bottom: 4px
+	}
+
+	p {
+		font-size: 12px;
+		margin-top: 0px;
+		margin-bottom: 4px
+	}
+
+	a {
+		color: #fff;
+		text-decoration: none;
+	}
+
+
+	ul {
+		padding-inline-start: 20px;
+		font-size: 10px
+	}
+
 	.button-reload {
 		border: none;
 		display: inline-block;
@@ -39,7 +61,7 @@
 		vertical-align: middle;
 		overflow: hidden;
 		text-decoration: none;
-		color: white;
+		color: #fff;
 		background-color: black;
 		text-align: center;
 		cursor: pointer;
@@ -50,9 +72,73 @@
 		color: #fff !important;
 		background-color: #f44336 !important
 	}
+
+	.moduleslist {
+		position: relative;
+		width: 90%;
+		font-family: Helvetica;
+		color: #fff;
+		vertical-align: middle;
+		margin: 2% 2% 5% 5%;
+	}
+
+	.center {
+		display: block;
+		margin-left: auto;
+		margin-right: auto;
+		margin-top: 10px;
+	}
+
+	li.scale {
+		font-size: 10px;
+		margin-top: 5px
+	}
+
 </style>
 
 <body>
+
+	<div id="3d" class='orchid' style="position: absolute; top: 0px; height: 100%; right: 0px; width: calc(100% - 180px);"></div>
+
+	<div id="pitch_graph" style="position: absolute; bottom: 0%; height: 100%; left: 0px; width: 180px; background-color: #00509e">
+		<div class="moduleslist">
+			<h3><b>Epoch Analysis of a Salt Cave - Dissolution and Capacity Simulation</b></h5>
+				<p style="font-style: italic;">Felipe Ferrari, Daniel Prata, Henrique Gaspar</p>
+				<br>
+				<p>
+					<a href="http://www.shiplab.hials.org" target="_blank"><b>Ship Design and Operations Lab</b></a>
+				</p>
+
+				<p>Faculty of Maritime Technology and Operations - NTNU (Aalesund, Norway)</p>
+
+				<br>
+
+				<ul>
+					<p>Scale of Elements</p>
+					<li class="scale">Epoch (1:10000)</li>
+					<li class="scale">Equipments (1:5)</li>
+					<li class="scale">Ship (1:1)</li>
+					<li class="scale">Bottom (1:1)</li>
+				</ul>
+
+				<br>
+
+				<p>
+					A simulation using <a href="http://www.shiplab.hials.org" target="_blank">
+						<b>Vessel.js</b></a> library - November, 2019.
+				</p>
+
+				<br>
+				<br>
+
+				<img class="center" src="images/ntnu_logo_white.png" alt="" width="80%">
+
+				<br>
+
+				<img class="center" src="images/logo_usp_white.png" alt="" width="50%">
+
+		</div>
+	</div>
 	<script>
 		"use strict";
 
@@ -70,15 +156,16 @@
 			//Renderer setup
 			//document.body.style = "overflow: hidden;";
 			document.body.style.overflow = "hidden";
-			var container = document.createElement("div");
-			//container.style = "position: absolute; top: 0; left: 0;"
-			Object.assign(container.style, {
-				position: "absolute",
-				top: 0,
-				left: 0,
-				width: "100vw",
-				height: "100vh"
-			});
+			var container = document.getElementById('3d');
+			document.body.appendChild(container);
+
+			// Object.assign(container.style, {
+			// 	position: "absolute",
+			// 	top: 0,
+			// 	left: 0,
+			// 	width: "100vw",
+			// 	height: "100vh"
+			// });
 			document.body.appendChild(container);
 			renderer = new THREE.WebGLRenderer({
 				antialias: true
@@ -144,7 +231,7 @@
 			};
 			window.addEventListener('resize', onResize, false);
 			onResize();
-			camera.position.set(0, -oSize * 0.15, -oSize * 0.01);
+			camera.position.set(oSize * 0.08, oSize * 0.08, -oSize * 0.08);
 			camera.lookAt(zUpCont.position);
 			zUpCont.add(camera);
 
@@ -542,6 +629,7 @@
 							epochEquipments.dissolution_parameters.dissolution_time = newValue;
 							epoch.simulation.diss_time = newValue;
 							epoch.simulation.setMaxVolume(epoch.simulation.diss_time, epoch.simulation.diss_rate);
+							epoch.simulation.setMaxTime(epoch.simulation.diss_time, epoch.simulation.flowrate);
 						})
 						.name("Time (days)");
 					scale.open();
@@ -552,30 +640,32 @@
 						.onChange(function(newValue) {
 							epochEquipments.co2_flowrate.flowrate_capacity = newValue;
 							epoch.simulation.flowrate = newValue;
+							epoch.simulation.setMaxTime(epoch.simulation.diss_time, epoch.simulation.flowrate);
+							scale.__controllers[5].__max = epoch.simulation.maxTime;
 						})
 						.name("Rate (m3/h)");
 					scale.open();
 					scale = gui.addFolder("Epoch Simulation");
 					scale
 						.add(epoch.simulation, 'view', {
-							Lateral: 0,
-							Perspective: 1,
+							Perspective: 0,
+							Lateral: 1,
 							Epoch: 2,
 							Ship: 3,
-							xtree: 4,
-							sub_pump: 5,
-							brine: 6
+							Xtree: 4,
+							Pump: 5,
+							Brine: 6
 						})
 						.onChange(function(newValue) {
 							switch (newValue) {
 								case '0':
-									camera.position.set(0, -oSize * 0.15, -oSize * 0.01);
+									camera.position.set(oSize * 0.08, oSize * 0.08, -oSize * 0.08);
 									camera.lookAt(zUpCont.position);
 									controls.target.set(0, 0, 0);
 									controls.update();
 									break;
 								case '1':
-									camera.position.set(oSize * 0.08, -oSize * 0.08, -oSize * 0.08);
+									camera.position.set(0, -oSize * 0.15, -oSize * 0.01);
 									camera.lookAt(zUpCont.position);
 									controls.target.set(0, 0, 0);
 									controls.update();
@@ -597,21 +687,21 @@
 									camera.position.set(oSize * 0.03, -oSize * 0.03, -oSize * 0.01);
 									camera.lookAt(zUpCont.position);
 									var position = epochEquipments.xmastree.position
-									controls.target.set(position.x, position.y, position.z+4);
+									controls.target.set(position.x, position.y, position.z + 4);
 									controls.update();
 									break;
 								case '5':
 									camera.position.set(oSize * 0.03, -oSize * 0.03, -oSize * 0.01);
 									camera.lookAt(zUpCont.position);
 									var position = epochEquipments.sub_pump.position
-									controls.target.set(position.x, position.y, position.z+4);
+									controls.target.set(position.x, position.y, position.z + 4);
 									controls.update();
 									break;
 								case '6':
 									camera.position.set(oSize * 0.03, -oSize * 0.03, -oSize * 0.01);
 									camera.lookAt(zUpCont.position);
 									var position = epochEquipments.brine_subpump.position
-									controls.target.set(position.x, position.y, position.z+4);
+									controls.target.set(position.x, position.y, position.z + 4);
 									controls.update();
 									break;
 								default:
@@ -636,7 +726,7 @@
 						})
 						.name("Speed");
 					scale
-						.add(epoch.simulation, 'time', 0, 100).listen()
+						.add(epoch.simulation, 'time', 0, epoch.simulation.maxTime).listen()
 						.name("Time (days)");
 					scale.open();
 
