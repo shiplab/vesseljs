@@ -94,11 +94,28 @@
 		margin-top: 5px
 	}
 
+	@media screen and (min-width:731px) {
+
+		[id='3d'] {
+			width: calc(100% - 180px);
+		}
+	}
+
+	@media screen and (max-width:730px) {
+		#pitch_graph {
+			display: none;
+		}
+
+		[id='3d'] {
+			width: calc(100%);
+		}
+	}
+
 </style>
 
 <body>
 
-	<div id="3d" class='orchid' style="position: absolute; top: 0px; height: 100%; right: 0px; width: calc(100% - 180px);"></div>
+	<div id="3d" class='orchid' style="position: absolute; top: 0px; height: 100%; right: 0px;"></div>
 
 	<div id="pitch_graph" style="position: absolute; bottom: 0%; height: 100%; left: 0px; width: 180px; background-color: #00509e">
 		<div class="moduleslist">
@@ -118,7 +135,7 @@
 					<li class="scale">Epoch (1:10000)</li>
 					<li class="scale">Equipments (1:5)</li>
 					<li class="scale">Ship (1:1)</li>
-					<li class="scale">Bottom (1:1)</li>
+					<li class="scale">Bottom (1:100)</li>
 				</ul>
 
 				<br>
@@ -131,7 +148,7 @@
 				<br>
 				<br>
 
-				<img class="center" src="images/ntnu_logo_white.png" alt="" width="80%">
+				<img class="center" src="images/ntnu_logo_white.png" alt="" width="90%">
 
 				<br>
 
