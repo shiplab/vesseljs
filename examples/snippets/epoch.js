@@ -154,3 +154,19 @@ class Epoch {
     };
   }
 }
+
+class ShipSimulation {
+  constructor() {
+    this.timeFactor = 0;
+    this.changingfactor = 0;
+    this.changedShip = false;
+  }
+  changeShip() {
+    if (this.timeFactor < 1) {
+      this.timeFactor += 0.001;
+      this.changingfactor = -this.timeFactor*(this.timeFactor-2);
+    } else {
+      this.changedShip = true;
+    }
+  }
+}
