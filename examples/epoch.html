@@ -6,6 +6,7 @@
 
 	<script src="libs/three.js"></script>
 	<script src="libs/STLLoader.js"></script>
+	<script src="libs/jquery.js.js"></script>
 
 	<script src="snippets/Ship3D_v2.js"></script>
 
@@ -16,7 +17,6 @@
 	<script src="libs/OrbitControls.js"></script>
 	<script src="libs/skybox_from_examples.js"></script>
 	<script src="libs/browse_files_Elias_Hasle.js"></script>
-	<script src="libs/STLLoader.js"></script>
 	<!-- <script src="libs/bootstrap.min.css"></script> -->
 
 	<script src="snippets/Patch_interpolation.js"></script>
@@ -54,6 +54,25 @@
 		font-size: 10px
 	}
 
+	#arrow {
+		position: absolute;
+		top: 76px;
+		left: 120px;
+		z-index: 101;
+		display: block;
+	}
+
+	#info {
+		position: absolute;
+		font-family: Helvetica;
+		top: 10px;
+		left: 10px;
+		width: 20%;
+		text-align: left;
+		z-index: 100;
+		display: block;
+	}
+
 	.button-reload {
 		border: none;
 		display: inline-block;
@@ -89,9 +108,41 @@
 		margin-top: 10px;
 	}
 
+	.text-yellow {
+		color: #ffff00;
+	}
+
 	li.scale {
 		font-size: 10px;
 		margin-top: 5px
+	}
+
+	.run-1 {
+	  animation: move-arrow-1 3s 1 ease forwards;
+	}
+
+	.run-2 {
+	  animation: move-arrow-2 3s 1 ease forwards;
+	}
+
+	@-webkit-keyframes move-arrow-1 {
+	  0% {
+	    top: 76px;
+	  }
+
+	  100% {
+	    top: 116px;
+	  }
+	}
+
+	@-webkit-keyframes move-arrow-2 {
+	  0% {
+	    top: 116px;
+	  }
+
+	  100% {
+	    top: 156px;
+	  }
 	}
 
 	@media screen and (min-width:731px) {
@@ -114,7 +165,20 @@
 
 <body>
 
-	<div id="3d" class='orchid' style="position: absolute; top: 0px; height: 100%; right: 0px;"></div>
+	<div id="3d" class='orchid' style="position: absolute; top: 0px; height: 100%; right: 0px;">
+		<div id="info">
+			<h2>Stages</h2>
+			<h4 class="text-yellow">Creation</h4>
+			<h4>Ship Trasition</h4>
+			<h4>Epoch Filling</h4>
+		</div>
+
+		 <!-- <svg id="arrow" src="images/arrow_left.svg" alt="" style="margin-left: 30px;"></svg> -->
+		 <svg id="arrow"  width="25" height="25" viewBox="0 0 18 18">
+			 <path fill="#ffff00"
+			  d="M15 8.25H5.87l4.19-4.19L9 3 3 9l6 6 1.06-1.06-4.19-4.19H15v-1.5z"/>
+		 </svg>
+	</div>
 
 	<div id="pitch_graph" style="position: absolute; bottom: 0%; height: 100%; left: 0px; width: 180px; background-color: #00509e">
 		<div class="moduleslist">
@@ -358,8 +422,8 @@
 					},
 					"dimensions": {
 						"radius": {
-							"seawater": 2*10*0.0254, // radius in [m]
-							"brine": 2*18.125*0.0254 // radius in [m]
+							"seawater": 2 * 10 * 0.0254, // radius in [m]
+							"brine": 2 * 18.125 * 0.0254 // radius in [m]
 						},
 						"height": -(epoch.position.z + epoch.height / 2 + (oceanDepth))
 					}
@@ -529,7 +593,7 @@
 
 			// Inserting Ship
 			ships = ({
-				"shipSTL" : {
+				"shipSTL": {
 					"hull": {
 						"position": {
 							"x": -50,
@@ -543,7 +607,7 @@
 						"Depth": 3.4,
 					}
 				},
-				"fpsoSTL" : {
+				"fpsoSTL": {
 					"hull": {
 						"position": {
 							"x": -50,
@@ -877,6 +941,11 @@
 			requestAnimationFrame(animate);
 		})();
 
+		// animate phase index
+		// ships.changedShip.change(function() {
+		// 	console.log("Teste");
+		// });
+
 		function animate(millitime) {
 			var t = clock.getElapsedTime();
 
@@ -892,15 +961,22 @@
 			if (epoch.simulation.radius > epoch.simulation.maxRadius && !ships.simulation.changedShip) {
 				epoch.simulation.pause();
 				ships.simulation.changeShip();
+				document.getElementById('arrow').classList.add('run-1');
+				document.getElementById('info').children[1].classList.remove('text-yellow');
+				document.getElementById('info').children[2].classList.add('text-yellow');
 				zUpCont.children[12].material.visible = true;
-				zUpCont.children[12].position.x = -70 - 150*(1-ships.simulation.changingfactor);
+				zUpCont.children[12].position.x = -70 - 150 * (1 - ships.simulation.changingfactor);
 				zUpCont.children[12].material.opacity = ships.simulation.changingfactor;
 				zUpCont.children[13].material.opacity = 1 - ships.simulation.changingfactor;
-				zUpCont.children[13].position.x = -50 + 150*ships.simulation.changingfactor;
+				zUpCont.children[13].position.x = -50 + 150 * ships.simulation.changingfactor;
 				console.log(ships.simulation.timeFactor);
 				if (ships.simulation.changedShip) {
 					epoch.simulation.play();
 					zUpCont.children[13].material.visible = false;
+					// document.getElementById('arrow').style.top = 100
+					document.getElementById('arrow').classList.add('run-2');
+					document.getElementById('info').children[2].classList.remove('text-yellow');
+					document.getElementById('info').children[3].classList.add('text-yellow');
 				}
 			}
 
