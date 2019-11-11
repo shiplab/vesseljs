@@ -6,7 +6,6 @@
 
 	<script src="libs/three.js"></script>
 	<script src="libs/STLLoader.js"></script>
-	<script src="libs/jquery.js.js"></script>
 
 	<script src="snippets/Ship3D_v2.js"></script>
 
@@ -57,7 +56,7 @@
 	#arrow {
 		position: absolute;
 		top: 76px;
-		left: 120px;
+		left: 140px;
 		z-index: 101;
 		display: block;
 	}
@@ -67,7 +66,7 @@
 		font-family: Helvetica;
 		top: 10px;
 		left: 10px;
-		width: 20%;
+		width: 150px;
 		text-align: left;
 		z-index: 100;
 		display: block;
@@ -168,9 +167,9 @@
 	<div id="3d" class='orchid' style="position: absolute; top: 0px; height: 100%; right: 0px;">
 		<div id="info">
 			<h2>Stages</h2>
-			<h4 class="text-yellow">Creation</h4>
-			<h4>Ship Trasition</h4>
-			<h4>Epoch Filling</h4>
+			<h4 class="text-yellow">Dissolution</h4>
+			<h4>Ship Transition</h4>
+			<h4>CO2 Storage</h4>
 		</div>
 
 		 <!-- <svg id="arrow" src="images/arrow_left.svg" alt="" style="margin-left: 30px;"></svg> -->
@@ -189,7 +188,7 @@
 					<a href="http://www.shiplab.hials.org" target="_blank"><b>Ship Design and Operations Lab</b></a>
 				</p>
 
-				<p>Faculty of Maritime Technology and Operations - NTNU (Aalesund, Norway)</p>
+				<p>Department of Ocean Operations and Civil Engineering - NTNU (Aalesund, Norway)</p>
 
 				<br>
 
@@ -208,7 +207,6 @@
 						<b>Vessel.js</b></a> library - November, 2019.
 				</p>
 
-				<br>
 				<br>
 
 				<img class="center" src="images/ntnu_logo_white.png" alt="" width="90%">
@@ -237,6 +235,8 @@
 			//document.body.style = "overflow: hidden;";
 			document.body.style.overflow = "hidden";
 			var container = document.getElementById('3d');
+			var arrow = document.getElementById('arrow');
+			var info = document.getElementById('info');
 			document.body.appendChild(container);
 
 			// Object.assign(container.style, {
@@ -500,7 +500,10 @@
 						color: 0xffff00,
 						emissive: 0x494949,
 						specular: 0x6b6b6b,
-						shininess: 100
+						shininess: 100,
+						transparent: true,
+						side: THREE.FrontSide,
+						opacity: 1
 					});
 					console.info('There is no color in geometrySTL: ', geometrySTL.hasColors);
 				}
@@ -511,6 +514,7 @@
 					epochEquipments.sub_pump.position.y,
 					epochEquipments.sub_pump.position.z
 				];
+				epochEquipments.sub_pump.mesh.name = "sub_pump";
 				zUpCont.add(epochEquipments.sub_pump.mesh);
 
 			});
@@ -546,7 +550,7 @@
 			var geometryCylinder = new THREE.CylinderGeometry(
 				epochEquipments.injection_tubes.dimensions.radius.seawater, // Radius Maximun
 				epochEquipments.injection_tubes.dimensions.radius.seawater, // Radius Minimun
-				epochEquipments.injection_tubes.dimensions.height + 10,
+				epochEquipments.injection_tubes.dimensions.height + 0.95*epoch.height,
 				32
 			);
 			var material = new THREE.MeshBasicMaterial({
@@ -562,7 +566,7 @@
 			] = [
 				epochEquipments.injection_tubes.position.x,
 				epochEquipments.injection_tubes.position.y,
-				epochEquipments.injection_tubes.position.z - 5
+				epochEquipments.injection_tubes.position.z - 0.95	*epoch.height/2
 			];
 			epochEquipments.injection_tubes.mesh[0].rotation.x = -Math.PI / 2;
 			zUpCont.add(epochEquipments.injection_tubes.mesh[0]);
@@ -653,6 +657,7 @@
 				ships.shipSTL.hull.mesh.position.x = ships.shipSTL.hull.position.x;
 				ships.shipSTL.hull.mesh.position.y = ships.shipSTL.hull.position.y;
 				ships.shipSTL.hull.mesh.position.z = ships.shipSTL.hull.position.z;
+				ships.shipSTL.hull.mesh.name = "ship";
 
 				zUpCont.add(ships.shipSTL.hull.mesh);
 				// zUpCont.add(new THREE.Mesh(geometrySTL, material));
@@ -690,6 +695,7 @@
 				ships.fpsoSTL.hull.mesh.position.x = ships.fpsoSTL.hull.position.x;
 				ships.fpsoSTL.hull.mesh.position.y = ships.fpsoSTL.hull.position.y;
 				ships.fpsoSTL.hull.mesh.position.z = ships.fpsoSTL.hull.position.z;
+				ships.fpsoSTL.hull.mesh.name = "fpso";
 
 				zUpCont.add(ships.fpsoSTL.hull.mesh);
 				zUpCont.children[zUpCont.children.length - 1].material.visible = false;
@@ -879,7 +885,8 @@
 						.add(epoch.simulation, 'pause')
 						.name("Pause");
 					scale
-						.add(epoch.simulation, 'restart')
+						// .add(epoch.simulation, 'restart')
+						.add(window.location, 'reload')
 						.name("Restart");
 					scale
 						.add(epoch.simulation, 'speed', {
@@ -961,22 +968,24 @@
 			if (epoch.simulation.radius > epoch.simulation.maxRadius && !ships.simulation.changedShip) {
 				epoch.simulation.pause();
 				ships.simulation.changeShip();
-				document.getElementById('arrow').classList.add('run-1');
-				document.getElementById('info').children[1].classList.remove('text-yellow');
-				document.getElementById('info').children[2].classList.add('text-yellow');
-				zUpCont.children[12].material.visible = true;
-				zUpCont.children[12].position.x = -70 - 150 * (1 - ships.simulation.changingfactor);
-				zUpCont.children[12].material.opacity = ships.simulation.changingfactor;
-				zUpCont.children[13].material.opacity = 1 - ships.simulation.changingfactor;
-				zUpCont.children[13].position.x = -50 + 150 * ships.simulation.changingfactor;
-				console.log(ships.simulation.timeFactor);
+				arrow.classList.add('run-1');
+				info.children[1].classList.remove('text-yellow');
+				info.children[2].classList.add('text-yellow');
+				zUpCont.getObjectByName( "fpso" ).material.visible = true;
+				zUpCont.getObjectByName( "fpso" ).position.x = -70 - 150 * (1 - ships.simulation.changingfactor);
+				zUpCont.getObjectByName( "fpso" ).material.opacity = ships.simulation.changingfactor;
+				zUpCont.getObjectByName( "ship" ).material.opacity = 1 - ships.simulation.changingfactor;
+				zUpCont.getObjectByName( "ship" ).position.x = -50 + 150 * ships.simulation.changingfactor;
+				zUpCont.getObjectByName( "sub_pump" ).material.opacity = 1 - ships.simulation.changingfactor;
+				umbilical.geometry.vertices[umbilical.geometry.vertices["length"]-1].x = epochEquipments.xmastree.position.x;
+				umbilical.geometry.verticesNeedUpdate = true;
 				if (ships.simulation.changedShip) {
 					epoch.simulation.play();
-					zUpCont.children[13].material.visible = false;
-					// document.getElementById('arrow').style.top = 100
-					document.getElementById('arrow').classList.add('run-2');
-					document.getElementById('info').children[2].classList.remove('text-yellow');
-					document.getElementById('info').children[3].classList.add('text-yellow');
+					zUpCont.getObjectByName( "ship" ).material.visible = false;
+					zUpCont.getObjectByName( "sub_pump" ).material.visible = false;
+					arrow.classList.add('run-2');
+					info.children[2].classList.remove('text-yellow');
+					info.children[3].classList.add('text-yellow');
 				}
 			}
 

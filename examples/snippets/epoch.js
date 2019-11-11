@@ -47,12 +47,15 @@ class Epoch {
     this.playing = false;
     clock.stop();
   }
-  restart() {
-    this.playing = false;
-    this.paused = false;
-    this.storingPhase = false;
-    clock.stop();
-    this.play();
+  // restart() {
+  //   this.playing = false;
+  //   this.paused = false;
+  //   this.storingPhase = false;
+  //   clock.stop();
+  //   this.play();
+  // }
+  test() {
+    console.log('so um teste');
   }
   updateVolume(time) {
     this.time = parseFloat(this.speed) * Math.floor(time); // weeks (speed is the multplyer)
