@@ -81,7 +81,7 @@
 			scene.add(zUpCont);
 
 			//Camera setup
-			camera = new THREE.PerspectiveCamera(26, window.innerWidth / window.innerHeight, 1, 1000000);
+			camera = new THREE.PerspectiveCamera(26, window.innerWidth / window.innerHeight, 1, 1.75*oSize);
 			let onResize = function() {
 				let w = container.clientWidth;
 				let h = container.clientHeight;

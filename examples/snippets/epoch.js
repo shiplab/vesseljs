@@ -15,21 +15,14 @@ class Epoch {
     this.paused = false; // paused or not
     this.storingPhase = false; // in the storing phase or not
     this.speed = "50"; // Current speed
-    this.maxVolume = 7 * 24 * this.diss_time * this.diss_rate; // [m3]
-    this.maxRadius = Math.pow(this.maxVolume / (10 * Math.PI * this.height), 1 / 2) * 0.1; // [10 m]
-    this.bottomRadius = this.maxRadius * (1 + this.deltaRadius / 2);  // Base radius [10 m]
+    this.view = "0"; // View of the simulation
     this.oilVolume = 0; // angle of oil
     this.oilHeight = 0; // angle of oil
-    this.oilRadius = 0; // radius of oil secction
-    this.possibleValues = this.volumeArray(this.maxRadius * 10, this.height * 10, this.deltaRadius, this.bottomRadius * 10); // possible volumes in array
+    this.oilRadius = 0; // radius of oil secctio
+    this.setMaxVolume(this.diss_time, this.diss_rate);
+    this.setMaxTime(this.diss_time, this.flowrate);
   }
   play() {
-
-    // if (this.mesh.length >= 2) {
-    //   zUpCont.children.splice(zUpCont.children.length-1, 1);
-    //   this.mesh.splice(this.mesh.length-1, 1);
-    // }
-
 
     if (!this.paused) {
 
@@ -54,12 +47,15 @@ class Epoch {
     this.playing = false;
     clock.stop();
   }
-  restart() {
-    this.playing = false;
-    this.paused = false;
-    this.storingPhase = false;
-    clock.stop();
-    this.play();
+  // restart() {
+  //   this.playing = false;
+  //   this.paused = false;
+  //   this.storingPhase = false;
+  //   clock.stop();
+  //   this.play();
+  // }
+  test() {
+    console.log('so um teste');
   }
   updateVolume(time) {
     this.time = parseFloat(this.speed) * Math.floor(time); // weeks (speed is the multplyer)
@@ -67,7 +63,7 @@ class Epoch {
     // Function check if we are in the creation or maturing phase
     if (this.radius < this.maxRadius) {
 
-      this.volume = parseFloat(this.speed) * 7 * 24 * time * this.diss_rate; // [m3]
+      this.volume = parseFloat(this.speed) * 24 * time * this.diss_rate; // [m3]
       this.radius = Math.pow(this.volume / (10 * Math.PI * this.height), 1 / 2) * 0.1; // [10 km]
 
     } else if (this.oilHeight < this.height) {
@@ -77,11 +73,10 @@ class Epoch {
         this.initialMaturingTime = time;
       }
 
-      this.oilVolume = parseFloat(this.speed) * 7 * 24 * (time - this.initialMaturingTime) * this.flowrate; // [m3]
+      this.oilVolume = parseFloat(this.speed) * 24 * (time - this.initialMaturingTime) * this.flowrate; // [m3]
       var results = this.bisectionSearch(this.possibleValues.volume, this.oilVolume);
       var deltaHeight = this.possibleValues.height[results.index + 1] - this.possibleValues.height[results.index];
       var deltaRadius = this.possibleValues.oilRadius[results.index + 1] - this.possibleValues.oilRadius[results.index];
-      // debugger
 
       if (results.mu == null) {
         this.oilHeight = this.height;
@@ -92,9 +87,19 @@ class Epoch {
 
 
     } else {
-      // debugger
       this.pause();
     }
+  }
+  setMaxVolume(diss_time, diss_rate, flowrate) {
+    this.maxVolume = 24 * diss_time * diss_rate; // [m3]
+    this.maxRadius = Math.pow(this.maxVolume / (10 * Math.PI * this.height), 1 / 2) * 0.1; // [10 m]
+    this.bottomRadius = this.maxRadius * (1 + this.deltaRadius / 2); // Base radius [10 m]
+
+    this.possibleValues = this.volumeArray(this.maxRadius * 10, this.height * 10, this.deltaRadius, this.bottomRadius * 10); // possible volumes in array
+
+  }
+  setMaxTime(diss_time, flowrate) {
+    this.maxTime = diss_time + this.maxVolume / (flowrate * 24); // Days for finishing operation [days]
   }
   volumeArray(radius, maxHeight, deltaRadius, bottomRadius) {
     // @ferrari212
@@ -106,8 +111,8 @@ class Epoch {
     var step = maxHeight / 100;
     for (var i = 0; i < 100; i++) {
       height.push(step * i);
-      oilRadius.push(bottomRadius - deltaRadius*radius*height[i]/maxHeight); // Radius in the oil
-      volume.push((Math.PI / 3) * height[i] * (Math.pow(bottomRadius, 2) + bottomRadius*oilRadius[i] + Math.pow(oilRadius[i], 2)));
+      oilRadius.push(bottomRadius - deltaRadius * radius * height[i] / maxHeight); // Radius in the oil
+      volume.push((Math.PI / 3) * height[i] * (Math.pow(bottomRadius, 2) + bottomRadius * oilRadius[i] + Math.pow(oilRadius[i], 2)));
       oilRadius[i] *= 0.1;
       height[i] *= 0.1;
     }
@@ -150,5 +155,21 @@ class Epoch {
       index,
       mu
     };
+  }
+}
+
+class ShipSimulation {
+  constructor() {
+    this.timeFactor = 0;
+    this.changingfactor = 0;
+    this.changedShip = false;
+  }
+  changeShip() {
+    if (this.timeFactor < 1) {
+      this.timeFactor += 0.001;
+      this.changingfactor = -this.timeFactor*(this.timeFactor-2);
+    } else {
+      this.changedShip = true;
+    }
   }
 }
