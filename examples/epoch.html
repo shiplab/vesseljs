@@ -724,7 +724,7 @@
 				// "radialDistance": 200,
 				// "mooringAngle": 45,
 				"breakingLoad": 200,
-				"anchorLength": 200,
+				"anchorLength": 120,
 				"horizontalForce": 200, // Horizontal Force on the ship (kgf)
 				"w": 10, // Mooring line density (kg/m)
 				"oceanDepth": oceanDepth,
@@ -749,7 +749,7 @@
 				// "radialDistance": 200,
 				// "mooringAngle": 45,
 				"breakingLoad": 300,
-				"anchorLength": 200,
+				"anchorLength": 87,
 				"horizontalForce": 200, // Horizontal Force on the ship (kgf)
 				"w": 5, // Mooring line density (kg/m)
 				"oceanDepth": oceanDepth,
@@ -947,11 +947,6 @@
 
 			requestAnimationFrame(animate);
 		})();
-
-		// animate phase index
-		// ships.changedShip.change(function() {
-		// 	console.log("Teste");
-		// });
 
 		function animate(millitime) {
 			var t = clock.getElapsedTime();
