@@ -224,7 +224,7 @@
 		var renderer, camera, controls, gui, stats;
 		var scene, zUpCont, playback, bodies, ocean, ship3D;
 		var ship3D, states, epoch, epochEquipments, ships, eletricCable, umbilical;
-		var designDimension, floatingStates, eletricCable, line, hangedeletricCable;
+		var designDimension, floatingStates, line, hangedeletricCable;
 		var catenaryFunction;
 		var scale;
 
@@ -749,7 +749,7 @@
 				// "radialDistance": 200,
 				// "mooringAngle": 45,
 				"breakingLoad": 300,
-				"anchorLength": 87,
+				"anchorLength": 90,
 				"horizontalForce": 200, // Horizontal Force on the ship (kgf)
 				"w": 5, // Mooring line density (kg/m)
 				"oceanDepth": oceanDepth,
@@ -922,9 +922,9 @@
 			eletricCable.geometry = new THREE.Geometry();
 			eletricCable.object = new THREE.Line(eletricCable.geometry, eletricCable.materialLine);
 
-			catenaryFunction = new InsertCatenary(eletricCable.anchorPointOnShip, eletricCable.anchorPointSeaBottom, eletricCable, 100);
-			// eletricCable.anchorLineGeometry.geometry.verticesNeedUpdate = true;
-			// zUpCont.add(eletricCable.anchorLineGeometry);
+			// catenaryFunction = new InsertCatenary(eletricCable.anchorPointOnShip, eletricCable.anchorPointSeaBottom, eletricCable, 100);
+			eletricCable.object3D = new Cable(eletricCable.anchorPointOnShip, eletricCable.anchorPointSeaBottom, eletricCable, 100);
+			zUpCont.add(eletricCable.object3D.line.object);
 
 			//Point of mooring line on ship (m, m, m)
 			//Trim added to correct misplacement of mooring node
@@ -941,7 +941,9 @@
 			// Insert geometry
 			umbilical.geometry = new THREE.Geometry();
 
-			catenaryFunction = new InsertCatenary(umbilical.anchorPointOnShip, umbilical.anchorPointSeaBottom, umbilical, 100);
+			// catenaryFunction = new InsertCatenary(umbilical.anchorPointOnShip, umbilical.anchorPointSeaBottom, umbilical, 100);
+			umbilical.object3D = new Mooring(umbilical.anchorPointOnShip, umbilical.anchorPointSeaBottom, umbilical, 100);
+			zUpCont.add(umbilical.object3D.line.object);
 
 			playback.play();
 
