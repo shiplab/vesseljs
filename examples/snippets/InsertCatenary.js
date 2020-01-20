@@ -71,9 +71,6 @@ class Catenary {
             z:z[m]
           }
         )
-        // elementLine.line.geometry.vertices[m].x = ;
-        // elementLine.line.geometry.vertices[m].y = y[m];
-        // elementLine.line.geometry.vertices[m].z = z[m];
       }
 
       elementLine.line.geometry.vertices.push(
@@ -83,9 +80,6 @@ class Catenary {
           z:elementLine.finalPoint.z
         }
       )
-      // elementLine.line.geometry.vertices[m].x = elementLine.finalPoint.x;
-      // elementLine.line.geometry.vertices[m].y = elementLine.finalPoint.y;
-      // elementLine.line.geometry.vertices[m].z = elementLine.finalPoint.z;
     }
 
   }
@@ -126,8 +120,7 @@ class Cable extends Catenary {
 class Mooring extends Catenary {
   constructor(initialPoint, finalPoint, line, divisions) {
     super(initialPoint, finalPoint, line, divisions);
-    this.calculateMooringGeometry()
-    // super.createLine(this.line.geometry, this.line.materialLine);
+    this.calculateMooringGeometry();
   }
 
   calculateMooringGeometry () {
