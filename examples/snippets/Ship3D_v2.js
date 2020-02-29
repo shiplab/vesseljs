@@ -146,7 +146,12 @@ function Ship3D(ship, {shipState, stlPath, deckOpacity = 0.2, objectOpacity = 0.
 		let pos = deckGeom.getAttribute("position");
 		let pa = pos.array;
 		for (let j = 0; j < stss.length + 1; j++) {
-			let x = d.xAft + (j / stss.length) * (d.xFwd - d.xAft);
+			//This was totally wrong, and still would benefit from
+			//not mapping directly to stations, as shorter decks will
+			//Get zero-width sections
+			let x = stss[j];//d.xAft+(j/stss.length)*(d.xFwd-d.xAft);
+			if (isNaN(x)) x = stss[j-1];
+			x = Math.max(d.xAft, Math.min(d.xFwd, x));
 			let y1 = Vessel.f.linearFromArrays(stss, wlHigh, x);
 			let y2 = Vessel.f.linearFromArrays(stss, wlLow, x);
 			let y = Math.min(0.5 * d.breadth, y1, y2);
@@ -250,6 +255,12 @@ Object.assign(Ship3D.prototype, {
 		let x = s.xCentre;
 		let y = s.yCentre;
 		let z = s.zBase;
+
+		//Small position jitter to avoid z-fighting
+		let n = 0.01*(2*Math.random()-1);
+		x += n;
+		y += n;
+		z += n;
 
 		//Scale
 		let d = bo.boxDimensions;

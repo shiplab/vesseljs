@@ -19,7 +19,6 @@
 	<!-- <script src="libs/bootstrap.min.css"></script> -->
 
 	<script src="snippets/Patch_interpolation.js"></script>
-	<script src="snippets/Playback.js"></script>
 	<script src="snippets/Regular_ocean.js"></script>
 	<script src="snippets/InsertCatenary.js"></script>
 	<script src="snippets/epoch.js"></script>
@@ -222,7 +221,7 @@
 
 		//Globals
 		var renderer, camera, controls, gui, stats;
-		var scene, zUpCont, playback, bodies, ocean, ship3D;
+		var scene, zUpCont, bodies, ocean, ship3D;
 		var ship3D, states, epoch, epochEquipments, ships, eletricCable, umbilical;
 		var designDimension, floatingStates, line, hangedeletricCable;
 		var catenaryFunction;
@@ -264,10 +263,6 @@
 				}
 			};
 			gui.add(obj, "Click to read paper");
-
-			playback = new Playback({
-				parentGUI: gui
-			});
 
 			//Scene setup:
 			scene = new THREE.Scene();
@@ -332,7 +327,6 @@
 				size: oSize,
 				segments: 127
 			});
-			playback.add(ocean);
 			zUpCont.add(ocean);
 
 			// Creating Epoch
@@ -884,10 +878,10 @@
 					scale
 						.add(epoch.simulation, 'pause')
 						.name("Pause");
-					scale
-						// .add(epoch.simulation, 'restart')
-						.add(window.location, 'reload')
-						.name("Restart");
+					// scale
+					// 	// .add(epoch.simulation, 'restart')
+					// 	.add(window.location, 'reload')
+					// 	.name("Restart");
 					scale
 						.add(epoch.simulation, 'speed', {
 							Slow: 1,
@@ -945,21 +939,13 @@
 			umbilical.object3D = new Mooring(umbilical.anchorPointOnShip, umbilical.anchorPointSeaBottom, umbilical, 100);
 			zUpCont.add(umbilical.object3D.line.object);
 
-			playback.play();
-
 			requestAnimationFrame(animate);
 		})();
 
 		function animate(millitime) {
 			var t = clock.getElapsedTime();
 
-
-			let playing = playback.update();
-
-			//Disable this to freeze water when not playing
-			if (!playing) {
-				ocean.water.material.uniforms.time.value += 1 / 60;
-			}
+			ocean.water.material.uniforms.time.value += 1 / 60;
 
 			//Simulate the ship change
 			if (epoch.simulation.radius > epoch.simulation.maxRadius && !ships.simulation.changedShip) {
