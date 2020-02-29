@@ -389,7 +389,7 @@ function DynamicalMovement(ship, states, userParameters, Ini, seaDepth) {
 			anchorAngle[i] = [(anchorPoint[i][0] - anchorPointOnShip[i][0]) / anchorDist[i], (anchorPoint[i][2] - anchorPointOnShip[i][2]) / anchorDist[i]];
 			var as = numeric.linspace(0.01, mooring.anchorLength, 100);
 
-			
+
 			for (var n = 0; n < as.length; n++) {
 				aPosible[n] = mooring.anchorLength - anchorDist[i] - as[n] * Math.sinh(Math.acosh(((anchorPointOnShip[i][1] + userParameters.seaDepth) / as[n]) + 1)) + as[n] * (Math.acosh(((anchorPointOnShip[i][1] + userParameters.seaDepth) / as[n]) + 1));
 			}
@@ -421,7 +421,7 @@ function DynamicalMovement(ship, states, userParameters, Ini, seaDepth) {
 			FM[3] += (g * horizontalForce[i] * (anchorAngle[i][1])) * (pos[i][2] + depth - draft / 2) + (g * verticalForce[i]) * pos[i][1];
 			FM[4] += g * horizontalForce[i] * (anchorAngle[i][0]) * (pos[i][2] + depth - draft / 2) + g * verticalForce[i] * pos[i][0];
 			FM[5] += (-g * horizontalForce[i] * (anchorAngle[i][1])) * (pos[i][0]) + g * horizontalForce[i] * (anchorAngle[i][0]) * (pos[i][1]);
-			
+
 			// Force component at this specific moment
 			Fx = g * horizontalForce[i] * (anchorAngle[i][0]);
 			Fy = g * horizontalForce[i] * (anchorAngle[i][1]);
@@ -508,7 +508,7 @@ function DynamicalMovement(ship, states, userParameters, Ini, seaDepth) {
 			tick.plot1 = motion.pitch * 180 / Math.PI;
 			callback(JSON.stringify(tick));
 		};
-		
+
 		var myDashboardMooring = {
 			"graphset":[
 			  {//---------- mooring line tension plot-----------//
@@ -520,8 +520,8 @@ function DynamicalMovement(ship, states, userParameters, Ini, seaDepth) {
 				"width":"33%",
 				"x":"0%",
 				"y":"0%",
-				"plot":{ 
-					"aspect":"spline", 
+				"plot":{
+					"aspect":"spline",
 					"marker":{"visible":true},
 				},
 				"series":[{
@@ -538,7 +538,7 @@ function DynamicalMovement(ship, states, userParameters, Ini, seaDepth) {
 					"marker" :{
 						"background-color":"0xff0000",
 					},
-					
+
 				}, {
 					"values":[0],
 					"lineColor": "0x0066ff",
@@ -600,8 +600,8 @@ function DynamicalMovement(ship, states, userParameters, Ini, seaDepth) {
 				"width":"33%",
 				"x":"33%",
 				"y":"0%",
-				"plot":{ 
-					"aspect":"spline", 
+				"plot":{
+					"aspect":"spline",
 					"marker":{"visible":true},
 				},
 				"series":[{
@@ -646,8 +646,8 @@ function DynamicalMovement(ship, states, userParameters, Ini, seaDepth) {
 				"width":"33%",
 				"x":"66%",
 				"y":"0%",
-				"plot":{ 
-					"aspect":"spline", 
+				"plot":{
+					"aspect":"spline",
 					"marker":{"visible":true},
 				},
 				"series":[{
@@ -691,9 +691,9 @@ function DynamicalMovement(ship, states, userParameters, Ini, seaDepth) {
 			  },
 			]
 		};
-	
+
 		window.onload=function(){
-			 zingchart.render({ 
+			 zingchart.render({
 				id:'plotMooringTension',
 				height:"100%",
 				width:"100%",

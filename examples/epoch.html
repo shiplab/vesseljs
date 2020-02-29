@@ -19,7 +19,6 @@
 	<!-- <script src="libs/bootstrap.min.css"></script> -->
 
 	<script src="snippets/Patch_interpolation.js"></script>
-	<script src="snippets/Playback.js"></script>
 	<script src="snippets/Regular_ocean.js"></script>
 	<script src="snippets/InsertCatenary.js"></script>
 	<script src="snippets/epoch.js"></script>
@@ -222,9 +221,9 @@
 
 		//Globals
 		var renderer, camera, controls, gui, stats;
-		var scene, zUpCont, playback, bodies, ocean, ship3D;
+		var scene, zUpCont, bodies, ocean, ship3D;
 		var ship3D, states, epoch, epochEquipments, ships, eletricCable, umbilical;
-		var designDimension, floatingStates, eletricCable, line, hangedeletricCable;
+		var designDimension, floatingStates, line, hangedeletricCable;
 		var catenaryFunction;
 		var scale;
 
@@ -264,10 +263,6 @@
 				}
 			};
 			gui.add(obj, "Click to read paper");
-
-			playback = new Playback({
-				parentGUI: gui
-			});
 
 			//Scene setup:
 			scene = new THREE.Scene();
@@ -332,7 +327,6 @@
 				size: oSize,
 				segments: 127
 			});
-			playback.add(ocean);
 			zUpCont.add(ocean);
 
 			// Creating Epoch
@@ -724,7 +718,7 @@
 				// "radialDistance": 200,
 				// "mooringAngle": 45,
 				"breakingLoad": 200,
-				"anchorLength": 200,
+				"anchorLength": 120,
 				"horizontalForce": 200, // Horizontal Force on the ship (kgf)
 				"w": 10, // Mooring line density (kg/m)
 				"oceanDepth": oceanDepth,
@@ -749,7 +743,7 @@
 				// "radialDistance": 200,
 				// "mooringAngle": 45,
 				"breakingLoad": 300,
-				"anchorLength": 200,
+				"anchorLength": 90,
 				"horizontalForce": 200, // Horizontal Force on the ship (kgf)
 				"w": 5, // Mooring line density (kg/m)
 				"oceanDepth": oceanDepth,
@@ -884,10 +878,10 @@
 					scale
 						.add(epoch.simulation, 'pause')
 						.name("Pause");
-					scale
-						// .add(epoch.simulation, 'restart')
-						.add(window.location, 'reload')
-						.name("Restart");
+					// scale
+					// 	// .add(epoch.simulation, 'restart')
+					// 	.add(window.location, 'reload')
+					// 	.name("Restart");
 					scale
 						.add(epoch.simulation, 'speed', {
 							Slow: 1,
@@ -922,9 +916,9 @@
 			eletricCable.geometry = new THREE.Geometry();
 			eletricCable.object = new THREE.Line(eletricCable.geometry, eletricCable.materialLine);
 
-			catenaryFunction = new InsertCatenary(eletricCable.anchorPointOnShip, eletricCable.anchorPointSeaBottom, eletricCable, 100);
-			// eletricCable.anchorLineGeometry.geometry.verticesNeedUpdate = true;
-			// zUpCont.add(eletricCable.anchorLineGeometry);
+			// catenaryFunction = new InsertCatenary(eletricCable.anchorPointOnShip, eletricCable.anchorPointSeaBottom, eletricCable, 100);
+			eletricCable.object3D = new Cable(eletricCable.anchorPointOnShip, eletricCable.anchorPointSeaBottom, eletricCable, 100);
+			zUpCont.add(eletricCable.object3D.line.object);
 
 			//Point of mooring line on ship (m, m, m)
 			//Trim added to correct misplacement of mooring node
@@ -941,28 +935,17 @@
 			// Insert geometry
 			umbilical.geometry = new THREE.Geometry();
 
-			catenaryFunction = new InsertCatenary(umbilical.anchorPointOnShip, umbilical.anchorPointSeaBottom, umbilical, 100);
-
-			playback.play();
+			// catenaryFunction = new InsertCatenary(umbilical.anchorPointOnShip, umbilical.anchorPointSeaBottom, umbilical, 100);
+			umbilical.object3D = new Mooring(umbilical.anchorPointOnShip, umbilical.anchorPointSeaBottom, umbilical, 100);
+			zUpCont.add(umbilical.object3D.line.object);
 
 			requestAnimationFrame(animate);
 		})();
 
-		// animate phase index
-		// ships.changedShip.change(function() {
-		// 	console.log("Teste");
-		// });
-
 		function animate(millitime) {
 			var t = clock.getElapsedTime();
 
-
-			let playing = playback.update();
-
-			//Disable this to freeze water when not playing
-			if (!playing) {
-				ocean.water.material.uniforms.time.value += 1 / 60;
-			}
+			ocean.water.material.uniforms.time.value += 1 / 60;
 
 			//Simulate the ship change
 			if (epoch.simulation.radius > epoch.simulation.maxRadius && !ships.simulation.changedShip) {
