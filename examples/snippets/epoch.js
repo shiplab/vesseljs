@@ -54,9 +54,6 @@ class Epoch {
   //   clock.stop();
   //   this.play();
   // }
-  test() {
-    console.log('so um teste');
-  }
   updateVolume(time) {
     this.time = parseFloat(this.speed) * Math.floor(time); // weeks (speed is the multplyer)
 
