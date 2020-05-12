@@ -467,6 +467,7 @@
 		});
 
 		var raoReq = new XMLHttpRequest();
+		// file missing :(
 		raoReq.open("GET", "motion_data/Explore_file_motion.4", true);
 		raoReq.addEventListener("load", function(event) {
 			output = event.target.response;
@@ -510,17 +511,13 @@
 				}
 			}
 
-			var lineNumb, i, j, k, l;
+			var i, j, k, l;
 			for (l = 0; l < lin.length - 1; l++) {
-				lineNumb = l + 1;
-				i = ((l + 1) % 12);
-				if (i === 0) {i = 12};
-
-				j = Math.floor(lineNumb / (dof * hea));
-				k = Math.floor(lineNumb / 12) % 25;
-
-				rao[i - 1][j][k] = lin[l][3];
-				pha[i - 1][j][k] = lin[l][4];
+				i = l % dof;
+				j = Math.floor(l / (dof * hea));
+				k = Math.floor(l / dof) % hea;
+				rao[i][j][k] = lin[l][3];
+				pha[i][j][k] = lin[l][4];
 			}
 		}
 
