@@ -71,6 +71,22 @@
 		display: block;
 	}
 
+	#tooltip {
+		visibility: hidden;
+		position: absolute;
+		font-family: Helvetica;
+		/* top: 10px;
+		left: 10px;
+		width: 10px; */
+		/* height: 50px; */
+		display: block;
+	  background-color: black;
+	  color: #fff;
+	  text-align: center;
+	  padding: 5px 10px;
+	  border-radius: 6px;
+	}
+
 	.button-reload {
 		border: none;
 		display: inline-block;
@@ -171,6 +187,8 @@
 			<h4>CO2 Storage</h4>
 		</div>
 
+		<div id="tooltip"></div>
+
 		 <!-- <svg id="arrow" src="images/arrow_left.svg" alt="" style="margin-left: 30px;"></svg> -->
 		 <svg id="arrow"  width="25" height="25" viewBox="0 0 18 18">
 			 <path fill="#ffff00"
@@ -229,14 +247,17 @@
 
 		var clock = new THREE.Clock();
 
+		// Inserting arrow phases
+		var container = document.getElementById('3d');
+		var arrow = document.getElementById('arrow');
+		var info = document.getElementById('info');
+		var tooltip = document.getElementById('tooltip');
+		document.body.appendChild(container);
+
 		(function main() {
 			//Renderer setup
 			//document.body.style = "overflow: hidden;";
 			document.body.style.overflow = "hidden";
-			var container = document.getElementById('3d');
-			var arrow = document.getElementById('arrow');
-			var info = document.getElementById('info');
-			document.body.appendChild(container);
 
 			// Object.assign(container.style, {
 			// 	position: "absolute",
@@ -359,6 +380,7 @@
 				epoch.position.y,
 				epoch.position.z,
 			];
+			epoch.mesh[epoch.mesh.length - 1].name = "epoch";
 			epoch.mesh[0].rotation.x = -Math.PI / 2;
 			zUpCont.add(epoch.mesh[0]);
 
@@ -475,6 +497,7 @@
 					epochEquipments.xmastree.position.z
 				];
 
+				epochEquipments.xmastree.mesh.name = "Christimas Three";
 				epochEquipments.xmastree.mesh.rotation.set(0, 0, -Math.PI / 2)
 
 
@@ -536,6 +559,7 @@
 					epochEquipments.brine_subpump.position.y,
 					epochEquipments.brine_subpump.position.z
 				];
+				epochEquipments.brine_subpump.mesh.name = "Brine SubPump";
 				zUpCont.add(epochEquipments.brine_subpump.mesh);
 
 			});
@@ -562,6 +586,7 @@
 				epochEquipments.injection_tubes.position.y,
 				epochEquipments.injection_tubes.position.z - 0.95	*epoch.height/2
 			];
+			epochEquipments.injection_tubes.mesh[0].name = "Tube";
 			epochEquipments.injection_tubes.mesh[0].rotation.x = -Math.PI / 2;
 			zUpCont.add(epochEquipments.injection_tubes.mesh[0]);
 
@@ -586,6 +611,7 @@
 				epochEquipments.injection_tubes.position.y,
 				epochEquipments.injection_tubes.position.z
 			];
+			epochEquipments.injection_tubes.mesh[1].name = "Tube";
 			epochEquipments.injection_tubes.mesh[1].rotation.x = -Math.PI / 2;
 			zUpCont.add(epochEquipments.injection_tubes.mesh[1]);
 
@@ -608,7 +634,7 @@
 				"fpsoSTL": {
 					"hull": {
 						"position": {
-							"x": -50,
+							"x": -500,
 							"y": 0,
 							"z": -1
 						}
@@ -918,6 +944,7 @@
 
 			// catenaryFunction = new InsertCatenary(eletricCable.anchorPointOnShip, eletricCable.anchorPointSeaBottom, eletricCable, 100);
 			eletricCable.object3D = new Cable(eletricCable.anchorPointOnShip, eletricCable.anchorPointSeaBottom, eletricCable, 100);
+			eletricCable.object3D.line.object.name = "Eletric Cable";
 			zUpCont.add(eletricCable.object3D.line.object);
 
 			//Point of mooring line on ship (m, m, m)
@@ -937,10 +964,97 @@
 
 			// catenaryFunction = new InsertCatenary(umbilical.anchorPointOnShip, umbilical.anchorPointSeaBottom, umbilical, 100);
 			umbilical.object3D = new Mooring(umbilical.anchorPointOnShip, umbilical.anchorPointSeaBottom, umbilical, 100);
+			umbilical.object3D.line.object.name = "Umbilical";
 			zUpCont.add(umbilical.object3D.line.object);
 
 			requestAnimationFrame(animate);
 		})();
+
+		// Inserting Ray Caster. @ferrari212
+		// Source: https://threejs.org/docs/#api/en/core/Raycaster; https://github.com/mrdoob/three.js/blob/master/examples/webgl_interactive_cubes_ortho.html
+		var raycaster = new THREE.Raycaster();
+		var mouse = new THREE.Vector2();
+		var intersected = ({"name": undefined, "currentHex": undefined});
+
+		// intersected.name = "No initial name";
+		var canvasWidth = window.innerWidth - container.clientWidth;
+
+		function onMouseMove( event ) {
+
+			// calculate mouse position in normalized device coordinates
+			// (-1 to +1) for both components
+
+			// Transport the event client position
+			mouse.clientX = event.clientX;
+			mouse.clientY = event.clientY;
+
+			mouse.x = ( (event.clientX - canvasWidth) / container.clientWidth ) * 2 - 1;
+			mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+			// console.log(mouse.x, mouse.y);
+
+		}
+
+		function renderRayCaster() {
+
+			// update the picking ray with the camera and mouse position
+			raycaster.setFromCamera( mouse, camera );
+
+			// calculate objects intersecting the picking ray
+			var intersects = raycaster.intersectObjects( zUpCont.children );
+
+			if (intersects[0].object.name != "" && intersects[0].object.name != undefined) {
+				// Objsect touched something
+
+				if (intersected.name != intersects[0].object.name) {
+					// Objsect touched is different from the previeus
+
+					if (intersected.name != undefined) {
+						// Check if there was a previeus touched object
+
+						// Make the previous in its original color
+						intersected.material.color.set(intersected.currentHex);
+
+					}
+
+					// cast name and colors of the object
+					intersected = intersects[0].object;
+					intersected.currentHex = intersected.material.color.getHex();
+
+					//paint element of red
+					intersects[0].object.material.color.set( 0xff0000 );
+
+					// Inserting tooltip
+					tooltip.style.visibility = 'visible';
+					tooltip.style.left = mouse.clientX - canvasWidth + 20;
+					tooltip.style.top = mouse.clientY + 10;
+					tooltip.textContent = intersected.name;
+
+				}
+
+			} else {
+				// Objsect touched nothing
+
+				if (intersected.name != undefined) {
+					// Check if there was a previeus touched
+
+					// Make the previous in its original color
+					intersected.material.color.set(intersected.currentHex);
+				}
+
+				// cast name and colors of the object as udefined
+				intersected = ({"name": undefined, "currentHex": undefined});
+
+				// Taking off tool tip
+				tooltip.style.visibility = 'hidden';
+			}
+
+			// renderer.render( scene, camera );
+
+		}
+
+		window.addEventListener( 'mousemove', onMouseMove, false );
+
+		// window.requestAnimationFrame(renderRayCaster);
 
 		function animate(millitime) {
 			var t = clock.getElapsedTime();
@@ -1013,6 +1127,7 @@
 
 			renderer.render(scene, camera);
 			requestAnimationFrame(animate);
+			renderRayCaster();
 		}
 	</script>
 </body>
