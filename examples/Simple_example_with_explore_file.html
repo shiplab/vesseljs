@@ -115,7 +115,7 @@
 				"hull": {
 					"attributes": {
 						"LOA": 264.75,
-						"BOA": 24,
+						"BOA": 48,
 						"Depth": 24,
 						"APP": 0
 					},
@@ -134,11 +134,11 @@
 					"affiliations": {},
 					"boxDimensions": {
 						"length": 264.75,
-						"breadth": 23.8,
+						"breadth": 47,
 						"height": 24
 					},
 					"capabilities": {},
-					"file3D": "Tank1.stl",
+					"file3D": "tank1.stl",
 					"weightInformation": {
 						"lightweight": 0,
 						"cg": [0, 0, 1]
@@ -195,7 +195,7 @@
 			rao = [];
 			pha = [];
 
-			var dof = 12; // DoF
+			var dof = 6; // DoF
 			var per = 60; // Number of periods
 			var hea = 25; // Number of headings
 
@@ -213,18 +213,13 @@
 				}
 			}
 
-			var lineNumb, i, j, k, l;
+			var i, j, k, l;
 			for (l = 0; l < lin.length - 1; l++) {
-
-				lineNumb = l + 1;
-				i = ((l + 1) % 12);
-				if (i === 0) {i = 12};
-
-				j = Math.floor(lineNumb / (dof * hea));
-				k = Math.floor(lineNumb / 12) % 25;
-
-				rao[i - 1][j][k] = lin[l][3];
-				pha[i - 1][j][k] = lin[l][4];
+				i = l % dof;
+				j = Math.floor(l / (dof * hea));
+				k = Math.floor(l / dof) % hea;
+				rao[i][j][k] = lin[l][3];
+				pha[i][j][k] = lin[l][4];
 			}
 		}
 
