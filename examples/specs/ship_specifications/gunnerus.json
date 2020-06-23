@@ -1339,8 +1339,6 @@
     }
   ],
 
-  "start": "HERE START THE BASEOBJECTS------------------/////-----------------------",
-
   "derivedObjects": [
     {
       "id": "Propulsion room",
