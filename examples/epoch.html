@@ -434,28 +434,10 @@
 		var info = document.getElementById('info');
 		var tooltip = document.getElementById('tooltip');
 		document.body.appendChild(container);
-		
-		// // Pan Icon
-		// container.onmouseover = function() {
-		// 	container.style.cursor = "grab";
-
-		// 	container.onclick = function() {
-		// 	container.style.cursor = "grabbing";
-		// };
-		// };
 
 		(function main() {
-			//Renderer setup
-			//document.body.style = "overflow: hidden;";
 			document.body.style.overflow = "hidden";
 
-			// Object.assign(container.style, {
-			// 	position: "absolute",
-			// 	top: 0,
-			// 	left: 0,
-			// 	width: "100vw",
-			// 	height: "100vh"
-			// });
 			document.body.appendChild(container);
 			renderer = new THREE.WebGLRenderer({
 				antialias: true
@@ -526,8 +508,6 @@
 			controls.enablePan = false;
 			controls.maxPolarAngle = 3 * (Math.PI / 4);
 			controls.minPolarAngle = 0;
-			// controls.maxAzimuthAngle = Math.PI / 2;
-			// controls.minAzimuthAngle = -Math.PI / 2;
 
 			//zUpCont.add(new THREE.AxisHelper(1000));
 			zUpCont.add(new THREE.HemisphereLight(0xccccff, 0x666688, 1));
@@ -692,7 +672,6 @@
 
 
 				zUpCont.add(epochEquipments.xmastree.mesh);
-				// zUpCont.add(new THREE.Mesh(geometrySTL, material));
 			});
 
 			loader.load('./specs/STL files/eletric.stl', function(geometrySTL) {
@@ -764,7 +743,6 @@
 			var material = new THREE.MeshBasicMaterial({
 				color: 0x000000,
 				transparent: false
-				// opacity: 0.8
 			});
 			epochEquipments.injection_tubes.mesh = [];
 			epochEquipments.injection_tubes.mesh.push(new THREE.Mesh(geometryCylinder, material));
@@ -848,7 +826,6 @@
 					});
 				} else {
 					var material = new THREE.MeshPhongMaterial({
-						// color: 0xffff00,
 						color: 0x303030,
 						emissive: 0x494949,
 						specular: 0x6b6b6b,
@@ -870,7 +847,6 @@
 				ships.shipSTL.hull.mesh.name = "ship";
 
 				zUpCont.add(ships.shipSTL.hull.mesh);
-				// zUpCont.add(new THREE.Mesh(geometrySTL, material));
 			});
 
 
@@ -885,7 +861,6 @@
 					});
 				} else {
 					var material = new THREE.MeshPhongMaterial({
-						// color: 0xffff00,
 						color: 0x303030,
 						emissive: 0x494949,
 						specular: 0x6b6b6b,
@@ -896,8 +871,6 @@
 					});
 					console.info('There is no color in geometrySTL: ', geometrySTL.hasColors);
 				}
-
-				// new THREE.Mesh( geometry, material );
 
 				ships.fpsoSTL.hull.mesh = new THREE.Mesh(geometrySTL, material);
 				ships.fpsoSTL.hull.mesh.scale.set(0.25, 0.25, 0.25);
@@ -931,8 +904,6 @@
 				},
 				"anchorLineGeometry": {},
 				"hangedMooring": {},
-				// "radialDistance": 200,
-				// "mooringAngle": 45,
 				"breakingLoad": 200,
 				"anchorLength": 120,
 				"horizontalForce": 200, // Horizontal Force on the ship (kgf)
@@ -956,8 +927,6 @@
 				},
 				"anchorLineGeometry": {},
 				"hangedMooring": {},
-				// "radialDistance": 200,
-				// "mooringAngle": 45,
 				"breakingLoad": 300,
 				"anchorLength": 90,
 				"horizontalForce": 200, // Horizontal Force on the ship (kgf)
@@ -1094,10 +1063,6 @@
 					scale
 						.add(epoch.simulation, 'pause')
 						.name("Pause");
-					// scale
-					// 	// .add(epoch.simulation, 'restart')
-					// 	.add(window.location, 'reload')
-					// 	.name("Restart");
 					scale
 						.add(epoch.simulation, 'speed', {
 							Slow: 1,
