@@ -54,10 +54,40 @@
 
 	#arrow {
 		position: absolute;
-		top: 76px;
+		top: 28px;
 		left: 140px;
 		z-index: 101;
 		display: block;
+	}
+
+	#button {
+		position: fixed;
+		bottom: 16px;
+		right: 16px;
+
+		padding: 12px;
+		border-radius: 50%;
+		margin-bottom: 0px;
+
+		background-color: #FFF;
+		opacity: .9;
+		z-index: 999;
+
+		box-shadow: 0 0 4px rgba(0,0,0,.15);
+	}
+
+	#diss-explanation {
+		position: absolute;
+	}
+
+	#diss-transition {
+		position: absolute;
+		opacity: 0;
+	}
+
+	#diss-storage {
+		position: absolute;
+		opacity: 0;
 	}
 
 	#info {
@@ -75,10 +105,6 @@
 		visibility: hidden;
 		position: absolute;
 		font-family: Helvetica;
-		/* top: 10px;
-		left: 10px;
-		width: 10px; */
-		/* height: 50px; */
 		display: block;
 	  background-color: black;
 	  color: #fff;
@@ -122,6 +148,27 @@
 		margin-top: 10px;
 	}
 
+	.explanation {
+		background-color: #fff;
+		padding: 10px;
+		opacity: 0.75;
+		border-radius: 10px;
+	}
+
+	.grabbable {
+    cursor: move; /* fallback if grab cursor is unsupported */
+    cursor: grab;
+    cursor: -moz-grab;
+    cursor: -webkit-grab;
+	}
+
+	/* (Optional) Apply a "closed-hand" cursor during drag operation. */
+	.grabbable:active {
+			cur	sor: grabbing;
+			cursor: -moz-grabbing;
+			cursor: -webkit-grabbing;
+	}
+
 	.text-yellow {
 		color: #ffff00;
 	}
@@ -131,31 +178,108 @@
 		margin-top: 5px
 	}
 
+	/* LOADER */
+	#loader-wrapper {
+		width: 100%;
+		height: 100%;
+		text-align: center;
+		position: absolute;
+		top: 0;
+		left: 0;
+		background-color: #00509e;
+		color: #fff;
+		font-family: Helvetica;
+		z-index: 105;
+	}
+
+	.loader {
+		display: inline-block;
+    width: 50px;
+    height: 50px;
+		position: relative;
+		margin-top: 17%;
+    border-radius: 50%;
+    vertical-align: middle;
+}
+.loader,
+.loader:before,
+.loader:after {
+    animation: 1s infinite ease-in-out;
+}
+.loader:before,
+.loader:after {
+    width: 100%; 
+    height: 100%;
+    border-radius: 50%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.loader-black { background-color: #fff; }
+
+.loader-1 { animation-name: loader1; }
+@-webkit-keyframes loader1 {
+    from { transform: scale(0); opacity: 1; }
+    to   { transform: scale(1); opacity: 0; }
+}
+
+/* ANIMATION */
+	.text-off {
+			animation: textoff 4s 1 ease forwards;
+	}
+
+	.text-on {
+			animation: texton 4s 1 ease forwards;
+	}
+
+
 	.run-1 {
 	  animation: move-arrow-1 3s 1 ease forwards;
 	}
 
+	
 	.run-2 {
 	  animation: move-arrow-2 3s 1 ease forwards;
 	}
 
-	@-webkit-keyframes move-arrow-1 {
+	@-webkit-keyframes textoff {
 	  0% {
-	    top: 76px;
+	    opacity: 0.75;
 	  }
 
 	  100% {
-	    top: 116px;
+	    opacity: 0;
 	  }
 	}
 
-	@-webkit-keyframes move-arrow-2 {
+	@-webkit-keyframes texton {
 	  0% {
-	    top: 116px;
+	    opacity: 0;
 	  }
 
 	  100% {
-	    top: 156px;
+	    opacity: 0.75;
+	  }
+	}
+
+	@-webkit-keyframes move-arrow-1 {
+	  0% {
+	    top: 28px;
+	  }
+
+	  100% {
+	    top: 68px;
+	  }
+	}	
+
+	@-webkit-keyframes move-arrow-2 {
+	  0% {
+	    top: 68px;
+	  }
+
+	  100% {
+	    top: 108px;
 	  }
 	}
 
@@ -179,21 +303,63 @@
 
 <body>
 
-	<div id="3d" class='orchid' style="position: absolute; top: 0px; height: 100%; right: 0px;">
+	<a id="button" target="_blank" href="https://github.com/shiplab/vesseljs/blob/dev/examples/epoch.html" title="View source code for animation / cloth on GitHub" style="">
+		<img src="..\examples\images\code-24px.svg">
+	</a>
+
+	<div id="loader-wrapper">
+		<div class="loader loader-black loader-1"></div>
+		<div><h1 style="font-style: italic;">Loading...</h1></div>
+	</div>
+
+	<div id="3d" class='orchid grabbable' style="position: absolute; top: 0px; height: 100%; right: 0px;">
 		<div id="info">
-			<h2>Stages</h2>
+			<!-- <h2>Stages</h2> -->
 			<h4 class="text-yellow">Dissolution</h4>
 			<h4>Ship Transition</h4>
 			<h4>CO2 Storage</h4>
+			<div>
+				<div id="diss-explanation" class="explanation">
+					<p>
+						The dissolution stage comprises two possible solutions
+						for the dissolution system: using a dedicated unit (DU) or
+						using the FPSO (Floating Production, Storage, and
+						Offloading) platform available infrastructure.
+					</p>
+					<p>
+						When using a dedicated unit, a subsea pump will provide
+						water to the cave dissolution. This subsea pump requires
+						an infrastructure consisting of a generator, an umbilical
+						cable to provide high voltage electricity, a water intake
+						pipe, and connection equipment as flowlines, terminals,
+						and jumpers
+					</p>
+				</div>				
+				<div id="diss-transition" class="explanation">
+					<p>
+						On the transition phase the Dedicated unit ship is substitute by
+						a FPSO that stores the liquified CO2, the Sub pump unit is removed
+						and the Umbilical will be reconnected to the Christmas Tree.
+					</p>
+				</div>				
+				<div id="diss-storage" class="explanation">
+					<p>
+						The FPSO start the injection of the liquified CO2 in the epoch, the 
+            time for fulfilling the epoch depends upon the size of the epoch and 
+            CO2 flow rate. 
+					</p>
+				</div>				
+			</div>			
 		</div>
 
 		<div id="tooltip"></div>
 
-		 <!-- <svg id="arrow" src="images/arrow_left.svg" alt="" style="margin-left: 30px;"></svg> -->
 		 <svg id="arrow"  width="25" height="25" viewBox="0 0 18 18">
 			 <path fill="#ffff00"
 			  d="M15 8.25H5.87l4.19-4.19L9 3 3 9l6 6 1.06-1.06-4.19-4.19H15v-1.5z"/>
 		 </svg>
+
+		 
 	</div>
 
 	<div id="pitch_graph" style="position: absolute; bottom: 0%; height: 100%; left: 0px; width: 180px; background-color: #00509e">
@@ -237,6 +403,21 @@
 	<script>
 		"use strict";
 
+		window.addEventListener('load', function() {
+		var fadeTarget = document.getElementById("loader-wrapper");
+    var fadeEffect = setInterval(function () {
+        if (!fadeTarget.style.opacity) {
+            fadeTarget.style.opacity = 1;
+        }
+        if (fadeTarget.style.opacity > 0) {
+            fadeTarget.style.opacity -= 0.05;
+        } else {
+            clearInterval(fadeEffect);
+						fadeTarget.remove();
+        }
+    }, 50);
+	})
+
 		//Globals
 		var renderer, camera, controls, gui, stats;
 		var scene, zUpCont, bodies, ocean, ship3D;
@@ -253,6 +434,15 @@
 		var info = document.getElementById('info');
 		var tooltip = document.getElementById('tooltip');
 		document.body.appendChild(container);
+		
+		// // Pan Icon
+		// container.onmouseover = function() {
+		// 	container.style.cursor = "grab";
+
+		// 	container.onclick = function() {
+		// 	container.style.cursor = "grabbing";
+		// };
+		// };
 
 		(function main() {
 			//Renderer setup
@@ -822,7 +1012,7 @@
 							epochEquipments.co2_flowrate.flowrate_capacity = newValue;
 							epoch.simulation.flowrate = newValue;
 							epoch.simulation.setMaxTime(epoch.simulation.diss_time, epoch.simulation.flowrate);
-							scale.__controllers[5].__max = epoch.simulation.maxTime;
+							scale.__controllers[4].__max = epoch.simulation.maxTime;
 						})
 						.name("Rate (m3/h)");
 					scale.open();
@@ -1066,24 +1256,37 @@
 				epoch.simulation.pause();
 				ships.simulation.changeShip();
 				arrow.classList.add('run-1');
-				info.children[1].classList.remove('text-yellow');
-				info.children[2].classList.add('text-yellow');
+				
+				document.getElementById('diss-explanation').classList.add('text-off');
+				document.getElementById('diss-transition').classList.add('text-on');
+				
+				info.children[0].classList.remove('text-yellow');
+				info.children[1].classList.add('text-yellow');
+				
 				zUpCont.getObjectByName( "fpso" ).material.visible = true;
 				zUpCont.getObjectByName( "fpso" ).position.x = -70 - 150 * (1 - ships.simulation.changingfactor);
 				zUpCont.getObjectByName( "fpso" ).material.opacity = ships.simulation.changingfactor;
 				zUpCont.getObjectByName( "ship" ).material.opacity = 1 - ships.simulation.changingfactor;
 				zUpCont.getObjectByName( "ship" ).position.x = -50 + 150 * ships.simulation.changingfactor;
 				zUpCont.getObjectByName( "sub_pump" ).material.opacity = 1 - ships.simulation.changingfactor;
+				
 				umbilical.geometry.vertices[umbilical.geometry.vertices["length"]-1].x = epochEquipments.xmastree.position.x;
 				umbilical.geometry.verticesNeedUpdate = true;
+
 				if (ships.simulation.changedShip) {
 					epoch.simulation.play();
 					zUpCont.getObjectByName( "ship" ).material.visible = false;
 					zUpCont.getObjectByName( "sub_pump" ).material.visible = false;
 					arrow.classList.add('run-2');
-					info.children[2].classList.remove('text-yellow');
-					info.children[3].classList.add('text-yellow');
+					
+					document.getElementById('diss-transition').classList.remove('text-on');
+					document.getElementById('diss-transition').classList.add('text-off');
+					document.getElementById('diss-storage').classList.add('text-on');
+					
+					info.children[1].classList.remove('text-yellow');
+					info.children[2].classList.add('text-yellow');
 				}
+
 			}
 
 			if (epoch.simulation.playing) {
