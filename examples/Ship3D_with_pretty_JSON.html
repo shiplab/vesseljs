@@ -36,7 +36,7 @@
 	<script type="text/javascript" src="libs/renderjson.js"></script>
 
 	<!--Ship3D class for three.js-->
-	<script src="snippets/Ship3D.js"></script>
+	<script src="snippets/Ship3D_v2.js"></script>
 
 	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -174,15 +174,19 @@
 			var shipspec = JSON.parse(contents);
 			displayContents(shipspec);
 			var ship = new Vessel.Ship(shipspec);
+			var state = new Vessel.ShipState();
 			if (ship3D !== undefined) {
 				scene.remove(ship3D);
 			}
-			ship3D = new Ship3D(ship, "specs/STL files");
+			ship3D = new Ship3D(ship, {
+					shipState: state,
+					stlPath: "specs/STL files"
+				});
 			scene.add(ship3D);
 
 			let LOA = ship.structure.hull.attributes.LOA;
-			camera.position.set(0.7 * LOA, 0.7 * LOA, 0.7 * LOA);
-			controls.target = new THREE.Vector3(LOA / 2, 0, 0);
+			camera.position.set(0.2 * LOA, 0.7 * LOA, 0.7 * LOA);
+			controls.target = new THREE.Vector3(0, 0, 0);
 			controls.update();
 			animate();
 		}
@@ -206,13 +210,6 @@
 			.addEventListener('change', readSingleFile, false)
 
 	</script>
-	<!-- /.container -->
-
-
-
-	<!-- Insert own scripts here -->
-
-
 </body>
 
 </html>
