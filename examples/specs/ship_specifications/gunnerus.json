@@ -54,8 +54,8 @@
         ]
       },
       "style": {
-        "upperColor": "pink",
-        "lowerColor": "grey",
+        "upperColor": "green",
+        "lowerColor": "pink",
         "opacity": 0.6
       },
       "buttockHeights": {}
@@ -1338,8 +1338,6 @@
       }
     }
   ],
-
-  "start": "HERE START THE BASEOBJECTS------------------/////-----------------------",
 
   "derivedObjects": [
     {
