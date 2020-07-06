@@ -164,7 +164,7 @@
 
 	/* (Optional) Apply a "closed-hand" cursor during drag operation. */
 	.grabbable:active {
-			cur	sor: grabbing;
+			cursor: grabbing;
 			cursor: -moz-grabbing;
 			cursor: -webkit-grabbing;
 	}
@@ -428,11 +428,14 @@
 
 		var clock = new THREE.Clock();
 
+		// Global intersected element for raycaster control
+		var intersected;
+
 		// Inserting arrow phases
 		var container = document.getElementById('3d');
 		var arrow = document.getElementById('arrow');
 		var info = document.getElementById('info');
-		var tooltip = document.getElementById('tooltip');
+		var tooltipElement = document.getElementById('tooltip');
 		document.body.appendChild(container);
 
 		(function main() {
@@ -1127,11 +1130,8 @@
 
 		// Inserting Ray Caster. @ferrari212
 		// Source: https://threejs.org/docs/#api/en/core/Raycaster; https://github.com/mrdoob/three.js/blob/master/examples/webgl_interactive_cubes_ortho.html
-		var raycaster = new THREE.Raycaster();
 		var mouse = new THREE.Vector2();
-		var intersected = ({"name": undefined, "currentHex": undefined});
 
-		// intersected.name = "No initial name";
 		var canvasWidth = window.innerWidth - container.clientWidth;
 
 		function onMouseMove( event ) {
@@ -1145,66 +1145,83 @@
 
 			mouse.x = ( (event.clientX - canvasWidth) / container.clientWidth ) * 2 - 1;
 			mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
-			// console.log(mouse.x, mouse.y);
 
 		}
 
-		function renderRayCaster() {
+		function renderRayCaster(mouse, camera, intersectedElement = {"name": undefined}) {
+		//  Ray Caster Function. @ferrari212. Inspirations:
+		// https://threejs.org/docs/#api/en/core/Raycaster; 
+		// https://github.com/mrdoob/three.js/blob/master/examples/webgl_interactive_cubes_ortho.html
+		// Create documentation
+			
+			var raycaster = new THREE.Raycaster();
 
 			// update the picking ray with the camera and mouse position
 			raycaster.setFromCamera( mouse, camera );
 
-			// calculate objects intersecting the picking ray
+			// calculate objects intersecting the picking ray			
 			var intersects = raycaster.intersectObjects( zUpCont.children );
+			// var test = intersectedElement;
 
 			if (intersects[0].object.name != "" && intersects[0].object.name != undefined) {
 				// Objsect touched something
 
-				if (intersected.name != intersects[0].object.name) {
+				if (intersectedElement.name != intersects[0].object.name) {
 					// Objsect touched is different from the previeus
 
-					if (intersected.name != undefined) {
+					if (intersectedElement.name != undefined) {
 						// Check if there was a previeus touched object
 
 						// Make the previous in its original color
-						intersected.material.color.set(intersected.currentHex);
+						intersectedElement.material.color.set(intersectedElement.currentHex);
 
 					}
 
 					// cast name and colors of the object
-					intersected = intersects[0].object;
-					intersected.currentHex = intersected.material.color.getHex();
+					intersectedElement = intersects[0].object;
+					intersectedElement.currentHex = intersectedElement.material.color.getHex();
 
 					//paint element of red
 					intersects[0].object.material.color.set( 0xff0000 );
 
-					// Inserting tooltip
-					tooltip.style.visibility = 'visible';
-					tooltip.style.left = mouse.clientX - canvasWidth + 20;
-					tooltip.style.top = mouse.clientY + 10;
-					tooltip.textContent = intersected.name;
-
 				}
+
+				intersectedElement.status = true;
 
 			} else {
 				// Objsect touched nothing
 
-				if (intersected.name != undefined) {
+				if (intersectedElement.name != undefined) {
 					// Check if there was a previeus touched
 
 					// Make the previous in its original color
-					intersected.material.color.set(intersected.currentHex);
+					intersectedElement.material.color.set(intersectedElement.currentHex);
 				}
 
 				// cast name and colors of the object as udefined
-				intersected = ({"name": undefined, "currentHex": undefined});
+				intersectedElement = ({"name": undefined, "currentHex": undefined, "status": false});
+
+			}
+
+			return intersectedElement
+
+		}
+
+		function toolTip(tooltip, intersected) {
+			if (intersected.status) {
+
+				// Inserting tooltip
+				tooltip.style.visibility = 'visible';
+				tooltip.style.left = mouse.clientX - canvasWidth + 20;
+				tooltip.style.top = mouse.clientY + 10;
+				tooltip.textContent = intersected.name;
+
+			} else {
 
 				// Taking off tool tip
 				tooltip.style.visibility = 'hidden';
+				
 			}
-
-			// renderer.render( scene, camera );
-
 		}
 
 		window.addEventListener( 'mousemove', onMouseMove, false );
@@ -1295,7 +1312,9 @@
 
 			renderer.render(scene, camera);
 			requestAnimationFrame(animate);
-			renderRayCaster();
+
+			intersected = renderRayCaster(mouse, camera, intersected);
+			toolTip(tooltipElement, intersected);
 		}
 	</script>
 </body>
