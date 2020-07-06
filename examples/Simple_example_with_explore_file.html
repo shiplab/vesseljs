@@ -8,45 +8,30 @@
 
 	<title>Ship in Ocean</title>
 	<script src="../build/vessel.js"></script>
-
 	<script src="libs/three.js"></script>
 	<script src="libs/STLLoader.js"></script>
-
 	<script src="snippets/Ship3D_v2.js"></script>
-
 	<script src="libs/plotly-1.48.3.min.js"></script>
-
 	<script src="libs/Mirror.js"></script>
 	<script src="libs/WaterShader.js"></script>
-
 	<script src="libs/OrbitControls.js"></script>
 	<script src="libs/dat.gui.min.js"></script>
 	<script src="libs/skybox_from_examples.js"></script>
-
 	<script src="libs/browse_files_Elias_Hasle.js"></script>
 	<script src="snippets/Patch_interpolation.js"></script>
-	<!--<script src="Moving_bodies_Elias_Hasle.js"></script>-->
 	<script src="snippets/Playback.js"></script>
-	<script src="snippets/Regular_ocean_final.js"></script>
-	<!--<script src="keyboard_arrow_input_Elias_Hasle.js"></script>-->
+	<script src="snippets/Regular_ocean.js"></script>
 	<script src="libs/zingchart.min.js"></script>
-
 	<script src="snippets/Simple_example.js"></script>
 	<script src="libs/numeric-1.2.6.min.js"></script>
 </head>
 
 <body>
-
 	<input type="file" id="openFile" />
 	<br>
 	<pre id="fileContents"></pre>
 	<div id="3d" class='orchid' style="position: absolute; top: 0px; height: 75%; right: 0px; width: 75%"></div>
-
-
 	<div id="plotBottom" style="position:fixed; bottom:0%; float:left; width:100%; height:95%"></div>
-
-
-
 
 	<script>
 		"use strict";
@@ -87,7 +72,6 @@
 		var J;
 		var cube;
 		var plane;
-
 
 		spec2 = {
 			"attributes": {},
@@ -160,9 +144,9 @@
 
 		lin = [];
 
-		document.getElementById('openFile').addEventListener('change', function() {
+		document.getElementById('openFile').addEventListener('change', function () {
 			var fr = new FileReader();
-			fr.onload = function() {
+			fr.onload = function () {
 				output = this.result;
 				useRAO(output);
 			};
@@ -170,14 +154,14 @@
 		});
 
 		var raoReq = new XMLHttpRequest();
-		raoReq.open("GET", "motion_data/Simple_file_motion.4", true);
-		raoReq.addEventListener("load", function(event) {
+		raoReq.open("GET", "motion_data/Simple_file_motion.txt", true);
+		raoReq.addEventListener("load", function (event) {
 			output = event.target.response;
 			useRAO(output);
 		});
 		raoReq.send(null);
 
-		var useRAO = function(result) {
+		var useRAO = function (result) {
 			index = 0;
 			res = result.split(/[\s]+/).join(' ')
 			res2 = res.substring(1)
@@ -218,8 +202,8 @@
 				i = l % dof;
 				j = Math.floor(l / (dof * hea));
 				k = Math.floor(l / dof) % hea;
-				rao[i][j][k] = lin[l][3];
-				pha[i][j][k] = lin[l][4];
+				rao[i][per - 1 - j][k] = lin[l][3];
+				pha[i][per - 1 - j][k] = lin[l][4];
 			}
 		}
 
@@ -264,7 +248,6 @@
 			gui = new dat.GUI();
 
 			// add report to GUI controller
-
 			playback = new Playback({
 				parentGUI: gui
 			});
@@ -309,7 +292,7 @@
 				1,
 				1000000
 			);
-			let onResize = function() {
+			let onResize = function () {
 				let w = container.clientWidth;
 				let h = container.clientHeight;
 				renderer.setSize(w, h);
@@ -349,7 +332,6 @@
 			states = ship.designState.clone();
 			states2 = buoy.designState.clone();
 
-
 			//console.log(states.objectCache);
 			statMod = new Vessel.StateModule(ship, states);
 			statMod.setDraft();
@@ -365,17 +347,11 @@
 			});
 			zUpCont.add(ship3D);
 
-
-
-
 			LOA1 = ship.structure.hull.attributes.LOA;
 
 			BOA1 = ship.structure.hull.attributes.BOA;
 
-
 			T1 = ship.designState.calculationParameters.Draft_design;
-
-
 
 			sep = {};
 			sep.x = 0
@@ -386,15 +362,12 @@
 			ship3D.position.y = 0;
 			ship3D.position.z = -T1;
 
-
 			var geometry2 = new THREE.BoxGeometry(50, 20, 50);
-			var material2 = new THREE.MeshBasicMaterial({color: 0x33aa33});
+			var material2 = new THREE.MeshBasicMaterial({ color: 0x33aa33 });
 			cube = new THREE.Mesh(geometry2, material2);
 			scene.add(cube);
 
 			cube.position.x = 315
-
-
 
 			designDimention = ship.structure.hull.attributes;
 			floatingStates = states.discrete.FloatingCondition.state;
@@ -409,7 +382,6 @@
 					designDimention.Depth - T1
 				]
 			]; // Point of mooring line on ship          (m, m, m)
-
 
 			var material = new THREE.LineBasicMaterial({
 				color: 0x0000ff
@@ -434,13 +406,11 @@
 				yaw: Ini[5],
 			};
 
-
 			var tprev = 0; // Initial time
-
 
 			dynMov = new DynamicalMovement(ship, states, states2, userParameters, Ini);
 
-			playback.add(function(t) {
+			playback.add(function (t) {
 
 				let dt = t - tprev;
 
