@@ -22,6 +22,7 @@
 	<script src="snippets/Regular_ocean.js"></script>
 	<script src="snippets/InsertCatenary.js"></script>
 	<script src="snippets/epoch.js"></script>
+	<script src="snippets/renderRayCaster.js"></script>
 	<!--<script src="Moving_bodies_Elias_Hasle.js"></script>-->
 	<!--<script src="keyboard_arrow_input_Elias_Hasle.js"></script>-->
 
@@ -1146,66 +1147,9 @@
 			mouse.x = ( (event.clientX - canvasWidth) / container.clientWidth ) * 2 - 1;
 			mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
 
-		}
+		}		
 
-		function renderRayCaster(mouse, camera, intersectedElement = {"name": undefined}) {
-		//  Ray Caster Function. @ferrari212. Inspirations:
-		// https://threejs.org/docs/#api/en/core/Raycaster; 
-		// https://github.com/mrdoob/three.js/blob/master/examples/webgl_interactive_cubes_ortho.html
-		// Create documentation
-			
-			var raycaster = new THREE.Raycaster();
-
-			// update the picking ray with the camera and mouse position
-			raycaster.setFromCamera( mouse, camera );
-
-			// calculate objects intersecting the picking ray			
-			var intersects = raycaster.intersectObjects( zUpCont.children );
-			// var test = intersectedElement;
-
-			if (intersects[0].object.name != "" && intersects[0].object.name != undefined) {
-				// Objsect touched something
-
-				if (intersectedElement.name != intersects[0].object.name) {
-					// Objsect touched is different from the previeus
-
-					if (intersectedElement.name != undefined) {
-						// Check if there was a previeus touched object
-
-						// Make the previous in its original color
-						intersectedElement.material.color.set(intersectedElement.currentHex);
-
-					}
-
-					// cast name and colors of the object
-					intersectedElement = intersects[0].object;
-					intersectedElement.currentHex = intersectedElement.material.color.getHex();
-
-					//paint element of red
-					intersects[0].object.material.color.set( 0xff0000 );
-
-				}
-
-				intersectedElement.status = true;
-
-			} else {
-				// Objsect touched nothing
-
-				if (intersectedElement.name != undefined) {
-					// Check if there was a previeus touched
-
-					// Make the previous in its original color
-					intersectedElement.material.color.set(intersectedElement.currentHex);
-				}
-
-				// cast name and colors of the object as udefined
-				intersectedElement = ({"name": undefined, "currentHex": undefined, "status": false});
-
-			}
-
-			return intersectedElement
-
-		}
+		window.addEventListener( 'mousemove', onMouseMove, false );
 
 		function toolTip(tooltip, intersected) {
 			if (intersected.status) {
@@ -1222,11 +1166,7 @@
 				tooltip.style.visibility = 'hidden';
 				
 			}
-		}
-
-		window.addEventListener( 'mousemove', onMouseMove, false );
-
-		// window.requestAnimationFrame(renderRayCaster);
+		}		
 
 		function animate(millitime) {
 			var t = clock.getElapsedTime();
@@ -1313,7 +1253,7 @@
 			renderer.render(scene, camera);
 			requestAnimationFrame(animate);
 
-			intersected = renderRayCaster(mouse, camera, intersected);
+			intersected = renderRayCaster(mouse, camera, zUpCont, intersected);
 			toolTip(tooltipElement, intersected);
 		}
 	</script>
