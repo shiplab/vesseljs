@@ -29,7 +29,24 @@
 		<!--<script src="keyboard_arrow_input_Elias_Hasle.js"></script>-->
 	</head>
 
+	<style>
+		#tooltip {
+			/* visibility: hidden; */
+			position: absolute;
+			font-family: Helvetica;
+			display: block;
+			background-color: black;
+			color: #fff;
+			text-align: center;
+			padding: 5px 10px;
+			border-radius: 6px;
+			z-index: 101;
+		}
+	</style>
+
 	<body>
+		<div id="tooltip"></div>
+
 		<script>
 			"use strict"
 
@@ -37,7 +54,11 @@
 			var renderer, camera, controls, gui, stats
 			var scene, zUpCont, playback, bodies, ocean, ship3D, shipGLTF
 			var scale, modelStyle
+
+			// Global variables for raycaster control
 			var intersected
+			var tooltipElement = document.getElementById("tooltip")
+
 			;(function main() {
 				//Renderer setup
 				//document.body.style = "overflow: hidden;";
@@ -208,13 +229,13 @@
 				requestAnimationFrame(animate)
 			})()
 
-			// Inserting Ray Caster. @ferrari212
-			// Source: https://threejs.org/docs/#api/en/core/Raycaster; https://github.com/mrdoob/three.js/blob/master/examples/webgl_interactive_cubes_ortho.html
 			var mouse = new THREE.Vector2()
 
 			function onMouseMove(event) {
 				// calculate mouse position in normalized device coordinates
 				// (-1 to +1) for both components
+				mouse.clientX = event.clientX
+				mouse.clientY = event.clientY
 
 				mouse.x = (event.clientX / window.innerWidth) * 2 - 1
 				mouse.y = -(event.clientY / window.innerHeight) * 2 + 1
@@ -223,6 +244,21 @@
 			}
 
 			window.addEventListener("mousemove", onMouseMove, false)
+
+			function toolTip(tooltip, intersected) {
+				if (intersected.status) {
+					// Inserting tooltip
+					tooltip.style.visibility = "visible"
+					tooltip.style.left = mouse.clientX + 20
+					tooltip.style.top = mouse.clientY + 10
+					tooltip.textContent = intersected.name
+					// console.log(tooltip.style.left)
+					console.log(intersected)
+				} else {
+					// Taking off tool tip
+					tooltip.style.visibility = "hidden"
+				}
+			}
 
 			function animate(millitime) {
 				ocean.water.material.uniforms.time.value += 2 / 60
@@ -233,6 +269,7 @@
 				requestAnimationFrame(animate)
 
 				intersected = renderRayCaster(mouse, camera, zUpCont, intersected)
+				toolTip(tooltipElement, intersected)
 			}
 		</script>
 	</body>

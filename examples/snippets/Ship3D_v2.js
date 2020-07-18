@@ -181,7 +181,7 @@ function Ship3D(ship, {shipState, stlPath, deckOpacity = 0.2, objectOpacity = 0.
 
 	//Bulkheads:
 	var bulkheads = new THREE.Group();
-	bulkheads.scale.set(1, 0.5 * BOA, Depth);
+	bulkheads.scale.set(1, BOA, Depth);
 	//Should have individually trimmed geometries like the decks
 	let bhGeom = new THREE.BoxBufferGeometry(1, 1, 1);
 	bhGeom.translate(0, 0, 0.5);
