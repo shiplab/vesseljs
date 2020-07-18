@@ -1,489 +1,437 @@
 <html>
+	<head>
+		<meta charset="utf-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<head>
+		<title>Ship in Ocean</title>
+		<script src="../build/vessel.js"></script>
 
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
+		<script src="libs/three.js"></script>
+		<script src="libs/STLLoader.js"></script>
 
-	<title>Ship in Ocean</title>
-	<script src="../build/vessel.js"></script>
+		<script src="snippets/Ship3D_v2.js"></script>
 
-	<script src="libs/three.js"></script>
-	<script src="libs/STLLoader.js"></script>
+		<script src="libs/plotly-1.48.3.min.js"></script>
 
-	<script src="snippets/Ship3D_v2.js"></script>
+		<script src="libs/Mirror.js"></script>
+		<script src="libs/WaterShader.js"></script>
 
-	<script src="libs/plotly-1.48.3.min.js"></script>
+		<script src="libs/OrbitControls.js"></script>
+		<script src="libs/dat.gui.min.js"></script>
+		<script src="libs/skybox_from_examples.js"></script>
 
-	<script src="libs/Mirror.js"></script>
-	<script src="libs/WaterShader.js"></script>
+		<script src="libs/browse_files_Elias_Hasle.js"></script>
+		<script src="snippets/Patch_interpolation.js"></script>
+		<!--<script src="Moving_bodies_Elias_Hasle.js"></script>-->
+		<script src="snippets/Playback.js"></script>
+		<script src="snippets/Regular_ocean_final.js"></script>
+		<!--<script src="keyboard_arrow_input_Elias_Hasle.js"></script>-->
+		<script src="libs/zingchart.min.js"></script>
 
-	<script src="libs/OrbitControls.js"></script>
-	<script src="libs/dat.gui.min.js"></script>
-	<script src="libs/skybox_from_examples.js"></script>
+		<script src="snippets/Simple_example.js"></script>
+		<script src="libs/numeric-1.2.6.min.js"></script>
+	</head>
 
-	<script src="libs/browse_files_Elias_Hasle.js"></script>
-	<script src="snippets/Patch_interpolation.js"></script>
-	<!--<script src="Moving_bodies_Elias_Hasle.js"></script>-->
-	<script src="snippets/Playback.js"></script>
-	<script src="snippets/Regular_ocean_final.js"></script>
-	<!--<script src="keyboard_arrow_input_Elias_Hasle.js"></script>-->
-	<script src="libs/zingchart.min.js"></script>
+	<body>
+		<input type="file" id="openFile" />
+		<br />
+		<pre id="fileContents"></pre>
+		<div id="3d" class="orchid" style="position: absolute; top: 0px; height: 75%; right: 0px; width: 75%;"></div>
 
-	<script src="snippets/Simple_example.js"></script>
-	<script src="libs/numeric-1.2.6.min.js"></script>
-</head>
+		<div id="plotBottom" style="position: fixed; bottom: 0%; float: left; width: 100%; height: 95%;"></div>
 
-<body>
+		<script>
+			"use strict";
 
-	<input type="file" id="openFile" />
-	<br>
-	<pre id="fileContents"></pre>
-	<div id="3d" class='orchid' style="position: absolute; top: 0px; height: 75%; right: 0px; width: 75%"></div>
+			//Globals
+			var renderer, camera, controls, gui, stats;
+			var scene, zUpCont, playback, bodies, ocean, ship3D, buoy, statMod, statMod2;
+			var designDimention, designDimention2, floatingStates, floatingStates2, mooring, hawsers, line, hangedMooring, hangedMooring2;
+			var RG_system, g, MM, ADD_mass, AA, A_33, BB, B_33, B_44, B_55, B_66, CC, waveForce, C_D, seaDepth, anchorLength, anchorLength2, radialDistance, radialDistance2, density, density2, mooringAngle, mooringAngle2;
+			var mooring;
+			var group;
+			var mooring, hawsers;
+			var dynMov, wavMo, states, states2, scale;
+			var group;
+			var spec, spec2;
+			var ship, barge2, ship3D, barge23D;
+			var LOA1, LOA2, BOA1, BOA2, Depth1, Depth2, T1, T2, sep;
+			var motions, motions2;
+			var lin, output, res, res2, index, mat, rao, pha;
+			var J;
+			var cube;
+			var plane;
 
-
-	<div id="plotBottom" style="position:fixed; bottom:0%; float:left; width:100%; height:95%"></div>
-
-
-
-
-	<script>
-		"use strict";
-
-		//Globals
-		var renderer, camera, controls, gui, stats;
-		var scene, zUpCont, playback, bodies, ocean, ship3D, buoy, statMod, statMod2;
-		var designDimention, designDimention2, floatingStates, floatingStates2, mooring, hawsers, line, hangedMooring, hangedMooring2;
-		var RG_system,
-			g,
-			MM,
-			ADD_mass,
-			AA,
-			A_33,
-			BB,
-			B_33,
-			B_44,
-			B_55,
-			B_66,
-			CC,
-			waveForce,
-			C_D,
-			seaDepth,
-			anchorLength, anchorLength2,
-			radialDistance, radialDistance2,
-			density, density2,
-			mooringAngle, mooringAngle2;
-		var mooring;
-		var group;
-		var mooring, hawsers;
-		var dynMov, wavMo, states, states2, scale;
-		var group;
-		var spec, spec2;
-		var ship, barge2, ship3D, barge23D;
-		var LOA1, LOA2, BOA1, BOA2, Depth1, Depth2, T1, T2, sep;
-		var motions, motions2;
-		var lin, output, res, res2, index, mat, rao, pha;
-		var J;
-		var cube;
-		var plane;
-
-
-		spec2 = {
-			"attributes": {},
-			"designState": {
-				"calculationParameters": {
-					"LWL_design": 264.75,
-					"Draft_design": 8,
-					"Cb_design": 1,
-					"K": 0.032,
-				},
-				"objectOverrides": {
-					"derivedByGroup": {
-						"cargo tanks": {
-							"fullness": 0
+			spec2 = {
+				attributes: {},
+				designState: {
+					calculationParameters: {
+						LWL_design: 264.75,
+						Draft_design: 8,
+						Cb_design: 1,
+						K: 0.032,
+					},
+					objectOverrides: {
+						derivedByGroup: {
+							"cargo tanks": {
+								fullness: 0,
+							},
+							"ballast tanks": {
+								fullness: 1,
+							},
 						},
-						"ballast tanks": {
-							"fullness": 1
+					},
+				},
+				structure: {
+					hull: {
+						attributes: {
+							LOA: 264.75,
+							BOA: 24,
+							Depth: 24,
+							APP: 0,
+						},
+						halfBreadths: {
+							waterlines: [0, 0, 1],
+							stations: [0, 1],
+							table: [
+								[0, 0],
+								[1, 1],
+								[1, 1],
+							],
+						},
+					},
+					decks: {},
+					bulkheads: {},
+				},
+				baseObjects: [
+					{
+						id: "Tanks",
+						affiliations: {},
+						boxDimensions: {
+							length: 264.75,
+							breadth: 23.8,
+							height: 24,
+						},
+						capabilities: {},
+						file3D: "Tank1.stl",
+						weightInformation: {
+							lightweight: 0,
+							cg: [0, 0, 1],
+						},
+					},
+				],
+				derivedObjects: [
+					{
+						id: "Tank1",
+						baseObject: "Tanks",
+						referenceState: {
+							xCentre: 133,
+							yCentre: 0,
+							zBase: 0,
+						},
+						affiliations: {},
+					},
+				],
+			};
+
+			lin = [];
+
+			document.getElementById("openFile").addEventListener("change", function () {
+				var fr = new FileReader();
+				fr.onload = function () {
+					output = this.result;
+					useRAO(output);
+				};
+				fr.readAsText(this.files[0]);
+			});
+
+			var raoReq = new XMLHttpRequest();
+			raoReq.open("GET", "motion_data/Simple_file_motion.4", true);
+			raoReq.addEventListener("load", function (event) {
+				output = event.target.response;
+				useRAO(output);
+			});
+			raoReq.send(null);
+
+			var useRAO = function (result) {
+				index = 0;
+				res = result.split(/[\s]+/).join(" ");
+				res2 = res.substring(1);
+				mat = res2.split(" ");
+
+				for (i = 0; i < mat.length; i++) {
+					mat[i] = +mat[i];
+				}
+
+				for (i = 0; i < mat.length / 7; i++) {
+					lin[i] = mat.slice(index, index + 5);
+					index = index + 7;
+				}
+
+				rao = [];
+				pha = [];
+
+				var dof = 12; // DoF
+				var per = 60; // Number of periods
+				var hea = 25; // Number of headings
+
+				// allocate vector
+				for (i = 0; i < dof; i++) {
+					rao[i] = [];
+					pha[i] = [];
+					for (j = 0; j < per; j++) {
+						rao[i][j] = [];
+						pha[i][j] = [];
+						for (k = 0; k < hea; k++) {
+							rao[i][j][k] = [];
+							pha[i][j][k] = [];
 						}
 					}
 				}
 
-
-			},
-			"structure": {
-				"hull": {
-					"attributes": {
-						"LOA": 264.75,
-						"BOA": 24,
-						"Depth": 24,
-						"APP": 0
-					},
-					"halfBreadths": {
-						"waterlines": [0, 0, 1],
-						"stations": [0, 1],
-						"table": [[0, 0], [1, 1], [1, 1]]
-					},
-				},
-				"decks": {},
-				"bulkheads": {},
-			},
-			"baseObjects": [
-				{
-					"id": "Tanks",
-					"affiliations": {},
-					"boxDimensions": {
-						"length": 264.75,
-						"breadth": 23.8,
-						"height": 24
-					},
-					"capabilities": {},
-					"file3D": "Tank1.stl",
-					"weightInformation": {
-						"lightweight": 0,
-						"cg": [0, 0, 1]
-					},
-				},
-			],
-			"derivedObjects": [
-				{
-					"id": "Tank1",
-					"baseObject": "Tanks",
-					"referenceState": {
-						"xCentre": 133,
-						"yCentre": 0,
-						"zBase": 0
-					},
-					"affiliations": {},
-				}]
-		};
-
-		lin = [];
-
-		document.getElementById('openFile').addEventListener('change', function() {
-			var fr = new FileReader();
-			fr.onload = function() {
-				output = this.result;
-				useRAO(output);
-			};
-			fr.readAsText(this.files[0]);
-		});
-
-		var raoReq = new XMLHttpRequest();
-		raoReq.open("GET", "motion_data/Simple_file_motion.4", true);
-		raoReq.addEventListener("load", function(event) {
-			output = event.target.response;
-			useRAO(output);
-		});
-		raoReq.send(null);
-
-		var useRAO = function(result) {
-			index = 0;
-			res = result.split(/[\s]+/).join(' ')
-			res2 = res.substring(1)
-			mat = res2.split(" ");
-
-			for (i = 0; i < mat.length; i++) {
-				mat[i] = +mat[i]
-			}
-
-			for (i = 0; i < mat.length / 7; i++) {
-				lin[i] = mat.slice(index, index + 5)
-				index = index + 7;
-			}
-
-			rao = [];
-			pha = [];
-
-			var dof = 12; // DoF
-			var per = 60; // Number of periods
-			var hea = 25; // Number of headings
-
-			// allocate vector
-			for (i = 0; i < dof; i++) {
-				rao[i] = [];
-				pha[i] = [];
-				for (j = 0; j < per; j++) {
-					rao[i][j] = [];
-					pha[i][j] = [];
-					for (k = 0; k < hea; k++) {
-						rao[i][j][k] = [];
-						pha[i][j][k] = [];
+				var lineNumb, i, j, k, l;
+				for (l = 0; l < lin.length - 1; l++) {
+					lineNumb = l + 1;
+					i = (l + 1) % 12;
+					if (i === 0) {
+						i = 12;
 					}
+
+					j = Math.floor(lineNumb / (dof * hea));
+					k = Math.floor(lineNumb / 12) % 25;
+
+					rao[i - 1][j][k] = lin[l][3];
+					pha[i - 1][j][k] = lin[l][4];
+				}
+			};
+
+			hangedMooring = []; // Point of hanged mooring line on seabed (m, m, m)
+
+			// Damping
+			C_D = 0.2; // Assumed Linear Resistance Coeff.	(m/s)
+			B_44 = 3000000; // Assumed Roll Linear Damping Coeff.	(kgm2/s)
+			B_55 = 60000000; // Assumed Roll Linear Damping Coeff.	(kgm2/s)
+			B_66 = 6000000; // Assumed Roll Linear Damping Coeff.	(kgm2/s)
+			seaDepth = 55; // Sea bottom depth (m)
+			anchorLength = 195; // Anchor length (m)
+			radialDistance = 200;
+			density = 200;
+			mooringAngle = 45;
+			var userParameters = {
+				C_D,
+				B_44,
+				B_55,
+				B_66,
+				seaDepth,
+				anchorLength,
+				radialDistance,
+				density,
+				mooringAngle,
+			};
+
+			(function main() {
+				//Renderer setup
+				//document.body.style = "overflow: hidden;";
+				document.body.style.overflow = "hidden";
+				var container = document.getElementById("3d");
+				document.body.appendChild(container);
+				renderer = new THREE.WebGLRenderer({
+					antialias: true,
+				});
+				//renderer.setSize(window.innerWidth, window.innerHeight);
+				renderer.setClearColor(0x99aadd);
+				container.appendChild(renderer.domElement);
+
+				//GUI setup (comment out to remove gui)
+				gui = new dat.GUI();
+
+				// add report to GUI controller
+
+				playback = new Playback({
+					parentGUI: gui,
+				});
+
+				//Scene setup:
+				scene = new THREE.Scene();
+				let sun = new THREE.DirectionalLight(0xffffff, 2);
+				sun.position.set(-512, 246, 128);
+				scene.add(sun);
+
+				//Ocean size
+				let oSize = 2048;
+
+				scene.add(new Skybox(oSize));
+
+				// Add the bottom of ocean
+				var geometry = new THREE.PlaneBufferGeometry(oSize, oSize, 32);
+				geometry.dynamic = true;
+				var texture = new THREE.TextureLoader().load("textures/bottom.jpg");
+				var material = new THREE.MeshBasicMaterial({
+					side: THREE.FrontSide,
+					map: texture,
+					transparent: true,
+				});
+				plane = new THREE.Mesh(geometry, material);
+				plane.rotation.set(-Math.PI / 2, 0, 0);
+				plane.position.setY(-userParameters.seaDepth);
+				plane.material.side = THREE.DoubleSide;
+				plane.material.opacity = 0.8;
+				scene.add(plane);
+
+				//Use Z up from now on:
+				THREE.Object3D.DefaultUp.set(0, 0, 1);
+				zUpCont = new THREE.Group();
+				zUpCont.rotation.x = -0.5 * Math.PI;
+				scene.add(zUpCont);
+
+				//Camera setup
+				camera = new THREE.PerspectiveCamera(26, window.innerWidth / window.innerHeight, 1, 1000000);
+				let onResize = function () {
+					let w = container.clientWidth;
+					let h = container.clientHeight;
+					renderer.setSize(w, h);
+					camera.aspect = w / h;
+					camera.updateProjectionMatrix();
+				};
+				window.addEventListener("resize", onResize, false);
+				onResize();
+				camera.position.set(519, -62, -32);
+				camera.lookAt(zUpCont.position);
+				zUpCont.add(camera);
+
+				controls = new THREE.OrbitControls(camera, renderer.domElement);
+				//controls.minDistance = 0;
+				controls.maxDistance = 0.5 * oSize;
+				controls.enablePan = false;
+				controls.maxPolarAngle = 3 * (Math.PI / 4);
+				controls.minPolarAngle = 0;
+
+				//zUpCont.add(new THREE.AxisHelper(1000));
+				zUpCont.add(new THREE.HemisphereLight(0xccccff, 0x666688, 1));
+
+				ocean = new Ocean({
+					parentGUI: gui, //remenber to insert back to see the waves
+					sunDir: sun.position.clone().normalize(),
+					size: oSize,
+					segments: 127,
+				});
+				playback.add(ocean);
+				zUpCont.add(ocean);
+
+				wavMo = [];
+				states = [];
+
+				ship = new Vessel.Ship(spec2);
+				buoy = new Vessel.Ship(spec2);
+				states = ship.designState.clone();
+				states2 = buoy.designState.clone();
+
+				//console.log(states.objectCache);
+				statMod = new Vessel.StateModule(ship, states);
+				statMod.setDraft();
+				//console.log(states.shipCache.thisStateVer);
+				ship3D = new Ship3D(ship, {
+					shipState: states,
+					stlPath: "specs/STL files",
+					upperColor: 0x33aa33,
+					lowerColor: 0xaa3333,
+					hullOpacity: 1,
+					deckOpacity: 1,
+					objectOpacity: 1,
+				});
+				zUpCont.add(ship3D);
+
+				LOA1 = ship.structure.hull.attributes.LOA;
+
+				BOA1 = ship.structure.hull.attributes.BOA;
+
+				T1 = ship.designState.calculationParameters.Draft_design;
+
+				sep = {};
+				sep.x = 0;
+				sep.y = 4;
+				sep.z = 0;
+
+				ship3D.position.x = 0;
+				ship3D.position.y = 0;
+				ship3D.position.z = -T1;
+
+				var geometry2 = new THREE.BoxGeometry(50, 20, 50);
+				var material2 = new THREE.MeshBasicMaterial({ color: 0x33aa33 });
+				cube = new THREE.Mesh(geometry2, material2);
+				scene.add(cube);
+
+				cube.position.x = 315;
+
+				designDimention = ship.structure.hull.attributes;
+				floatingStates = states.discrete.FloatingCondition.state;
+
+				states.continuous.mooring = {};
+				mooring = states.continuous.mooring;
+
+				mooring.mooringPointOnShip = [[floatingStates.LWL / 2 - 3, 0, designDimention.Depth - T1]]; // Point of mooring line on ship          (m, m, m)
+
+				var material = new THREE.LineBasicMaterial({
+					color: 0x0000ff,
+				});
+
+				var geometry = new THREE.Geometry();
+				geometry.vertices.push(new THREE.Vector3(130, 16, 0), new THREE.Vector3(300, 5, 0));
+
+				line = new THREE.Line(geometry, material);
+				scene.add(line);
+
+				var Ini = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+				states.continuous.motion = {
+					surge: Ini[0],
+					sway: Ini[1],
+					heave: Ini[2],
+					roll: Ini[3],
+					pitch: Ini[4],
+					yaw: Ini[5],
+				};
+
+				var tprev = 0; // Initial time
+
+				dynMov = new DynamicalMovement(ship, states, states2, userParameters, Ini);
+
+				playback.add(function (t) {
+					let dt = t - tprev;
+
+					dynMov.moveShip(tprev, dt);
+
+					tprev = t;
+				});
+
+				//Initial configuration:
+				let w = ocean.addCosineWave({
+					A: 0,
+					T: 11,
+					theta: 1,
+				});
+				if (ocean.cosConf) ocean.cosConf.close();
+				playback.play();
+				requestAnimationFrame(animate);
+			})();
+
+			function animate(millitime) {
+				ocean.water.render();
+				renderer.render(scene, camera);
+				let playing = playback.update();
+
+				// Disable this to freeze water when not playing
+				if (!playing) {
+					ocean.water.material.uniforms.time.value += 1 / 60;
+				}
+				requestAnimationFrame(animate);
+			}
+
+			function updateMotion() {
+				for (let i = 0; i < wavMo.length; i++) {
+					wavMo[i].writeOutput();
 				}
 			}
-
-			var lineNumb, i, j, k, l;
-			for (l = 0; l < lin.length - 1; l++) {
-
-				lineNumb = l + 1;
-				i = ((l + 1) % 12);
-				if (i === 0) {i = 12};
-
-				j = Math.floor(lineNumb / (dof * hea));
-				k = Math.floor(lineNumb / 12) % 25;
-
-				rao[i - 1][j][k] = lin[l][3];
-				pha[i - 1][j][k] = lin[l][4];
-			}
-		}
-
-		hangedMooring = []; // Point of hanged mooring line on seabed (m, m, m)
-
-		// Damping
-		C_D = 0.2; // Assumed Linear Resistance Coeff.	(m/s)
-		B_44 = 3000000; // Assumed Roll Linear Damping Coeff.	(kgm2/s)
-		B_55 = 60000000; // Assumed Roll Linear Damping Coeff.	(kgm2/s)
-		B_66 = 6000000; // Assumed Roll Linear Damping Coeff.	(kgm2/s)
-		seaDepth = 55; // Sea bottom depth (m)
-		anchorLength = 195; // Anchor length (m)
-		radialDistance = 200;
-		density = 200;
-		mooringAngle = 45;
-		var userParameters = {
-			C_D,
-			B_44,
-			B_55,
-			B_66,
-			seaDepth,
-			anchorLength,
-			radialDistance,
-			density,
-			mooringAngle
-		};
-
-		(function main() {
-			//Renderer setup
-			//document.body.style = "overflow: hidden;";
-			document.body.style.overflow = "hidden";
-			var container = document.getElementById('3d');
-			document.body.appendChild(container);
-			renderer = new THREE.WebGLRenderer({
-				antialias: true
-			});
-			//renderer.setSize(window.innerWidth, window.innerHeight);
-			renderer.setClearColor(0x99aadd);
-			container.appendChild(renderer.domElement);
-
-			//GUI setup (comment out to remove gui)
-			gui = new dat.GUI();
-
-			// add report to GUI controller
-
-			playback = new Playback({
-				parentGUI: gui
-			});
-
-			//Scene setup:
-			scene = new THREE.Scene();
-			let sun = new THREE.DirectionalLight(0xffffff, 2);
-			sun.position.set(-512, 246, 128);
-			scene.add(sun);
-
-			//Ocean size
-			let oSize = 2048;
-
-			scene.add(new Skybox(oSize));
-
-			// Add the bottom of ocean
-			var geometry = new THREE.PlaneBufferGeometry(oSize, oSize, 32);
-			geometry.dynamic = true;
-			var texture = new THREE.TextureLoader().load("textures/bottom.jpg");
-			var material = new THREE.MeshBasicMaterial({
-				side: THREE.FrontSide,
-				map: texture,
-				transparent: true
-			});
-			plane = new THREE.Mesh(geometry, material);
-			plane.rotation.set(-Math.PI / 2, 0, 0);
-			plane.position.setY(-userParameters.seaDepth);
-			plane.material.side = THREE.DoubleSide;
-			plane.material.opacity = 0.8;
-			scene.add(plane);
-
-			//Use Z up from now on:
-			THREE.Object3D.DefaultUp.set(0, 0, 1);
-			zUpCont = new THREE.Group();
-			zUpCont.rotation.x = -0.5 * Math.PI;
-			scene.add(zUpCont);
-
-			//Camera setup
-			camera = new THREE.PerspectiveCamera(
-				26,
-				window.innerWidth / window.innerHeight,
-				1,
-				1000000
-			);
-			let onResize = function() {
-				let w = container.clientWidth;
-				let h = container.clientHeight;
-				renderer.setSize(w, h);
-				camera.aspect = w / h;
-				camera.updateProjectionMatrix();
-			};
-			window.addEventListener("resize", onResize, false);
-			onResize();
-			camera.position.set(519, -62, -32);
-			camera.lookAt(zUpCont.position);
-			zUpCont.add(camera);
-
-			controls = new THREE.OrbitControls(camera, renderer.domElement);
-			//controls.minDistance = 0;
-			controls.maxDistance = 0.5 * oSize;
-			controls.enablePan = false;
-			controls.maxPolarAngle = 3 * (Math.PI / 4);
-			controls.minPolarAngle = 0;
-
-			//zUpCont.add(new THREE.AxisHelper(1000));
-			zUpCont.add(new THREE.HemisphereLight(0xccccff, 0x666688, 1));
-
-			ocean = new Ocean({
-				parentGUI: gui, //remenber to insert back to see the waves
-				sunDir: sun.position.clone().normalize(),
-				size: oSize,
-				segments: 127
-			});
-			playback.add(ocean);
-			zUpCont.add(ocean);
-
-			wavMo = [];
-			states = [];
-
-			ship = new Vessel.Ship(spec2);
-			buoy = new Vessel.Ship(spec2);
-			states = ship.designState.clone();
-			states2 = buoy.designState.clone();
-
-
-			//console.log(states.objectCache);
-			statMod = new Vessel.StateModule(ship, states);
-			statMod.setDraft();
-			//console.log(states.shipCache.thisStateVer);
-			ship3D = new Ship3D(ship, {
-				shipState: states,
-				stlPath: "specs/STL files",
-				upperColor: 0x33aa33,
-				lowerColor: 0xaa3333,
-				hullOpacity: 1,
-				deckOpacity: 1,
-				objectOpacity: 1
-			});
-			zUpCont.add(ship3D);
-
-
-
-
-			LOA1 = ship.structure.hull.attributes.LOA;
-
-			BOA1 = ship.structure.hull.attributes.BOA;
-
-
-			T1 = ship.designState.calculationParameters.Draft_design;
-
-
-
-			sep = {};
-			sep.x = 0
-			sep.y = 4
-			sep.z = 0
-
-			ship3D.position.x = 0;
-			ship3D.position.y = 0;
-			ship3D.position.z = -T1;
-
-
-			var geometry2 = new THREE.BoxGeometry(50, 20, 50);
-			var material2 = new THREE.MeshBasicMaterial({color: 0x33aa33});
-			cube = new THREE.Mesh(geometry2, material2);
-			scene.add(cube);
-
-			cube.position.x = 315
-
-
-
-			designDimention = ship.structure.hull.attributes;
-			floatingStates = states.discrete.FloatingCondition.state;
-
-			states.continuous.mooring = {};
-			mooring = states.continuous.mooring;
-
-			mooring.mooringPointOnShip = [
-				[
-					(floatingStates.LWL / 2) - 3,
-					0,
-					designDimention.Depth - T1
-				]
-			]; // Point of mooring line on ship          (m, m, m)
-
-
-			var material = new THREE.LineBasicMaterial({
-				color: 0x0000ff
-			});
-
-			var geometry = new THREE.Geometry();
-			geometry.vertices.push(
-				new THREE.Vector3(130, 16, 0),
-				new THREE.Vector3(300, 5, 0),
-			);
-
-			line = new THREE.Line(geometry, material);
-			scene.add(line);
-
-			var Ini = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-			states.continuous.motion = {
-				surge: Ini[0],
-				sway: Ini[1],
-				heave: Ini[2],
-				roll: Ini[3],
-				pitch: Ini[4],
-				yaw: Ini[5],
-			};
-
-
-			var tprev = 0; // Initial time
-
-
-			dynMov = new DynamicalMovement(ship, states, states2, userParameters, Ini);
-
-			playback.add(function(t) {
-
-				let dt = t - tprev;
-
-				dynMov.moveShip(tprev, dt);
-
-				tprev = t;
-
-			});
-
-			//Initial configuration:
-			let w = ocean.addCosineWave({
-				A: 0,
-				T: 11,
-				theta: 1
-			});
-			if (ocean.cosConf) ocean.cosConf.close();
-			playback.play();
-			requestAnimationFrame(animate);
-		})();
-
-		function animate(millitime) {
-			ocean.water.render();
-			renderer.render(scene, camera);
-			let playing = playback.update();
-
-			// Disable this to freeze water when not playing
-			if (!playing) {
-				ocean.water.material.uniforms.time.value += 1 / 60;
-			}
-			requestAnimationFrame(animate);
-		}
-
-		function updateMotion() {
-			for (let i = 0; i < wavMo.length; i++) {
-				wavMo[i].writeOutput();
-			}
-		}
-	</script>
-</body>
-
+		</script>
+	</body>
 </html>
