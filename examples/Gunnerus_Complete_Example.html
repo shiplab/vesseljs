@@ -181,12 +181,36 @@
 					zUpCont.add(shipGLTF)
 				})
 
-				modelStyle = { show: "ModelGLTF" }
+				// Recursive function to find element and delete
+				function toggleElement(element, name) {
+					if (element.children.lenght == 0) {
+						return
+					}
+
+					element.children.forEach(child => {
+						console.log(child.name)
+						console.log(child.group)
+
+						if (child.group == name) {
+							if (child.visible) {
+								child.visible = false
+							} else {
+								child.visible = true
+							}
+						}
+						toggleElement(child, name)
+					})
+				}
+
+				modelStyle = {
+					show: "ModelGLTF",
+					displayOutline: true,
+				}
 
 				// //GUI setup (comment out to remove gui)
 				gui = new dat.GUI()
 
-				scale = gui.addFolder("Dissolution Parameters")
+				scale = gui.addFolder("Visualization parameters")
 				scale
 					.add(modelStyle, "show", {
 						Model: "ModelGLTF",
@@ -210,11 +234,12 @@
 						switch (newValue) {
 							case "ModelGLTF":
 								zUpCont.add(shipGLTF)
-
+								scale.domElement.hidden = true
 								break
 
 							case "Ship3D":
 								zUpCont.add(ship3D)
+								scale.domElement.hidden = false
 								break
 
 							default:
@@ -222,6 +247,50 @@
 						}
 					})
 					.name("View")
+				scale.open()
+				scale = gui.addFolder("New")
+				scale.domElement.hidden = true
+				scale
+					.add(modelStyle, "displayOutline")
+					.onChange(newValue => {
+						toggleElement(zUpCont, "Machinery")
+					})
+					.name("Machinery")
+
+				scale
+					.add(modelStyle, "displayOutline")
+					.onChange(newValue => {
+						toggleElement(zUpCont, "Tank")
+					})
+					.name("Tank")
+
+				scale
+					.add(modelStyle, "displayOutline")
+					.onChange(newValue => {
+						toggleElement(zUpCont, "Compartment")
+					})
+					.name("Compartment")
+
+				scale
+					.add(modelStyle, "displayOutline")
+					.onChange(newValue => {
+						toggleElement(zUpCont, "Deck")
+					})
+					.name("Deck")
+
+				scale
+					.add(modelStyle, "displayOutline")
+					.onChange(newValue => {
+						toggleElement(zUpCont, "Bulkheads")
+					})
+					.name("Bulkheads")
+
+				scale
+					.add(modelStyle, "displayOutline")
+					.onChange(newValue => {
+						toggleElement(zUpCont, "Hull3D")
+					})
+					.name("Hull3D")
 				scale.open()
 
 				// playback.play()
@@ -252,8 +321,7 @@
 					tooltip.style.left = mouse.clientX + 20
 					tooltip.style.top = mouse.clientY + 10
 					tooltip.textContent = intersected.name
-					// console.log(tooltip.style.left)
-					console.log(intersected)
+					zUpCont.remove(zUpCont.getObjectByName(intersected.name))
 				} else {
 					// Taking off tool tip
 					tooltip.style.visibility = "hidden"
@@ -261,7 +329,7 @@
 			}
 
 			function animate(millitime) {
-				ocean.water.material.uniforms.time.value += 2 / 60
+				ocean.water.material.uniforms.time.value += 1 / 60
 
 				// ocean.water.render();
 

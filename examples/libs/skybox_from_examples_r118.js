@@ -23,6 +23,7 @@ function Skybox(size) {
 	});
 	var cubeShader = THREE.ShaderLib["cube"];
 	cubeShader.uniforms.envMap.value = cubeMap;
+
 	var skyBoxMaterial = new THREE.ShaderMaterial({
 		fragmentShader: cubeShader.fragmentShader,
 		vertexShader: cubeShader.vertexShader,

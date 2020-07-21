@@ -429,14 +429,14 @@
 
 		var clock = new THREE.Clock();
 
-		// Global intersected element for raycaster control
+		// Global variables for raycaster control
 		var intersected;
+		var tooltipElement = document.getElementById('tooltip');
 
 		// Inserting arrow phases
 		var container = document.getElementById('3d');
 		var arrow = document.getElementById('arrow');
 		var info = document.getElementById('info');
-		var tooltipElement = document.getElementById('tooltip');
 		document.body.appendChild(container);
 
 		(function main() {
@@ -1166,7 +1166,7 @@
 				tooltip.style.visibility = 'hidden';
 				
 			}
-		}		
+		}
 
 		function animate(millitime) {
 			var t = clock.getElapsedTime();

@@ -171,6 +171,7 @@ function Ship3D(ship, {shipState, stlPath, deckOpacity = 0.2, objectOpacity = 0.
 		}
 		let deck = new THREE.Mesh(deckGeom, mat);
 		deck.name = dk;//[i];
+		deck.group = d.affiliations.group
 		deck.position.z = d.zFloor;
 		//deck.scale.set(d.xFwd-d.xAft, d.breadth, d.thickness);
 		//deck.position.set(0.5*(d.xFwd+d.xAft), 0, d.zFloor);
@@ -198,6 +199,7 @@ function Ship3D(ship, {shipState, stlPath, deckOpacity = 0.2, objectOpacity = 0.
 		}
 		let bulkhead = new THREE.Mesh(bhGeom, mat);
 		bulkhead.name = bhk;//[i];
+		bulkhead.group = bh.affiliations.group;
 		bulkhead.scale.set(bh.thickness, 1, 1);
 		bulkhead.position.set(bh.xAft, 0, 0);
 		bulkheads.add(bulkhead);
@@ -283,6 +285,7 @@ Object.assign(Ship3D.prototype, {
 					m.position.set(x, y, z);
 					m.scale.set(d.length, d.breadth, d.height);
 					m.name = object.id;
+					m.group = bo.affiliations.group != undefined ? bo.affiliations.group : undefined
 					self.blocks.add(m);
 				},
 				undefined,
@@ -292,6 +295,7 @@ Object.assign(Ship3D.prototype, {
 					m.position.set(x, y, z);
 					m.scale.set(d.length, d.breadth, d.height);
 					m.name = object.id;
+					m.group = bo.affiliations.group != undefined ? bo.affiliations.group : undefined
 					this.blocks.add(m);
 				}
 			);
@@ -301,6 +305,7 @@ Object.assign(Ship3D.prototype, {
 			m.position.set(x, y, z);
 			m.scale.set(d.length, d.breadth, d.height);
 			m.name = object.id;
+			m.group = bo.affiliations.group != undefined ? bo.affiliations.group : undefined
 			this.blocks.add(m);
 		}
 	},
@@ -446,6 +451,7 @@ function Hull3D(hull, design_draft) {
 	THREE.Group.call(this);
 
 	this.hull = hull;
+	this.group = "Hull3D"
 	this.design_draft = design_draft !== undefined ? design_draft : 0.5 * hull.attributes.Depth;
 	this.upperColor = typeof hull.style.upperColor !== "undefined" ? hull.style.upperColor : 0x33aa33;
 	this.lowerColor = typeof hull.style.lowerColor !== "undefined" ? hull.style.lowerColor : 0xaa3333;
