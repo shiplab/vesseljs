@@ -188,14 +188,16 @@
 					}
 
 					element.children.forEach(child => {
-						console.log(child.name)
-						console.log(child.group)
+						// console.log(child.name)
+						// console.log(child.group)
 
 						if (child.group == name) {
-							if (child.visible) {
-								child.visible = false
+							console.log(child)
+							// Verify if it is visible trought the masks layers
+							if (child.layers.mask) {
+								child.layers.disable(0)
 							} else {
-								child.visible = true
+								child.layers.enable(0)
 							}
 						}
 						toggleElement(child, name)
@@ -248,6 +250,7 @@
 					})
 					.name("View")
 				scale.open()
+
 				scale = gui.addFolder("New")
 				scale.domElement.hidden = true
 				scale
@@ -285,12 +288,6 @@
 					})
 					.name("Bulkheads")
 
-				scale
-					.add(modelStyle, "displayOutline")
-					.onChange(newValue => {
-						toggleElement(zUpCont, "Hull3D")
-					})
-					.name("Hull3D")
 				scale.open()
 
 				// playback.play()
@@ -313,6 +310,9 @@
 			}
 
 			window.addEventListener("mousemove", onMouseMove, false)
+
+			// Enabling setting Layers
+			// scene.layers.enable(1)
 
 			function toolTip(tooltip, intersected) {
 				if (intersected.status) {

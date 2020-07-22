@@ -14,11 +14,20 @@ function renderRayCaster(mouse, camera, scene, intersectedElement = { name: unde
 	// update the picking ray with the camera and mouse position
 	raycaster.setFromCamera(mouse, camera)
 
+	// Ensures just the layers = 1 one will be effected by raycaster
+	raycaster.layers.set(0)
+
 	scene.updateMatrixWorld()
 
 	// calculate objects intersecting the picking ray
 	// recursive setted to true to check all sub elements
 	var intersects = raycaster.intersectObjects(scene.children, true)
+
+	// Enabling and disabling elements
+	// intersects.forEach(element => {
+	// 	console.log(element.visible)
+	// 	element.visible ? element.layers.enable(1) : element.layers.disable(1)
+	// })
 
 	// Try verifies the if there is intersects[0].object error
 	try {
