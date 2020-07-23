@@ -75,7 +75,7 @@
 				document.body.appendChild(container)
 				renderer = new THREE.WebGLRenderer({ antialias: true })
 				//renderer.setSize(window.innerWidth, window.innerHeight);
-				renderer.setClearColor(0x99aadd)
+				renderer.setClearColor(0xa9cce3)
 				container.appendChild(renderer.domElement)
 
 				playback = new Playback({ parentGUI: gui })
@@ -96,7 +96,9 @@
 				// zUpCont.rotation.x = -0.5 * Math.PI;
 				scene.add(zUpCont)
 
-				scene.add(new Skybox(oSize))
+				var skybox = new Skybox(oSize)
+				skybox.name = "Skybox"
+				scene.add(skybox)
 
 				//Camera setup
 				camera = new THREE.PerspectiveCamera(26, window.innerWidth / window.innerHeight, 1, 1000000)
@@ -136,6 +138,7 @@
 				})
 
 				// playback.add(ocean)
+				ocean.name = "Ocean"
 				scene.add(ocean)
 				scene.rotation.x = -Math.PI / 2
 
@@ -188,11 +191,7 @@
 					}
 
 					element.children.forEach(child => {
-						// console.log(child.name)
-						// console.log(child.group)
-
 						if (child.group == name) {
-							console.log(child)
 							// Verify if it is visible trought the masks layers
 							if (child.layers.mask) {
 								child.layers.disable(0)
@@ -205,7 +204,8 @@
 				}
 
 				modelStyle = {
-					show: "ModelGLTF",
+					model: "ModelGLTF",
+					scene: "On",
 					displayOutline: true,
 				}
 
@@ -214,7 +214,7 @@
 
 				scale = gui.addFolder("Visualization parameters")
 				scale
-					.add(modelStyle, "show", {
+					.add(modelStyle, "model", {
 						Model: "ModelGLTF",
 						Blocks: "Ship3D",
 					})
@@ -249,6 +249,30 @@
 						}
 					})
 					.name("View")
+				scale
+					.add(modelStyle, "scene", {
+						On: "On",
+						Off: "Off",
+					})
+					.onChange(newValue => {
+						switch (newValue) {
+							case "On":
+								scene.getObjectByName("Skybox").visible = true
+								scene.getObjectByName("Ocean").visible = true
+								break
+
+							case "Off":
+								scene.getObjectByName("Skybox").visible = false
+								scene.getObjectByName("Ocean").visible = false
+								break
+
+							default:
+								break
+						}
+					})
+					.name("Scenario")
+
+				// scene.getObjectByName("Ocean").visible = false
 				scale.open()
 
 				scale = gui.addFolder("New")
@@ -305,8 +329,6 @@
 
 				mouse.x = (event.clientX / window.innerWidth) * 2 - 1
 				mouse.y = -(event.clientY / window.innerHeight) * 2 + 1
-
-				// console.log(mouse);
 			}
 
 			window.addEventListener("mousemove", onMouseMove, false)
