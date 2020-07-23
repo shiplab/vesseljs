@@ -14,8 +14,6 @@ function DynamicalMovement(ship, states, states2, states3, userParameters, Ini, 
 	depth = designDimention.Depth;
 	draft = floatingStates.T;
 
-
-
 	this.states.continuous.motion = {};
 	var motion = this.states.continuous.motion;
 
@@ -25,8 +23,7 @@ function DynamicalMovement(ship, states, states2, states3, userParameters, Ini, 
 	this.states3.continuous.motion = {};
 	var motion3 = this.states3.continuous.motion;
 
-
-	this.moveShip = function(tprev, dt) {
+	this.moveShip = function (tprev, dt) {
 
 		mooringForce = this.InsertMooring(this.ship, this.states, motion, motion2, seaDepth, mooring.anchorPoint);
 
@@ -63,10 +60,9 @@ function DynamicalMovement(ship, states, states2, states3, userParameters, Ini, 
 			} else {
 				n = 9;
 			}
-
 		}
 
-		playback.add(function(t) {
+		playback.add(function (t) {
 
 			cos_mo0 = Math.cos(omega * t + pha[n][0][ocean.waves[0].T][ocean.waves[0].theta * 4]);
 			cos_mo1 = Math.cos(omega * t + pha[n][1][ocean.waves[0].T][ocean.waves[0].theta * 4]);
@@ -93,29 +89,29 @@ function DynamicalMovement(ship, states, states2, states3, userParameters, Ini, 
 				cos_mo17 = Math.cos(omega * t + pha[n][17][ocean.waves[0].T][ocean.waves[0].theta * 4]);
 			}
 
-			motion.surge = (rao[n][0][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo0
-			motion.sway = (rao[n][1][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo1 * 0.6
-			motion.heave = (rao[n][2][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo2 * 0.6
-			motion.roll = (rao[n][3][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo3 * 2
-			motion.pitch = (rao[n][4][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo4 * 0.6
-			motion.yaw = (rao[n][5][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo5 * 0.6
+			motion.surge = (rao[n][0][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo0;
+			motion.sway = (rao[n][1][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo1;
+			motion.heave = (rao[n][2][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo2;
+			motion.roll = (rao[n][3][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo3;
+			motion.pitch = (rao[n][4][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo4;
+			motion.yaw = (rao[n][5][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo5;
 
 			if (numShips == 2 || numShips == 3) {
-				motion2.surge = (rao[n][6][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo6
-				motion2.sway = (rao[n][7][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo7 * 0.4
-				motion2.heave = (rao[n][8][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo8
-				motion2.roll = (rao[n][9][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo9 * 2
-				motion2.pitch = (rao[n][10][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo10 * 2
-				motion2.yaw = (rao[n][11][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo11 * 0.4
+				motion2.surge = (rao[n][6][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo6;
+				motion2.sway = (rao[n][7][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo7;
+				motion2.heave = (rao[n][8][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo8;
+				motion2.roll = (rao[n][9][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo9;
+				motion2.pitch = (rao[n][10][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo10;
+				motion2.yaw = (rao[n][11][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo11;
 			}
 
 			if (numShips == 3) {
-				motion3.surge = (rao[n][12][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo12
-				motion3.sway = (rao[n][13][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo13 * 0.4
-				motion3.heave = (rao[n][14][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo14
-				motion3.roll = (rao[n][15][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo15 * 2
-				motion3.pitch = (rao[n][16][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo16 * 2
-				motion3.yaw = (rao[n][17][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo17 * 0.4
+				motion3.surge = (rao[n][12][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo12;
+				motion3.sway = (rao[n][13][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo13;
+				motion3.heave = (rao[n][14][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo14;
+				motion3.roll = (rao[n][15][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo15;
+				motion3.pitch = (rao[n][16][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo16;
+				motion3.yaw = (rao[n][17][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo17;
 			}
 
 		});
@@ -126,7 +122,7 @@ function DynamicalMovement(ship, states, states2, states3, userParameters, Ini, 
 		ship3D.heave = motion.heave;
 		ship3D.roll = motion.roll;
 		ship3D.pitch = motion.pitch;
-		ship3D.yaw = motion.yaw * 0.5;
+		ship3D.yaw = motion.yaw;
 
 		if (numShips == 2 || numShips == 3) {
 			barge23D.surge = motion2.surge;
@@ -134,7 +130,7 @@ function DynamicalMovement(ship, states, states2, states3, userParameters, Ini, 
 			barge23D.heave = motion2.heave;
 			barge23D.roll = motion2.roll;
 			barge23D.pitch = motion2.pitch;
-			barge23D.yaw = motion2.yaw * 0.5;
+			barge23D.yaw = motion2.yaw;
 		}
 
 		if (numShips == 3) {
@@ -143,16 +139,15 @@ function DynamicalMovement(ship, states, states2, states3, userParameters, Ini, 
 			barge33D.heave = motion3.heave;
 			barge33D.roll = motion3.roll;
 			barge33D.pitch = motion3.pitch;
-			barge33D.yaw = motion3.yaw * 0.5;
+			barge33D.yaw = motion3.yaw;
 		}
 	};
-
 
 	// This formulation is based on the  book Wave-Induced Loads and Ship Motions, LArs Bergdahl
 	// chapter 6 - motion for smal body approximation
 
 	//@ferrari212
-	this.WaveForce = function(rho, t, a_33) {
+	this.WaveForce = function (rho, t, a_33) {
 		var a = ocean.waves["0"].A; //Amplitude of Movement
 		var costh = ocean.waves["0"].costh; //Cos of Wave Directions
 		var sinth = ocean.waves["0"].sinth; //Sen of Wave Directions
@@ -188,7 +183,6 @@ function DynamicalMovement(ship, states, states2, states3, userParameters, Ini, 
 		rb = -2.12 * r - 1.89;
 		rd = 1.16 * r - 7.97;
 
-
 		// Equation (6.62)
 		var b_44 = rho * draft * Math.pow(breadth, 3) * Math.pow(2 * g / breadth, 0.5) * ra * Math.exp(rb * Math.pow(omega, -1.3)) * Math.pow(omega, rd);
 		B_44 = b_44 * length;
@@ -205,12 +199,11 @@ function DynamicalMovement(ship, states, states2, states3, userParameters, Ini, 
 		var complex3 = new numeric.T(-a * Math.exp(-k * draft) * (rho * g * breadth - omega * omega * a_33, -a * Math.exp(-k * draft) * (-omega * b_33)));
 		var FW_55 = complex1.mul(complex2).mul(complex3).x;
 
-
 		var FW = [0, 0, FW_33, FW_44, FW_55, 0];
 		return FW;
 	}
 
-	this.RungeKuttaSolver = function(t, y) {
+	this.RungeKuttaSolver = function (t, y) {
 		var J1 = Euler2J1(y.slice(3, 6));
 		var J2 = Euler2J2(y.slice(3, 6));
 
@@ -248,7 +241,7 @@ function DynamicalMovement(ship, states, states2, states3, userParameters, Ini, 
 		return dy;
 	}
 
-	var Coriolis = function(M, AM, vel) {
+	var Coriolis = function (M, AM, vel) {
 		var c = numeric.dot(M, vel);
 		var C = numeric.rep([6, 6], 0);
 		var CA = numeric.rep([6, 6], 0);
@@ -268,7 +261,6 @@ function DynamicalMovement(ship, states, states2, states3, userParameters, Ini, 
 		var CAQuad3 = CAQuad2;
 		var CAQuad4 = Smtrx(SA.slice(3, 6));
 
-
 		for (i = 0; i < 3; i++) {
 			for (f = 0; f < 3; f++) {
 				C[i][3 + f] = S1[i][f] - S2[i][f];
@@ -284,7 +276,7 @@ function DynamicalMovement(ship, states, states2, states3, userParameters, Ini, 
 		return numeric.add(C, CA);
 	}
 
-	var Euler2J1 = function(Eang) {
+	var Euler2J1 = function (Eang) {
 		Eang[0] = -Eang[0];
 		Eang[2] = -Eang[2];
 		rx = [
@@ -307,7 +299,7 @@ function DynamicalMovement(ship, states, states2, states3, userParameters, Ini, 
 		return J1;
 	}
 
-	var Euler2J2 = function(Eang) {
+	var Euler2J2 = function (Eang) {
 		Eang[0] = -Eang[0];
 		Eang[2] = -Eang[2];
 		J2 = [
@@ -320,7 +312,7 @@ function DynamicalMovement(ship, states, states2, states3, userParameters, Ini, 
 	}
 
 	// Returns the skew-symetrical of the matrix
-	var Smtrx = function(vec3) {
+	var Smtrx = function (vec3) {
 		var m = [
 			[0, -vec3[2], vec3[1]],
 			[vec3[2], 0, -vec3[0]],
@@ -331,8 +323,7 @@ function DynamicalMovement(ship, states, states2, states3, userParameters, Ini, 
 	}
 
 	//Insert Mooring lines ------------------------------------
-
-	this.InsertMooring = function(ship, states, motion, seaDepth, anchorPoint) {
+	this.InsertMooring = function (ship, states, motion, seaDepth, anchorPoint) {
 
 		var J = Euler2J1([motion.roll, motion.pitch, motion.yaw]);
 
@@ -360,8 +351,6 @@ function DynamicalMovement(ship, states, states2, states3, userParameters, Ini, 
 				-userParameters.seaDepth,
 				userParameters.radialDistance * Math.sin((-i * Math.PI) / 2 + (mooring.mooringAngle * Math.PI) / 180)
 			];
-
-
 
 			hangedMooring[i] = []
 			anchorPointOnShip[i] = [pos[i][0] + motion.surge, pos[i][2] + motion.heave, pos[i][1] - motion.sway];
@@ -392,7 +381,6 @@ function DynamicalMovement(ship, states, states2, states3, userParameters, Ini, 
 			Fy = g * horizontalForce[i] * (anchorAngle[i][1]);
 			Fz = g * verticalForce[i];
 			resultingForce[i] = Math.pow(Math.pow(Fx, 2) + Math.pow(Fy, 2) + Math.pow(Fz, 2), 0.5) / 1000;
-
 		}
 
 		for (var i = 0; i < pos.length; i++) {
@@ -404,7 +392,6 @@ function DynamicalMovement(ship, states, states2, states3, userParameters, Ini, 
 				mooring.anchorLineGeometry[i].geometry.vertices[0].y = anchorPointOnShip[i][1];
 				mooring.anchorLineGeometry[i].geometry.vertices[0].z = anchorPointOnShip[i][2];
 			}
-
 
 			for (var m = 0; m < hangedMooring[i].length; m++) {
 				if (mooring.anchorLineGeometry[i].geometry.vertices[m + 1] == undefined) {
@@ -436,7 +423,7 @@ function DynamicalMovement(ship, states, states2, states3, userParameters, Ini, 
 	}
 	//INSERT Hawsers --------------------------------------------
 
-	this.InsertHawsers = function(ship, states, motion, motion2, seaDepth, anchorPoint) {
+	this.InsertHawsers = function (ship, states, motion, motion2, seaDepth, anchorPoint) {
 		this.anchorPoint = anchorPoint
 		this.motion = motion;
 		this.motion2 = motion2;
@@ -447,7 +434,6 @@ function DynamicalMovement(ship, states, states2, states3, userParameters, Ini, 
 
 		posT = [numeric.dot(J, hawsers.mooringPointOnShip[0]), numeric.dot(J, hawsers.mooringPointOnShip[1]), numeric.dot(J, hawsers.mooringPointOnShip[2]), numeric.dot(J, hawsers.mooringPointOnShip[3]), numeric.dot(J, hawsers.mooringPointOnShip[4]), numeric.dot(J, hawsers.mooringPointOnShip[5]), numeric.dot(J, hawsers.mooringPointOnShip[6]), numeric.dot(J, hawsers.mooringPointOnShip[7])];
 
-
 		posB = [numeric.dot(J_2, hawsers.anchorPoint[0]), numeric.dot(J_2, hawsers.anchorPoint[1]),
 		numeric.dot(J_2, hawsers.anchorPoint[2]),
 		numeric.dot(J_2, hawsers.anchorPoint[3]),
@@ -456,37 +442,27 @@ function DynamicalMovement(ship, states, states2, states3, userParameters, Ini, 
 		numeric.dot(J_2, hawsers.anchorPoint[6]),
 		numeric.dot(J_2, hawsers.anchorPoint[7])];
 
-
 		var anchorPointOnShip1 = []; // Line geometry (global)
 		var anchorPointOnShip2 = [];
 
 		for (var i = 0; i < posT.length; i++) {
-
 			anchorPointOnShip1[i] = [posT[i][0] + motion.surge, posT[i][2] + motion.heave, posT[i][1] - motion.sway];
-
 			anchorPointOnShip2[i] = [posB[i][0] + motion2.surge, posB[i][2] + motion2.heave, posB[i][1] - motion2.sway];
-
 		}
 
 		for (var i = 0; i < posT.length; i++) {
-
 			hawsers.anchorLineGeometry[i].geometry.vertices[0].x = anchorPointOnShip1[i][0];
 			hawsers.anchorLineGeometry[i].geometry.vertices[0].y = anchorPointOnShip1[i][1];
 			hawsers.anchorLineGeometry[i].geometry.vertices[0].z = anchorPointOnShip1[i][2];
 
 			hawsers.anchorLineGeometry[i].geometry.vertices[1].x = anchorPointOnShip2[i][0];
-
 			hawsers.anchorLineGeometry[i].geometry.vertices[1].y = anchorPointOnShip2[i][1];
-
 			hawsers.anchorLineGeometry[i].geometry.vertices[1].z = anchorPointOnShip2[i][2];
 
 			hawsers.anchorLineGeometry[i].geometry.verticesNeedUpdate = true;
 
 			//Calculate hawsers tensions---------------------------
 			hawsers.anchorLineGeometry[i].geometry.linelength = Math.sqrt((Math.pow((hawsers.anchorLineGeometry[i].geometry.vertices[0].x - hawsers.anchorLineGeometry[i].geometry.vertices[1].x), 2)) + (Math.pow((hawsers.anchorLineGeometry[i].geometry.vertices[0].y - hawsers.anchorLineGeometry[i].geometry.vertices[1].y), 2)) + (Math.pow((hawsers.anchorLineGeometry[i].geometry.vertices[0].z - hawsers.anchorLineGeometry[i].geometry.vertices[1].z), 2)));
-
-
-
 		}
 
 		for (i = 0; i < 8; i++) {
@@ -497,13 +473,11 @@ function DynamicalMovement(ship, states, states2, states3, userParameters, Ini, 
 			}
 			tension[i] = (hawsers.anchorLineGeometry[i].geometry.linelength - inilen) * Math.pow((diameter * 0.1), 2) * k * 0.5
 
-			if ((hawsers.anchorLineGeometry[i].geometry.linelength - inilen) < 0) {tension[i] = 0}
+			if ((hawsers.anchorLineGeometry[i].geometry.linelength - inilen) < 0) { tension[i] = 0 }
 		}
-
 	}
 	//Insert Hawsers 2 -------------------------------------
-
-	this.InsertHawsers2 = function(ship, states, motion, motion3, seaDepth, anchorPoint) {
+	this.InsertHawsers2 = function (ship, states, motion, motion3, seaDepth, anchorPoint) {
 		this.motion = motion;
 		this.motion3 = motion3;
 		this.anchorPoint = anchorPoint;
@@ -522,75 +496,63 @@ function DynamicalMovement(ship, states, states2, states3, userParameters, Ini, 
 		numeric.dot(J_2, anchorPoint[6]),
 		numeric.dot(J_2, anchorPoint[7])];
 
-
 		var anchorPointOnShip2 = []; // Line geometry (global)
 		var anchorPointz = [];
 
 		for (var i = 0; i < posT2.length; i++) {
-
 			anchorPointOnShip2[i] = [posT2[i][0] + motion.surge, posT2[i][2] + motion.heave, posT2[i][1] - motion.sway];
-
 			anchorPointz[i] = [posB2[i][0] + motion3.surge, posB2[i][2] + motion3.heave, posB2[i][1] - motion3.sway];
-
 		}
 
 		for (var i = 0; i < posT2.length; i++) {
-
 			hawsers2.anchorLineGeometry[i].geometry.vertices[0].x = anchorPointOnShip2[i][0];
 			hawsers2.anchorLineGeometry[i].geometry.vertices[0].y = anchorPointOnShip2[i][1];
 			hawsers2.anchorLineGeometry[i].geometry.vertices[0].z = anchorPointOnShip2[i][2];
 
 			hawsers2.anchorLineGeometry[i].geometry.vertices[1].x = anchorPointz[i][0];
-
 			hawsers2.anchorLineGeometry[i].geometry.vertices[1].y = anchorPointz[i][1];
-
 			hawsers2.anchorLineGeometry[i].geometry.vertices[1].z = anchorPointz[i][2];
-
-
-
 
 			hawsers2.anchorLineGeometry[i].geometry.verticesNeedUpdate = true;
 		}
-
 		//PLOTS for motion and tensions --------------------------
-
 	}
-	window.feedMotionHeave = function(callback) {
+	window.feedMotionHeave = function (callback) {
 		var tick = {};
 		tick.plot0 = motion.heave;
 		tick.plot1 = motion2.heave;
 		tick.plot2 = motion3.heave;
 		callback(JSON.stringify(tick));
 	};
-	window.feedMotionRoll = function(callback) {
+	window.feedMotionRoll = function (callback) {
 		var tick = {};
 		tick.plot0 = motion.roll * 180 / Math.PI;
 		tick.plot1 = motion2.roll * 180 / Math.PI;
 		tick.plot2 = motion3.roll * 180 / Math.PI;
 		callback(JSON.stringify(tick));
 	};
-	window.feedMotionSurge = function(callback) {
+	window.feedMotionSurge = function (callback) {
 		var tick = {};
 		tick.plot0 = motion.surge;
 		tick.plot1 = motion2.surge;
 		tick.plot2 = motion3.surge;
 		callback(JSON.stringify(tick));
 	};
-	window.feedMotionSway = function(callback) {
+	window.feedMotionSway = function (callback) {
 		var tick = {};
 		tick.plot0 = motion.sway;
 		tick.plot1 = motion2.sway;
 		tick.plot2 = motion3.sway;
 		callback(JSON.stringify(tick));
 	};
-	window.feedMotionPitch = function(callback) {
+	window.feedMotionPitch = function (callback) {
 		var tick = {};
 		tick.plot0 = motion.pitch * 180 / Math.PI;
 		tick.plot1 = motion2.pitch * 180 / Math.PI;
 		tick.plot2 = motion3.pitch * 180 / Math.PI;
 		callback(JSON.stringify(tick));
 	};
-	window.feedMotionYaw = function(callback) {
+	window.feedMotionYaw = function (callback) {
 		var tick = {};
 		tick.plot0 = motion.yaw;
 		tick.plot1 = motion2.yaw;
@@ -598,7 +560,7 @@ function DynamicalMovement(ship, states, states2, states3, userParameters, Ini, 
 		callback(JSON.stringify(tick));
 	};
 
-	window.tensions = function(callback) {
+	window.tensions = function (callback) {
 		var tick = {};
 		tick.plot0 = resultingForce[0];
 		tick.plot1 = resultingForce[1];
@@ -606,8 +568,7 @@ function DynamicalMovement(ship, states, states2, states3, userParameters, Ini, 
 		tick.plot3 = resultingForce[3];
 		callback(JSON.stringify(tick));
 	};
-
-	window.tensionsHawsers = function(callback) {
+	window.tensionsHawsers = function (callback) {
 		var tick = {};
 		tick.plot0 = tension[0];
 		tick.plot1 = tension[1];
@@ -633,7 +594,7 @@ function DynamicalMovement(ship, states, states2, states3, userParameters, Ini, 
 				"y": "48%",
 				"plot": {
 					"aspect": "spline",
-					"marker": {"visible": false},
+					"marker": { "visible": false },
 				},
 				"series": [{
 					"values": [0],
@@ -717,7 +678,7 @@ function DynamicalMovement(ship, states, states2, states3, userParameters, Ini, 
 				"y": "72%",
 				"plot": {
 					"aspect": "spline",
-					"marker": {"visible": false},
+					"marker": { "visible": false },
 				},
 				"series": [{
 					"values": [0],
@@ -790,7 +751,7 @@ function DynamicalMovement(ship, states, states2, states3, userParameters, Ini, 
 				"y": "72%",
 				"plot": {
 					"aspect": "spline",
-					"marker": {"visible": false},
+					"marker": { "visible": false },
 				},
 				"series": [{
 					"values": [0],
@@ -857,7 +818,7 @@ function DynamicalMovement(ship, states, states2, states3, userParameters, Ini, 
 				"y": "72%",
 				"plot": {
 					"aspect": "spline",
-					"marker": {"visible": false},
+					"marker": { "visible": false },
 				},
 				"series": [{
 					"values": [0],
@@ -879,7 +840,7 @@ function DynamicalMovement(ship, states, states2, states3, userParameters, Ini, 
 				},
 				scaleY: {
 					label: {
-						text: 'Pitch translation [m]',
+						text: 'Pitch angle [deg]',
 						fontStyle: 'normal',
 						fontWeight: 'normal',
 					},
@@ -924,7 +885,7 @@ function DynamicalMovement(ship, states, states2, states3, userParameters, Ini, 
 				"y": "72%",
 				"plot": {
 					"aspect": "spline",
-					"marker": {"visible": false},
+					"marker": { "visible": false },
 				},
 				"series": [{
 					"values": [0],
@@ -991,7 +952,7 @@ function DynamicalMovement(ship, states, states2, states3, userParameters, Ini, 
 				"y": "0%",
 				"plot": {
 					"aspect": "spline",
-					"marker": {"visible": false},
+					"marker": { "visible": false },
 				},
 				"series": [{
 					"values": [0],
@@ -1058,7 +1019,7 @@ function DynamicalMovement(ship, states, states2, states3, userParameters, Ini, 
 				"y": "25%",
 				"plot": {
 					"aspect": "spline",
-					"marker": {"visible": false},
+					"marker": { "visible": false },
 				},
 				"series": [{
 					"values": [0],
@@ -1126,7 +1087,7 @@ function DynamicalMovement(ship, states, states2, states3, userParameters, Ini, 
 				"plot": {
 					"aspect": "spline",
 
-					"marker": {"visible": false},
+					"marker": { "visible": false },
 				},
 				"series": [{
 					"values": [0],
@@ -1188,8 +1149,7 @@ function DynamicalMovement(ship, states, states2, states3, userParameters, Ini, 
 		]
 	};
 
-
-	window.onload = function() {
+	window.onload = function () {
 		zingchart.render({
 			id: 'plotBottom',
 			height: "100%",
@@ -1198,5 +1158,4 @@ function DynamicalMovement(ship, states, states2, states3, userParameters, Ini, 
 		});
 
 	};
-
 };

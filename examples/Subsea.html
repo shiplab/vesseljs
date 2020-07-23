@@ -7,29 +7,21 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 
 	<title>Side by side</title>
-
 	<script src="../build/vessel.js"></script>
-
 	<script src="libs/three.js"></script>
 	<script src="libs/STLLoader.js"></script>
-
 	<script src="snippets/Ship3D_v2.js"></script>
-
 	<script src="libs/plotly-1.48.3.min.js"></script>
-
 	<script src="libs/Mirror.js"></script>
 	<script src="libs/Mirror.js"></script>
 	<script src="libs/WaterShader.js"></script>
-
 	<script src="libs/OrbitControls.js"></script>
 	<script src="libs/dat.gui.min.js"></script>
 	<script src="libs/skybox_from_examples.js"></script>
-
 	<script src="libs/browse_files_Elias_Hasle.js"></script>
 	<script src="snippets/Patch_interpolation.js"></script>
-	<!--<script src="Moving_bodies_Elias_Hasle.js"></script>-->
 	<script src="snippets/Playback.js"></script>
-	<script src="snippets/Regular_ocean_final.js"></script>
+	<script src="snippets/Regular_ocean.js"></script>
 	<script src="snippets/Subsea.js"></script>
 	<script src="motion_data/data_subsea.js"></script>
 	<script src="libs/numeric-1.2.6.min.js"></script>
@@ -39,12 +31,7 @@
 	<div id="3d" class="col-md-12 text-left" style="min-height: 96vh">
 	</div>
 
-
-
-
 	<script>
-
-
 		//Globals
 		var renderer, camera, controls, gui, stats;
 		var scene, zUpCont, playback, bodies, ocean, ship3D, barge23D, statMod, statMod2, statMod3;
@@ -80,11 +67,7 @@
 		var lin, output, res, res2, index, mat, rao, pha;
 		var J;
 		var inputFile, text, input;
-		var data = data;
 		var umbilical, saltb;
-
-
-
 
 		spec = {
 			"attributes": {},
@@ -328,7 +311,6 @@
 			]
 		};
 
-
 		spec2 = {
 			"attributes": {},
 			"designState": {
@@ -348,8 +330,6 @@
 						}
 					}
 				}
-
-
 			},
 			"structure": {
 				"hull": {
@@ -449,7 +429,6 @@
 			]
 		};
 
-
 		lin = [];
 		res = [];
 		res2 = [];
@@ -457,9 +436,7 @@
 		rao = [];
 		pha = [];
 
-
 		for (var z = 0; z < data.length; z++) {
-
 			index = 0;
 			res[z] = data[z].split(/[\s]+/).join(' ')
 			res2[z] = res[z].substring(1)
@@ -471,16 +448,12 @@
 				mat[z][j] = +mat[z][j]
 			}
 
-
 			for (var i = 0; i < mat[z].length / 7; i++) {
-
-
 				lin[z][i] = mat[z].slice(index, index + 5)
 
 				index = index + 7; //for 2 ships
 				//index = index + 1 --> for 1 ship
 				//index = index + 13 --> for 3 ships
-
 			}
 			rao[z] = []
 
@@ -490,7 +463,6 @@
 			var dof3 = 18;
 			var per = 30; // Number of periods
 			var hea = 25; // Number of headings
-
 
 			// allocate vector
 			for (var i = 0; i < dof3; i++) {
@@ -505,64 +477,55 @@
 					}
 				}
 			}
+		}
+		console.log(lin);
 
+		var i, j, z, o, u, h, g, q, w;
+
+		for (var l = 0; l < 4500; l++) {
+			z = l % cases;
+			i = l % dof1;
+			j = Math.floor(l / (dof1 * hea));
+			k = Math.floor(l / dof1) % hea;
+			rao[0][i][per - 1 - j][k] = lin[0][l][3];
+			pha[0][i][per - 1 - j][k] = lin[0][l][4];
+			rao[1][i][per - 1 - j][k] = lin[1][l][3];
+			pha[1][i][per - 1 - j][k] = lin[1][l][4];
 		}
 
-		console.log(rao)
+		for (var l = 0; l < 9000; l++) {
+			z = l % cases;
+			o = l % dof2;
+			h = Math.floor(l / (dof2 * hea));
+			q = Math.floor(l / dof2) % hea;
+			rao[2][o][per - 1 - h][q] = lin[2][l][3];
+			pha[2][o][per - 1 - h][q] = lin[2][l][4];
+			rao[3][o][per - 1 - h][q] = lin[3][l][3];
+			pha[3][o][per - 1 - h][q] = lin[3][l][4];
+			rao[4][o][per - 1 - h][q] = lin[4][l][3];
+			pha[4][o][per - 1 - h][q] = lin[4][l][4];
+			rao[5][o][per - 1 - h][q] = lin[5][l][3];
+			pha[5][o][per - 1 - h][q] = lin[5][l][4];
+		}
 
-		for (var p = 0; p < lin.length - 1; p++) {
-
-			var i, j, z, o, u, h, g, q, w;
-
-
-			for (var l = 0; l < 4500; l++) {
-				z = l % cases;
-				i = l % dof1;
-				j = Math.floor(l / (dof1 * hea));
-				k = Math.floor(l / dof1) % hea;
-				rao[0][i][j][k] = lin[0][l][3];
-				pha[0][i][j][k] = lin[0][l][4];
-				rao[1][i][j][k] = lin[1][l][3];
-				pha[1][i][j][k] = lin[1][l][4];
-			}
-
-			for (var l = 0; l < 9000; l++) {
-				z = l % cases;
-				o = l % dof2;
-				h = Math.floor(l / (dof2 * hea));
-				q = Math.floor(l / dof2) % hea;
-				rao[2][o][h][q] = lin[2][l][3];
-				pha[2][o][h][q] = lin[2][l][4];
-				rao[3][o][h][q] = lin[3][l][3];
-				pha[3][o][h][q] = lin[3][l][4];
-				rao[4][o][h][q] = lin[4][l][3];
-				pha[4][o][h][q] = lin[4][l][4];
-				rao[5][o][h][q] = lin[5][l][3];
-				pha[5][o][h][q] = lin[5][l][4];
-
-			}
-
-			for (var l = 0; l < 13500; l++) {
-				u = l % dof3;
-				g = Math.floor(l / (dof3 * hea));
-				w = Math.floor(l / dof3) % hea;
-				rao[6][u][g][w] = lin[6][l][3];
-				pha[6][u][g][w] = lin[6][l][4];
-				rao[7][u][g][w] = lin[7][l][3];
-				pha[7][u][g][w] = lin[7][l][4];
-				rao[8][u][g][w] = lin[8][l][3];
-				pha[8][u][g][w] = lin[8][l][4];
-				rao[9][u][g][w] = lin[9][l][3];
-				pha[9][u][g][w] = lin[9][l][4];
-			}
+		for (var l = 0; l < 13500; l++) {
+			u = l % dof3;
+			g = Math.floor(l / (dof3 * hea));
+			w = Math.floor(l / dof3) % hea;
+			rao[6][u][per - 1 - g][w] = lin[6][l][3];
+			pha[6][u][per - 1 - g][w] = lin[6][l][4];
+			rao[7][u][per - 1 - g][w] = lin[7][l][3];
+			pha[7][u][per - 1 - g][w] = lin[7][l][4];
+			rao[8][u][per - 1 - g][w] = lin[8][l][3];
+			pha[8][u][per - 1 - g][w] = lin[8][l][4];
+			rao[9][u][per - 1 - g][w] = lin[9][l][3];
+			pha[9][u][per - 1 - g][w] = lin[9][l][4];
 		}
 
 		hangedMooringM = []; // Point of hanged mooring line on seabed (m, m, m)
 		hangedMooringU = []; // Point of hanged mooring line on seabed (m, m, m)
 		hangedMooringE = []; // Point of hanged mooring line on seabed (m, m, m)
 		hangedMooringS = []; // Point of hanged mooring line on seabed (m, m, m)
-
-
 
 		// Damping
 		C_D = 0.2; // Assumed Linear Resistance Coeff.	(m/s)
@@ -609,7 +572,6 @@
 			mooringAngleU,
 		};
 
-
 		(function main() {
 			//Renderer setup
 			//document.body.style = "overflow: hidden;";
@@ -627,7 +589,6 @@
 			gui = new dat.GUI();
 
 			// add report to GUI controller
-
 			playback = new Playback({
 				parentGUI: gui
 			});
@@ -672,7 +633,7 @@
 				1,
 				1000000
 			);
-			let onResize = function() {
+			let onResize = function () {
 				let w = container.clientWidth;
 				let h = container.clientHeight;
 				renderer.setSize(w, h);
@@ -727,15 +688,11 @@
 			});
 			zUpCont.add(ship3D);
 
-
-
 			LOA1 = ship.structure.hull.attributes.LOA;
 
 			BOA1 = ship.structure.hull.attributes.BOA;
 
 			T1 = ship.designState.calculationParameters.Draft_design;
-
-
 
 			sep = {};
 			sep.x = 0
@@ -744,21 +701,14 @@
 
 			ship3D.position.z = -T1;
 
-
 			designDimention = ship.structure.hull.attributes;
 			floatingStates = states.discrete.FloatingCondition.state;
 
-
-
-
 			// Insert mooring lines------------------------
-
-
 			states.continuous.mooring = {};
 			mooring = states.continuous.mooring;
 
 			// var anchorLength = 195; // Mooring line Length                   (m)
-
 			mooring.mooringPointOnShip = [
 				[
 					(floatingStates.LWL / 2) - 3,
@@ -785,8 +735,6 @@
 			mooring.anchorPoint = []; // Point of mooring line on seabed        (m, m, m)
 			mooring.anchorLineGeometry = []; // Line geometry (global)        (m, m, m)
 			mooring.anchorLength = anchorLengthM
-
-
 
 			// Anchoring point in seabed
 			for (var i = 0; i < mooring.mooringPointOnShip.length; i++) {
@@ -838,7 +786,6 @@
 				}
 			}
 
-
 			for (var i = 0; i < mooring.mooringPointOnShip.length; i++) {
 
 				mooring.anchorLineGeometry[i] = new THREE.Line(
@@ -854,9 +801,6 @@
 			mooring.anchorLineGeometry[0].properties.diameter = 0.0635
 			mooring.anchorLineGeometry[0].properties.axial_stiffness = 1090000 * Math.pow(mooring.anchorLineGeometry[0].properties.diameter, 2)
 			mooring.anchorLineGeometry[0].properties.EA = 545000
-
-
-
 
 			// UMBILICAL
 			states.continuous.umbilical = {}
@@ -888,8 +832,6 @@
 				]; // Point of mooring line on seabed        (m, m, m)
 			}
 
-
-
 			// Rope Material
 			var materialLineU = [
 				new THREE.LineBasicMaterial({
@@ -910,9 +852,7 @@
 				}
 			}
 
-
 			for (var i = 0; i < umbilical.PointOnShip.length; i++) {
-
 				umbilical.anchorLineGeometry[i] = new THREE.Line(
 					geometryMooringU[i],
 					materialLineU[i]
@@ -922,20 +862,15 @@
 			}
 
 			umbilical.hangedMooring = []; // Point of hanged mooring line on seabed (m, m, m)
-
 			umbilical.anchorLength = anchorLengthU; // Mooring line Length                   (m)
-
 			umbilical.radialDistance = radialDistanceU;
 			umbilical.seaDepth = seaDepth;
-
 
 			//CATENARY -----------------------------------------
 
 			// SALT SEABOTTOM
 			states.continuous.catenary = {}
 			catenary = states.continuous.catenary;
-
-
 
 			x1 = (floatingStates.LWL / 2)
 			y1 = designDimention.Depth - T1
@@ -948,7 +883,6 @@
 
 			catenary.PointOnShip = [[x1, y1, z1]];
 			catenary.anchorPoint = [[x2, y2, z2]];
-
 
 			var x0 = 0, z0 = 0;
 			var a = 1
@@ -972,17 +906,16 @@
 			LineGeometry5.position.x = 156
 
 			var geometry_buoy = new THREE.BoxGeometry(8, 5, 5);
-			var material = new THREE.MeshBasicMaterial({color: 0x33cc33});
-			var material_buoy = new THREE.MeshBasicMaterial({color: 0xff0000});
+			var material = new THREE.MeshBasicMaterial({ color: 0x33cc33 });
+			var material_buoy = new THREE.MeshBasicMaterial({ color: 0xff0000 });
 
 			var buoy = new THREE.Mesh(geometry_buoy, material_buoy);
 			scene.add(buoy);
 
-			updateCatenary = function() {
-
-				var A = {x: x1, y: y1, z: z1}
-				B = {x: x2, y: y2, z: z2}
-				C = {x: x0, y: a, z: z0}
+			updateCatenary = function () {
+				var A = { x: x1, y: y1, z: z1 }
+				B = { x: x2, y: y2, z: z2 }
+				C = { x: x0, y: a, z: z0 }
 
 				var xm = (A.x + B.x) / 2
 				var Ax = (B.x - A.x) / 2
@@ -1058,31 +991,22 @@
 				y[0] = a * Math.cosh(x / a)
 				var diffe = y[0] - y1
 				for (var i = 0; i < ((xa - xinc) - xb) / xinc; i++) {
-
 					xc[i] = x - xb
 					y[i] = (a * Math.cosh(x / a) - diffe)
 					z[i] = Math.tan(zAng) * xc[i]
-
 					x = x + xinc
-
 				}
 
-
 				for (var m = 0; m < 99; m++) {
-
 					LineGeometry5.geometry.vertices[m].x = xc[m];
 					LineGeometry5.geometry.vertices[m].y = y[m];
 					LineGeometry5.geometry.vertices[m].z = z[m];
-
 					LineGeometry5.geometry.verticesNeedUpdate = true;
 				}
 
 				//BUOY-------------------------------------------
-
-
-				buoy_pos = {x: 195, y: y[99], z: 0}
+				buoy_pos = { x: 195, y: y[99], z: 0 }
 				buoy.position.set(buoy_pos.x, buoy_pos.y, buoy_pos.z)
-
 			}
 
 			// SALT SEABOTTOM
@@ -1114,18 +1038,11 @@
 				]; // Point of mooring line on seabed        (m, m, m)
 			}
 
-
-
 			//CUBE---------------------------------------------
-
 			var geometry = new THREE.BoxGeometry(20, 40, 40);
-
 			var cube = new THREE.Mesh(geometry, material);
 			scene.add(cube);
 			cube.position.set(230, -100, 0)
-
-
-
 
 			// Rope Material
 			var materialLineSB = [
@@ -1147,9 +1064,7 @@
 				}
 			}
 
-
 			for (var i = 0; i < saltb.PointOnShip.length; i++) {
-
 				saltb.anchorLineGeometry[i] = new THREE.Line(
 					geometryMooringSB[i],
 					materialLineSB[i]
@@ -1159,16 +1074,9 @@
 			}
 
 			saltb.hangedMooring = []; // Point of hanged mooring line on seabed (m, m, m)
-
 			saltb.anchorLength = anchorLengthSB; // Mooring line Length                   (m)
-
 			saltb.radialDistance = radialDistanceSB;
 			saltb.seaDepth = seaDepth;
-
-
-
-
-
 
 			var Ini = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 			states.continuous.motion = {
@@ -1182,12 +1090,11 @@
 
 			var tprev = 0; // Initial time
 
-
 			scale = gui.addFolder("Mooring Configuration");
 			scale
 				.add(userParameters, "seaDepth", 10, 100)
 				.step(5)
-				.onChange(function(newValue) {
+				.onChange(function (newValue) {
 					seaDepth = newValue;
 					mooring.seaDepth = newValue;
 					for (let i = scene.children.length - 1; i >= 0; i--) {
@@ -1205,14 +1112,14 @@
 			scale
 				.add(userParameters, "anchorLengthM", 50, 500)
 				.step(1)
-				.onChange(function(newValue) {
+				.onChange(function (newValue) {
 					mooring.anchorLength = newValue;
 				})
 				.name("Mooring length");
 			scale
 				.add(userParameters, "radialDistanceM", 50, 500)
 				.step(1)
-				.onChange(function(newValue) {
+				.onChange(function (newValue) {
 					mooring.radialDistance = newValue;
 					radialDistanceM = newValue;
 				})
@@ -1220,7 +1127,7 @@
 			scale
 				.add(userParameters, "mooringAngleM", 0, 90)
 				.step(1)
-				.onChange(function(newValue) {
+				.onChange(function (newValue) {
 					mooring.mooringAngle = newValue;
 					mooringAngleM = newValue;
 				})
@@ -1228,28 +1135,21 @@
 			scale
 				.add(userParameters, "densityM", 50, 500)
 				.step(1)
-				.onChange(function(newValue) {
+				.onChange(function (newValue) {
 					mooring.w = newValue;
 				})
 				.name("Density");
-
-
 
 			// cylinderCil.setRotationFromAxisAngle ([0, 0.25, 0], -Math.PI/4);
 			dynMov = new DynamicalMovement(ship, states, states2, states3, userParameters, Ini, seaDepth);
 			scale.open();
 
-			//VERY approximate motion (for visualisation only)
-			playback.add(function(t) {
-				// let x = ship3D.position.x;
-				// let y = ship3D.position.y;
-				// let oCenter = ocean.calculateZ(x,y,t);
+			playback.add(function (t) {
 				let dt = t - tprev;
 
 				dynMov.moveShip(tprev, dt);
 
 				tprev = t;
-
 			});
 
 			//Initial configuration:

@@ -1,10 +1,8 @@
-
 function DynamicalMovement(ship, states, json_data, userParameters, Ini) {
 	this.ship = ship;
 	this.states = states;
 
 	var calculatedParameters = this.ship.designState.calculationParameters;
-
 
 	length = floatingStates.LWL;
 	breadth = floatingStates.BWL;
@@ -34,10 +32,7 @@ function DynamicalMovement(ship, states, json_data, userParameters, Ini) {
 		mooringLine = this.InsertLine(this.ship, this.states, motion, mooring.anchorPoint);
 
 		var y = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-
-
 	};
-
 
 	//@ferrari212
 	this.WaveForce = function(rho, t, a_33) {
@@ -51,7 +46,6 @@ function DynamicalMovement(ship, states, json_data, userParameters, Ini) {
 		var omega = wavCre.waveDef.waveFreq; // wave frequencie
 		var k = 2 * Math.PI / ocean.waves["0"].L; // wave number
 		var phase = omega * t - ocean.waves["0"].phi - k * projMag;
-
 	}
 
 	this.RugenKuttaSolver = function(t, y) {
@@ -86,7 +80,6 @@ function DynamicalMovement(ship, states, json_data, userParameters, Ini) {
 		var CAQuad1 = numeric.rep([3, 3], 0);
 		var CAQuad3 = CAQuad2;
 		var CAQuad4 = Smtrx(SA.slice(3, 6));
-
 
 		for (i = 0; i < 3; i++) {
 			for (f = 0; f < 3; f++) {
@@ -150,21 +143,16 @@ function DynamicalMovement(ship, states, json_data, userParameters, Ini) {
 	}
 
 	this.InsertLine = function(ship, states, motion, anchorPoint) {
-
 		let omega = wavCre.waveDef.waveFreq;
-
 
 		playback.add(function(t) {
 			cos_mo = Math.cos(omega * t - ocean.waves["0"].phi);
 		});
 
-		var J = Euler2J1([(json_data[sep.y / 4][controller.object.fullness][controller2.object.fullness][3][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo, (json_data[sep.y / 4][controller.object.fullness][controller2.object.fullness][4][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo, 0]);
-
-		var J_2 = Euler2J1([(json_data[sep.y / 4][controller.object.fullness][controller2.object.fullness][9][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo, (json_data[sep.y / 4][controller.object.fullness][controller2.object.fullness][10][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo, 0]);
-
+		var J = Euler2J1([(json_data[sep.y / 4][controller.object.fullness][controller2.object.fullness][3][periodIndex][thetaIndex] * [ocean.waves[0].A]) * cos_mo, (json_data[sep.y / 4][controller.object.fullness][controller2.object.fullness][4][periodIndex][thetaIndex] * [ocean.waves[0].A]) * cos_mo, 0]);
+		var J_2 = Euler2J1([(json_data[sep.y / 4][controller.object.fullness][controller2.object.fullness][9][periodIndex][thetaIndex] * [ocean.waves[0].A]) * cos_mo, (json_data[sep.y / 4][controller.object.fullness][controller2.object.fullness][10][periodIndex][thetaIndex] * [ocean.waves[0].A]) * cos_mo, 0]);
 
 		pos = [numeric.dot(J, mooring.mooringPointOnShip[0]), numeric.dot(J, mooring.mooringPointOnShip[1]), numeric.dot(J, mooring.mooringPointOnShip[2]), numeric.dot(J, mooring.mooringPointOnShip[3]), numeric.dot(J, mooring.mooringPointOnShip[4]), numeric.dot(J, mooring.mooringPointOnShip[5]), numeric.dot(J, mooring.mooringPointOnShip[6]), numeric.dot(J, mooring.mooringPointOnShip[7])];
-
 
 		posB = [numeric.dot(J_2, mooring.mooringPoint[0]), numeric.dot(J_2, mooring.mooringPoint[1]),
 		numeric.dot(J_2, mooring.mooringPoint[2]),
@@ -174,7 +162,6 @@ function DynamicalMovement(ship, states, json_data, userParameters, Ini) {
 		numeric.dot(J_2, mooring.mooringPoint[6]),
 		numeric.dot(J_2, mooring.mooringPoint[7])];
 
-
 		var aPosible = []; // Guesses necessary for solving Eq.     (m)
 		var a = []; // Guesses necessary for solving Eq.     (m)
 		var FM = numeric.rep([6], 0); // Horizontal forces and Moments       (m)
@@ -183,22 +170,16 @@ function DynamicalMovement(ship, states, json_data, userParameters, Ini) {
 		var anchorPoint = [];
 
 		for (var i = 0; i < pos.length; i++) {
-
-			anchorPointOnShip[i] = [pos[i][0] + 0, pos[i][2] + (json_data[sep.y / 4][controller.object.fullness][controller2.object.fullness][2][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo, pos[i][1] - 0];
-
-			anchorPoint[i] = [-posB[i][0] + 0, -posB[i][2] + (json_data[sep.y / 4][controller.object.fullness][controller2.object.fullness][8][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo, -posB[i][1] - 0];
-
+			anchorPointOnShip[i] = [pos[i][0] + 0, pos[i][2] + (json_data[sep.y / 4][controller.object.fullness][controller2.object.fullness][2][periodIndex][thetaIndex] * [ocean.waves[0].A]) * cos_mo, pos[i][1] - 0];
+			anchorPoint[i] = [-posB[i][0] + 0, -posB[i][2] + (json_data[sep.y / 4][controller.object.fullness][controller2.object.fullness][8][periodIndex][thetaIndex] * [ocean.waves[0].A]) * cos_mo, -posB[i][1] - 0];
 		}
 
 		for (var i = 0; i < pos.length; i++) {
 			if (mooring.anchorLineGeometry[i].geometry.vertices[1] == undefined) {
 				mooring.anchorLineGeometry[i].geometry.vertices[1] = [];
-
 				mooring.anchorLineGeometry[i].geometry.vertices[0] = [];
 				mooring.anchorLineGeometry[i].geometry.vertices[1].push(new THREE.Vector3(anchorPoint[i][0], anchorPoint[i][1], anchorPoint[i][2]));
 				mooring.anchorLineGeometry[i].geometry.vertices[0].push(new THREE.Vector3(anchorPointOnShip[i][0], anchorPointOnShip[i][1], anchorPointOnShip[i][2]));
-
-
 			} else {
 				mooring.anchorLineGeometry[i].geometry.vertices[0].x = anchorPointOnShip[i][0];
 				mooring.anchorLineGeometry[i].geometry.vertices[0].y = anchorPointOnShip[i][1];
@@ -207,11 +188,8 @@ function DynamicalMovement(ship, states, json_data, userParameters, Ini) {
 				mooring.anchorLineGeometry[i].geometry.vertices[1].y = anchorPoint[i][1];
 				mooring.anchorLineGeometry[i].geometry.vertices[1].z = anchorPoint[i][2];
 			}
-
 			mooring.anchorLineGeometry[i].geometry.linelength = Math.sqrt((Math.pow((mooring.anchorLineGeometry[i].geometry.vertices[0].x - mooring.anchorLineGeometry[i].geometry.vertices[1].x), 2)) + (Math.pow((mooring.anchorLineGeometry[i].geometry.vertices[0].y - mooring.anchorLineGeometry[i].geometry.vertices[1].y), 2)) + (Math.pow((mooring.anchorLineGeometry[i].geometry.vertices[0].z - mooring.anchorLineGeometry[i].geometry.vertices[1].z), 2)));
 			mooring.anchorLineGeometry[i].geometry.verticesNeedUpdate = true;
-
-
 		}
 		// states.continuous.mooring = mooring;
 
