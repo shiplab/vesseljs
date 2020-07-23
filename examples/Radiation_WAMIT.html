@@ -2,156 +2,141 @@
 	<head>
 		<title>Ship in Ocean</title>
 		<script src="../build/vessel.js"></script>
-
 		<script src="libs/three.js"></script>
 		<script src="libs/STLLoader.js"></script>
-
 		<script src="snippets/Ship3D_v2.js"></script>
-
 		<script src="libs/plotly-1.48.3.min.js"></script>
-
 		<!-- Upgrading to WaterShader2.js will remove the dependency
 	on Mirror.js as well as open up possibilities for visualizing approximate water flows around vessels. -->
 		<script src="libs/Mirror.js"></script>
 		<script src="libs/WaterShader.js"></script>
-		<!-- <script src="libs/Water.js"></script> -->
-
 		<script src="libs/OrbitControls.js"></script>
 		<script src="libs/dat.gui.min.js"></script>
 		<script src="libs/skybox_from_examples.js"></script>
-
 		<script src="libs/browse_files_Elias_Hasle.js"></script>
 		<script src="snippets/Patch_interpolation.js"></script>
-		<!--<script src="Moving_bodies_Elias_Hasle.js"></script>-->
 		<script src="snippets/Playback.js"></script>
 		<script src="snippets/Regular_ocean.js"></script>
-		<!-- <script src="snippets/Regular_ocean2.js"></script> -->
-		<!--<script src="keyboard_arrow_input_Elias_Hasle.js"></script>-->
-
 		<script src="snippets/Radiation_WAMIT.js"></script>
-		<!-- <script src="js/mooringSystem.js"></script> -->
 		<script src="libs/numeric-1.2.6.min.js"></script>
 		<script src="libs/zingchart.min.js"></script>
 	</head>
 
 	<body>
 		<div id="3d" class="orchid" style="position: absolute; top: 0px; height: 100%; right: 0px; width: 50%;"></div>
-
 		<div id="heave_graph" style="position: absolute; bottom: 66%; height: 40%; left: 0px; width: 50%;"></div>
 		<div id="roll_graph" style="position: absolute; bottom: 33%; height: 40%; left: 0px; width: 50%;"></div>
 		<div id="pitch_graph" style="position: absolute; bottom: 0%; height: 40%; left: 0px; width: 50%;"></div>
 		<script>
-			"use strict";
+			"use strict"
 
 			//Globals
-			var renderer, camera, controls, gui, stats;
-			var scene, zUpCont, playback, bodies, ocean, ship3D, statMod;
-			var RG_system, g, MM, ADD_mass, AA, A_33, BB, B_33, B_55, B_44, B_55, CC, waveForce, C_D;
-			var dynMov, wavMo, states, scale;
-			var group;
+			var renderer, camera, controls, gui, stats
+			var scene, zUpCont, playback, bodies, ocean, ship3D, statMod
+			var RG_system, g, MM, ADD_mass, AA, A_33, BB, B_33, B_55, B_44, B_55, CC, waveForce, C_D
+			var dynMov, wavMo, states, scale
+			var group
 
 			// Damping
-			C_D = 0.2; // Assumed Linear Resistance Coeff.	(m/s)
-			B_44 = 3000000; // Assumed Roll Linear Damping Coeff.	(kgm2/s)
-			B_55 = 6000000; // Assumed Roll Linear Damping Coeff.	(kgm2/s)
-			var userParameters = { C_D, B_44, B_55 };
+			C_D = 0.2 // Assumed Linear Resistance Coeff.	(m/s)
+			B_44 = 3000000 // Assumed Roll Linear Damping Coeff.	(kgm2/s)
+			B_55 = 6000000 // Assumed Roll Linear Damping Coeff.	(kgm2/s)
+			var userParameters = { C_D, B_44, B_55 }
 
-			(function main() {
+			;(function main() {
 				//Renderer setup
 				//document.body.style = "overflow: hidden;";
-				document.body.style.overflow = "hidden";
-				var container = document.getElementById("3d");
-				document.body.appendChild(container);
+				document.body.style.overflow = "hidden"
+				var container = document.getElementById("3d")
+				document.body.appendChild(container)
 
-				renderer = new THREE.WebGLRenderer({ antialias: true });
+				renderer = new THREE.WebGLRenderer({ antialias: true })
 				//renderer.setSize(window.innerWidth, window.innerHeight);
-				renderer.setClearColor(0x99aadd);
-				container.appendChild(renderer.domElement);
+				renderer.setClearColor(0x99aadd)
+				container.appendChild(renderer.domElement)
 
 				//GUI setup (comment out to remove gui)
-				gui = new dat.GUI();
+				gui = new dat.GUI()
 
 				// add report to GUI controller
 				var obj = {
 					"Click to read paper": function () {
-						window.open("https://raw.githubusercontent.com/wiki/shiplab/vesseljs/files/open_6_DOF.pdf");
+						window.open("https://raw.githubusercontent.com/wiki/shiplab/vesseljs/files/open_6_DOF.pdf")
 					},
-				};
+				}
 
-				gui.add(obj, "Click to read paper");
-
-				playback = new Playback({ parentGUI: gui });
+				gui.add(obj, "Click to read paper")
+				playback = new Playback({ parentGUI: gui })
 
 				//Scene setup:
-				scene = new THREE.Scene();
-				let sun = new THREE.DirectionalLight(0xffffff, 2);
-				sun.position.set(-512, 246, 128);
-				scene.add(sun);
+				scene = new THREE.Scene()
+				let sun = new THREE.DirectionalLight(0xffffff, 2)
+				sun.position.set(-512, 246, 128)
+				scene.add(sun)
 
 				//Ocean size
-				let oSize = 2048;
-
-				scene.add(new Skybox(oSize));
+				let oSize = 2048
+				scene.add(new Skybox(oSize))
 
 				// Add the bottom of ocean
-				var geometry = new THREE.PlaneBufferGeometry(oSize, oSize, 32);
-				var material = new THREE.MeshBasicMaterial({ color: 0xffff00, side: THREE.DoubleSide, transparent: true, opacity: 0.5 });
-				var plane = new THREE.Mesh(geometry, material);
-				plane.rotateX(-Math.PI / 2);
-				var oceanDepth = 30;
-				plane.translateZ(-oceanDepth);
-				scene.add(plane);
+				var geometry = new THREE.PlaneBufferGeometry(oSize, oSize, 32)
+				var material = new THREE.MeshBasicMaterial({ color: 0xffff00, side: THREE.DoubleSide, transparent: true, opacity: 0.5 })
+				var plane = new THREE.Mesh(geometry, material)
+				plane.rotateX(-Math.PI / 2)
+				var oceanDepth = 30
+				plane.translateZ(-oceanDepth)
+				scene.add(plane)
 
 				//Use Z up from now on:
-				THREE.Object3D.DefaultUp.set(0, 0, 1);
-				zUpCont = new THREE.Group();
-				zUpCont.rotation.x = -0.5 * Math.PI;
-				scene.add(zUpCont);
+				THREE.Object3D.DefaultUp.set(0, 0, 1)
+				zUpCont = new THREE.Group()
+				zUpCont.rotation.x = -0.5 * Math.PI
+				scene.add(zUpCont)
 
 				//Camera setup
-				camera = new THREE.PerspectiveCamera(26, window.innerWidth / window.innerHeight, 1, 1000000);
+				camera = new THREE.PerspectiveCamera(26, window.innerWidth / window.innerHeight, 1, 1000000)
 				let onResize = function () {
-					let w = container.clientWidth;
-					let h = container.clientHeight;
-					renderer.setSize(w, h);
-					camera.aspect = w / h;
-					camera.updateProjectionMatrix();
-				};
-				window.addEventListener("resize", onResize, false);
-				onResize();
-				camera.position.set(oSize * 0.05, -oSize * 0.05, oSize * 0.02);
-				camera.lookAt(zUpCont.position);
-				zUpCont.add(camera);
+					let w = container.clientWidth
+					let h = container.clientHeight
+					renderer.setSize(w, h)
+					camera.aspect = w / h
+					camera.updateProjectionMatrix()
+				}
+				window.addEventListener("resize", onResize, false)
+				onResize()
+				camera.position.set(oSize * 0.05, -oSize * 0.05, oSize * 0.02)
+				camera.lookAt(zUpCont.position)
+				zUpCont.add(camera)
 
-				controls = new THREE.OrbitControls(camera, renderer.domElement);
+				controls = new THREE.OrbitControls(camera, renderer.domElement)
 				//controls.minDistance = 0;
-				controls.maxDistance = 0.5 * oSize;
-				controls.enablePan = false;
-				controls.maxPolarAngle = Math.PI;
-				controls.minPolarAngle = 0;
+				controls.maxDistance = 0.5 * oSize
+				controls.enablePan = false
+				controls.maxPolarAngle = Math.PI
+				controls.minPolarAngle = 0
 
 				//zUpCont.add(new THREE.AxisHelper(1000));
-				zUpCont.add(new THREE.HemisphereLight(0xccccff, 0x666688, 1));
+				zUpCont.add(new THREE.HemisphereLight(0xccccff, 0x666688, 1))
 
 				ocean = new Ocean({
 					parentGUI: null /* gui */, //remenber to insert back to see the waves
 					sunDir: sun.position.clone().normalize(),
 					size: oSize,
 					segments: 127,
-				});
-				playback.add(ocean);
-				zUpCont.add(ocean);
+				})
+				playback.add(ocean)
+				zUpCont.add(ocean)
 
-				wavMo = [];
-				states = [];
+				wavMo = []
+				states = []
 
 				Vessel.loadShip("specs/ship_specifications/mississipiBarge.json", function (ship) {
-					states = ship.designState.clone();
-					states.objectOverrides.derivedByGroup["ballast tanks"].fullness = 0.5;
-					states.objectOverrides.derivedByGroup["cargo tanks"].fullness = 0.5;
-					console.log(states.objectCache);
-					statMod = new Vessel.StateModule(ship, states);
-					statMod.setDraft();
+					states = ship.designState.clone()
+					states.objectOverrides.derivedByGroup["ballast tanks"].fullness = 0.5
+					states.objectOverrides.derivedByGroup["cargo tanks"].fullness = 0.5
+					console.log(states.objectCache)
+					statMod = new Vessel.StateModule(ship, states)
+					statMod.setDraft()
 					//console.log(states.shipCache.thisStateVer);
 					ship3D = new Ship3D(ship, {
 						shipState: states,
@@ -161,8 +146,8 @@
 						hullOpacity: 1,
 						deckOpacity: 1,
 						objectOpacity: 1,
-					});
-					zUpCont.add(ship3D);
+					})
+					zUpCont.add(ship3D)
 
 					// Initial Velocities
 					// Initial BF-Surge Velocity
@@ -175,69 +160,65 @@
 					// Initial Euler Angle Y
 					// Initial Euler Angle Z
 					// [Surge, Sway, Heave, VSurge, VSway, VHeave, VRoll, VPitch, VYaw, EX, EY, EZ]
-					var Ini = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-					states.continuous.motion = { surge: Ini[0], sway: Ini[1], heave: Ini[2], roll: Ini[3], pitch: Ini[4], yaw: Ini[5] };
+					var Ini = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+					states.continuous.motion = { surge: Ini[0], sway: Ini[1], heave: Ini[2], roll: Ini[3], pitch: Ini[4], yaw: Ini[5] }
 
-					var tprev = 0; // Initial time;
+					var tprev = 0 // Initial time;
 
-					scale = gui.addFolder("Initial State");
+					scale = gui.addFolder("Initial State")
 					scale
 						.add(states.continuous.motion, "heave", -0.5, 0.5)
 						.step(0.01)
 						.onChange(function (newValue) {
-							ship3D.heave = newValue;
-							states.continuous.motion.heave = newValue;
-						});
+							ship3D.heave = newValue
+							states.continuous.motion.heave = newValue
+						})
 					scale
 						.add(states.continuous.motion, "roll", -0.5, 0.5)
 						.step(0.01)
 						.onChange(function (newValue) {
-							ship3D.roll = newValue;
-							states.continuous.motion.roll = newValue;
-						});
+							ship3D.roll = newValue
+							states.continuous.motion.roll = newValue
+						})
 					scale
 						.add(states.continuous.motion, "pitch", -0.1, 0.1)
 						.step(0.01)
 						.onChange(function (newValue) {
-							ship3D.pitch = newValue;
-							states.continuous.motion.pitch = newValue;
-						});
-					scale.open();
+							ship3D.pitch = newValue
+							states.continuous.motion.pitch = newValue
+						})
+					scale.open()
 
 					// cylinderCil.setRotationFromAxisAngle ([0, 0.25, 0], -Math.PI/4);
-					dynMov = new DynamicalMovement(ship, states, userParameters, Ini, oceanDepth);
-					scale.open();
+					dynMov = new DynamicalMovement(ship, states, userParameters, Ini, oceanDepth)
+					scale.open()
 
-					//VERY approximate motion (for visualisation only)
 					playback.add(function (t) {
-						// let x = ship3D.position.x;
-						// let y = ship3D.position.y;
-						// let oCenter = ocean.calculateZ(x,y,t);
-						let dt = t - tprev;
+						let dt = t - tprev
 
-						dynMov.moveShip(tprev, dt);
-						tprev = t;
+						dynMov.moveShip(tprev, dt)
+						tprev = t
 
-						ship3D.surge = states.continuous.motion.surge;
-						ship3D.sway = states.continuous.motion.sway;
-						ship3D.heave = states.continuous.motion.heave;
-						ship3D.roll = states.continuous.motion.roll;
-						ship3D.pitch = states.continuous.motion.pitch;
-						ship3D.yaw = states.continuous.motion.yaw;
-					});
+						ship3D.surge = states.continuous.motion.surge
+						ship3D.sway = states.continuous.motion.sway
+						ship3D.heave = states.continuous.motion.heave
+						ship3D.roll = states.continuous.motion.roll
+						ship3D.pitch = states.continuous.motion.pitch
+						ship3D.yaw = states.continuous.motion.yaw
+					})
 
 					function mo1() {
-						return 0;
+						return 0
 					}
 
 					function mo2() {
-						return states.continuous.motion.roll;
+						return states.continuous.motion.roll
 					}
 					function mo3() {
-						return states.continuous.motion.heave;
+						return states.continuous.motion.heave
 					}
 					function mo4() {
-						return states.continuous.motion.pitch;
+						return states.continuous.motion.pitch
 					}
 
 					Plotly.plot("roll_graph", [
@@ -251,7 +232,7 @@
 							mode: "lines",
 							line: { color: "#DF56F1" },
 						},
-					]);
+					])
 
 					Plotly.plot("heave_graph", [
 						{
@@ -264,7 +245,7 @@
 							mode: "lines",
 							line: { color: "#DF56F1" },
 						},
-					]);
+					])
 
 					Plotly.plot("pitch_graph", [
 						{
@@ -277,9 +258,9 @@
 							mode: "lines",
 							line: { color: "#DF56F1" },
 						},
-					]);
+					])
 
-					var cnt = 0;
+					var cnt = 0
 
 					var interval = setInterval(function () {
 						Plotly.extendTraces(
@@ -288,7 +269,7 @@
 								y: [[mo1()], [mo2()]],
 							},
 							[0, 1]
-						);
+						)
 
 						Plotly.extendTraces(
 							"heave_graph",
@@ -296,7 +277,7 @@
 								y: [[mo1()], [mo3()]],
 							},
 							[0, 1]
-						);
+						)
 
 						Plotly.extendTraces(
 							"pitch_graph",
@@ -304,35 +285,32 @@
 								y: [[mo1()], [mo4()]],
 							},
 							[0, 1]
-						);
-						if (cnt === 1) clearInterval(interval);
-					}, 10);
-				});
+						)
+						if (cnt === 1) clearInterval(interval)
+					}, 10)
+				})
 
 				//Initial configuration:
-				if (ocean.cosConf) ocean.cosConf.close();
-
-				playback.play();
-
-				requestAnimationFrame(animate);
-			})();
+				if (ocean.cosConf) ocean.cosConf.close()
+				playback.play()
+				requestAnimationFrame(animate)
+			})()
 
 			function animate(millitime) {
-				ocean.water.render();
-				renderer.render(scene, camera);
-				let playing = playback.update();
+				ocean.water.render()
+				renderer.render(scene, camera)
+				let playing = playback.update()
 
 				// Disable this to freeze water when not playing
 				if (!playing) {
-					ocean.water.material.uniforms.time.value += 1 / 60;
+					ocean.water.material.uniforms.time.value += 1 / 60
 				}
-
-				requestAnimationFrame(animate);
+				requestAnimationFrame(animate)
 			}
 
 			function updateMotion() {
 				for (let i = 0; i < wavMo.length; i++) {
-					wavMo[i].writeOutput();
+					wavMo[i].writeOutput()
 				}
 			}
 		</script>
