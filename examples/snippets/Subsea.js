@@ -37,35 +37,29 @@ function DynamicalMovement(ship, states, states2, states3, userParameters, Ini, 
 		var cos_mo2, cos_mo3, cos_mo4, cos_mo5, cos_mo8, cos_mo9, cos_mo10;
 		let omega = wavCre.waveDef.waveFreq;
 
-
-
 		playback.add(function(t) {
-			cos_mo0 = Math.cos(omega * t - pha[1][0][ocean.waves[0].T][ocean.waves[0].theta * 4]);
-			cos_mo1 = Math.cos(omega * t - pha[1][1][ocean.waves[0].T][ocean.waves[0].theta * 4]);
-			cos_mo2 = Math.cos(omega * t - pha[1][2][ocean.waves[0].T][ocean.waves[0].theta * 4]);
-			cos_mo3 = Math.cos(omega * t - pha[1][3][ocean.waves[0].T][ocean.waves[0].theta * 4]);
-			cos_mo4 = Math.cos(omega * t - pha[1][4][ocean.waves[0].T][ocean.waves[0].theta * 4]);
-			cos_mo5 = Math.cos(omega * t - pha[1][5][ocean.waves[0].T][ocean.waves[0].theta * 4]);
+			cos_mo0 = Math.cos(omega * t - pha[1][0][periodIndex][thetaIndex]);
+			cos_mo1 = Math.cos(omega * t - pha[1][1][periodIndex][thetaIndex]);
+			cos_mo2 = Math.cos(omega * t - pha[1][2][periodIndex][thetaIndex]);
+			cos_mo3 = Math.cos(omega * t - pha[1][3][periodIndex][thetaIndex]);
+			cos_mo4 = Math.cos(omega * t - pha[1][4][periodIndex][thetaIndex]);
+			cos_mo5 = Math.cos(omega * t - pha[1][5][periodIndex][thetaIndex]);
 
-
-			motion.surge = (rao[1][0][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo0 * 0.01
-			motion.sway = (rao[1][1][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo1 * 0.01
-			motion.heave = (rao[1][2][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo2 * 0.01
-			motion.roll = (rao[1][3][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo3 * 0.01
-			motion.pitch = (rao[1][4][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo4 * 0.01
-			motion.yaw = (rao[1][5][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo5 * 0.01
+			motion.surge = (rao[1][0][periodIndex][thetaIndex] * [ocean.waves[0].A]) * cos_mo0 * 0.01
+			motion.sway = (rao[1][1][periodIndex][thetaIndex] * [ocean.waves[0].A]) * cos_mo1 * 0.01
+			motion.heave = (rao[1][2][periodIndex][thetaIndex] * [ocean.waves[0].A]) * cos_mo2 * 0.01
+			motion.roll = (rao[1][3][periodIndex][thetaIndex] * [ocean.waves[0].A]) * cos_mo3 * 0.01
+			motion.pitch = (rao[1][4][periodIndex][thetaIndex] * [ocean.waves[0].A]) * cos_mo4 * 0.01
+			motion.yaw = (rao[1][5][periodIndex][thetaIndex] * [ocean.waves[0].A]) * cos_mo5 * 0.01
 		});
-
 
 		ship3D.surge = motion.surge;
 		ship3D.sway = motion.sway;
 		ship3D.heave = motion.heave;
 		ship3D.roll = motion.roll;
 		ship3D.pitch = motion.pitch;
-		ship3D.yaw = motion.yaw * 0.5;
-
+		ship3D.yaw = motion.yaw;
 	};
-
 
 	// This formulation is based on the  book Wave-Induced Loads and Ship Motions, LArs Bergdahl
 	// chapter 6 - motion for smal body approximation

@@ -64,58 +64,56 @@ function DynamicalMovement(ship, states, states2, states3, userParameters, Ini, 
 
 		playback.add(function (t) {
 
-			cos_mo0 = Math.cos(omega * t + pha[n][0][ocean.waves[0].T][ocean.waves[0].theta * 4]);
-			cos_mo1 = Math.cos(omega * t + pha[n][1][ocean.waves[0].T][ocean.waves[0].theta * 4]);
-			cos_mo2 = Math.cos(omega * t + pha[n][2][ocean.waves[0].T][ocean.waves[0].theta * 4]);
-			cos_mo3 = Math.cos(omega * t + pha[n][3][ocean.waves[0].T][ocean.waves[0].theta * 4]);
-			cos_mo4 = Math.cos(omega * t + pha[n][4][ocean.waves[0].T][ocean.waves[0].theta * 4]);
-			cos_mo5 = Math.cos(omega * t + pha[n][5][ocean.waves[0].T][ocean.waves[0].theta * 4]);
+			cos_mo0 = Math.cos(omega * t + pha[n][0][periodIndex][thetaIndex]);
+			cos_mo1 = Math.cos(omega * t + pha[n][1][periodIndex][thetaIndex]);
+			cos_mo2 = Math.cos(omega * t + pha[n][2][periodIndex][thetaIndex]);
+			cos_mo3 = Math.cos(omega * t + pha[n][3][periodIndex][thetaIndex]);
+			cos_mo4 = Math.cos(omega * t + pha[n][4][periodIndex][thetaIndex]);
+			cos_mo5 = Math.cos(omega * t + pha[n][5][periodIndex][thetaIndex]);
 
 			if (numShips == 2 || numShips == 3) {
-				cos_mo6 = Math.cos(omega * t - pha[n][6][ocean.waves[0].T][ocean.waves[0].theta * 4]);
-				cos_mo7 = Math.cos(omega * t - pha[n][7][ocean.waves[0].T][ocean.waves[0].theta * 4]);
-				cos_mo8 = Math.cos(omega * t - pha[n][8][ocean.waves[0].T][ocean.waves[0].theta * 4]);
-				cos_mo9 = Math.cos(omega * t - pha[n][9][ocean.waves[0].T][ocean.waves[0].theta * 4]);
-				cos_mo10 = Math.cos(omega * t - pha[n][10][ocean.waves[0].T][ocean.waves[0].theta * 4]);
-				cos_mo11 = Math.cos(omega * t - pha[n][11][ocean.waves[0].T][ocean.waves[0].theta * 4]);
+				cos_mo6 = Math.cos(omega * t - pha[n][6][periodIndex][thetaIndex]);
+				cos_mo7 = Math.cos(omega * t - pha[n][7][periodIndex][thetaIndex]);
+				cos_mo8 = Math.cos(omega * t - pha[n][8][periodIndex][thetaIndex]);
+				cos_mo9 = Math.cos(omega * t - pha[n][9][periodIndex][thetaIndex]);
+				cos_mo10 = Math.cos(omega * t - pha[n][10][periodIndex][thetaIndex]);
+				cos_mo11 = Math.cos(omega * t - pha[n][11][periodIndex][thetaIndex]);
 			}
 
 			if (numShips == 3) {
-				cos_mo12 = Math.cos(omega * t + pha[n][12][ocean.waves[0].T][ocean.waves[0].theta * 4]);
-				cos_mo13 = Math.cos(omega * t + pha[n][13][ocean.waves[0].T][ocean.waves[0].theta * 4]);
-				cos_mo14 = Math.cos(omega * t + pha[n][14][ocean.waves[0].T][ocean.waves[0].theta * 4]);
-				cos_mo15 = Math.cos(omega * t + pha[n][15][ocean.waves[0].T][ocean.waves[0].theta * 4]);
-				cos_mo16 = Math.cos(omega * t + pha[n][16][ocean.waves[0].T][ocean.waves[0].theta * 4]);
-				cos_mo17 = Math.cos(omega * t + pha[n][17][ocean.waves[0].T][ocean.waves[0].theta * 4]);
+				cos_mo12 = Math.cos(omega * t + pha[n][12][periodIndex][thetaIndex]);
+				cos_mo13 = Math.cos(omega * t + pha[n][13][periodIndex][thetaIndex]);
+				cos_mo14 = Math.cos(omega * t + pha[n][14][periodIndex][thetaIndex]);
+				cos_mo15 = Math.cos(omega * t + pha[n][15][periodIndex][thetaIndex]);
+				cos_mo16 = Math.cos(omega * t + pha[n][16][periodIndex][thetaIndex]);
+				cos_mo17 = Math.cos(omega * t + pha[n][17][periodIndex][thetaIndex]);
 			}
 
-			motion.surge = (rao[n][0][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo0;
-			motion.sway = (rao[n][1][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo1;
-			motion.heave = (rao[n][2][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo2;
-			motion.roll = (rao[n][3][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo3;
-			motion.pitch = (rao[n][4][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo4;
-			motion.yaw = (rao[n][5][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo5;
+			motion.surge = (rao[n][0][periodIndex][thetaIndex] * [ocean.waves[0].A]) * cos_mo0;
+			motion.sway = (rao[n][1][periodIndex][thetaIndex] * [ocean.waves[0].A]) * cos_mo1;
+			motion.heave = (rao[n][2][periodIndex][thetaIndex] * [ocean.waves[0].A]) * cos_mo2;
+			motion.roll = (rao[n][3][periodIndex][thetaIndex] * [ocean.waves[0].A]) * cos_mo3;
+			motion.pitch = (rao[n][4][periodIndex][thetaIndex] * [ocean.waves[0].A]) * cos_mo4;
+			motion.yaw = (rao[n][5][periodIndex][thetaIndex] * [ocean.waves[0].A]) * cos_mo5;
 
 			if (numShips == 2 || numShips == 3) {
-				motion2.surge = (rao[n][6][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo6;
-				motion2.sway = (rao[n][7][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo7;
-				motion2.heave = (rao[n][8][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo8;
-				motion2.roll = (rao[n][9][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo9;
-				motion2.pitch = (rao[n][10][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo10;
-				motion2.yaw = (rao[n][11][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo11;
+				motion2.surge = (rao[n][6][periodIndex][thetaIndex] * [ocean.waves[0].A]) * cos_mo6;
+				motion2.sway = (rao[n][7][periodIndex][thetaIndex] * [ocean.waves[0].A]) * cos_mo7;
+				motion2.heave = (rao[n][8][periodIndex][thetaIndex] * [ocean.waves[0].A]) * cos_mo8;
+				motion2.roll = (rao[n][9][periodIndex][thetaIndex] * [ocean.waves[0].A]) * cos_mo9;
+				motion2.pitch = (rao[n][10][periodIndex][thetaIndex] * [ocean.waves[0].A]) * cos_mo10;
+				motion2.yaw = (rao[n][11][periodIndex][thetaIndex] * [ocean.waves[0].A]) * cos_mo11;
 			}
 
 			if (numShips == 3) {
-				motion3.surge = (rao[n][12][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo12;
-				motion3.sway = (rao[n][13][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo13;
-				motion3.heave = (rao[n][14][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo14;
-				motion3.roll = (rao[n][15][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo15;
-				motion3.pitch = (rao[n][16][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo16;
-				motion3.yaw = (rao[n][17][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo17;
+				motion3.surge = (rao[n][12][periodIndex][thetaIndex] * [ocean.waves[0].A]) * cos_mo12;
+				motion3.sway = (rao[n][13][periodIndex][thetaIndex] * [ocean.waves[0].A]) * cos_mo13;
+				motion3.heave = (rao[n][14][periodIndex][thetaIndex] * [ocean.waves[0].A]) * cos_mo14;
+				motion3.roll = (rao[n][15][periodIndex][thetaIndex] * [ocean.waves[0].A]) * cos_mo15;
+				motion3.pitch = (rao[n][16][periodIndex][thetaIndex] * [ocean.waves[0].A]) * cos_mo16;
+				motion3.yaw = (rao[n][17][periodIndex][thetaIndex] * [ocean.waves[0].A]) * cos_mo17;
 			}
-
 		});
-
 
 		ship3D.surge = motion.surge;
 		ship3D.sway = motion.sway;
