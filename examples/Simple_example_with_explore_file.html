@@ -72,6 +72,7 @@
 		var J;
 		var cube;
 		var plane;
+		var periodIndex, thetaIndex;
 
 		spec2 = {
 			"attributes": {},
@@ -154,7 +155,7 @@
 		});
 
 		var raoReq = new XMLHttpRequest();
-		raoReq.open("GET", "motion_data/Simple_file_motion.txt", true);
+		raoReq.open("GET", "motion_data/Simple_file_motion.4", true);
 		raoReq.addEventListener("load", function (event) {
 			output = event.target.response;
 			useRAO(output);
@@ -429,6 +430,33 @@
 			if (ocean.cosConf) ocean.cosConf.close();
 			playback.play();
 			requestAnimationFrame(animate);
+
+			// Substitute default ocean gui controllers for custom ones to fit WAMIT results
+			var oceanGui = gui.__folders.Ocean;
+			var mapper = {
+				theta: 0,
+				angFreq: 0.45,
+				period: 0
+			};
+			thetaMapper(mapper.theta);
+			periodMapper(mapper.angFreq);
+
+			oceanGui.remove(gui.__folders.Ocean.__controllers["1"]);
+			oceanGui.remove(gui.__folders.Ocean.__controllers["1"]);
+			oceanGui.add(mapper, "theta", 0, 360, 15).name("<div>Direction (&theta;)</div>").onChange(thetaMapper);
+			oceanGui.add(mapper, "angFreq", 0.15, 1.55, 0.025).name("<div>Angular freq. (&omega;)</div>").onChange(periodMapper);
+			var perGUI = oceanGui.add(mapper, "period").name("<div>Period in s (T)</div>").listen().step(0.001);
+			perGUI.domElement.style.pointerEvents = "none";
+
+			function thetaMapper(angle) {
+				ocean.waves["0"].theta = angle - 180;
+				thetaIndex = angle / 15;
+			}
+			function periodMapper(freq) {
+				mapper.period = 2 * Math.PI / freq;
+				ocean.waves["0"].T = mapper.period;
+				periodIndex = Math.round((1.55 - freq) / 0.025);
+			}
 		})();
 
 		function animate(millitime) {

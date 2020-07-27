@@ -25,7 +25,6 @@
 	<script src="snippets/loading_conditions.js"></script>
 	<script src="motion_data/data_automatic.js"></script>
 	<script src="snippets/Regular_ocean.js"></script>
-
 </head>
 
 <body>
@@ -33,7 +32,6 @@
 	</div>
 
 	<div id="mydiv">
-
 		<div id="mydivheader">Rope tensions</div>
 		<p>Stern hawser 1: = <span id='tension1'></span> kN</p>
 		<p>Stern hawser 2: = <span id='tension2'></span> kN</p>
@@ -882,9 +880,9 @@
 
 				barge23D.surge = motions2.mo_surge;
 				barge23D.sway = motions2.mo_sway;
-				barge23D.heave = motions2.mo_heave * 1.15;
+				barge23D.heave = motions2.mo_heave;
 				barge23D.roll = motions2.mo_roll;
-				barge23D.pitch = motions2.mo_pitch * 1.15;
+				barge23D.pitch = motions2.mo_pitch;
 				barge23D.yaw = motions2.mo_yaw;
 
 				// Define axial stiffness
@@ -919,12 +917,8 @@
 				document.getElementById('tension4').innerHTML = tension[3].toFixed(0);
 				document.getElementById('tension5').innerHTML = tension[4].toFixed(0);
 				document.getElementById('tension6').innerHTML = tension[5].toFixed(0);
-				document.getElementById('tension7').innerHTML =
-
-					tension[6].toFixed(0);
+				document.getElementById('tension7').innerHTML = tension[6].toFixed(0);
 				document.getElementById('tension8').innerHTML = tension[7].toFixed(0);
-
-
 			});
 
 		};
