@@ -217,7 +217,7 @@
     left: 0;
 }
 
-.loader-black { background-color: #fff; }
+.loader-white { background-color: #fff; }
 
 .loader-1 { animation-name: loader1; }
 @-webkit-keyframes loader1 {
@@ -304,12 +304,12 @@
 
 <body>
 
-	<a id="button" target="_blank" href="https://github.com/shiplab/vesseljs/blob/dev/examples/epoch.html" title="View source code for animation / cloth on GitHub" style="">
+	<a id="button" target="_blank" href="https://github.com/shiplab/vesseljs/blob/master/examples/epoch.html" title="View source code for animation / cloth on GitHub" style="">
 		<img src="..\examples\images\code-24px.svg">
 	</a>
 
 	<div id="loader-wrapper">
-		<div class="loader loader-black loader-1"></div>
+		<div class="loader loader-white loader-1"></div>
 		<div><h1 style="font-style: italic;">Loading...</h1></div>
 	</div>
 
@@ -404,6 +404,7 @@
 	<script>
 		"use strict";
 
+		// JavaScript for adding loader page
 		window.addEventListener('load', function() {
 		var fadeTarget = document.getElementById("loader-wrapper");
     var fadeEffect = setInterval(function () {

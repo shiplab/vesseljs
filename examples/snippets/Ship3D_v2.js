@@ -171,12 +171,18 @@ function Ship3D(ship, {shipState, stlPath, deckOpacity = 0.2, objectOpacity = 0.
 		}
 		let deck = new THREE.Mesh(deckGeom, mat);
 		deck.name = dk;//[i];
+
+		// The try verification is used to verify if the group affiliation was inserted in the JSON structure,
+		// the affiliation must be decided in the future if it will be incorporate into the main structure of the group
+		// or if there is a better approach to classify it.
+		// @ferrari212
 		try {
 			deck.group = d.affiliations.group
 		} catch (error) {
 			console.warn('Group tag were introduced to deck object');			
 			console.warn(error);			
 		}		
+		
 		deck.position.z = d.zFloor;
 		//deck.scale.set(d.xFwd-d.xAft, d.breadth, d.thickness);
 		//deck.position.set(0.5*(d.xFwd+d.xAft), 0, d.zFloor);
@@ -204,6 +210,11 @@ function Ship3D(ship, {shipState, stlPath, deckOpacity = 0.2, objectOpacity = 0.
 		}
 		let bulkhead = new THREE.Mesh(bhGeom, mat);
 		bulkhead.name = bhk;//[i];
+
+		// The try verification is used to verify if the group affiliation was inserted in the JSON structure,
+		// the affiliation must be decided in the future if it will be incorporate into the main structure of the group
+		// or if there is a better approach to classify it.
+		// @ferrari212
 		try {
 			bulkhead.group = bh.affiliations.group;			
 		} catch (error) {
