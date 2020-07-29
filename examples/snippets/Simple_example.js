@@ -25,26 +25,23 @@ function DynamicalMovement(ship, states, states2, userParameters, Ini, seaDepth)
 
 		playback.add(function(t) {
 			if (output === undefined) {} else {
-				cos_mo0 = Math.cos(omega * t - pha[0][ocean.waves[0].T][ocean.waves[0].theta * 4]);
-				cos_mo1 = Math.cos(omega * t - pha[1][ocean.waves[0].T][ocean.waves[0].theta * 4]);
-				cos_mo2 = Math.cos(omega * t - pha[2][ocean.waves[0].T][ocean.waves[0].theta * 4]);
-				cos_mo3 = Math.cos(omega * t - pha[3][ocean.waves[0].T][ocean.waves[0].theta * 4]);
-				cos_mo4 = Math.cos(omega * t - pha[4][ocean.waves[0].T][ocean.waves[0].theta * 4]);
-				cos_mo5 = Math.cos(omega * t - pha[5][ocean.waves[0].T][ocean.waves[0].theta * 4]);
+				cos_mo0 = Math.cos(omega * t - pha[0][periodIndex][thetaIndex]);
+				cos_mo1 = Math.cos(omega * t - pha[1][periodIndex][thetaIndex]);
+				cos_mo2 = Math.cos(omega * t - pha[2][periodIndex][thetaIndex]);
+				cos_mo3 = Math.cos(omega * t - pha[3][periodIndex][thetaIndex]);
+				cos_mo4 = Math.cos(omega * t - pha[4][periodIndex][thetaIndex]);
+				cos_mo5 = Math.cos(omega * t - pha[5][periodIndex][thetaIndex]);
 			}
 
 			if (output === undefined) {} else {
-				motion.surge = (rao[0][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo0 * 0.01
-				motion.sway = (rao[1][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo1 * 0.01
-				motion.heave = (rao[2][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo2 * 0.01
-				motion.roll = (rao[3][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo3 * 0.01
-				motion.pitch = (rao[4][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo4 * 0.01
-				motion.yaw = (rao[5][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * cos_mo5 * 0.01
-
-
+				motion.surge = (rao[0][periodIndex][thetaIndex] * [ocean.waves[0].A]) * cos_mo0 * 0.01
+				motion.sway = (rao[1][periodIndex][thetaIndex] * [ocean.waves[0].A]) * cos_mo1 * 0.01
+				motion.heave = (rao[2][periodIndex][thetaIndex] * [ocean.waves[0].A]) * cos_mo2 * 0.01
+				motion.roll = (rao[3][periodIndex][thetaIndex] * [ocean.waves[0].A]) * cos_mo3 * 0.01
+				motion.pitch = (rao[4][periodIndex][thetaIndex] * [ocean.waves[0].A]) * cos_mo4 * 0.01
+				motion.yaw = (rao[5][periodIndex][thetaIndex] * [ocean.waves[0].A]) * cos_mo5 * 0.01
 			}
 		});
-
 
 		ship3D.surge = motion.surge;
 		ship3D.sway = motion.sway;
@@ -52,7 +49,6 @@ function DynamicalMovement(ship, states, states2, userParameters, Ini, seaDepth)
 		ship3D.roll = motion.roll;
 		ship3D.pitch = motion.pitch;
 		ship3D.yaw = motion.yaw;
-
 
 		//@ferrari212
 		this.WaveForce = function(rho, t, a_33) {

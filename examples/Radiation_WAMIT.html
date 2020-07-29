@@ -3,32 +3,22 @@
 <head>
 	<title>Ship in Ocean</title>
 	<script src="../build/vessel.js"></script>
-
 	<script src="libs/three.js"></script>
 	<script src="libs/STLLoader.js"></script>
-
 	<script src="snippets/Ship3D_v2.js"></script>
-
 	<script src="libs/plotly-1.48.3.min.js"></script>
-
 	<!-- Upgrading to WaterShader2.js will remove the dependency
 	on Mirror.js as well as open up possibilities for visualizing approximate water flows around vessels. -->
 	<script src="libs/Mirror.js"></script>
 	<script src="libs/WaterShader.js"></script>
-
 	<script src="libs/OrbitControls.js"></script>
 	<script src="libs/dat.gui.min.js"></script>
 	<script src="libs/skybox_from_examples.js"></script>
-
 	<script src="libs/browse_files_Elias_Hasle.js"></script>
 	<script src="snippets/Patch_interpolation.js"></script>
-	<!--<script src="Moving_bodies_Elias_Hasle.js"></script>-->
 	<script src="snippets/Playback.js"></script>
 	<script src="snippets/Regular_ocean.js"></script>
-	<!--<script src="keyboard_arrow_input_Elias_Hasle.js"></script>-->
-
 	<script src="snippets/Radiation_WAMIT.js"></script>
-	<!-- <script src="js/mooringSystem.js"></script> -->
 	<script src="libs/numeric-1.2.6.min.js"></script>
 	<script src="libs/zingchart.min.js"></script>
 
@@ -36,7 +26,6 @@
 
 <body>
 	<div id="3d" class='orchid' style="position: absolute; top: 0px; height: 100%; right: 0px; width: 50%"></div>
-
 	<div id="heave_graph" style="position: absolute; bottom: 66%; height: 40%; left: 0px; width: 50%"></div>
 	<div id="roll_graph" style="position: absolute; bottom: 33%; height: 40%; left: 0px; width: 50%"></div>
 	<div id="pitch_graph" style="position: absolute; bottom: 0%; height: 40%; left: 0px; width: 50%"></div>
@@ -54,7 +43,7 @@
 		C_D = 0.2;			 // Assumed Linear Resistance Coeff.	(m/s)
 		B_44 = 3000000;	// Assumed Roll Linear Damping Coeff.	(kgm2/s)
 		B_55 = 6000000;	// Assumed Roll Linear Damping Coeff.	(kgm2/s)
-		var userParameters = {C_D, B_44, B_55};
+		var userParameters = { C_D, B_44, B_55 };
 
 		(function main() {
 			//Renderer setup
@@ -63,7 +52,7 @@
 			var container = document.getElementById('3d');
 			document.body.appendChild(container);
 
-			renderer = new THREE.WebGLRenderer({antialias: true});
+			renderer = new THREE.WebGLRenderer({ antialias: true });
 			//renderer.setSize(window.innerWidth, window.innerHeight);
 			renderer.setClearColor(0x99aadd);
 			container.appendChild(renderer.domElement);
@@ -73,14 +62,13 @@
 
 			// add report to GUI controller
 			var obj = {
-				"Click to read paper": function() {
+				"Click to read paper": function () {
 					window.open("https://raw.githubusercontent.com/wiki/shiplab/vesseljs/files/open_6_DOF.pdf");
 				}
 			};
 
 			gui.add(obj, "Click to read paper");
-
-			playback = new Playback({parentGUI: gui});
+			playback = new Playback({ parentGUI: gui });
 
 			//Scene setup:
 			scene = new THREE.Scene();
@@ -90,12 +78,11 @@
 
 			//Ocean size
 			let oSize = 2048;
-
 			scene.add(new Skybox(oSize));
 
 			// Add the bottom of ocean
 			var geometry = new THREE.PlaneBufferGeometry(oSize, oSize, 32);
-			var material = new THREE.MeshBasicMaterial({color: 0xffff00, side: THREE.DoubleSide, transparent: true, opacity: 0.5});
+			var material = new THREE.MeshBasicMaterial({ color: 0xffff00, side: THREE.DoubleSide, transparent: true, opacity: 0.5 });
 			var plane = new THREE.Mesh(geometry, material);
 			plane.rotateX(-Math.PI / 2);
 			var oceanDepth = 30;
@@ -110,7 +97,7 @@
 
 			//Camera setup
 			camera = new THREE.PerspectiveCamera(26, window.innerWidth / window.innerHeight, 1, 1000000);
-			let onResize = function() {
+			let onResize = function () {
 				let w = container.clientWidth;
 				let h = container.clientHeight;
 				renderer.setSize(w, h);
@@ -144,8 +131,7 @@
 			wavMo = [];
 			states = [];
 
-
-			Vessel.loadShip("specs/ship_specifications/mississipiBarge.json", function(ship) {
+			Vessel.loadShip("specs/ship_specifications/mississipiBarge.json", function (ship) {
 				states = ship.designState.clone();
 				states.objectOverrides.derivedByGroup["ballast tanks"].fullness = 0.5;
 				states.objectOverrides.derivedByGroup["cargo tanks"].fullness = 0.5;
@@ -176,35 +162,30 @@
 				// Initial Euler Angle Z
 				// [Surge, Sway, Heave, VSurge, VSway, VHeave, VRoll, VPitch, VYaw, EX, EY, EZ]
 				var Ini = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-				states.continuous.motion = {surge: Ini[0], sway: Ini[1], heave: Ini[2], roll: Ini[3], pitch: Ini[4], yaw: Ini[5]};
+				states.continuous.motion = { surge: Ini[0], sway: Ini[1], heave: Ini[2], roll: Ini[3], pitch: Ini[4], yaw: Ini[5] };
 
 				var tprev = 0; 		// Initial time;
 
 				scale = gui.addFolder("Initial State");
-				scale.add(states.continuous.motion, "heave", -0.5, 0.5).step(0.01).onChange(function(newValue) {
+				scale.add(states.continuous.motion, "heave", -0.5, 0.5).step(0.01).onChange(function (newValue) {
 					ship3D.heave = newValue;
 					states.continuous.motion.heave = newValue;
 				});
-				scale.add(states.continuous.motion, "roll", -0.5, 0.5).step(0.01).onChange(function(newValue) {
+				scale.add(states.continuous.motion, "roll", -0.5, 0.5).step(0.01).onChange(function (newValue) {
 					ship3D.roll = newValue;
 					states.continuous.motion.roll = newValue;
 				});
-				scale.add(states.continuous.motion, "pitch", -0.1, 0.1).step(0.01).onChange(function(newValue) {
+				scale.add(states.continuous.motion, "pitch", -0.1, 0.1).step(0.01).onChange(function (newValue) {
 					ship3D.pitch = newValue;
 					states.continuous.motion.pitch = newValue;
 				});
 				scale.open();
 
-
 				// cylinderCil.setRotationFromAxisAngle ([0, 0.25, 0], -Math.PI/4);
 				dynMov = new DynamicalMovement(ship, states, userParameters, Ini, oceanDepth);
 				scale.open();
 
-				//VERY approximate motion (for visualisation only)
-				playback.add(function(t) {
-					// let x = ship3D.position.x;
-					// let y = ship3D.position.y;
-					// let oCenter = ocean.calculateZ(x,y,t);
+				playback.add(function (t) {
 					let dt = t - tprev;
 
 					dynMov.moveShip(tprev, dt);
@@ -217,7 +198,6 @@
 					ship3D.pitch = states.continuous.motion.pitch;
 					ship3D.yaw = states.continuous.motion.yaw;
 				});
-
 
 				function mo1() {
 					return 0;
@@ -237,38 +217,38 @@
 					[{
 						y: [1, 2, 3].map(mo1),
 						mode: 'lines',
-						line: {color: '#80CAF6'}
+						line: { color: '#80CAF6' }
 					}, {
 						y: [1, 2, 3].map(mo2),
 						mode: 'lines',
-						line: {color: '#DF56F1'}
+						line: { color: '#DF56F1' }
 					}]);
 
 				Plotly.plot('heave_graph',
 					[{
 						y: [1, 2, 3].map(mo1),
 						mode: 'lines',
-						line: {color: '#80CAF6'}
+						line: { color: '#80CAF6' }
 					}, {
 						y: [1, 2, 3].map(mo3),
 						mode: 'lines',
-						line: {color: '#DF56F1'}
+						line: { color: '#DF56F1' }
 					}]);
 
 				Plotly.plot('pitch_graph',
 					[{
 						y: [1, 2, 3].map(mo1),
 						mode: 'lines',
-						line: {color: '#80CAF6'}
+						line: { color: '#80CAF6' }
 					}, {
 						y: [1, 2, 3].map(mo4),
 						mode: 'lines',
-						line: {color: '#DF56F1'}
+						line: { color: '#DF56F1' }
 					}]);
 
 				var cnt = 0;
 
-				var interval = setInterval(function() {
+				var interval = setInterval(function () {
 
 					Plotly.extendTraces('roll_graph', {
 						y: [[mo1()], [mo2()]]
@@ -285,15 +265,9 @@
 				}, 10);
 			});
 
-
-
-
-
 			//Initial configuration:
 			if (ocean.cosConf) ocean.cosConf.close();
-
 			playback.play();
-
 			requestAnimationFrame(animate);
 		})();
 
@@ -306,7 +280,6 @@
 			if (!playing) {
 				ocean.water.material.uniforms.time.value += 1 / 60;
 			}
-
 			requestAnimationFrame(animate);
 		}
 
@@ -316,7 +289,6 @@
 			}
 		}
 	</script>
-
 </body>
 
 </html>

@@ -21,23 +21,17 @@
 	<script src="libs/browse_files_Elias_Hasle.js"></script>
 	<script src="snippets/Patch_interpolation.js"></script>
 	<script src="snippets/Playback.js"></script>
-
 	<script src="libs/numeric-1.2.6.min.js"></script>
 	<script src="snippets/loading_conditions.js"></script>
-	<script type="text/javascript" src="motion_data/data_automatic.json"></script>
-	<script src="snippets/Regular_ocean_final.js"></script>
-
-
+	<script src="motion_data/data_automatic.js"></script>
+	<script src="snippets/Regular_ocean.js"></script>
 </head>
 
 <body>
-
 	<div id="3d" class="col-md-12 text-left" style="min-height: 96vh">
 	</div>
 
-
 	<div id="mydiv">
-
 		<div id="mydivheader">Rope tensions</div>
 		<p>Stern hawser 1: = <span id='tension1'></span> kN</p>
 		<p>Stern hawser 2: = <span id='tension2'></span> kN</p>
@@ -78,7 +72,6 @@
 		<div id="pitch_graph" style="width:1280px;height:300px"></div>
 		<div id="yaw_graph" style="width:1280px;height:300px"></div>
 	</div>
-
 
 	<script>
 		// Make the DIV element draggable:
@@ -139,8 +132,7 @@
 		var period, heading, amplitude;
 		var cos_mo, sin_mo, sep, controller, controller2;
 		var tension0, tension1, tension2, tension3, tension4, tension5, tension6, tension7, tension8, diameter, material;
-
-
+		var periodIndex, thetaIndex;
 
 		//Vessel specs
 		spec = {
@@ -509,20 +501,17 @@
 		B_44 = 0;	// Assumed Roll Linear Damping Coeff.	(kgm2/s)
 		B_55 = 0;	// Assumed Roll Linear Damping Coeff.	(kgm2/s)
 		B_66 = 0; // Assumed Roll Linear Damping Coeff.	(kgm2/s)
-		var userParameters = {C_D, B_44, B_55, B_66};
+		var userParameters = { C_D, B_44, B_55, B_66 };
 
 		diameter = 1;
 		material = 1;
 
-		var rope = {diameter, material}
+		var rope = { diameter, material }
 		var tension = [tension0, tension1, tension2, tension3, tension4, tension5, tension6, tension8]
-
-
-
 
 		//Ready renderer and scene
 		function motion() {
-			renderer = new THREE.WebGLRenderer({antialias: true});
+			renderer = new THREE.WebGLRenderer({ antialias: true });
 			renderer.setPixelRatio(window.devicePixelRatio);
 			renderer.setClearColor(0xA9CCE3, 1);
 
@@ -533,7 +522,7 @@
 
 			gui = new dat.GUI();
 
-			playback = new Playback({parentGUI: gui});
+			playback = new Playback({ parentGUI: gui });
 
 			//Scene setup
 			scene = new THREE.Scene();
@@ -554,7 +543,7 @@
 
 			//Camera setup
 			camera = new THREE.PerspectiveCamera(26, window.innerWidth / window.innerHeight, 1, 1000000);
-			let onResize = function() {
+			let onResize = function () {
 				let w = container.clientWidth;
 				let h = container.clientHeight;
 				renderer.setSize(w, h);
@@ -586,7 +575,6 @@
 			playback.add(ocean);
 			zUpCont.add(ocean);
 
-
 			states = [];
 			states2 = [];
 
@@ -598,8 +586,6 @@
 			statMod = new Vessel.StateModule(barge, states);
 			statMod.setDraft();
 
-
-
 			barge2 = new Vessel.Ship(spec2);
 			states2 = barge2.designState.clone();
 
@@ -607,7 +593,6 @@
 
 			statMod2 = new Vessel.StateModule(barge2, states2);
 			statMod2.setDraft();
-
 
 			//Creation of an object
 			barge3D = new Ship3D(barge, {
@@ -732,13 +717,11 @@
 			//
 
 			for (var i = 0; i < mooring.mooringPointOnShip.length; i++) {
-
 				mooring.anchorLineGeometry[i] = new THREE.Line(geometryMooring[i], materialLine[i]);
 				mooring.anchorLineGeometry[i].geometry.verticesNeedUpdate = true;
 
 				scene.add(mooring.anchorLineGeometry[i]);
 			}
-
 
 			//--------------------------------------------------------------
 
@@ -746,7 +729,7 @@
 			let w = ocean.addCosineWave({
 				A: 6,
 				T: 14,
-				theta: 6
+				theta: -180
 			});
 
 			if (ocean.cosConf) ocean.cosConf.close();
@@ -754,31 +737,40 @@
 
 			requestAnimationFrame(animate);
 
+			// Substitute default ocean gui controllers for custom ones to fit WAMIT results
+			var oceanGui = gui.__folders.Ocean;
+			var mapper = {
+				theta: 0,
+				angFreq: 0.45,
+				period: 0
+			};
+			thetaMapper(mapper.theta);
+			periodMapper(mapper.angFreq);
+
+			oceanGui.remove(gui.__folders.Ocean.__controllers["1"]);
+			oceanGui.remove(gui.__folders.Ocean.__controllers["1"]);
+			oceanGui.add(mapper, "theta", 0, 360, 15).name("<div>Direction (&theta;)</div>").onChange(thetaMapper);
+			oceanGui.add(mapper, "angFreq", 0.15, 1.55, 0.025).name("<div>Angular freq. (&omega;)</div>").onChange(periodMapper);
+			var perGUI = oceanGui.add(mapper, "period").name("<div>Period in s (T)</div>").listen().step(0.001);
+			perGUI.domElement.style.pointerEvents = "none";
+
+			function thetaMapper(angle) {
+				ocean.waves["0"].theta = angle - 180;
+				thetaIndex = angle / 15;
+			}
+			function periodMapper(freq) {
+				mapper.period = 2 * Math.PI / freq;
+				ocean.waves["0"].T = mapper.period;
+				periodIndex = Math.round((1.55 - freq) / 0.025);
+			}
 
 			var Ini = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-			states.continuous.motion = {surge: Ini[0], sway: Ini[1], heave: Ini[2], roll: Ini[3], pitch: Ini[4], yaw: Ini[5]};
-
+			states.continuous.motion = { surge: Ini[0], sway: Ini[1], heave: Ini[2], roll: Ini[3], pitch: Ini[4], yaw: Ini[5] };
 			var Ini2 = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-			states2.continuous.motion = {surge: Ini2[0], sway: Ini2[1], heave: Ini2[2], roll: Ini2[3], pitch: Ini2[4], yaw: Ini2[5]};
-
-
-
-
+			states2.continuous.motion = { surge: Ini2[0], sway: Ini2[1], heave: Ini2[2], roll: Ini2[3], pitch: Ini2[4], yaw: Ini2[5] };
 
 			//controlled by gui. give input for motions in here
 			let shipSpec = barge.getSpecification();
-
-			/*
-				   draft1 = gui.addFolder("VLCC draft");
-				   draft1.add(barge3D.position, "z", -22, -10).step(8).onChange(updateRope);
-				   draft1.open();
-
-
-				   draft2 = gui.addFolder("LNG draft");
-				   draft2.add(barge23D.position, "z", -16.5, -8).step(8.5).onChange(updateRope2);
-				   draft2.open();
-
-		   */
 
 			gap = gui.addFolder("Gap between vessels");
 			Gap = gap.add(sep, "y", 4, 8).step(4).onChange(gapFunction);
@@ -788,7 +780,7 @@
 
 			controller = scale.add(states.objectOverrides.derivedByGroup["ballast tanks"], "fullness", 1, 3).step(1);
 
-			controller.onChange(function(newValue) {
+			controller.onChange(function (newValue) {
 
 				states.objectOverrides.derivedByGroup["cargo tanks"].fullness = newValue;
 				states.version += 1;
@@ -800,7 +792,7 @@
 
 			controller2 = scale.add(states2.objectOverrides.derivedByGroup["ballast tanks"], "fullness", 1, 3).step(1);
 
-			controller2.onChange(function(newValue2) {
+			controller2.onChange(function (newValue2) {
 
 				states2.objectOverrides.derivedByGroup["cargo tanks"].fullness = newValue2;
 				barge23D.position.z = -newValue2 * 5;
@@ -809,20 +801,13 @@
 			});
 			scale.open();
 
-
 			ropes = gui.addFolder("Rope properties");
 			Dia = ropes.add(rope, "diameter", 2, 10).step(1);
 			Mat = ropes.add(rope, "material", 1, 3).step(1);
 
-
 			//Gap.object.y;
 
-
 			//function update draft
-			/*        function updateRope() {
-
-					}
-			 */
 			function updateRope1() {
 				mooring.mooringPointOnShip = [
 					[floatingStates.LWL / 3.5 + 8, -floatingStates.BWL / 2, designDimention.Depth - T1],
@@ -838,7 +823,6 @@
 
 			function updateRope2() {
 				mooring.mooringPoint = [[-floatingStates2.LWL / 3, (floatingStates2.BWL / 2) + sep.y + 2.8, -designDimention2.Depth + T2], [-floatingStates2.LWL / 3 + 8, (floatingStates2.BWL / 2) + sep.y + 2.8, -designDimention2.Depth + T2], [floatingStates2.LWL / 3 - 16, (floatingStates2.BWL / 2) + sep.y + 2.8, -designDimention2.Depth + T2], [floatingStates2.LWL / 3 - 8, (floatingStates2.BWL / 2) + sep.y + 2.8, -designDimention2.Depth + T2], [floatingStates2.LWL / 3, (floatingStates2.BWL / 2) + sep.y + 2.8, -designDimention2.Depth + T2], [-floatingStates2.LWL / 3 + 16, (floatingStates2.BWL / 2) + sep.y + 2.8, -designDimention2.Depth + T2], [-20, (floatingStates2.BWL / 2) + sep.y + 2.8, -designDimention2.Depth + T2],
-
 				[20, (floatingStates2.BWL / 2) + sep.y + 2.8, -designDimention2.Depth + T2]]
 			}
 
@@ -860,7 +844,7 @@
 
 			var tprev = 0; 		// Initial time;
 
-			playback.add(function(t) {
+			playback.add(function (t) {
 				let omega = wavCre.waveDef.waveFreq;
 
 				let dt = t - tprev;
@@ -869,23 +853,22 @@
 				dynMov2.moveShip(tprev, dt);
 				tprev = t;
 
-
 				motions = {}
 
 				motions.mo_surge = 0
 				motions.mo_sway = 0
-				motions.mo_heave = (json_data[sep.y / 4][controller.object.fullness][controller2.object.fullness][2][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * Math.cos(omega * t - ocean.waves[0].phi);
-				motions.mo_roll = (json_data[sep.y / 4][controller.object.fullness][controller2.object.fullness][3][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * Math.cos(omega * t - ocean.waves[0].phi);
-				motions.mo_pitch = (json_data[sep.y / 4][controller.object.fullness][controller2.object.fullness][4][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * Math.cos(omega * t - ocean.waves[0].phi);
+				motions.mo_heave = (json_data[sep.y / 4][controller.object.fullness][controller2.object.fullness][2][periodIndex][thetaIndex] * [ocean.waves[0].A]) * Math.cos(omega * t - ocean.waves[0].phi);
+				motions.mo_roll = (json_data[sep.y / 4][controller.object.fullness][controller2.object.fullness][3][periodIndex][thetaIndex] * [ocean.waves[0].A]) * Math.cos(omega * t - ocean.waves[0].phi);
+				motions.mo_pitch = (json_data[sep.y / 4][controller.object.fullness][controller2.object.fullness][4][periodIndex][thetaIndex] * [ocean.waves[0].A]) * Math.cos(omega * t - ocean.waves[0].phi);
 				motions.mo_yaw = 0
 
 				motions2 = {}
 
 				motions2.mo_surge = 0
 				motions2.mo_sway = 0
-				motions2.mo_heave = (json_data[sep.y / 4][controller.object.fullness][controller2.object.fullness][8][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * Math.cos(omega * t - ocean.waves[0].phi);
-				motions2.mo_roll = (json_data[sep.y / 4][controller.object.fullness][controller2.object.fullness][9][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * Math.cos(omega * t - ocean.waves[0].phi);
-				motions2.mo_pitch = (json_data[sep.y / 4][controller.object.fullness][controller2.object.fullness][10][ocean.waves[0].T][ocean.waves[0].theta * 4] * [ocean.waves[0].A]) * Math.cos(omega * t - ocean.waves[0].phi);
+				motions2.mo_heave = (json_data[sep.y / 4][controller.object.fullness][controller2.object.fullness][8][periodIndex][thetaIndex] * [ocean.waves[0].A]) * Math.cos(omega * t - ocean.waves[0].phi);
+				motions2.mo_roll = (json_data[sep.y / 4][controller.object.fullness][controller2.object.fullness][9][periodIndex][thetaIndex] * [ocean.waves[0].A]) * Math.cos(omega * t - ocean.waves[0].phi);
+				motions2.mo_pitch = (json_data[sep.y / 4][controller.object.fullness][controller2.object.fullness][10][periodIndex][thetaIndex] * [ocean.waves[0].A]) * Math.cos(omega * t - ocean.waves[0].phi);
 				motions2.mo_yaw = 0
 
 				barge3D.surge = motions.mo_surge;
@@ -897,94 +880,12 @@
 
 				barge23D.surge = motions2.mo_surge;
 				barge23D.sway = motions2.mo_sway;
-				barge23D.heave = motions2.mo_heave * 1.15;
+				barge23D.heave = motions2.mo_heave;
 				barge23D.roll = motions2.mo_roll;
-				barge23D.pitch = motions2.mo_pitch * 1.15;
+				barge23D.pitch = motions2.mo_pitch;
 				barge23D.yaw = motions2.mo_yaw;
 
-				/*
-				function mo1(){
-					return motions.mo_roll;
-				}
-
-				function mo2(){
-					return motions2.mo_roll;
-				}
-
-					Plotly.plot('roll_graph',
-				[{
-				  y: [1,2,3].map(mo1),
-				  mode: 'lines',
-				  line: {color: '#80CAF6'}
-				}, {
-				  y: [1,2,3].map(mo2),
-				  mode: 'lines',
-				  line: {color: '#DF56F1'}
-				}]);
-
-				var cnt = 0;
-
-				var interval = setInterval(function() {
-
-				  Plotly.extendTraces('roll_graph', {
-					y: [[mo1()], [mo2()]]
-				  }, [0, 1])
-
-				  if(cnt === 1) clearInterval(interval);
-				}, 10);
-
-
-
-
-				/*
-				 var heave_plot = numeric.rep([50,2],0);
-
-
-					heave_plot[i][0] = t
-
-
-					heave_plot[i][1] = motions.mo_heave;
-
-
-				 $.plot("#roll_graph", [heave_plot],
-					 {yaxis: {tickFormatter: function(val, axis) { return val < axis.max ? val.toFixed(2) : "Heave (m)";}},
-					xaxis: {tickFormatter: function(val, axis) { return val < axis.max ? val.toFixed(2) : "time (s)";}}});     */
-				/*
-				$(function () {
-					var sin = [], cos = [];
-					for (var i = 0; i < 500; i += 0.2) {
-						sin.push([0, Math.sin(t)]);
-						cos.push([0, Math.cos(t)]);
-					}
-					var data = [
-						{ data: sin, label: "sin(x)"}
-						, { data: cos, label: "cos(x)" }
-					];
-					var options = {
-						series: {lines: { show: true },points: { show: true }
-						},
-						grid: {hoverable: true}, //IMPORTANT! needed for tooltip
-						yaxis: { min: -1.2, max: 1.2 },
-						tooltip: true,
-						tooltipOpts: {
-							content: "'%s' of %x.1 is %y.4",
-							shifts: {x: -60,y: 25}
-						}
-					};
-					var plotObj = $.plot( $("#roll_graph"),data,options);
-				});
-
-				*/
-
-
-
-
-
-
-
-
 				// Define axial stiffness
-
 				if (Mat.object.material == 1) {
 					k = 118000      //Nylon rope
 				} else if (Mat.object.material == 2) {
@@ -993,9 +894,7 @@
 					k = 1060000     //Polypropyle rope
 				}
 
-				/*// Define initial length rope
-				if (controller.object.fullness==1)*/
-
+				// Define initial length rope
 				inilen = 11.751311259877795
 
 
@@ -1009,7 +908,7 @@
 
 					tension[i] = (mooring.anchorLineGeometry[i].geometry.linelength - inilen) * Math.pow((diameter * 0.1), 2) * k * 0.5
 
-					if ((mooring.anchorLineGeometry[i].geometry.linelength - inilen) < 0) {tension[i] = 0}
+					if ((mooring.anchorLineGeometry[i].geometry.linelength - inilen) < 0) { tension[i] = 0 }
 				}
 
 				document.getElementById('tension1').innerHTML = tension[0].toFixed(0)
@@ -1018,12 +917,8 @@
 				document.getElementById('tension4').innerHTML = tension[3].toFixed(0);
 				document.getElementById('tension5').innerHTML = tension[4].toFixed(0);
 				document.getElementById('tension6').innerHTML = tension[5].toFixed(0);
-				document.getElementById('tension7').innerHTML =
-
-					tension[6].toFixed(0);
+				document.getElementById('tension7').innerHTML = tension[6].toFixed(0);
 				document.getElementById('tension8').innerHTML = tension[7].toFixed(0);
-
-
 			});
 
 		};

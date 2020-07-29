@@ -19,10 +19,10 @@
 	<script src="libs/browse_files_Elias_Hasle.js"></script>
 	<script src="snippets/Patch_interpolation.js"></script>
 	<script src="snippets/Playback.js"></script>
-	<script src="snippets/Regular_ocean_final.js"></script>
+	<script src="snippets/Regular_ocean.js"></script>
 	<script src="snippets/Side_by_side_operation.js"></script>
-	<script src="motion_data/rao.json"></script>
-	<script src="motion_data/pha.json"></script>
+	<script src="motion_data/rao.js"></script>
+	<script src="motion_data/pha.js"></script>
 	<script src="libs/zingchart.min.js"></script>
 	<script src="libs/numeric-1.2.6.min.js"></script>
 
@@ -86,6 +86,7 @@
 		var ship, barge2, ship3D, barge23D, barge3, barge33D;
 		var LOA1, LOA2, BOA1, BOA2, Depth1, Depth2, T1, T2, sep;
 		var motions, motions2, motions3;
+		var periodIndex, thetaIndex;
 
 		var rao = rao_data;
 		var pha = phase_data;
@@ -105,7 +106,7 @@
 		var k = 1090000
 
 
-		var userParameters = {seaDepth, anchorLength, radialDistance, density, mooringAngle, numShips, mooringLines, hawserLines};
+		var userParameters = { seaDepth, anchorLength, radialDistance, density, mooringAngle, numShips, mooringLines, hawserLines };
 
 		// Ship specifications ---------------------------------
 		spec = {
@@ -497,7 +498,7 @@
 				1,
 				1000000
 			);
-			let onResize = function() {
+			let onResize = function () {
 				let w = container.clientWidth;
 				let h = container.clientHeight;
 				renderer.setSize(w, h);
@@ -866,7 +867,7 @@
 			simu
 				.add(userParameters, "numShips", 1, 3)
 				.step(1)
-				.onChange(function(newValue) {
+				.onChange(function (newValue) {
 					numShips = newValue;
 					if (numShips == 1) {
 						barge23D.visible = false
@@ -896,7 +897,7 @@
 			simu
 				.add(userParameters, "mooringLines", 0, 1)
 				.step(1)
-				.onChange(function(newValue) {
+				.onChange(function (newValue) {
 					mooringLines = newValue;
 					if (mooringLines == 0) {
 						for (i = 0; i < 4; i++) {
@@ -913,7 +914,7 @@
 			simu
 				.add(userParameters, "hawserLines", 0, 1)
 				.step(1)
-				.onChange(function(newValue) {
+				.onChange(function (newValue) {
 					hawserLines = newValue;
 					if (numShips == 1 && hawserLines == 1) {
 						hawsers.anchorLineGeometry[i].visible = false
@@ -942,7 +943,7 @@
 
 
 			//VERY approximate motion (for visualisation only)
-			playback.add(function(t) {
+			playback.add(function (t) {
 				// let x = ship3D.position.x;
 				// let y = ship3D.position.y;
 				// let oCenter = ocean.calculateZ(x,y,t);
@@ -963,6 +964,33 @@
 			if (ocean.cosConf) ocean.cosConf.close();
 			playback.play();
 			requestAnimationFrame(animate);
+
+			// Substitute default ocean gui controllers for custom ones to fit WAMIT results
+			var oceanGui = gui.__folders.Ocean;
+			var mapper = {
+				theta: 0,
+				angFreq: 0.45,
+				period: 0
+			};
+			thetaMapper(mapper.theta);
+			periodMapper(mapper.angFreq);
+
+			oceanGui.remove(gui.__folders.Ocean.__controllers["1"]);
+			oceanGui.remove(gui.__folders.Ocean.__controllers["1"]);
+			oceanGui.add(mapper, "theta", 0, 360, 15).name("<div>Direction (&theta;)</div>").onChange(thetaMapper);
+			oceanGui.add(mapper, "angFreq", 0.15, 0.8, 0.025).name("<div>Angular freq. (&omega;)</div>").onChange(periodMapper);
+			var perGUI = oceanGui.add(mapper, "period").name("<div>Period in s (T)</div>").listen().step(0.001);
+			perGUI.domElement.style.pointerEvents = "none";
+
+			function thetaMapper(angle) {
+				ocean.waves["0"].theta = angle - 180;
+				thetaIndex = angle / 15;
+			}
+			function periodMapper(freq) {
+				mapper.period = 2 * Math.PI / freq;
+				ocean.waves["0"].T = mapper.period;
+				periodIndex = Math.round((0.8 - freq) / 0.025);
+			}
 		})();
 
 		function animate(millitime) {

@@ -8,33 +8,20 @@
 
 	<title>Ship in Ocean</title>
 	<script src="../build/vessel.js"></script>
-
 	<script src="libs/three.js"></script>
 	<script src="libs/STLLoader.js"></script>
-
 	<script src="snippets/Ship3D_v2.js"></script>
-
 	<script src="libs/plotly-1.48.3.min.js"></script>
-
-	<!-- Upgrading to WaterShader2.js will remove the dependency
-	on Mirror.js as well as open up possibilities for visualizing approximate water flows around vessels. -->
-	<script src="libs/Mirror.js"></script>
 	<script src="libs/Mirror.js"></script>
 	<script src="libs/WaterShader.js"></script>
-
 	<script src="libs/OrbitControls.js"></script>
 	<script src="libs/dat.gui.min.js"></script>
 	<script src="libs/skybox_from_examples.js"></script>
-
 	<script src="libs/browse_files_Elias_Hasle.js"></script>
 	<script src="snippets/Patch_interpolation.js"></script>
-	<!--<script src="Moving_bodies_Elias_Hasle.js"></script>-->
 	<script src="snippets/Playback.js"></script>
-	<script src="snippets/Regular_ocean_final.js"></script>
-	<!--<script src="keyboard_arrow_input_Elias_Hasle.js"></script>-->
-
+	<script src="snippets/Regular_ocean.js"></script>
 	<script src="snippets/Explore_file_side_to_side.js"></script>
-	<!-- <script src="js/mooringSystem.js"></script> -->
 	<script src="libs/numeric-1.2.6.min.js"></script>
 </head>
 
@@ -45,9 +32,6 @@
 	<pre id="fileContents"></pre>
 	<div id="3d" class="col-md-12 text-left" style="min-height: 96vh">
 	</div>
-
-
-
 
 	<script>
 		"use strict";
@@ -87,9 +71,7 @@
 		var motions, motions2;
 		var lin, output, res, res2, index, mat, rao, pha;
 		var J;
-
-
-
+		var periodIndex, thetaIndex;
 
 		spec = {
 			"attributes": {},
@@ -333,7 +315,6 @@
 			]
 		};
 
-
 		spec2 = {
 			"attributes": {},
 			"designState": {
@@ -454,12 +435,11 @@
 			]
 		};
 
-
 		lin = [];
 
-		document.getElementById('openFile').addEventListener('change', function() {
+		document.getElementById('openFile').addEventListener('change', function () {
 			var fr = new FileReader();
-			fr.onload = function() {
+			fr.onload = function () {
 				output = this.result;
 				useRAO(output);
 			}
@@ -469,13 +449,13 @@
 		var raoReq = new XMLHttpRequest();
 		// file missing :(
 		raoReq.open("GET", "motion_data/Explore_file_motion.4", true);
-		raoReq.addEventListener("load", function(event) {
+		raoReq.addEventListener("load", function (event) {
 			output = event.target.response;
 			useRAO(output);
 		});
 		raoReq.send(null);
 
-		var useRAO = function(result) {
+		var useRAO = function (result) {
 			index = 0;
 			res = result.split(/[\s]+/).join(' ')
 			res2 = res.substring(1)
@@ -516,8 +496,8 @@
 				i = l % dof;
 				j = Math.floor(l / (dof * hea));
 				k = Math.floor(l / dof) % hea;
-				rao[i][j][k] = lin[l][3];
-				pha[i][j][k] = lin[l][4];
+				rao[i][per - 1 - j][k] = lin[l][3];
+				pha[i][per - 1 - j][k] = lin[l][4];
 			}
 		}
 
@@ -563,7 +543,6 @@
 			gui = new dat.GUI();
 
 			// add report to GUI controller
-
 			playback = new Playback({
 				parentGUI: gui
 			});
@@ -608,7 +587,7 @@
 				1,
 				1000000
 			);
-			let onResize = function() {
+			let onResize = function () {
 				let w = container.clientWidth;
 				let h = container.clientHeight;
 				renderer.setSize(w, h);
@@ -677,8 +656,6 @@
 				objectOpacity: 0.5
 			});
 
-
-
 			LOA1 = ship.structure.hull.attributes.LOA;
 			LOA2 = barge2.structure.hull.attributes.LOA;
 			BOA1 = ship.structure.hull.attributes.BOA;
@@ -687,7 +664,6 @@
 			T2 = states2.discrete.FloatingCondition.state.T; */
 			T1 = ship.designState.calculationParameters.Draft_design;
 			T2 = barge2.designState.calculationParameters.Draft_design;
-
 
 			sep = {};
 			sep.x = 0
@@ -704,9 +680,7 @@
 
 			zUpCont.add(barge23D);
 
-
 			// INSERT HAWSERS------------------------------
-
 			states.continuous.hawsers = {};
 			hawsers = states.continuous.hawsers;
 
@@ -789,26 +763,7 @@
 
 			hawsers.hangedMooring2 = []; // Point of hanged mooring line on seabed (m, m, m)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 			// Insert mooring lines------------------------
-
-
 			states.continuous.mooring = {};
 			mooring = states.continuous.mooring;
 
@@ -892,7 +847,6 @@
 				}
 			}
 
-
 			for (var i = 0; i < mooring.mooringPointOnShip.length; i++) {
 
 				mooring.anchorLineGeometry[i] = new THREE.Line(
@@ -925,12 +879,11 @@
 
 			var tprev = 0; // Initial time
 
-
 			scale = gui.addFolder("Mooring Configuration");
 			scale
 				.add(userParameters, "seaDepth", 10, 100)
 				.step(5)
-				.onChange(function(newValue) {
+				.onChange(function (newValue) {
 					seaDepth = newValue;
 					mooring.seaDepth = newValue;
 					for (let i = scene.children.length - 1; i >= 0; i--) {
@@ -948,28 +901,22 @@
 			scale
 				.add(userParameters, "anchorLength", 50, 500)
 				.step(1)
-				.onChange(function(newValue) {
+				.onChange(function (newValue) {
 					mooring.anchorLength = newValue;
 				})
 				.name("Mooring length");
 			scale
 				.add(userParameters, "radialDistance", 50, 500)
 				.step(1)
-				.onChange(function(newValue) {
+				.onChange(function (newValue) {
 					mooring.radialDistance = newValue;
 					radialDistance = newValue;
-
-					//var rupture = Math.pow(((Math.pow(userParameters.radialDistance), 2) + (Math.pow(userParameters.seaDepth), 2)),
-					//	0.5);
-					//if (rupture < userParameters.anchorLength) {
-					//	alert("Mooring line is too short.");
-					//};
 				})
 				.name("Radial distance");
 			scale
 				.add(userParameters, "mooringAngle", 0, 90)
 				.step(1)
-				.onChange(function(newValue) {
+				.onChange(function (newValue) {
 					mooring.mooringAngle = newValue;
 					mooringAngle = newValue;
 				})
@@ -977,21 +924,16 @@
 			scale
 				.add(userParameters, "density", 50, 500)
 				.step(1)
-				.onChange(function(newValue) {
+				.onChange(function (newValue) {
 					mooring.w = newValue;
 				})
 				.name("Density");
-
 
 			// cylinderCil.setRotationFromAxisAngle ([0, 0.25, 0], -Math.PI/4);
 			dynMov = new DynamicalMovement(ship, states, userParameters, Ini);
 			scale.open();
 
-			//VERY approximate motion (for visualisation only)
-			playback.add(function(t) {
-				// let x = ship3D.position.x;
-				// let y = ship3D.position.y;
-				// let oCenter = ocean.calculateZ(x,y,t);
+			playback.add(function (t) {
 				let dt = t - tprev;
 
 				dynMov.moveShip(tprev, dt);
@@ -1009,6 +951,33 @@
 			if (ocean.cosConf) ocean.cosConf.close();
 			playback.play();
 			requestAnimationFrame(animate);
+
+			// Substitute default ocean gui controllers for custom ones to fit WAMIT results
+			var oceanGui = gui.__folders.Ocean;
+			var mapper = {
+				theta: 0,
+				angFreq: 0.45,
+				period: 0
+			};
+			thetaMapper(mapper.theta);
+			periodMapper(mapper.angFreq);
+
+			oceanGui.remove(gui.__folders.Ocean.__controllers["1"]);
+			oceanGui.remove(gui.__folders.Ocean.__controllers["1"]);
+			oceanGui.add(mapper, "theta", 0, 360, 15).name("<div>Direction (&theta;)</div>").onChange(thetaMapper);
+			oceanGui.add(mapper, "angFreq", 0.15, 1.55, 0.025).name("<div>Angular freq. (&omega;)</div>").onChange(periodMapper);
+			var perGUI = oceanGui.add(mapper, "period").name("<div>Period in s (T)</div>").listen().step(0.001);
+			perGUI.domElement.style.pointerEvents = "none";
+
+			function thetaMapper(angle) {
+				ocean.waves["0"].theta = angle - 180;
+				thetaIndex = angle / 15;
+			}
+			function periodMapper(freq) {
+				mapper.period = 2 * Math.PI / freq;
+				ocean.waves["0"].T = mapper.period;
+				periodIndex = Math.round((1.55 - freq) / 0.025);
+			}
 		})();
 
 		function animate(millitime) {
