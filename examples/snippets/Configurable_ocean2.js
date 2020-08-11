@@ -3,12 +3,11 @@
 /*Dependencies: THREE, Mirror, WaterShader, dat.gui (for gui only), browse_files_Elias_Hasle, Patch_interpolation */
 
 /*
-PLANS:
-Upgrading to (a possibly modified)
-WaterShader2.js will remove the dependency
-on Mirror.js as well as opening up
-possibilities for visualizing approximate
-water flows around vessels.
+OBS:
+This version eliminated the Mirror function
+as planned in the version Configurable_ocean2.
+The Configurable_ocean2.js must be merged later to have only
+one version of Configurable_ocean
 
 A more profound change would be moving
 calculations into shaders, such as is
