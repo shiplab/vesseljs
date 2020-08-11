@@ -3,7 +3,7 @@
 /*
 Draft for new version. More modularized, and interacts with a ship state.
 Uses an additional coordinate system for motions.
-The position.xy and rotation.z of the Ship3D object plae the ship in the 3D world.
+The position.xy and rotation.z of the Ship3D object plane the ship in the 3D world.
 (Not geographically)
 position.z is the (negative) draft.
 fluctCont is a "fluctuations container" to be used for dynamically

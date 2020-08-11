@@ -309,7 +309,7 @@
 						Blocks: "Ship3D",
 					})
 					.onChange(newValue => {
-						function verifyElement(element, index) {
+						function verifyElement(element) {
 							var otherName = {
 								ModelGLTF: "Ship3D",
 								Ship3D: "ModelGLTF",
@@ -365,7 +365,7 @@
 				// scene.getObjectByName("Ocean").visible = false
 				scale.open()
 
-				scale = gui.addFolder("New")
+				scale = gui.addFolder("Check Box List")
 				scale.domElement.hidden = true
 				scale
 					.add(modelStyle, "displayOutline")
