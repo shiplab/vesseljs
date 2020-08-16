@@ -95,14 +95,6 @@
 				"thickness": 0.1,
 				"density": 7850
 			},
-			"GB": {
-				"affiliations": {
-					"group": "Bulkheads"
-				},
-				"xAft": 5,
-				"thickness": 0.1,
-				"density": 7850
-			},
 			"B23": {
 				"affiliations": {
 					"group": "Bulkheads"

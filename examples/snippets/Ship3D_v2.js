@@ -193,22 +193,41 @@ function Ship3D(ship, {shipState, stlPath, deckOpacity = 0.2, objectOpacity = 0.
 
 	//Bulkheads:
 	var bulkheads = new THREE.Group();
-	bulkheads.scale.set(1, BOA, Depth);
-	//Should have individually trimmed geometries like the decks
-	let bhGeom = new THREE.BoxBufferGeometry(1, 1, 1);
-	bhGeom.translate(0, 0, 0.5);
+	// Individually trimmed geometries like the decks @ferrari212
 	let bhMat = new THREE.MeshPhongMaterial({color: 0xcccccc/*this.randomColor()*/, transparent: true, opacity: deckOpacity, side: THREE.DoubleSide});
-	bhGeom.translate(0.5, 0, 0);
 	let bhs = ship.structure.bulkheads;
+	let maxWl = Math.max(...hull.halfBreadths.waterlines)*Depth
 	//let bhk = Object.keys(bhs);
 	//for (let i = 0; i < bhk.length; i++) {
 	for (let bhk in bhs) {
 		let bh = bhs[bhk];//bhs[bhk[i]];
 		let mat = bhMat;
+		let station = hull.getStation(bh.xAft);
+		
 		if (bh.style) {
 			mat = new THREE.MeshPhongMaterial({color: typeof bh.style.color !== "undefined" ? bh.style.color : 0xcccccc, transparent: true, opacity: typeof bh.style.opacity !== "undefined" ? bh.style.opacity : deckOpacity, side: THREE.DoubleSide});
 		}
-		let bulkhead = new THREE.Mesh(bhGeom, mat);
+
+		let bulkheadGeom = new THREE.PlaneBufferGeometry(maxWl, BOA, station.length - 1, 1);
+
+		let pos = bulkheadGeom.getAttribute("position");
+		let pa = pos.array;
+
+
+		for (let i = 0; i < station.length; i++) {
+
+			// Check height in order to trim the bulkhead in the deck
+			if (pa[3 * i] < Depth - maxWl/2) {
+				pa[3 * i + 1] = station[i];
+				pa[3 * station.length + 3 * i + 1] = -station[i];				
+			} else {
+				pa[3 * i + 1] = pa[3 * station.length + 3 * i + 1] = 0;
+			}
+
+		}
+		pos.needsUpdate = true;
+		let bulkhead = new THREE.Mesh(bulkheadGeom, mat);
+		
 		bulkhead.name = bhk;//[i];
 
 		// The try verification is used to verify if the group affiliation was inserted in the JSON structure,
@@ -222,8 +241,8 @@ function Ship3D(ship, {shipState, stlPath, deckOpacity = 0.2, objectOpacity = 0.
 			console.warn(error);
 		}
 		
-		bulkhead.scale.set(bh.thickness, 1, 1);
-		bulkhead.position.set(bh.xAft, 0, 0);
+		bulkhead.rotation.y = -Math.PI / 2;
+		bulkhead.position.set(bh.xAft, 0, maxWl/2);
 		bulkheads.add(bulkhead);
 	}
 	this.bulkheads = bulkheads;
