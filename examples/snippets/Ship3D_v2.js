@@ -3,7 +3,7 @@
 /*
 Draft for new version. More modularized, and interacts with a ship state.
 Uses an additional coordinate system for motions.
-The position.xy and rotation.z of the Ship3D object plae the ship in the 3D world.
+The position.xy and rotation.z of the Ship3D object plane the ship in the 3D world.
 (Not geographically)
 position.z is the (negative) draft.
 fluctCont is a "fluctuations container" to be used for dynamically
@@ -171,6 +171,18 @@ function Ship3D(ship, {shipState, stlPath, deckOpacity = 0.2, objectOpacity = 0.
 		}
 		let deck = new THREE.Mesh(deckGeom, mat);
 		deck.name = dk;//[i];
+
+		// The try verification is used to verify if the group affiliation was inserted in the JSON structure,
+		// the affiliation must be decided in the future if it will be incorporate into the main structure of the group
+		// or if there is a better approach to classify it.
+		// @ferrari212
+		try {
+			deck.group = d.affiliations.group
+		} catch (error) {
+			console.warn('Group tag were introduced to deck object');			
+			console.warn(error);			
+		}		
+		
 		deck.position.z = d.zFloor;
 		//deck.scale.set(d.xFwd-d.xAft, d.breadth, d.thickness);
 		//deck.position.set(0.5*(d.xFwd+d.xAft), 0, d.zFloor);
@@ -181,25 +193,56 @@ function Ship3D(ship, {shipState, stlPath, deckOpacity = 0.2, objectOpacity = 0.
 
 	//Bulkheads:
 	var bulkheads = new THREE.Group();
-	bulkheads.scale.set(1, 0.5 * BOA, Depth);
-	//Should have individually trimmed geometries like the decks
-	let bhGeom = new THREE.BoxBufferGeometry(1, 1, 1);
-	bhGeom.translate(0, 0, 0.5);
+	// Individually trimmed geometries like the decks @ferrari212
 	let bhMat = new THREE.MeshPhongMaterial({color: 0xcccccc/*this.randomColor()*/, transparent: true, opacity: deckOpacity, side: THREE.DoubleSide});
-	bhGeom.translate(0.5, 0, 0);
 	let bhs = ship.structure.bulkheads;
+	let maxWl = Math.max(...hull.halfBreadths.waterlines)*Depth
 	//let bhk = Object.keys(bhs);
 	//for (let i = 0; i < bhk.length; i++) {
 	for (let bhk in bhs) {
 		let bh = bhs[bhk];//bhs[bhk[i]];
 		let mat = bhMat;
+		let station = hull.getStation(bh.xAft);
+		
 		if (bh.style) {
 			mat = new THREE.MeshPhongMaterial({color: typeof bh.style.color !== "undefined" ? bh.style.color : 0xcccccc, transparent: true, opacity: typeof bh.style.opacity !== "undefined" ? bh.style.opacity : deckOpacity, side: THREE.DoubleSide});
 		}
-		let bulkhead = new THREE.Mesh(bhGeom, mat);
+
+		let bulkheadGeom = new THREE.PlaneBufferGeometry(maxWl, BOA, station.length - 1, 1);
+
+		let pos = bulkheadGeom.getAttribute("position");
+		let pa = pos.array;
+
+
+		for (let i = 0; i < station.length; i++) {
+
+			// Check height in order to trim the bulkhead in the deck
+			if (pa[3 * i] < Depth - maxWl/2) {
+				pa[3 * i + 1] = station[i];
+				pa[3 * station.length + 3 * i + 1] = -station[i];				
+			} else {
+				pa[3 * i + 1] = pa[3 * station.length + 3 * i + 1] = 0;
+			}
+
+		}
+		pos.needsUpdate = true;
+		let bulkhead = new THREE.Mesh(bulkheadGeom, mat);
+		
 		bulkhead.name = bhk;//[i];
-		bulkhead.scale.set(bh.thickness, 1, 1);
-		bulkhead.position.set(bh.xAft, 0, 0);
+
+		// The try verification is used to verify if the group affiliation was inserted in the JSON structure,
+		// the affiliation must be decided in the future if it will be incorporate into the main structure of the group
+		// or if there is a better approach to classify it.
+		// @ferrari212
+		try {
+			bulkhead.group = bh.affiliations.group;			
+		} catch (error) {
+			console.warn('Group tag were introduced to bulkhead object');			
+			console.warn(error);
+		}
+		
+		bulkhead.rotation.y = -Math.PI / 2;
+		bulkhead.position.set(bh.xAft, 0, maxWl/2);
 		bulkheads.add(bulkhead);
 	}
 	this.bulkheads = bulkheads;
@@ -283,6 +326,7 @@ Object.assign(Ship3D.prototype, {
 					m.position.set(x, y, z);
 					m.scale.set(d.length, d.breadth, d.height);
 					m.name = object.id;
+					m.group = bo.affiliations.group != undefined ? bo.affiliations.group : undefined
 					self.blocks.add(m);
 				},
 				undefined,
@@ -292,6 +336,7 @@ Object.assign(Ship3D.prototype, {
 					m.position.set(x, y, z);
 					m.scale.set(d.length, d.breadth, d.height);
 					m.name = object.id;
+					m.group = bo.affiliations.group != undefined ? bo.affiliations.group : undefined
 					this.blocks.add(m);
 				}
 			);
@@ -301,6 +346,7 @@ Object.assign(Ship3D.prototype, {
 			m.position.set(x, y, z);
 			m.scale.set(d.length, d.breadth, d.height);
 			m.name = object.id;
+			m.group = bo.affiliations.group != undefined ? bo.affiliations.group : undefined
 			this.blocks.add(m);
 		}
 	},
@@ -446,6 +492,7 @@ function Hull3D(hull, design_draft) {
 	THREE.Group.call(this);
 
 	this.hull = hull;
+	this.group = "Hull3D"
 	this.design_draft = design_draft !== undefined ? design_draft : 0.5 * hull.attributes.Depth;
 	this.upperColor = typeof hull.style.upperColor !== "undefined" ? hull.style.upperColor : 0x33aa33;
 	this.lowerColor = typeof hull.style.lowerColor !== "undefined" ? hull.style.lowerColor : 0xaa3333;
