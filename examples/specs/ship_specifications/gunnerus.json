@@ -120,9 +120,9 @@
 				"group": "Compartment"
 			},
 			"boxDimensions": {
-				"length": 11.5,
+				"length": 10.0,
 				"breadth": 9.6,
-				"height": 4.576
+				"height": 4.216
 			},
 			"capabilities": {},
 			"file3D": "",
@@ -1464,7 +1464,7 @@
 				"SFI": "109"
 			},
 			"referenceState": {
-				"xCentre": 13.25,
+				"xCentre": 9.150,
 				"yCentre": 0,
 				"zBase": 2.385
 			},
