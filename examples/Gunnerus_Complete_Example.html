@@ -183,21 +183,31 @@
 			"use strict";
 
 			// JavaScript for adding loader page
-			window.addEventListener("load", function () {
-				var fadeTarget = document.getElementById("loader-wrapper");
-				var fadeEffect = setInterval(function () {
-					if (!fadeTarget.style.opacity) {
-						fadeTarget.style.opacity = 1;
-					}
+			window.addEventListener( "load", function () {
 
-					if (fadeTarget.style.opacity > 0) {
-						fadeTarget.style.opacity -= 0.05;
-					} else {
-						clearInterval(fadeEffect);
-						fadeTarget.remove();
-					}
-				}, 50);
-			});
+			var fadeTarget = document.getElementById( "loader-wrapper" );
+			var fadeEffect = setInterval( function () {
+
+				if ( ! fadeTarget.style.opacity ) {
+
+					fadeTarget.style.opacity = 1;
+
+				}
+
+				if ( fadeTarget.style.opacity > 0 ) {
+
+					fadeTarget.style.opacity -= 0.05;
+
+				} else {
+
+					clearInterval( fadeEffect );
+					fadeTarget.remove();
+
+				}
+
+			}, 50 );
+
+			} );
 
 			//Globals
 			var renderer, camera, controls, gui, stats;
@@ -207,388 +217,469 @@
 
 			// Global variables for raycaster control
 			var intersected;
-			var tooltipElement = document.getElementById("tooltip");
+			var tooltipElement = document.getElementById( "tooltip" );
 
 			// Marker which ensure the table is being displayed
 			tooltipElement.displayingPropTable = false;
 
-			(function main() {
-				//Renderer setup
-				//document.body.style = "overflow: hidden;";
-				document.body.style.overflow = "hidden";
-				var container = document.createElement("div");
-				container.id = "SimulationWindow";
-				//container.style = "position: absolute; top: 0; left: 0;"
-				Object.assign(container.style, {
-					position: "absolute",
-					top: 0,
-					left: 0,
-					width: "100vw",
-					height: "100vh"
-				});
-				document.body.appendChild(container);
-				renderer = new THREE.WebGLRenderer({ antialias: true });
-				//renderer.setSize(window.innerWidth, window.innerHeight);
-				renderer.setClearColor(0xa9cce3);
-				container.appendChild(renderer.domElement);
+			( function main() {
 
-				playback = new Playback({ parentGUI: gui });
+			//Renderer setup
+			//document.body.style = "overflow: hidden;";
+			document.body.style.overflow = "hidden";
+			var container = document.createElement( "div" );
+			container.id = "SimulationWindow";
+			//container.style = "position: absolute; top: 0; left: 0;"
+			Object.assign( container.style, {
+				position: "absolute",
+				top: 0,
+				left: 0,
+				width: "100vw",
+				height: "100vh"
+			} );
+			document.body.appendChild( container );
+			renderer = new THREE.WebGLRenderer( { antialias: true } );
+			//renderer.setSize(window.innerWidth, window.innerHeight);
+			renderer.setClearColor( 0xa9cce3 );
+			container.appendChild( renderer.domElement );
 
-				//Scene setup:
-				scene = new THREE.Scene();
-				let sun = new THREE.DirectionalLight(0xffffff, 2);
-				sun.position.set(-512, 246, 128);
-				scene.add(sun);
+			playback = new Playback( { parentGUI: gui } );
 
-				//Ocean size
-				let oSize = 2048;
+			//Scene setup:
+			scene = new THREE.Scene();
+			let sun = new THREE.DirectionalLight( 0xffffff, 2 );
+			sun.position.set( - 512, 246, 128 );
+			scene.add( sun );
 
-				//Use Z up from now on:
-				THREE.Object3D.DefaultUp.set(0, 0, 1);
-				zUpCont = new THREE.Group();
-				// This rotation must be deleted in order to garantee the real coordinate
-				// zUpCont.rotation.x = -0.5 * Math.PI;
-				scene.add(zUpCont);
+			//Ocean size
+			let oSize = 2048;
 
-				var skybox = new Skybox(oSize);
-				skybox.name = "Skybox";
-				scene.add(skybox);
+			//Use Z up from now on:
+			THREE.Object3D.DefaultUp.set( 0, 0, 1 );
+			zUpCont = new THREE.Group();
+			// This rotation must be deleted in order to garantee the real coordinate
+			// zUpCont.rotation.x = -0.5 * Math.PI;
+			scene.add( zUpCont );
 
-				//Camera setup
-				camera = new THREE.PerspectiveCamera(26, window.innerWidth / window.innerHeight, 1, 1000000);
+			var skybox = new Skybox( oSize );
+			skybox.name = "Skybox";
+			scene.add( skybox );
 
-				let onResize = function () {
-					let w = container.clientWidth;
-					let h = container.clientHeight;
-					renderer.setSize(w, h);
-					camera.aspect = w / h;
-					camera.updateProjectionMatrix();
-				};
+			//Camera setup
+			camera = new THREE.PerspectiveCamera( 26, window.innerWidth / window.innerHeight, 1, 1000000 );
 
-				camera.up.set(0, 1, 0);
+			let onResize = function () {
 
-				window.addEventListener("resize", onResize, false);
-				onResize();
-				camera.position.set(oSize * 0.03, oSize * 0.03, oSize * 0.03);
-				camera.lookAt(zUpCont.position);
-				// zUpCont.add(camera)
-				// scene.add(camera)
+				let w = container.clientWidth;
+				let h = container.clientHeight;
+				renderer.setSize( w, h );
+				camera.aspect = w / h;
+				camera.updateProjectionMatrix();
 
-				controls = new THREE.OrbitControls(camera, renderer.domElement);
-				//controls.minDistance = 0;
-				// controls.maxDistance = 1.25 * oSize;
-				controls.enablePan = false;
-				// controls.maxPolarAngle = 0.5 * Math.PI - 0.1;
-				// controls.minPolarAngle = 0.1;
+			};
 
-				// zUpCont.add(new THREE.AxesHelper(1000))
-				zUpCont.add(new THREE.HemisphereLight(0xccccff, 0x666688, 1));
+			camera.up.set( 0, 1, 0 );
 
-				ocean = new Ocean({
-					parentGUI: gui,
-					sunDir: sun.position.clone().normalize(),
-					size: oSize,
-					segments: 127
-				});
+			window.addEventListener( "resize", onResize, false );
+			onResize();
+			camera.position.set( oSize * 0.03, oSize * 0.03, oSize * 0.03 );
+			camera.lookAt( zUpCont.position );
+			// zUpCont.add(camera)
+			// scene.add(camera)
 
-				// playback.add(ocean)
-				ocean.name = "Ocean";
-				scene.add(ocean);
-				scene.rotation.x = -Math.PI / 2;
+			controls = new THREE.OrbitControls( camera, renderer.domElement );
+			//controls.minDistance = 0;
+			// controls.maxDistance = 1.25 * oSize;
+			controls.enablePan = false;
+			// controls.maxPolarAngle = 0.5 * Math.PI - 0.1;
+			// controls.minPolarAngle = 0.1;
 
-				// scene.rotation.x = Math.PI;
-				// scene.add(new THREE.AxesHelper(500));
+			// zUpCont.add(new THREE.AxesHelper(1000))
+			zUpCont.add( new THREE.HemisphereLight( 0xccccff, 0x666688, 1 ) );
 
-				Vessel.loadShip("specs/ship_specifications/gunnerus.json", function (ship) {
-					ship3D = new Ship3D(ship, {
-						// stlPath: "specs/STL files",
-						stlPath: "specs/STL files/Gunnerus",
-						upperColor: 0x33aa33,
-						lowerColor: 0xaa3333,
-						hullOpacity: 1,
-						deckOpacity: 1,
-						objectOpacity: 1
-					});
-					ship3D.name = "Ship3D";
-					ship3D.show = "on";
-					console.log(ship);
-					// zUpCont.add(ship3D)
+			ocean = new Ocean( {
+				parentGUI: gui,
+				sunDir: sun.position.clone().normalize(),
+				size: oSize,
+				segments: 127
+			} );
 
-					// Take the hydrostatics informations
-					var ship = ship3D.ship;
-					var draftDesign = ship.designState.calculationParameters.Draft_design;
-					var hull = ship.structure.hull;
+			// playback.add(ocean)
+			ocean.name = "Ocean";
+			scene.add( ocean );
+			scene.rotation.x = - Math.PI / 2;
 
-					hydrostatics = hull.calculateAttributesAtDraft(draftDesign);
-					// ship3D.shipState
-					// ship3D.ship.calculateStability()
-					// Maybe take KMt or KMl to the vessel.js
-					hydrostatics.KMt = hydrostatics.BMt + hydrostatics.KB;
-					hydrostatics.KMl = hydrostatics.BMl + hydrostatics.KB;
-					// console.log(hydrostatics);
-				});
+			// scene.rotation.x = Math.PI;
+			// scene.add(new THREE.AxesHelper(500));
 
-				// import binary glTF file
-				var boatPath = "specs/GLTF_files/Gunnerus.glb";
-				var loaderGLTF = new THREE.GLTFLoader();
-				loaderGLTF.load(boatPath, async gltf => {
-					shipGLTF = gltf.scene;
-					// mesh.material = new THREE.MeshLambertMaterial();
-					shipGLTF.rotation.x = Math.PI / 2;
-					shipGLTF.rotation.y = -Math.PI / 2;
-					shipGLTF.position.set(-1, 0, 0);
-					shipGLTF.name = "ModelGLTF";
+			Vessel.loadShip( "specs/ship_specifications/gunnerus.json", function ( ship ) {
 
-					if (shipGLTF.material) {
-						shipGLTF.material.side = THREE.DoubleSide;
-					}
+				ship3D = new Ship3D( ship, {
+					// stlPath: "specs/STL files",
+					stlPath: "specs/STL files/Gunnerus",
+					upperColor: 0x33aa33,
+					lowerColor: 0xaa3333,
+					hullOpacity: 1,
+					deckOpacity: 1,
+					objectOpacity: 1
+				} );
+				ship3D.name = "Ship3D";
+				ship3D.show = "on";
+				// zUpCont.add(ship3D)
 
-					await zUpCont.add(shipGLTF);
-				});
+				// Take the hydrostatics informations
+				var ship = ship3D.ship;
+				var draftDesign = ship.designState.calculationParameters.Draft_design;
+				var hull = ship.structure.hull;
 
-				// Recursive function to find element and delete
-				function toggleElement(element, name) {
-					if (element.children.lenght == 0) {
-						return;
-					}
+				hydrostatics = hull.calculateAttributesAtDraft( draftDesign );
+				// ship3D.shipState
+				// ship3D.ship.calculateStability()
+				// Maybe take KMt or KMl to the vessel.js
+				hydrostatics.KMt = hydrostatics.BMt + hydrostatics.KB;
+				hydrostatics.KMl = hydrostatics.BMl + hydrostatics.KB;
 
-					element.children.forEach(child => {
-						if (child.group == name) {
-							// Verify if it is visible trought the masks layers
-							if (child.layers.mask) {
-								child.layers.disable(0);
-							} else {
-								child.layers.enable(0);
-							}
-						}
+			} );
 
-						toggleElement(child, name);
-					});
+			// import binary glTF file
+			var boatPath = "specs/GLTF_files/Gunnerus.glb";
+			var loaderGLTF = new THREE.GLTFLoader();
+			loaderGLTF.load( boatPath, async gltf => {
+
+				shipGLTF = gltf.scene;
+				// mesh.material = new THREE.MeshLambertMaterial();
+				shipGLTF.rotation.x = Math.PI / 2;
+				shipGLTF.rotation.y = - Math.PI / 2;
+				shipGLTF.position.set( - 1, 0, 0 );
+				shipGLTF.name = "ModelGLTF";
+
+				if ( shipGLTF.material ) {
+
+					shipGLTF.material.side = THREE.DoubleSide;
+
 				}
 
-				modelStyle = {
-					model: "ModelGLTF",
-					scene: "On",
-					displayOutline: true
-				};
+				await zUpCont.add( shipGLTF );
 
-				// //GUI setup (comment out to remove gui)
-				gui = new dat.GUI();
-				scale = [];
+			} );
 
-				scale.push(gui.addFolder("Visualization parameters"));
-				scale.push(gui.addFolder("Check Box List"));
-				scale[1].domElement.hidden = true;
-				scale.push(gui.addFolder("Hydrostatic Information"));
-				scale[2].domElement.hidden = true;
+			// Recursive function to find element and delete
+			function toggleElement( element, name ) {
 
-				scale[0]
-					.add(modelStyle, "model", {
-						Model: "ModelGLTF",
-						Blocks: "Ship3D"
-					})
-					.onChange(newValue => {
-						function verifyElement(element) {
-							var otherName = {
-								ModelGLTF: "Ship3D",
-								Ship3D: "ModelGLTF"
-							};
+				if ( element.children.lenght == 0 ) {
 
-							if (element.name == otherName[newValue]) {
-								zUpCont.remove(element);
+					return;
+
+				}
+
+				element.children.forEach( child => {
+
+					if ( child.group == name ) {
+
+						// Verify if it is visible trought the masks layers
+						child.layers.mask ? child.layers.disable( 0 ) : child.layers.enable( 0 );
+
+					}
+
+					toggleElement( child, name );
+
+				} );
+
+			}
+
+			modelStyle = {
+				model: "ModelGLTF",
+				scene: "On",
+				displayOutline: true
+			};
+
+			// //GUI setup (comment out to remove gui)
+			gui = new dat.GUI();
+			scale = [];
+
+			scale.push( gui.addFolder( "Visualization parameters" ) );
+			scale.push( gui.addFolder( "Check Box List" ) );
+			scale[ 1 ].domElement.hidden = true;
+			scale.push( gui.addFolder( "Hydrostatic Information" ) );
+			scale[ 2 ].domElement.hidden = true;
+
+			scale[ 0 ]
+				.add( modelStyle, "model", {
+					Model: "ModelGLTF",
+					Blocks: "Ship3D"
+				} )
+				.onChange( newValue => {
+
+					function verifyElement( element ) {
+
+						var otherName = {
+							ModelGLTF: "Ship3D",
+							Ship3D: "ModelGLTF"
+						};
+
+						if ( element.name == otherName[ newValue ] ) {
+
+							zUpCont.remove( element );
+
+						}
+
+					}
+
+					zUpCont.children.forEach( verifyElement );
+
+					// Switch function
+					switch ( newValue ) {
+
+						case "ModelGLTF":
+							zUpCont.add( shipGLTF );
+							scale[ 1 ].domElement.hidden = scale[ 2 ].domElement.hidden = true;
+
+							break;
+
+						case "Ship3D":
+							zUpCont.add( ship3D );
+							scale[ 1 ].domElement.hidden = scale[ 2 ].domElement.hidden = false;
+
+							if ( scale[ 2 ].__controllers.length == 0 ) {
+
+								const HYDRO_RESULTS = [ "KMt", "KMl", "LCF", "LCB", "Cb", "Cp" ];
+
+								HYDRO_RESULTS.forEach( e => {
+
+									scale[ 2 ].add( hydrostatics, e );
+
+								} );
+
 							}
-						}
 
-						zUpCont.children.forEach(verifyElement);
+							break;
 
-						// Switch function
-						switch (newValue) {
-							case "ModelGLTF":
-								zUpCont.add(shipGLTF);
-								scale[1].domElement.hidden = scale[2].domElement.hidden = true;
+						default:
+							break;
 
-								break;
+					}
 
-							case "Ship3D":
-								zUpCont.add(ship3D);
-								scale[1].domElement.hidden = scale[2].domElement.hidden = false;
+				} )
+				.name( "View" );
+			scale[ 0 ]
+				.add( modelStyle, "scene", {
+					On: "On",
+					Off: "Off"
+				} )
+				.onChange( newValue => {
 
-								if (scale[2].__controllers.length == 0) {
-									const HYDRO_RESULTS = ["KMt", "KMl", "LCF", "LCB", "Cb", "Cp"];
+					switch ( newValue ) {
 
-									HYDRO_RESULTS.forEach(e => {
-										scale[2].add(hydrostatics, e);
-									});
-								}
+						case "On":
+							scene.getObjectByName( "Skybox" ).visible = true;
+							scene.getObjectByName( "Ocean" ).visible = true;
+							break;
 
-								break;
+						case "Off":
+							scene.getObjectByName( "Skybox" ).visible = false;
+							scene.getObjectByName( "Ocean" ).visible = false;
+							break;
 
-							default:
-								break;
-						}
-					})
-					.name("View");
-				scale[0]
-					.add(modelStyle, "scene", {
-						On: "On",
-						Off: "Off"
-					})
-					.onChange(newValue => {
-						switch (newValue) {
-							case "On":
-								scene.getObjectByName("Skybox").visible = true;
-								scene.getObjectByName("Ocean").visible = true;
-								break;
+						default:
+							break;
 
-							case "Off":
-								scene.getObjectByName("Skybox").visible = false;
-								scene.getObjectByName("Ocean").visible = false;
-								break;
+					}
 
-							default:
-								break;
-						}
-					})
-					.name("Scenario");
-				// scene.getObjectByName("Ocean").visible = false
-				scale[0].open();
+				} )
+				.name( "Scenario" );
+			// scene.getObjectByName("Ocean").visible = false
+			scale[ 0 ].open();
 
-				["Machinery", "Tank", "Compartment", "Deck", "Bulkheads"].forEach(e => {
-					scale[1]
-						.add(modelStyle, "displayOutline")
-						.onChange(newValue => {
-							toggleElement(zUpCont, e);
-						})
-						.name(e);
-				});
+			[ "Machinery", "Tank", "Compartment", "Deck", "Bulkheads", "Hull" ].forEach( e => {
 
-				scale[1].open();
+				scale[ 1 ]
+					.add( modelStyle, "displayOutline" )
+					.onChange( newValue => {
 
-				scale[2].open();
+						e === "Hull" ? ( zUpCont.children[ 1 ].hull3D.visible = ! zUpCont.children[ 1 ].hull3D.visible ) : toggleElement( zUpCont, e );
 
-				// playback.play()
+					} )
+					.name( e );
 
-				requestAnimationFrame(animate);
-			})();
+			} );
+
+			scale[ 1 ].open();
+
+			scale[ 2 ].open();
+
+			// playback.play()
+
+			requestAnimationFrame( animate );
+
+			} )();
 
 			var mouse = new THREE.Vector2();
 
-			function onMouseMove(event) {
-				// calculate mouse position in normalized device coordinates
-				// (-1 to +1) for both components
-				mouse.clientX = event.clientX;
-				mouse.clientY = event.clientY;
+			function onMouseMove( event ) {
 
-				mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-				mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+			// calculate mouse position in normalized device coordinates
+			// (-1 to +1) for both components
+			mouse.clientX = event.clientX;
+			mouse.clientY = event.clientY;
+
+			mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+			mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+
 			}
 
-			window.addEventListener("mousemove", onMouseMove, false);
+			window.addEventListener( "mousemove", onMouseMove, false );
 
 			// Enabling setting Layers
 			// scene.layers.enable(1)
 
 			// ToolTip function shows the object name when mouse is on @ferrari212
-			function toolTip(tooltip, intersected) {
-				if (intersected.status) {
-					// Inserting tooltip
-					tooltip.style.visibility = "visible";
-					tooltip.style.left = mouse.clientX + 20;
-					tooltip.style.top = mouse.clientY + 10;
-					tooltip.textContent = intersected.name;
-					zUpCont.remove(zUpCont.getObjectByName(intersected.name));
-				} else {
-					// Taking off tool tip
-					tooltip.style.visibility = "hidden";
-				}
+			function toolTip( tooltip, intersected ) {
+
+			if ( intersected.status ) {
+
+				// Inserting tooltip
+				tooltip.style.visibility = "visible";
+				tooltip.style.left = mouse.clientX + 20;
+				tooltip.style.top = mouse.clientY + 10;
+				tooltip.textContent = intersected.name;
+				zUpCont.remove( zUpCont.getObjectByName( intersected.name ) );
+
+			} else {
+
+				// Taking off tool tip
+				tooltip.style.visibility = "hidden";
+
+			}
+
 			}
 
 			// Function shows the object information when object is clicked on @ferrari212
-			function clickedInformation(Ship3D, tooltipElement, intersected) {
-				// Ship3D is the JSON info. of the ship
-				// tooltipElement is the html div that will contain the info
-				// Intersected is the element with the mouse on
+			function clickedInformation( Ship3D, tooltipElement, intersected ) {
 
-				document.body.style.cursor = "pointer";
+			// Ship3D is the JSON info. of the ship
+			// tooltipElement is the html div that will contain the info
+			// Intersected is the element with the mouse on
 
-				var ship = Ship3D.ship;
-				var name = intersected.name;
+			document.body.style.cursor = "pointer";
 
-				var element = ship.derivedObjects[name] || ship.structure.decks[name] || ship.structure.bulkheads[name];
+			var ship = Ship3D.ship;
+			var name = intersected.name;
 
-				function addTable(block, element) {
-					// console.log(element.baseObject.boxDimensions);
-					tooltipElement.displayingPropTable = true;
-					var boxDimensions = element.baseObject.boxDimensions;
+			var element = ship.derivedObjects[ name ] || ship.structure.decks[ name ] || ship.structure.bulkheads[ name ];
 
-					var keys = Object.keys(boxDimensions);
-					console.log(keys);
+			// Classes for changing the inner displayed table @ferrari
+			class ListMarkup {
 
-					// Inserting tooltip
-					block.style.visibility = "visible";
-					block.style.left = mouse.clientX + 20;
-					block.style.top = mouse.clientY + 10;
+				constructor() {
 
-					var listMarkup = `<a onclick="tooltipElement.displayingPropTable = false;" class="close"></a>`;
+					this.innerHTML = `<a onclick="tooltipElement.displayingPropTable = false;" class="close"></a><table>`;
 
-					listMarkup += "<table>";
+				}
 
-					for (let i = 0; i < keys.length; i++) {
-						listMarkup += `<tr><td> ${keys[i]} </td><td> ${boxDimensions[keys[i]]} </td></tr>`;
+				extendSingleInnerHTML( key, value, unit = "" ) {
+
+					this.innerHTML += `<tr><td> ${key} </td><td> ${value} ${unit} </td></tr>`;
+
+				}
+
+				arrayExtendInnerHTML( object, fromNumber = 0, toEnd = 0, unit = "" ) {
+
+					var keys = Object.keys( object );
+
+					for ( let i = fromNumber; i < keys.length - toEnd; i ++ ) {
+
+						this.innerHTML += `<tr><td> ${keys[ i ]} </td><td> ${object[ keys[ i ] ]} ${unit} </td></tr>`;
+
 					}
 
-					listMarkup += "</table>";
-
-					block.innerHTML = listMarkup;
-					zUpCont.remove(zUpCont.getObjectByName(element.name));
 				}
 
-				document.getElementById("SimulationWindow").onclick = () => addTable(tooltipElement, element);
-				// Need to take the bulkhead element as well
-				// console.log(element);
-				// document.onclick(console.log(`Clicked ${intersected.name}`));
+				closeInnerHTML() {
 
-				// Searching element - not necessary, element searched in the raycaster
+					this.innerHTML += `</table>`;
 
-				// var blocks = object.blocks.children
-				// var bulkheads = object.bulkheads.children
+				}
 
-				// function searchElement(elements) {
-				// 	return elements.find(element => element.name == intersected.name)
-				// }
-
-				// // var foundObject = blocks.find(element => element.name == intersected.name)
-
-				// var foundObject = searchElement(blocks) || searchElement(bulkheads);
-
-				// console.log(foundObject);
 			}
 
-			function animate(millitime) {
-				ocean.water.material.uniforms.time.value += 1 / 60;
+			// Add the table with the informations
+			function addTable( block, element ) {
 
-				// ocean.water.render();
+				// Invalidate function in case of element undefined
+				if ( element === undefined ) return;
 
-				renderer.render(scene, camera);
-				requestAnimationFrame(animate);
+				var listMarkup = new ListMarkup();
 
-				// Apply the function RayCaster
-				intersected = renderRayCaster(mouse, camera, zUpCont, intersected);
+				tooltipElement.displayingPropTable = true;
 
-				// Apply the click information function
-				if (intersected.name === undefined) {
-					document.body.style.cursor = "default";
-					document.getElementById("SimulationWindow").onclick = false;
+				if ( element.id === undefined ) {
+
+					// For structural elements
+					var keys = Object.keys( element );
+
+					listMarkup.extendSingleInnerHTML( "Group", element.affiliations.group );
+
+					listMarkup.arrayExtendInnerHTML( element, 1 );
+
 				} else {
-					clickedInformation(ship3D, tooltipElement, intersected);
+
+					// For non structural elements
+					listMarkup.extendSingleInnerHTML( "Id", element.id );
+
+					listMarkup.arrayExtendInnerHTML( element.baseObject.boxDimensions, 0, 0, "m" );
+
+					listMarkup.arrayExtendInnerHTML( element.referenceState, 0, 0, "m" );
+
 				}
 
-				// In case the element was not clicked the toolTip Function will be triggered
-				if (!tooltipElement.displayingPropTable) {
-					toolTip(tooltipElement, intersected);
-					console.log("passed here");
-				}
+				listMarkup.closeInnerHTML();
+
+				// Inserting tooltip
+				block.style.visibility = "visible";
+				block.style.left = mouse.clientX + 20;
+				block.style.top = mouse.clientY + 10;
+				block.innerHTML = listMarkup.innerHTML;
+				zUpCont.remove( zUpCont.getObjectByName( element.name ) );
+
 			}
+
+			document.getElementById( "SimulationWindow" ).onclick = () => addTable( tooltipElement, element );
+
+			}
+
+			function animate( millitime ) {
+
+			ocean.water.material.uniforms.time.value += 1 / 60;
+
+			// ocean.water.render();
+
+			renderer.render( scene, camera );
+			requestAnimationFrame( animate );
+
+			// Apply the function RayCaster
+			intersected = renderRayCaster( mouse, camera, zUpCont, intersected );
+
+			// Apply the click information function
+			if ( intersected.name === undefined ) {
+
+				document.body.style.cursor = "default";
+				document.getElementById( "SimulationWindow" ).onclick = false;
+
+			} else {
+
+				clickedInformation( ship3D, tooltipElement, intersected );
+
+			}
+
+			// In case the element was not clicked the toolTip Function will be triggered
+			if ( ! tooltipElement.displayingPropTable ) {
+
+				toolTip( tooltipElement, intersected );
+
+			}
+
+			}
+
 		</script>
 	</body>
 </html>
