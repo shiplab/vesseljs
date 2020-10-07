@@ -347,6 +347,10 @@
 							map["111.41"].push([2, 4, index, 1]);
 							map["111.71"].push([2, 4, index, 2]);
 							map["111.41"].push([2, 4, index, 3]);
+							zUpCont.children[2].children[4].children[index].children[0].material.side = THREE.DoubleSide;
+							zUpCont.children[2].children[4].children[index].children[1].material.side = THREE.DoubleSide;
+							zUpCont.children[2].children[4].children[index].children[2].material.side = THREE.DoubleSide;
+							zUpCont.children[2].children[4].children[index].children[3].material.side = THREE.DoubleSide;
 							break;
 						case "PTS_Propeller":
 							map["413.1"].push([2, 4, index]);
