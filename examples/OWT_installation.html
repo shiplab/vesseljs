@@ -282,7 +282,7 @@
 
 			window.addEventListener( "resize", onResize, false );
 			onResize();
-			camera.position.set( oSize * 0.03, oSize * 0.03, oSize * 0.03 );
+			camera.position.set( 630, 250, 820 );
 			camera.lookAt( zUpCont.position );
 			// zUpCont.add(camera)
 			// scene.add(camera)
@@ -403,64 +403,6 @@
 			scale.push( gui.addFolder( "Hydrostatic Information" ) );
 			scale[ 2 ].domElement.hidden = true;
 
-			scale[ 0 ]
-				.add( modelStyle, "model", {
-					Model: "ModelGLTF",
-					Blocks: "Ship3D"
-				} )
-				.onChange( newValue => {
-
-					function verifyElement( element ) {
-
-						var otherName = {
-							ModelGLTF: "Ship3D",
-							Ship3D: "ModelGLTF"
-						};
-
-						if ( element.name == otherName[ newValue ] ) {
-
-							zUpCont.remove( element );
-
-						}
-
-					}
-
-					zUpCont.children.forEach( verifyElement );
-
-					// Switch function
-					switch ( newValue ) {
-
-						case "ModelGLTF":
-							zUpCont.add( shipGLTF );
-							scale[ 1 ].domElement.hidden = scale[ 2 ].domElement.hidden = true;
-
-							break;
-
-						case "Ship3D":
-							zUpCont.add( ship3D );
-							scale[ 1 ].domElement.hidden = scale[ 2 ].domElement.hidden = false;
-
-							if ( scale[ 2 ].__controllers.length == 0 ) {
-
-								const HYDRO_RESULTS = [ "KMt", "KMl", "LCF", "LCB", "Cb", "Cp" ];
-
-								HYDRO_RESULTS.forEach( e => {
-
-									scale[ 2 ].add( hydrostatics, e );
-
-								} );
-
-							}
-
-							break;
-
-						default:
-							break;
-
-					}
-
-				} )
-				.name( "View" );
 			scale[ 0 ]
 				.add( modelStyle, "scene", {
 					On: "On",
