@@ -33,6 +33,9 @@
 		<!-- <script src="snippets/Configurable_ocean.js"></script> -->
 		<script src="snippets/Configurable_ocean2.js"></script>
 		<!--<script src="keyboard_arrow_input_Elias_Hasle.js"></script>-->
+	
+		<script src="snippets/FreeBody.js"></script>
+		<script src="libs/numeric-1.2.6.min.js"></script>
 	</head>
 
 	<style>
@@ -248,7 +251,7 @@
 			//Globals
 			var renderer, camera, controls, gui, stats
 			var scene, zUpCont, playback, bodies, ocean, ship3D, shipGLTF
-			var hydrostatics
+			var Teste
 			var scale, modelStyle
 
 			;(function main() {
@@ -330,42 +333,11 @@
 				scene.add(ocean)
 				scene.rotation.x = -Math.PI / 2
 
-				// scene.rotation.x = Math.PI;
-				// scene.add(new THREE.AxesHelper(500));
-
-				Vessel.loadShip("specs/ship_specifications/gunnerus.json", function (ship) {
-					ship3D = new Ship3D(ship, {
-						// stlPath: "specs/STL files",
-						stlPath: "specs/STL files/Gunnerus",
-						upperColor: 0x33aa33,
-						lowerColor: 0xaa3333,
-						hullOpacity: 1,
-						deckOpacity: 1,
-						objectOpacity: 1
-					})
-					ship3D.name = "Ship3D"
-					ship3D.show = "on"
-					// zUpCont.add(ship3D)
-
-					// Take the hydrostatics informations
-					var ship = ship3D.ship
-					var draftDesign = ship.designState.calculationParameters.Draft_design
-					var hull = ship.structure.hull
-
-					hydrostatics = hull.calculateAttributesAtDraft(draftDesign)
-					// ship3D.shipState
-					// ship3D.ship.calculateStability()
-					// Maybe take KMt or KMl to the vessel.js
-					hydrostatics.KMt = hydrostatics.BMt + hydrostatics.KB
-					hydrostatics.KMl = hydrostatics.BMl + hydrostatics.KB
-				})
-
 				// import binary glTF file
 				var boatPath = "specs/GLTF_files/Gunnerus.glb"
 				var loaderGLTF = new THREE.GLTFLoader()
 				loaderGLTF.load(boatPath, async gltf => {
 					shipGLTF = gltf.scene
-					// mesh.material = new THREE.MeshLambertMaterial();
 					shipGLTF.rotation.x = Math.PI / 2
 					shipGLTF.rotation.y = -Math.PI / 2
 					shipGLTF.position.set(-1, 0, 0)
@@ -394,14 +366,17 @@
 					})
 				}
 
-				modelStyle = {
-					model: "ModelGLTF",
-					scene: "On",
-					displayOutline: true
-				}
+				var m = 10
+				var I = [[10, 10, 10], [10, 10, 10], [10, 10, 10]]
+				var D = [[10, 10, 10], [10, 10, 10], [10, 10, 10]]
+
+				Teste = new ManouvringModel(m, I, D, Math.PI/2)
+				var Teste2 = new FreeBody(m, 10)
+				console.log(Teste)
+				console.log(Teste2)
 
 				// //GUI setup (comment out to remove gui)
-				gui = new dat.GUI()
+				// gui = new dat.GUI()
 
 				requestAnimationFrame(animate)
 			})()
