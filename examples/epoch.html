@@ -451,7 +451,6 @@
 		document.body.appendChild( container );
 
 		( function main() {
-
 			document.body.style.overflow = "hidden";
 
 			document.body.appendChild( container );
@@ -468,9 +467,7 @@
 			//add report to GUI controller
 			var obj = {
 				"Click to read paper": function () {
-
-					window.open( "https://observablehq.com/d/54d7081bc6ef0429" );
-
+					window.open( "http://www.scs-europe.net/dlib/2020/2020-0214.htm" );
 				}
 			};
 			gui.add( obj, "Click to read paper" );
@@ -515,7 +512,6 @@
 				renderer.setSize( w, h );
 				camera.aspect = w / h;
 				camera.updateProjectionMatrix();
-
 			};
 
 			window.addEventListener( 'resize', onResize, false );
@@ -695,20 +691,15 @@
 				epochEquipments.xmastree.mesh.name = "Christimas Three";
 				epochEquipments.xmastree.mesh.rotation.set( 0, 0, - Math.PI / 2 );
 
-
 				zUpCont.add( epochEquipments.xmastree.mesh );
-
 			} );
 
 			loader.load( './specs/STL files/eletric.stl', function ( geometrySTL ) {
-
 				if ( geometrySTL.hasColors ) {
-
 					var material = new THREE.MeshPhongMaterial( {
 						opacity: geometry.alpha,
 						vertexColors: THREE.VertexColors
 					} );
-
 				} else {
 
 					var material = new THREE.MeshPhongMaterial( {
@@ -736,16 +727,12 @@
 			} );
 
 			loader.load( './specs/STL files/eletric.stl', function ( geometrySTL ) {
-
 				if ( geometrySTL.hasColors ) {
-
 					var material = new THREE.MeshPhongMaterial( {
 						opacity: geometry.alpha,
 						vertexColors: THREE.VertexColors
 					} );
-
 				} else {
-
 					var material = new THREE.MeshPhongMaterial( {
 						color: 0xffff00,
 						emissive: 0x494949,
@@ -753,7 +740,6 @@
 						shininess: 100
 					} );
 					console.info( 'There is no color in geometrySTL: ', geometrySTL.hasColors );
-
 				}
 
 				epochEquipments.brine_subpump.mesh = new THREE.Mesh( geometrySTL, material );
@@ -764,7 +750,6 @@
 				];
 				epochEquipments.brine_subpump.mesh.name = "Brine SubPump";
 				zUpCont.add( epochEquipments.brine_subpump.mesh );
-
 			} );
 
 			// seawater tube
@@ -852,16 +837,12 @@
 			// Adding Ship STL
 			var loader = new THREE.STLLoader();
 			loader.load( './specs/STL files/ship.stl', function ( geometrySTL ) {
-
 				if ( geometrySTL.hasColors ) {
-
 					var material = new THREE.MeshPhongMaterial( {
 						opacity: geometry.alpha,
 						vertexColors: THREE.VertexColors
 					} );
-
 				} else {
-
 					var material = new THREE.MeshPhongMaterial( {
 						color: 0x303030,
 						emissive: 0x494949,
@@ -872,7 +853,6 @@
 						opacity: 1
 					} );
 					console.info( 'There is no color in geometrySTL: ', geometrySTL.hasColors );
-
 				}
 
 				// new THREE.Mesh( geometry, material );
@@ -885,23 +865,17 @@
 				ships.shipSTL.hull.mesh.name = "ship";
 
 				zUpCont.add( ships.shipSTL.hull.mesh );
-
 			} );
-
 
 			// Adding Ship STL
 			var loader = new THREE.STLLoader();
 			loader.load( './specs/STL files/FPSO.stl', function ( geometrySTL ) {
-
 				if ( geometrySTL.hasColors ) {
-
 					var material = new THREE.MeshPhongMaterial( {
 						opacity: geometry.alpha,
 						vertexColors: THREE.VertexColors
 					} );
-
 				} else {
-
 					var material = new THREE.MeshPhongMaterial( {
 						color: 0x303030,
 						emissive: 0x494949,
@@ -912,7 +886,6 @@
 						opacity: 0
 					} );
 					console.info( 'There is no color in geometrySTL: ', geometrySTL.hasColors );
-
 				}
 
 				ships.fpsoSTL.hull.mesh = new THREE.Mesh( geometrySTL, material );
@@ -926,7 +899,6 @@
 				zUpCont.add( ships.fpsoSTL.hull.mesh );
 				zUpCont.children[ zUpCont.children.length - 1 ].material.visible = false;
 				// zUpCont.add(new THREE.Mesh(geometrySTL, material));
-
 			} );
 
 			// Parameters for simulation
@@ -983,7 +955,6 @@
 				/*"specs/ship_specifications/prismaticHull.json"*/
 				"specs/ship_specifications/top-down.json",
 				function ( ship ) {
-
 					states = ship.designState.clone();
 					ship3D = new Ship3D( ship, {
 						stlPath: "specs/STL files",
@@ -1027,12 +998,10 @@
 						.add( epochEquipments.co2_flowrate, "flowrate_capacity", 500, 700 )
 						.step( 1 )
 						.onChange( function ( newValue ) {
-
 							epochEquipments.co2_flowrate.flowrate_capacity = newValue;
 							epoch.simulation.flowrate = newValue;
 							epoch.simulation.setMaxTime( epoch.simulation.diss_time, epoch.simulation.flowrate );
 							scale.__controllers[ 4 ].__max = epoch.simulation.maxTime;
-
 						} )
 						.name( "Rate (m3/h)" );
 					scale.open();
@@ -1051,7 +1020,6 @@
 						.onChange( function ( newValue ) {
 
 							switch ( newValue ) {
-
 								case '0':
 									camera.position.set( oSize * 0.08, oSize * 0.08, - oSize * 0.08 );
 									camera.lookAt( zUpCont.position );
@@ -1107,9 +1075,7 @@
 									break;
 								default:
 									console.log( 'View ' + newValue + ' not found.' );
-
 							}
-
 						} )
 						.name( "View" );
 					scale
@@ -1129,7 +1095,6 @@
 						.add( epoch.simulation, 'time', 0, epoch.simulation.maxTime ).listen()
 						.name( "Time (days)" );
 					scale.open();
-
 				} );
 
 			// Inserting the anchor
@@ -1178,7 +1143,6 @@
 			zUpCont.add( umbilical.object3D.line.object );
 
 			requestAnimationFrame( animate );
-
 		} )();
 
 		// Inserting Ray Caster. @ferrari212
@@ -1188,7 +1152,6 @@
 		var canvasWidth = window.innerWidth - container.clientWidth;
 
 		function onMouseMove( event ) {
-
 			// calculate mouse position in normalized device coordinates
 			// (-1 to +1) for both components
 
@@ -1198,39 +1161,30 @@
 
 			mouse.x = ( ( event.clientX - canvasWidth ) / container.clientWidth ) * 2 - 1;
 			mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
-
 		}
 
 		window.addEventListener( 'mousemove', onMouseMove, false );
 
 		function toolTip( tooltip, intersected ) {
-
 			if ( intersected.status ) {
-
 				// Inserting tooltip
 				tooltip.style.visibility = 'visible';
 				tooltip.style.left = mouse.clientX - canvasWidth + 20;
 				tooltip.style.top = mouse.clientY + 10;
 				tooltip.textContent = intersected.name;
-
 			} else {
-
 				// Taking off tool tip
 				tooltip.style.visibility = 'hidden';
-
 			}
-
 		}
 
 		function animate( millitime ) {
-
 			var t = clock.getElapsedTime();
 
 			ocean.water.material.uniforms.time.value += 1 / 60;
 
 			//Simulate the ship change
 			if ( epoch.simulation.radius > epoch.simulation.maxRadius && ! ships.simulation.changedShip ) {
-
 				epoch.simulation.pause();
 				ships.simulation.changeShip();
 				arrow.classList.add( 'run-1' );
@@ -1252,7 +1206,6 @@
 				umbilical.geometry.verticesNeedUpdate = true;
 
 				if ( ships.simulation.changedShip ) {
-
 					epoch.simulation.play();
 					zUpCont.getObjectByName( "ship" ).material.visible = false;
 					zUpCont.getObjectByName( "sub_pump" ).material.visible = false;
@@ -1264,22 +1217,16 @@
 
 					info.children[ 1 ].classList.remove( 'text-yellow' );
 					info.children[ 2 ].classList.add( 'text-yellow' );
-
 				}
-
 			}
 
 			if ( epoch.simulation.playing ) {
-
 				epoch.simulation.updateVolume( t );
 				if ( ! epoch.simulation.storingPhase ) {
-
 					epoch.mesh[ 0 ].scale.x = epoch.simulation.radius;
 					epoch.mesh[ 0 ].scale.z = epoch.simulation.radius;
 					epoch.mesh[ 0 ].geometry.verticesNeedUpdate = true;
-
 				} else if ( epoch.simulation.maxVolume > epoch.simulation.oilVolume ) {
-
 					// Insert Oil reservoir
 					var geometrySphere = new THREE.CylinderGeometry(
 						epoch.simulation.bottomRadius * 0.95, // Radius Maximun
@@ -1302,18 +1249,12 @@
 					epoch.mesh[ epoch.mesh.length - 1 ].rotation.x = - Math.PI / 2;
 					zUpCont.add( epoch.mesh[ epoch.mesh.length - 1 ] );
 					if ( epoch.mesh.length >= 3 ) {
-
 						zUpCont.children.splice( zUpCont.children.length - 2, 1 );
 						epoch.mesh.splice( epoch.mesh.length - 2, 1 );
-
 					}
-
 				} else {
-
 					epoch.simulation.pause();
-
 				}
-
 			}
 
 			ocean.water.render();
@@ -1323,9 +1264,7 @@
 
 			intersected = renderRayCaster( mouse, camera, zUpCont, intersected );
 			toolTip( tooltipElement, intersected );
-
 		}
-
 	</script>
 </body>
 
