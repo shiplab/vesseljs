@@ -238,7 +238,7 @@
 					console.log('Ship power goes up')
 					zUpCont.getObjectByName("ModelGLTF").position.x += .5
 				} else if (keyCode == 83) {
-					console.log('Ship power goes down')
+					console.log('Ship power goes back')
 					zUpCont.getObjectByName("ModelGLTF").position.x -= .5
 				} else if (keyCode == 65) {
 					zUpCont.getObjectByName("ModelGLTF").position.y += .5
@@ -367,13 +367,12 @@
 				}
 
 				var m = 10
-				var I = [[10, 10, 10], [10, 10, 10], [10, 10, 10]]
+				var I = [[0, 0, 0], [0, 0, 10], [0, 10, 10]]
 				var D = [[10, 10, 10], [10, 10, 10], [10, 10, 10]]
 
 				Teste = new ManouvringModel(m, I, D, Math.PI/2)
-				var Teste2 = new FreeBody(m, 10)
+				// Teste = new FreeBody(m, 10)
 				console.log(Teste)
-				console.log(Teste2)
 
 				// //GUI setup (comment out to remove gui)
 				// gui = new dat.GUI()
