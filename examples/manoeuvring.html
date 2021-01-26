@@ -230,28 +230,34 @@
 			document.addEventListener("keydown", onDocumentKeyDown, false)
 			function onDocumentKeyDown(event) {
 				var keyCode = event.which;
+				var n = manouvringModel.state.n;
+
 				// console.log(keyCode)
-				if (keyCode == 87) {
-					// cube.position.y += ySpeed;
+				if (keyCode == 87 && n <= 1) {
 					// Just a preliminary, in real case the ship moves according to the
 					// variation in the global reference system
 					console.log('Ship power goes up')
-					zUpCont.getObjectByName("ModelGLTF").position.x += .5
-				} else if (keyCode == 83) {
+					manouvringModel.state.n += 0.01;
+				} else if (keyCode == 83 && n >= -1) {
 					console.log('Ship power goes back')
-					zUpCont.getObjectByName("ModelGLTF").position.x -= .5
+					manouvringModel.state.n -= 0.01;
 				} else if (keyCode == 65) {
 					zUpCont.getObjectByName("ModelGLTF").position.y += .5
 				} else if (keyCode == 68) {
 					console.log('Ship power goes right')
 					zUpCont.getObjectByName("ModelGLTF").position.y -= .5
+				} else if (keyCode == 81) {
+					zUpCont.getObjectByName("ModelGLTF").rotation.y += .05
+				} else if (keyCode == 69) {
+					zUpCont.getObjectByName("ModelGLTF").rotation.y -= .05
 				}
 			}
 
 			//Globals
 			var renderer, camera, controls, gui, stats
-			var scene, zUpCont, playback, bodies, ocean, ship3D, shipGLTF
-			var Teste
+			var scene, zUpCont, playback, bodies, ocean
+			var ship, shipGLTF, shipState, propellers, wave, hullRes, propellerInteraction, rudderModel
+			var manouvringModel, forceVector
 			var scale, modelStyle
 
 			;(function main() {
@@ -311,7 +317,7 @@
 
 				window.addEventListener("resize", onResize, false)
 				onResize()
-				camera.position.set(-oSize * 0.03, oSize * 0.01, 0)
+				camera.position.set(-60, 20, 0)
 				console.log(zUpCont.position)
 				
 
@@ -333,6 +339,47 @@
 				scene.add(ocean)
 				scene.rotation.x = -Math.PI / 2
 
+				//Load sample file:
+			new THREE.FileLoader().load("specs/ship_specifications/Gunnerus.json", 
+				function (content) {
+
+					ship = new Vessel.Ship(JSON.parse(content))
+					shipState = new Vessel.ShipState(ship.designState.getSpecification())			
+					
+					// object and functions to handle propeller specifications
+					propellers = {};
+
+					// preload propeller specification
+					var propReq = new XMLHttpRequest();
+					propReq.open("GET", "specs/propeller_specifications/wag_4b_0.55a_1.2p.json", true);
+					propReq.addEventListener("load", function(event) {
+						var response = event.target.response;
+						var propeller = JSON.parse(response);
+						usePropSpec(propeller, "wag_4b_0.55a_1.2p.json");
+					});
+					propReq.send(null);
+
+					var usePropSpec = function(propeller, name) {
+							propellers[name.substring(0, name.length - 5)] = propeller;
+
+							wave = new Vessel.WaveCreator()
+
+							hullRes = new Vessel.HullResistance(ship, shipState, propeller, wave)
+							hullRes.writeOutput();
+							
+							// debugger
+
+						for (var propProp in propellers) {
+							var wagProp = propellers[propProp];
+							propellerInteraction = new Vessel.PropellerInteraction(ship, shipState, wagProp)
+							propellerInteraction.writeOutput();
+						}
+
+					};
+
+				}
+			);
+
 				// import binary glTF file
 				var boatPath = "specs/GLTF_files/Gunnerus.glb"
 				var loaderGLTF = new THREE.GLTFLoader()
@@ -347,32 +394,19 @@
 						shipGLTF.material.side = THREE.DoubleSide
 					}
 
-					await zUpCont.add(shipGLTF)
+					zUpCont.add(shipGLTF)
+
 				})
-
-				// Recursive function to find element and delete
-				function toggleElement(element, name) {
-					if (element.children.lenght == 0) {
-						return
-					}
-
-					element.children.forEach(child => {
-						if (child.group == name) {
-							// Verify if it is visible trought the masks layers
-							child.layers.mask ? child.layers.disable(0) : child.layers.enable(0)
-						}
-
-						toggleElement(child, name)
-					})
-				}
 
 				var m = 10
 				var I = [[0, 0, 0], [0, 0, 10], [0, 10, 10]]
 				var D = [[10, 10, 10], [10, 10, 10], [10, 10, 10]]
 
-				Teste = new ManouvringModel(m, I, D, Math.PI/2)
-				// Teste = new FreeBody(m, 10)
-				console.log(Teste)
+				manouvringModel = new ManouvringModel(m, I, D);
+				// manouvringModel = new FreeBody(m, 10)
+				console.log(manouvringModel);
+
+				forceVector = [0, 0, 0];
 
 				// //GUI setup (comment out to remove gui)
 				// gui = new dat.GUI()
@@ -380,9 +414,22 @@
 				requestAnimationFrame(animate)
 			})()
 
+			
+
 			function animate(millitime) {
 				ocean.water.material.uniforms.time.value += 1 / 60
-				camera.lookAt(20, 10, 0)
+				
+				if (shipGLTF) {
+					propellerInteraction.setSpeed(manouvringModel.state.V.u)
+
+					// forceVector[0] = propellerInteraction.getForceByRotation(manouvringModel.state.n);
+
+					// manouvringModel.setMatrixes(forceVector, 0)
+
+					// shipGLTF.position.x += manouvringModel.state.DX.x
+
+					// camera.lookAt(shipGLTF.position.x + 20, 10, -shipGLTF.position.y)
+				}
 
 				renderer.render(scene, camera)
 				requestAnimationFrame(animate)

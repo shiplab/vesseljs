@@ -25,28 +25,30 @@ class ManouvringModel extends FreeBody {
     super(m, I, D)
 
     this.state = { 
-      X: {x:0, y:0, z: 0},
+      // X: {x:0, y:0, yaw: 0},
+      DX: {x:0, y:0, yaw: 0},
       V: {u:0, v:0, yaw_dot:0},
-      DX: {x:0, y:0, z: 0}
+      n: 0,
+      yaw: initial_yaw,
+      rudderAngle: 0
     }
 
     if (D === undefined) {
       console.warn('Model with no defined damping value')
       D = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
     }
-    
+        
     this.M_RB = numeric.add(this.M, this.I)
 
 
     this.INVM = numeric.inv(this.M_RB)
-    this.INVMD = numeric.dot(this.INVM, D)   
-
-    this.setMatrix()
+    this.INVMD = numeric.dot(numeric.neg(this.INVM), D)   
+    this.setMatrixes()
 
     debugger
   }
 
-  setMatrix = (F = [0, 0, 0], yaw = 0) => {
+  setMatrixes = (F = [0, 0, 0], yaw = 0) => {
     this.R = this.parseR(yaw)
     this.A = this.parseA(this.R, this.INVMD)
 
@@ -68,7 +70,7 @@ class ManouvringModel extends FreeBody {
         if (j < 3) {
           A[i][j] =  0
         } else {
-          A[i][j] = i < 3  ? R[i][j-3] : -M[i-3][j-3]
+          A[i][j] = i < 3  ? R[i][j-3] : M[i-3][j-3]
         }        
       }      
     }
@@ -105,20 +107,22 @@ class ManouvringModel extends FreeBody {
   getDisplacements = (dt, V, self) => {
   
     // Parse matrix V
-    var D = [0, 0, 0, V.u, V.v, V.yaw_dot]
+    var X = [0, 0, 0, V.u, V.v, V.yaw_dot]
 
-    debugger
+    // debugger
 
-    var sol = numeric.dopri(0, dt, D, function (t,V) { return self.getDerivatives({u: D[3], v:D[4], yaw_dot: D[5]}) }, 1e-8, 100).at(dt);
+    var sol = numeric.dopri(0, dt, X, function (t,V) { return self.getDerivatives({u: X[3], v:X[4], yaw_dot: X[5]}) }, 1e-8, 100).at(dt);
     
     // Get global coordinates variation (dx, dy, dyaw)
-    // Get local velocity variation (du, dv, dyaw_dot)
+    // Get local velocity (du, dv, dyaw_dot)
+    this.state.DX = {x: sol[0], y: sol[1], yaw: sol[2]}
+    this.state.V = {x: sol[3], y: sol[4], yaw_dot: sol[5]}
 
     return ({
       DX: {
         x: sol[0],
         y: sol[1],
-        z: sol[2]
+        yaw: sol[2]
         },
       V: {
          u: sol[3],
