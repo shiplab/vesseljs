@@ -13,7 +13,7 @@ class FreeBody {
   constructor(m = 0, I = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]) {
     this.M = [[m, 0, 0],
               [0, m, 0],
-              [0, 0, m]
+              [0, 0, 0]
             ];
     this.I = I;
   }
@@ -45,7 +45,6 @@ class ManouvringModel extends FreeBody {
     this.INVMD = numeric.dot(numeric.neg(this.INVM), D)   
     this.setMatrixes()
 
-    debugger
   }
 
   setMatrixes = (F = [0, 0, 0], yaw = 0) => {
@@ -112,24 +111,13 @@ class ManouvringModel extends FreeBody {
     // debugger
 
     var sol = numeric.dopri(0, dt, X, function (t,V) { return self.getDerivatives({u: X[3], v:X[4], yaw_dot: X[5]}) }, 1e-8, 100).at(dt);
-    
+        
     // Get global coordinates variation (dx, dy, dyaw)
     // Get local velocity (du, dv, dyaw_dot)
     this.state.DX = {x: sol[0], y: sol[1], yaw: sol[2]}
-    this.state.V = {x: sol[3], y: sol[4], yaw_dot: sol[5]}
+    this.state.V = {u: sol[3], v: sol[4], yaw_dot: sol[5]}
 
-    return ({
-      DX: {
-        x: sol[0],
-        y: sol[1],
-        yaw: sol[2]
-        },
-      V: {
-         u: sol[3],
-         v: sol[4],
-         yaw_dot: sol[5]
-        }
-      })
+    this.state.yaw += this.state.DX.yaw
   
   }
 

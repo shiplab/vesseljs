@@ -4,7 +4,6 @@
 		<script src="../build/vessel.js"></script>
 
 		<script src="libs/three_r118.js"></script>
-		<script src="libs/STLLoader.js"></script>
 		<script src="libs/GLTFLoader.js"></script>
 
 		<script src="snippets/Ship3D_v2.js"></script>
@@ -16,12 +15,12 @@
 		<script src="libs/Water.js"></script>
 
 		<!-- Bootstrap Core CSS -->
-		<link href="examples/libs/bootstrap.min.css" rel="stylesheet">
+		<link href="examples/libs/bootstrap.min.css" rel="stylesheet" />
 
 		<!-- jQuery Version 1.11.1 -->
 		<script src="examples/libs/jquery.js"></script>
 
-		<script src="libs/OrbitControls.js"></script>
+		<!-- <script src="libs/OrbitControls.js"></script> -->
 		<script src="libs/dat.gui.min.js"></script>
 		<script src="libs/skybox_from_examples_r118.js"></script>
 		<script src="libs/browse_files_Elias_Hasle.js"></script>
@@ -33,7 +32,7 @@
 		<!-- <script src="snippets/Configurable_ocean.js"></script> -->
 		<script src="snippets/Configurable_ocean2.js"></script>
 		<!--<script src="keyboard_arrow_input_Elias_Hasle.js"></script>-->
-	
+
 		<script src="snippets/FreeBody.js"></script>
 		<script src="libs/numeric-1.2.6.min.js"></script>
 	</head>
@@ -42,26 +41,26 @@
 		table {
 			margin-top: 15px;
 			margin-bottom: 10px;
-			border-radius: 10%;			
+			border-radius: 10%;
 		}
 
 		table,
 		td {
 			color: #fff;
-			background-color: #000;			
+			background-color: #000;
 		}
 
 		td {
 			border: 1px solid #fff;
-			border-radius: 20%;	
+			border-radius: 20%;
 			width: 100px;
 		}
 
 		tr {
-			background-color: #000;			
+			background-color: #000;
 		}
 
-		#button {
+		#code-button {
 			position: fixed;
 			bottom: 16px;
 			right: 16px;
@@ -77,6 +76,17 @@
 			box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
 		}
 
+		#notes {
+			position: fixed;
+			bottom: 16px;
+			z-index: 999;
+			left: 16px;
+
+			background-color: #fff;
+			opacity: 0.9;
+
+			padding-right: 40px;
+s		}
 
 		#panel-number {
 			position: fixed;
@@ -182,29 +192,40 @@
 	</style>
 
 	<body>
-
 		<div id="loader-wrapper">
 			<div class="loader loader-white loader-1"></div>
 			<div><h1 style="font-style: italic">Loading...</h1></div>
 		</div>
 
-		<a id="button" target="_blank" href="https://github.com/ferrari212/vesseljs/blob/master/examples/Gunnerus_Complete_Example.html" title="View source code for animation / cloth on GitHub" style="">
+		<a id="code-button" target="_blank" href="https://github.com/ferrari212/vesseljs/blob/master/examples/Gunnerus_Complete_Example.html" title="View source code for animation / cloth on GitHub" style="">
 			<img src="..\examples\images\code-24px.svg" />
 		</a>
+
+		<div id="notes">
+			<ul>
+				<li>Use w,a,s,d buttom</li>
+				<li>Version in development</li>
+			</ul>
+		</div>
 
 		<table id="panel-number">
 			<tr valign="top">
 				<td>
-					<p style="font-size: 10px">Speed</p>
-					<h2>10</h2>
-					<p style="font-size: 10px">m/s</p>			
-				</td>
-				<td>
-					<p style="font-size: 10px">Displays here the stats</p>
-					<h2>10</h2>
+					<p style="font-size: 10px">FWD. Speed</p>
+					<h2 id="speed-text">0.0</h2>
 					<p style="font-size: 10px">m/s</p>
 				</td>
-			</tr>			
+				<td>
+					<p style="font-size: 10px">Prop. Angle</p>
+					<h2 id="angle-text">0.0</h2>
+					<p style="font-size: 10px">degree</p>
+				</td>
+				<td>
+					<p style="font-size: 10px">Prop. Rotation</p>
+					<h2 id="rotation-text">0</h2>
+					<p style="font-size: 10px">RPM</p>
+				</td>
+			</tr>
 		</table>
 
 		<script>
@@ -229,44 +250,57 @@
 
 			document.addEventListener("keydown", onDocumentKeyDown, false)
 			function onDocumentKeyDown(event) {
-				var keyCode = event.which;
-				var n = manouvringModel.state.n;
+				var keyCode = event.which
+				var n = manouvringModel.state.n
 
-				// console.log(keyCode)
-				if (keyCode == 87 && n <= 1) {
-					// Just a preliminary, in real case the ship moves according to the
-					// variation in the global reference system
-					console.log('Ship power goes up')
-					manouvringModel.state.n += 0.01;
-				} else if (keyCode == 83 && n >= -1) {
-					console.log('Ship power goes back')
-					manouvringModel.state.n -= 0.01;
-				} else if (keyCode == 65) {
-					zUpCont.getObjectByName("ModelGLTF").position.y += .5
-				} else if (keyCode == 68) {
-					console.log('Ship power goes right')
-					zUpCont.getObjectByName("ModelGLTF").position.y -= .5
-				} else if (keyCode == 81) {
-					zUpCont.getObjectByName("ModelGLTF").rotation.y += .05
-				} else if (keyCode == 69) {
-					zUpCont.getObjectByName("ModelGLTF").rotation.y -= .05
+				switch (keyCode) {
+					case 87:
+						if (n <= 5) {
+							manouvringModel.state.n += 0.1;
+							rotationText.innerText = (60 * manouvringModel.state.n).toFixed(0)
+						}
+						break;
+
+					case 83:
+						if (n >= -5) {
+							manouvringModel.state.n -= 0.1
+							rotationText.innerText = (60 * manouvringModel.state.n).toFixed(0)
+						}					
+						break;
+
+					case 65:
+						manouvringModel.state.rudderAngle -= 0.5	
+						angleText.innerText = manouvringModel.state.rudderAngle.toFixed(1)					
+						break;
+						
+					case 68:
+						manouvringModel.state.rudderAngle += 0.5
+						angleText.innerText = manouvringModel.state.rudderAngle.toFixed(1)		
+						break;
+				
+					default:
+						break;
 				}
 			}
 
 			//Globals
-			var renderer, camera, controls, gui, stats
+			var renderer, camera, gui, stats
 			var scene, zUpCont, playback, bodies, ocean
 			var ship, shipGLTF, shipState, propellers, wave, hullRes, propellerInteraction, rudderModel
 			var manouvringModel, forceVector
 			var scale, modelStyle
-
+			var speedText, angleText, rotationText
+			var clock, time;
 			;(function main() {
+
 				//Renderer setup
-				//document.body.style = "overflow: hidden;";
 				document.body.style.overflow = "hidden"
 				var container = document.createElement("div")
 				container.id = "SimulationWindow"
-				//container.style = "position: absolute; top: 0; left: 0;"
+				speedText = document.getElementById("speed-text")
+				angleText = document.getElementById("angle-text")
+				rotationText = document.getElementById("rotation-text")
+
 				Object.assign(container.style, {
 					position: "absolute",
 					top: 0,
@@ -276,7 +310,7 @@
 				})
 				document.body.appendChild(container)
 				renderer = new THREE.WebGLRenderer({ antialias: true })
-				//renderer.setSize(window.innerWidth, window.innerHeight);
+
 				renderer.setClearColor(0xa9cce3)
 				container.appendChild(renderer.domElement)
 
@@ -319,10 +353,9 @@
 				onResize()
 				camera.position.set(-60, 20, 0)
 				console.log(zUpCont.position)
-				
 
-				controls = new THREE.OrbitControls(camera, renderer.domElement)
-				controls.enablePan = false
+				// controls = new THREE.OrbitControls(camera, renderer.domElement)
+				// controls.enablePan = true
 
 				// zUpCont.add(new THREE.AxesHelper(1000))
 				zUpCont.add(new THREE.HemisphereLight(0xccccff, 0x666688, 1))
@@ -340,45 +373,40 @@
 				scene.rotation.x = -Math.PI / 2
 
 				//Load sample file:
-			new THREE.FileLoader().load("specs/ship_specifications/Gunnerus.json", 
-				function (content) {
-
+				new THREE.FileLoader().load("specs/ship_specifications/Gunnerus.json", function (content) {
 					ship = new Vessel.Ship(JSON.parse(content))
-					shipState = new Vessel.ShipState(ship.designState.getSpecification())			
-					
+					shipState = new Vessel.ShipState(ship.designState.getSpecification())
+
 					// object and functions to handle propeller specifications
-					propellers = {};
+					propellers = {}
 
 					// preload propeller specification
-					var propReq = new XMLHttpRequest();
-					propReq.open("GET", "specs/propeller_specifications/wag_4b_0.55a_1.2p.json", true);
-					propReq.addEventListener("load", function(event) {
-						var response = event.target.response;
-						var propeller = JSON.parse(response);
-						usePropSpec(propeller, "wag_4b_0.55a_1.2p.json");
-					});
-					propReq.send(null);
+					var propReq = new XMLHttpRequest()
+					propReq.open("GET", "specs/propeller_specifications/wag_4b_0.55a_1.2p.json", true)
+					propReq.addEventListener("load", function (event) {
+						var response = event.target.response
+						var propeller = JSON.parse(response)
+						usePropSpec(propeller, "wag_4b_0.55a_1.2p.json")
+					})
+					propReq.send(null)
 
-					var usePropSpec = function(propeller, name) {
-							propellers[name.substring(0, name.length - 5)] = propeller;
+					var usePropSpec = function (propeller, name) {
+						propellers[name.substring(0, name.length - 5)] = propeller
 
-							wave = new Vessel.WaveCreator()
+						wave = new Vessel.WaveCreator()
 
-							hullRes = new Vessel.HullResistance(ship, shipState, propeller, wave)
-							hullRes.writeOutput();
-							
-							// debugger
+						hullRes = new Vessel.HullResistance(ship, shipState, propeller, wave)
+						hullRes.writeOutput()
+
+						// debugger
 
 						for (var propProp in propellers) {
-							var wagProp = propellers[propProp];
+							var wagProp = propellers[propProp]
 							propellerInteraction = new Vessel.PropellerInteraction(ship, shipState, wagProp)
-							propellerInteraction.writeOutput();
+							propellerInteraction.writeOutput()
 						}
-
-					};
-
-				}
-			);
+					}
+				})
 
 				// import binary glTF file
 				var boatPath = "specs/GLTF_files/Gunnerus.glb"
@@ -395,40 +423,70 @@
 					}
 
 					zUpCont.add(shipGLTF)
-
 				})
 
-				var m = 10
-				var I = [[0, 0, 0], [0, 0, 10], [0, 10, 10]]
-				var D = [[10, 10, 10], [10, 10, 10], [10, 10, 10]]
+				var m = 1.1e7
+				var I = [
+					[0, 0, 0],
+					[0, 0, 8.4e6],
+					[0, 8.4e6, 5.8e8]
+				]
+				var D = [
+					[3e5, 0, 0],
+					[0, 5.5e5, 6.4e5],
+					[0, 6.4e5, 1.2e8]
+				]
 
-				manouvringModel = new ManouvringModel(m, I, D);
+				manouvringModel = new ManouvringModel(m, I, D)
 				// manouvringModel = new FreeBody(m, 10)
-				console.log(manouvringModel);
+				console.log(manouvringModel)
 
-				forceVector = [0, 0, 0];
+				forceVector = [0, 0, 0]
 
 				// //GUI setup (comment out to remove gui)
 				// gui = new dat.GUI()
+				clock = new THREE.Clock()
+				time = clock.getElapsedTime()
 
 				requestAnimationFrame(animate)
 			})()
 
-			
 
 			function animate(millitime) {
+				
 				ocean.water.material.uniforms.time.value += 1 / 60
 				
+				// console.log(millitime, clock.getElapsedTime(), clock.getElapsedTime() - time)
+
+				
+
 				if (shipGLTF) {
 					propellerInteraction.setSpeed(manouvringModel.state.V.u)
 
-					// forceVector[0] = propellerInteraction.getForceByRotation(manouvringModel.state.n);
+					var rudderAngle = manouvringModel.state.rudderAngle*Math.PI/180
+					var cos = Math.cos(rudderAngle)
+					var sin = Math.sin(rudderAngle)
 
-					// manouvringModel.setMatrixes(forceVector, 0)
+					forceVector = [
+						propellerInteraction.getForce(manouvringModel.state.n)*cos,
+						propellerInteraction.getForce(manouvringModel.state.n)*sin,
+						propellerInteraction.getForce(manouvringModel.state.n)*sin*20
+					]
 
-					// shipGLTF.position.x += manouvringModel.state.DX.x
+					manouvringModel.setMatrixes(forceVector, shipGLTF.rotation.y + Math.PI/2);
 
-					// camera.lookAt(shipGLTF.position.x + 20, 10, -shipGLTF.position.y)
+					manouvringModel.getDisplacements(clock.getElapsedTime() - time,
+																					manouvringModel.state.V, 
+																					manouvringModel)
+					time = clock.getElapsedTime()
+
+					shipGLTF.position.x += manouvringModel.state.DX.x;
+					shipGLTF.position.y += manouvringModel.state.DX.y;
+					shipGLTF.rotation.y = -Math.PI/2 - manouvringModel.state.yaw;
+
+					speedText.innerText = manouvringModel.state.V.u.toFixed(1)
+
+					camera.lookAt(shipGLTF.position.x + 20, 10, -shipGLTF.position.y)
 				}
 
 				renderer.render(scene, camera)
