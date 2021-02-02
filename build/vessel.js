@@ -2592,7 +2592,7 @@ Object.defineProperties(HullResistance.prototype, {
 
 		var Rt = this.coefficients.k * rf + rapp + rw + rb + rtr + ra;
 
-		return {Rt, Rf: this.coefficients.k * rf, Rw: rw};
+		return Rt;
 	}, "calmResistance"),
 	totalResistance: StateModule.prototype.memoized(function() {
 		var Hw = 2 * this.wavCre.waveDef.waveAmplitude; // wave height
@@ -2600,9 +2600,9 @@ Object.defineProperties(HullResistance.prototype, {
 		var Rtadd; // N, total resistance including added wave resistance
 		if (Hw <= 2) { // use Kreitner formula
 			var raddw = 0.64 * Math.pow(Hw * this.floatState.BWL, 2) * this.floatState.Cb * this.rho * this.g / this.floatState.LWL;
-			Rtadd = this.calmResistance.Rt + raddw;
+			Rtadd = this.calmResistance + raddw;
 		} else { // add 20% sea margin
-			Rtadd = 1.2 * this.calmResistance.Rt;
+			Rtadd = 1.2 * this.calmResistance;
 		}
 
 		var Pe = this.coefficients.speedSI * Rtadd; // effective power
