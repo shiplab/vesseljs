@@ -2592,7 +2592,7 @@ Object.defineProperties(HullResistance.prototype, {
 
 		var Rt = this.coefficients.k * rf + rapp + rw + rb + rtr + ra;
 
-		return Rt;
+		return {Rt, Rf: this.coefficients.k * rf, Rw: rw};
 	}, "calmResistance"),
 	totalResistance: StateModule.prototype.memoized(function() {
 		var Hw = 2 * this.wavCre.waveDef.waveAmplitude; // wave height
@@ -2600,9 +2600,9 @@ Object.defineProperties(HullResistance.prototype, {
 		var Rtadd; // N, total resistance including added wave resistance
 		if (Hw <= 2) { // use Kreitner formula
 			var raddw = 0.64 * Math.pow(Hw * this.floatState.BWL, 2) * this.floatState.Cb * this.rho * this.g / this.floatState.LWL;
-			Rtadd = this.calmResistance + raddw;
+			Rtadd = this.calmResistance.Rt + raddw;
 		} else { // add 20% sea margin
-			Rtadd = 1.2 * this.calmResistance;
+			Rtadd = 1.2 * this.calmResistance.Rt;
 		}
 
 		var Pe = this.coefficients.speedSI * Rtadd; // effective power
@@ -2672,6 +2672,7 @@ function PropellerInteraction(ship, states, propeller, rho = 1025) {
 	if (typeof this.states.discrete.Speed === "undefined") { // if vessel does not have a speed state
 		this.setSpeed(); // use its design speed
 	}
+	// debugger
 	this.speedState = this.states.discrete.Speed.state;
 	this.floatState = this.states.discrete.FloatingCondition.state;
 	this.resistanceState = this.states.discrete.HullResistance.state;
@@ -2687,20 +2688,23 @@ PropellerInteraction.prototype = Object.create(StateModule.prototype);
 Object.assign(PropellerInteraction.prototype, {
 	constructor: PropellerInteraction,
 	getForce: function (n) {
-		if (n === 0) return 0
+		if (n === 0) return 0;
 
-		var J = this.propulsion.Va / (n * this.propeller.D)
+		var J = this.propulsion.Va /(Math.abs(n) * this.propeller.D);
 
-		var KT = this.propeller.beta1 - this.propeller.beta2 * J
-		var T = KT * this.rho * Math.pow(n, 2) * Math.pow(this.propeller.D, 5)
-		var Ftadd = T * this.propeller.noProps * (1 - this.resistanceState.t)
-		return Ftadd
-	}
+		var KT = this.propeller.beta1 - this.propeller.beta2 * J;
+		var T = KT * this.rho * Math.pow(n, 2) * Math.pow(this.propeller.D, 5);
+		var Ftadd =	Math.sign(n)* T * this.propeller.noProps * (1 - this.resistanceState.t);
+		return Ftadd;
+	},
 });
 
 Object.defineProperties(PropellerInteraction.prototype, {
 	propulsion: StateModule.prototype.memoized(function() {
 		// convert vessel speed from knots to m/s
+		if (this.speedSI === 0) {
+			console.error("Speed equals to zero, try getForce() method to get boolard pull or use changeSpeed() method to set a non null value.")
+		}
 		var speedSI = 0.514444 * this.speedState.speed;
 		var lcb = 100 * (this.floatState.LCB - (this.floatState.minXs + this.floatState.LWL / 2)) / this.floatState.LWL; // %
 		var Va = speedSI / (1 - this.resistanceState.w); // m/s
@@ -2727,7 +2731,7 @@ Object.defineProperties(PropellerInteraction.prototype, {
 		var eta = eta0 * this.resistanceState.etah * etar;
 		var Ps = this.resistanceState.Pe / eta; // W, required brake power
 
-		return {eta, Ps, n};
+		return {eta, Ps, n, Va};
 	}, "propulsion")
 });
 //@EliasHasle
