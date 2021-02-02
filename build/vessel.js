@@ -2685,7 +2685,17 @@ function PropellerInteraction(ship, states, propeller, rho = 1025) {
 PropellerInteraction.prototype = Object.create(StateModule.prototype);
 
 Object.assign(PropellerInteraction.prototype, {
-	constructor: PropellerInteraction
+	constructor: PropellerInteraction,
+	getForceByRotation: function (n) {
+		if (n === 0) return 0
+
+		var J = this.propulsion.Va / (n * this.propeller.D)
+
+		var KT = this.propeller.beta1 - this.propeller.beta2 * J
+		var T = KT * this.rho * Math.pow(n, 2) * Math.pow(this.propeller.D, 5)
+		var Ftadd = T * this.propeller.noProps * (1 - this.resistanceState.t)
+		return Ftadd
+	}
 });
 
 Object.defineProperties(PropellerInteraction.prototype, {
