@@ -33,7 +33,7 @@
 		<script src="snippets/Configurable_ocean2.js"></script>
 		<!--<script src="keyboard_arrow_input_Elias_Hasle.js"></script>-->
 
-		<script src="snippets/FreeBody.js"></script>
+		<script src="../source/classes/FreeBody.js"></script>
 		<script src="libs/numeric-1.2.6.min.js"></script>
 	</head>
 
@@ -197,14 +197,15 @@ s		}
 			<div><h1 style="font-style: italic">Loading...</h1></div>
 		</div>
 
-		<a id="code-button" target="_blank" href="https://github.com/ferrari212/vesseljs/blob/master/examples/Gunnerus_Complete_Example.html" title="View source code for animation / cloth on GitHub" style="">
+		<a id="code-button" target="_blank" href="https://github.com/ferrari212/vesseljs/blob/master/examples/manoeuvring.html" title="View source code for animation / cloth on GitHub" style="">
 			<img src="..\examples\images\code-24px.svg" />
 		</a>
 
 		<div id="notes">
 			<ul>
-				<li>Use w,a,s,d buttom</li>
-				<li>Version in development</li>
+				<li>Use w,a,s,d buttom to control the <br> rotation and angle of the propeller; </li>
+				<li>Version in development;</li>
+				<li>Model based on IP500515 course <br> proposed project.</li>
 			</ul>
 		</div>
 
@@ -455,9 +456,6 @@ s		}
 			function animate(millitime) {
 				
 				ocean.water.material.uniforms.time.value += 1 / 60
-				
-				// console.log(millitime, clock.getElapsedTime(), clock.getElapsedTime() - time)
-
 				
 
 				if (shipGLTF) {
