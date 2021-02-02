@@ -2686,7 +2686,7 @@ PropellerInteraction.prototype = Object.create(StateModule.prototype);
 
 Object.assign(PropellerInteraction.prototype, {
 	constructor: PropellerInteraction,
-	getForceByRotation: function (n) {
+	getForce: function (n) {
 		if (n === 0) return 0
 
 		var J = this.propulsion.Va / (n * this.propeller.D)
