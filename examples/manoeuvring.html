@@ -374,7 +374,7 @@ s		}
 				scene.rotation.x = -Math.PI / 2
 
 				//Load sample file:
-				new THREE.FileLoader().load("specs/ship_specifications/Gunnerus.json", function (content) {
+				new THREE.FileLoader().load("specs/ship_specifications/gunnerus.json", function (content) {
 					ship = new Vessel.Ship(JSON.parse(content))
 					shipState = new Vessel.ShipState(ship.designState.getSpecification())
 
