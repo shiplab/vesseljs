@@ -5,18 +5,13 @@
 	<script src="../build/vessel.js"></script>
 
 	<script src="libs/tree.min.js"></script>
+
 	<script src="3D_engine/three_r118.js"></script>
 	<script src="3D_engine/STLLoader.js"></script>
 	<script src="3D_engine/GLTFLoader.js"></script>
-
 	<script src="3D_engine/Ship3D_v2.js"></script>
 
-	<!-- Upgrading to WaterShader2.js will remove the dependency
-	on Mirror.js as well as open up possibilities for visualizing approximate water flows around vessels. -->
-	<!-- <script src="libs/Mirror.js"></script>-->
-	<!-- <script src="libs/WaterShader.js"></script> -->
 	<script src="3D_engine/Water.js"></script>
-
 	<script src="3D_engine/OrbitControls_v2.js"></script>
 	<script src="3D_engine/dat.gui.min.js"></script>
 	<script src="3D_engine/skybox_from_examples_r118.js"></script>
@@ -24,11 +19,8 @@
 
 	<script src="3D_engine/Patch_interpolation.js"></script>
 	<script src="3D_engine/renderRayCaster.js"></script>
-	<!--<script src="Moving_bodies_Elias_Hasle.js"></script>-->
 	<script src="3D_engine/Playback.js"></script>
-	<!-- <script src="snippets/Configurable_ocean.js"></script> -->
 	<script src="3D_engine/Configurable_ocean_v2.js"></script>
-	<!--<script src="keyboard_arrow_input_Elias_Hasle.js"></script>-->
 </head>
 
 <style>
@@ -36,15 +28,12 @@
 		position: fixed;
 		bottom: 16px;
 		right: 16px;
-
 		padding: 12px;
 		border-radius: 50%;
 		margin-bottom: 0px;
-
 		background-color: #fff;
 		opacity: 0.9;
 		z-index: 999;
-
 		box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
 	}
 
@@ -156,8 +145,8 @@
 	</div>
 
 	<a id="button" target="_blank"
-		href="https://github.com/ferrari212/vesseljs/blob/master/examples/Gunnerus_Complete_Example.html"
-		title="View source code for animation / cloth on GitHub" style="">
+		href="https://github.com/shiplab/vesseljs/blob/master/examples/Gunnerus_Browser.html"
+		title="View source code on GitHub" style="">
 		<img src="..\examples\images\code-24px.svg" />
 	</a>
 
@@ -227,7 +216,7 @@
 			// zUpCont.rotation.x = -0.5 * Math.PI;
 			scene.add(zUpCont);
 
-			var skybox = new Skybox(oSize);
+			var skybox = new Skybox(5 * oSize);
 			skybox.name = "Skybox";
 			//scene.add(skybox);
 
@@ -346,6 +335,10 @@
 							map["111.41"].push([2, 4, index, 1]);
 							map["111.71"].push([2, 4, index, 2]);
 							map["111.41"].push([2, 4, index, 3]);
+							zUpCont.children[2].children[4].children[index].children[0].material.side = THREE.DoubleSide;
+							zUpCont.children[2].children[4].children[index].children[1].material.side = THREE.DoubleSide;
+							zUpCont.children[2].children[4].children[index].children[2].material.side = THREE.DoubleSide;
+							zUpCont.children[2].children[4].children[index].children[3].material.side = THREE.DoubleSide;
 							break;
 						case "PTS_Propeller":
 							map["413.1"].push([2, 4, index]);
