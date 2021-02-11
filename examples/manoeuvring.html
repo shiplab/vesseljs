@@ -3,34 +3,34 @@
 		<title>Ship in Ocean</title>
 		<script src="../build/vessel.js"></script>
 
-		<script src="libs/three_r118.js"></script>
-		<script src="libs/GLTFLoader.js"></script>
+		<script src="3D_engine/three_r118.js"></script>
+		<script src="3D_engine/GLTFLoader.js"></script>
 
-		<script src="snippets/Ship3D_v2.js"></script>
+		<script src="3D_engine/Ship3D_v2.js"></script>
 
 		<!-- Upgrading to WaterShader2.js will remove the dependency
 	on Mirror.js as well as open up possibilities for visualizing approximate water flows around vessels. -->
 		<!-- <script src="libs/Mirror.js"></script>-->
 		<!-- <script src="libs/WaterShader.js"></script> -->
-		<script src="libs/Water.js"></script>
+		<script src="3D_engine/Water.js"></script>
 
 		<!-- Bootstrap Core CSS -->
-		<link href="examples/libs/bootstrap.min.css" rel="stylesheet" />
+		<link href="libs/bootstrap.min.css" rel="stylesheet" />
 
 		<!-- jQuery Version 1.11.1 -->
-		<script src="examples/libs/jquery.js"></script>
+		<script src="libs/jquery.js"></script>
 
 		<!-- <script src="libs/OrbitControls.js"></script> -->
-		<script src="libs/dat.gui.min.js"></script>
-		<script src="libs/skybox_from_examples_r118.js"></script>
+		<script src="3D_engine/dat.gui.min.js"></script>
+		<script src="3D_engine/skybox_from_examples_r118.js"></script>
 		<script src="libs/browse_files_Elias_Hasle.js"></script>
 
-		<script src="snippets/Patch_interpolation.js"></script>
-		<script src="snippets/renderRayCaster.js"></script>
+		<script src="3D_engine/Patch_interpolation.js"></script>
+		<script src="3D_engine/renderRayCaster.js"></script>
 		<!--<script src="Moving_bodies_Elias_Hasle.js"></script>-->
-		<script src="snippets/Playback.js"></script>
+		<script src="3D_engine/Playback.js"></script>
 		<!-- <script src="snippets/Configurable_ocean.js"></script> -->
-		<script src="snippets/Configurable_ocean2.js"></script>
+		<script src="3D_engine/Configurable_ocean_v2.js"></script>
 		<!--<script src="keyboard_arrow_input_Elias_Hasle.js"></script>-->
 
 		<script src="../source/classes/FreeBody.js"></script>
@@ -231,7 +231,6 @@
 
 		<script>
 			"use strict"
-
 			// JavaScript for adding loader page
 			window.addEventListener("load", function () {
 				var fadeTarget = document.getElementById("loader-wrapper")
@@ -239,7 +238,6 @@
 					if (!fadeTarget.style.opacity) {
 						fadeTarget.style.opacity = 1
 					}
-
 					if (fadeTarget.style.opacity > 0) {
 						fadeTarget.style.opacity -= 0.05
 					} else {
@@ -261,24 +259,20 @@
 							rotationText.innerText = (60 * manouvringModel.state.n).toFixed(0)
 						}
 						break;
-
 					case 83:
 						if (n >= -5) {
 							manouvringModel.state.n -= 0.1
 							rotationText.innerText = (60 * manouvringModel.state.n).toFixed(0)
 						}					
 						break;
-
 					case 65:
 						manouvringModel.state.rudderAngle -= 0.5	
 						angleText.innerText = manouvringModel.state.rudderAngle.toFixed(1)					
 						break;
-						
 					case 68:
 						manouvringModel.state.rudderAngle += 0.5
 						angleText.innerText = manouvringModel.state.rudderAngle.toFixed(1)		
 						break;
-				
 					default:
 						break;
 				}
@@ -293,7 +287,6 @@
 			var speedText, angleText, rotationText
 			var clock, time;
 			;(function main() {
-
 				//Renderer setup
 				document.body.style.overflow = "hidden"
 				var container = document.createElement("div")
@@ -400,7 +393,6 @@
 						hullRes.writeOutput()
 
 						// debugger
-
 						for (var propProp in propellers) {
 							var wagProp = propellers[propProp]
 							propellerInteraction = new Vessel.PropellerInteraction(ship, shipState, wagProp)
@@ -422,7 +414,6 @@
 					if (shipGLTF.material) {
 						shipGLTF.material.side = THREE.DoubleSide
 					}
-
 					zUpCont.add(shipGLTF)
 				})
 
@@ -454,10 +445,8 @@
 
 
 			function animate(millitime) {
-				
 				ocean.water.material.uniforms.time.value += 1 / 60
 				
-
 				if (shipGLTF) {
 					propellerInteraction.setSpeed(manouvringModel.state.V.u)
 
@@ -472,7 +461,6 @@
 					]
 
 					manouvringModel.setMatrixes(forceVector, shipGLTF.rotation.y + Math.PI/2);
-
 					manouvringModel.getDisplacements(clock.getElapsedTime() - time,
 																					manouvringModel.state.V, 
 																					manouvringModel)
@@ -483,10 +471,8 @@
 					shipGLTF.rotation.y = -Math.PI/2 - manouvringModel.state.yaw;
 
 					speedText.innerText = manouvringModel.state.V.u.toFixed(1)
-
 					camera.lookAt(shipGLTF.position.x + 20, 10, -shipGLTF.position.y)
 				}
-
 				renderer.render(scene, camera)
 				requestAnimationFrame(animate)
 			}

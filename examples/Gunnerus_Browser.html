@@ -1,0 +1,660 @@
+<html>
+
+<head>
+	<title>Ship in Ocean</title>
+	<script src="../build/vessel.js"></script>
+
+	<script src="libs/tree.min.js"></script>
+
+	<script src="3D_engine/three_r118.js"></script>
+	<script src="3D_engine/STLLoader.js"></script>
+	<script src="3D_engine/GLTFLoader.js"></script>
+	<script src="3D_engine/Ship3D_v2.js"></script>
+
+	<script src="3D_engine/Water.js"></script>
+	<script src="3D_engine/OrbitControls_v2.js"></script>
+	<script src="3D_engine/dat.gui.min.js"></script>
+	<script src="3D_engine/skybox_from_examples_r118.js"></script>
+	<script src="libs/browse_files_Elias_Hasle.js"></script>
+
+	<script src="3D_engine/Patch_interpolation.js"></script>
+	<script src="3D_engine/renderRayCaster.js"></script>
+	<script src="3D_engine/Playback.js"></script>
+	<script src="3D_engine/Configurable_ocean_v2.js"></script>
+</head>
+
+<style>
+	#button {
+		position: fixed;
+		bottom: 16px;
+		right: 16px;
+		padding: 12px;
+		border-radius: 50%;
+		margin-bottom: 0px;
+		background-color: #fff;
+		opacity: 0.9;
+		z-index: 999;
+		box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
+	}
+
+	#tooltip {
+		/* visibility: hidden; */
+		position: absolute;
+		font-family: Helvetica;
+		display: block;
+		background-color: black;
+		color: #fff;
+		text-align: center;
+		padding: 5px 10px;
+		border-radius: 6px;
+		z-index: 101;
+	}
+
+	/* LOADER */
+	#loader-wrapper {
+		width: 100%;
+		height: 100%;
+		text-align: center;
+		position: absolute;
+		top: 0;
+		left: 0;
+		background-color: #00509e;
+		color: #fff;
+		font-family: Helvetica;
+		z-index: 105;
+	}
+
+	.loader {
+		display: inline-block;
+		width: 50px;
+		height: 50px;
+		position: relative;
+		margin-top: 17%;
+		border-radius: 50%;
+		vertical-align: middle;
+	}
+
+	.loader,
+	.loader:before,
+	.loader:after {
+		animation: 1s infinite ease-in-out;
+	}
+
+	.loader:before,
+	.loader:after {
+		width: 100%;
+		height: 100%;
+		border-radius: 50%;
+		position: absolute;
+		top: 0;
+		left: 0;
+	}
+
+	.loader-white {
+		background-color: #fff;
+	}
+
+	.loader-1 {
+		animation-name: loader1;
+	}
+
+	@-webkit-keyframes loader1 {
+		from {
+			transform: scale(0);
+			opacity: 1;
+		}
+
+		to {
+			transform: scale(1);
+			opacity: 0;
+		}
+	}
+
+	@media screen and (min-width:731px) {
+
+		[id='3d'] {
+			width: calc(100% - 300px);
+		}
+	}
+
+	@media screen and (max-width:730px) {
+		#pitch_graph {
+			display: none;
+		}
+
+		[id='3d'] {
+			width: calc(100%);
+		}
+	}
+</style>
+
+<body>
+	<div id="pitch_graph" style="position: absolute; bottom: 0%; height: 100%; left: 0px; width: 300px">
+		<div class="hierarchy"></div>
+	</div>
+
+	<div id="3d" class='orchid grabbable' style="position: absolute; top: 0px; height: 100%; right: 0px;">
+		<div id="tooltip"></div>
+	</div>
+
+	<div id="loader-wrapper">
+		<div class="loader loader-white loader-1"></div>
+		<div>
+			<h1 style="font-style: italic;">Loading...</h1>
+		</div>
+	</div>
+
+	<a id="button" target="_blank"
+		href="https://github.com/shiplab/vesseljs/blob/master/examples/Gunnerus_Browser.html"
+		title="View source code on GitHub" style="">
+		<img src="..\examples\images\code-24px.svg" />
+	</a>
+
+	<script>
+		"use strict";
+
+		// JavaScript for adding loader page
+		window.addEventListener("load", function () {
+			var fadeTarget = document.getElementById("loader-wrapper");
+			var fadeEffect = setInterval(function () {
+				if (!fadeTarget.style.opacity) {
+					fadeTarget.style.opacity = 1;
+				}
+
+				if (fadeTarget.style.opacity > 0) {
+					fadeTarget.style.opacity -= 0.05;
+				} else {
+					clearInterval(fadeEffect);
+					fadeTarget.remove();
+				}
+			}, 50);
+		});
+
+		//Globals
+		var renderer, camera, controls, gui, stats;
+		var scene, zUpCont, playback, bodies, ocean, ship3D, shipGLTF;
+		var scale, modelStyle, container;
+
+		// Global variables for raycaster control
+		var intersected;
+		var tooltipElement = document.getElementById("tooltip");
+
+		(function main() {
+			//Renderer setup
+			//document.body.style = "overflow: hidden;";
+			document.body.style.overflow = "hidden";
+			container = document.getElementById('3d');
+			//container.style = "position: absolute; top: 0; left: 0;"
+			// Object.assign(container.style, {
+			// 	position: "absolute",
+			// 	top: 0,
+			// 	left: 0,
+			// 	width: "100vw",
+			// 	height: "100vh",
+			// });
+			//document.body.appendChild(container);
+			renderer = new THREE.WebGLRenderer({ antialias: true });
+			//renderer.setSize(window.innerWidth, window.innerHeight);
+			renderer.setClearColor(0xa9cce3);
+			container.appendChild(renderer.domElement);
+
+			playback = new Playback({ parentGUI: gui });
+
+			//Scene setup:
+			scene = new THREE.Scene();
+			let sun = new THREE.DirectionalLight(0xffffff, 2);
+			sun.position.set(-512, 246, 128);
+			scene.add(sun);
+
+			//Ocean size
+			let oSize = 2048;
+
+			//Use Z up from now on:
+			THREE.Object3D.DefaultUp.set(0, 0, 1);
+			zUpCont = new THREE.Group();
+			// This rotation must be deleted in order to garantee the real coordinate
+			// zUpCont.rotation.x = -0.5 * Math.PI;
+			scene.add(zUpCont);
+
+			var skybox = new Skybox(5 * oSize);
+			skybox.name = "Skybox";
+			//scene.add(skybox);
+
+			//Camera setup
+			camera = new THREE.PerspectiveCamera(26, window.innerWidth / window.innerHeight, 1, 1000000);
+
+			let onResize = function () {
+				let w = container.clientWidth;
+				let h = container.clientHeight;
+				renderer.setSize(w, h);
+				camera.aspect = w / h;
+				camera.updateProjectionMatrix();
+			};
+
+			camera.up.set(0, 1, 0);
+
+			window.addEventListener("resize", onResize, false);
+			onResize();
+			camera.position.set(oSize * 0.03, oSize * 0.03, oSize * 0.03);
+			camera.lookAt(zUpCont.position);
+			// zUpCont.add(camera)
+			// scene.add(camera)
+
+			controls = new THREE.OrbitControls(camera, renderer.domElement);
+			//controls.minDistance = 0;
+			// controls.maxDistance = 1.25 * oSize;
+			controls.enablePan = false;
+			// controls.maxPolarAngle = 0.5 * Math.PI - 0.1;
+			// controls.minPolarAngle = 0.1;
+
+			// zUpCont.add(new THREE.AxesHelper(1000))
+			zUpCont.add(new THREE.HemisphereLight(0xccccff, 0x666688, 1));
+
+			ocean = new Ocean({
+				parentGUI: gui,
+				sunDir: sun.position.clone().normalize(),
+				size: oSize,
+				segments: 127,
+			});
+
+			// playback.add(ocean)
+			ocean.name = "Ocean";
+			//scene.add(ocean);
+			scene.rotation.x = -Math.PI / 2;
+
+			// scene.rotation.x = Math.PI;
+			// scene.add(new THREE.AxesHelper(500));
+
+			Vessel.loadShip("specs/ship_specifications/gunnerus.json", function (ship) {
+				ship3D = new Ship3D(ship, {
+					// stlPath: "specs/STL files",
+					stlPath: "specs/STL files/Gunnerus",
+					upperColor: 0x33aa33,
+					lowerColor: 0xaa3333,
+					hullOpacity: 1,
+					deckOpacity: 1,
+					objectOpacity: 1,
+				});
+				ship3D.name = "Ship3D";
+				ship3D.show = "on";
+				zUpCont.add(ship3D);
+				for (let index = 0; index < zUpCont.children[1].decks.children.length; index++) {
+					zUpCont.children[1].decks.children[index].layers.disable(0);
+				}
+				for (let index = 0; index < zUpCont.children[1].hull3D.children.length; index++) {
+					zUpCont.children[1].hull3D.children[index].layers.disable(0);
+				}
+				for (let index = 0; index < zUpCont.children[1].blocks.children.length; index++) {
+					zUpCont.children[1].blocks.children[index].layers.disable(0);
+				}
+			});
+
+			// import binary glTF file
+			var boatPath = "specs/GLTF_files/Gunnerus.glb";
+			var loaderGLTF = new THREE.GLTFLoader();
+			loaderGLTF.load(boatPath, async gltf => {
+				shipGLTF = gltf.scene;
+				// mesh.material = new THREE.MeshLambertMaterial();
+				shipGLTF.rotation.x = Math.PI / 2;
+				shipGLTF.rotation.y = -Math.PI / 2;
+				shipGLTF.position.set(-1, 0, 0);
+				shipGLTF.name = "ModelGLTF";
+
+				if (shipGLTF.material) {
+					shipGLTF.material.side = THREE.DoubleSide;
+				}
+
+				await zUpCont.add(shipGLTF);
+				zUpCont.children[1].blocks.children[49].layers.toggle();
+				//zUpCont.children[1].blocks.children[50].layers.toggle();
+				for (let index = 0; index < zUpCont.children[2].children[4].children.length; index++) {
+					switch (zUpCont.children[2].children[4].children[index].name) {
+						case "Decals":
+							map["112"].push([2, 4, index]);
+							break;
+						case "VesselGlass":
+							map["111.41"].push([2, 4, index]);
+							break;
+						case "bridgeGlass":
+							map["112"].push([2, 4, index]);
+							break;
+						case "Deck":
+							map["111.1"].push([2, 4, index]);
+							break;
+						case "WhitePaint":
+							map["112"].push([2, 4, index]);
+							break;
+						case "bridgeInside":
+							map["112"].push([2, 4, index]);
+							break;
+						case "WindowCover":
+							map["112"].push([2, 4, index]);
+							break;
+						case "Hull":
+							map["111.41"].push([2, 4, index, 0]);
+							map["111.41"].push([2, 4, index, 1]);
+							map["111.71"].push([2, 4, index, 2]);
+							map["111.41"].push([2, 4, index, 3]);
+							zUpCont.children[2].children[4].children[index].children[0].material.side = THREE.DoubleSide;
+							zUpCont.children[2].children[4].children[index].children[1].material.side = THREE.DoubleSide;
+							zUpCont.children[2].children[4].children[index].children[2].material.side = THREE.DoubleSide;
+							zUpCont.children[2].children[4].children[index].children[3].material.side = THREE.DoubleSide;
+							break;
+						case "PTS_Propeller":
+							map["413.1"].push([2, 4, index]);
+							break;
+						case "PTS_PropellerFrame":
+							map["413.1"].push([2, 4, index]);
+							break;
+						case "STB_Propeller":
+							map["413.1"].push([2, 4, index]);
+							break;
+						case "STB_PropellerFrame":
+							map["413.1"].push([2, 4, index]);
+							break;
+						case "Thruster_Front":
+							map["433.1"].push([2, 4, index]);
+							break;
+						case "BluePaint":
+							map["112"].push([2, 4, index]);
+							break;
+						case "bridgeBlue":
+							map["112"].push([2, 4, index]);
+							break;
+						case "bridge":
+							map["112"].push([2, 4, index]);
+							break;
+						case "radar":
+							map["112"].push([2, 4, index, 0]);
+							map["112"].push([2, 4, index, 1]);
+							break;
+						case "safeRing":
+							map["112"].push([2, 4, index, 0]);
+							map["112"].push([2, 4, index, 1]);
+							break;
+						case "Stairs":
+							map["112"].push([2, 4, index, 0]);
+							map["112"].push([2, 4, index, 1]);
+							break;
+						case "vesselShared":
+							map["112"].push([2, 4, index]);
+							break;
+						case "vesselShared_bridge":
+							map["112"].push([2, 4, index, 0]);
+							map["112"].push([2, 4, index, 1]);
+							map["112"].push([2, 4, index, 2]);
+							break;
+						case "Exhaust":
+							map["112"].push([2, 4, index]);
+							break;
+						case "Railing":
+							map["111.41"].push([2, 4, index]);
+							break;
+					}
+				}
+			});
+
+			// Recursive function to find element and delete
+			function toggleElement(element, name) {
+				if (element.children.lenght == 0) {
+					return;
+				}
+
+				element.children.forEach(child => {
+					if (child.group == name) {
+						// Verify if it is visible trought the masks layers
+						if (child.layers.mask) {
+							child.layers.disable(0);
+						} else {
+							child.layers.enable(0);
+						}
+					}
+
+					toggleElement(child, name);
+				});
+			}
+
+			// modelStyle = {
+			// 	model: "ModelGLTF",
+			// 	scene: "On",
+			// 	displayOutline: true,
+			// };
+
+			// //GUI setup (comment out to remove gui)
+			// gui = new dat.GUI();
+
+			// scale = gui.addFolder("Visualization parameters");
+			// scale
+			// 	.add(modelStyle, "model", {
+			// 		Model: "ModelGLTF",
+			// 		Blocks: "Ship3D",
+			// 	})
+			// 	.onChange(newValue => {
+			// 		function verifyElement(element) {
+			// 			var otherName = {
+			// 				ModelGLTF: "Ship3D",
+			// 				Ship3D: "ModelGLTF",
+			// 			};
+
+			// 			if (element.name == otherName[newValue]) {
+			// 				zUpCont.remove(element);
+			// 			}
+			// 		}
+
+			// 		zUpCont.children.forEach(verifyElement);
+
+			// 		// Switch function
+			// 		switch (newValue) {
+			// 			case "ModelGLTF":
+			// 				zUpCont.add(shipGLTF);
+			// 				scale.domElement.hidden = true;
+			// 				break;
+
+			// 			case "Ship3D":
+			// 				zUpCont.add(ship3D);
+			// 				scale.domElement.hidden = false;
+			// 				break;
+
+			// 			default:
+			// 				break;
+			// 		}
+			// 	})
+			// 	.name("View");
+			// scale
+			// 	.add(modelStyle, "scene", {
+			// 		On: "On",
+			// 		Off: "Off",
+			// 	})
+			// 	.onChange(newValue => {
+			// 		switch (newValue) {
+			// 			case "On":
+			// 				scene.getObjectByName("Skybox").visible = true;
+			// 				scene.getObjectByName("Ocean").visible = true;
+			// 				break;
+
+			// 			case "Off":
+			// 				scene.getObjectByName("Skybox").visible = false;
+			// 				scene.getObjectByName("Ocean").visible = false;
+			// 				break;
+
+			// 			default:
+			// 				break;
+			// 		}
+			// 	})
+			// 	.name("Scenario");
+
+			// scene.getObjectByName("Ocean").visible = false
+			// scale.open();
+
+			// scale = gui.addFolder("Check Box List");
+			// scale.domElement.hidden = true;
+			// scale
+			// 	.add(modelStyle, "displayOutline")
+			// 	.onChange(newValue => {
+			// 		toggleElement(zUpCont, "Machinery");
+			// 	})
+			// 	.name("Machinery");
+
+			// scale
+			// 	.add(modelStyle, "displayOutline")
+			// 	.onChange(newValue => {
+			// 		toggleElement(zUpCont, "Tank");
+			// 	})
+			// 	.name("Tank");
+
+			// scale
+			// 	.add(modelStyle, "displayOutline")
+			// 	.onChange(newValue => {
+			// 		toggleElement(zUpCont, "Compartment");
+			// 	})
+			// 	.name("Compartment");
+
+			// scale
+			// 	.add(modelStyle, "displayOutline")
+			// 	.onChange(newValue => {
+			// 		toggleElement(zUpCont, "Deck");
+			// 	})
+			// 	.name("Deck");
+
+			// scale
+			// 	.add(modelStyle, "displayOutline")
+			// 	.onChange(newValue => {
+			// 		toggleElement(zUpCont, "Bulkheads");
+			// 	})
+			// 	.name("Bulkheads");
+
+			// scale.open();
+
+			dat.GUI.toggleHide();
+
+			// playback.play()
+
+			requestAnimationFrame(animate);
+		})();
+
+		var mouse = new THREE.Vector2();
+
+		var canvasWidth = window.innerWidth - container.clientWidth;
+
+		function onMouseMove(event) {
+			// calculate mouse position in normalized device coordinates
+			// (-1 to +1) for both components
+			mouse.clientX = event.clientX;
+			mouse.clientY = event.clientY;
+
+			mouse.x = ((event.clientX - canvasWidth) / container.clientWidth) * 2 - 1;
+			mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+		}
+
+		window.addEventListener("mousemove", onMouseMove, false);
+
+		// Enabling setting Layers
+		// scene.layers.enable(1)
+
+		function toolTip(tooltip, intersected) {
+			if (intersected.status) {
+				// Inserting tooltip
+				tooltip.style.visibility = "visible";
+				tooltip.style.left = mouse.clientX - canvasWidth + 20;
+				tooltip.style.top = mouse.clientY + 10;
+				tooltip.textContent = intersected.name;
+				zUpCont.remove(zUpCont.getObjectByName(intersected.name));
+			} else {
+				// Taking off tool tip
+				tooltip.style.visibility = "hidden";
+			}
+		}
+
+		function animate(millitime) {
+			//ocean.water.material.uniforms.time.value += 1 / 60;
+
+			// ocean.water.render();
+
+			renderer.render(scene, camera);
+			requestAnimationFrame(animate);
+
+			intersected = renderRayCaster(mouse, camera, zUpCont, intersected);
+			toolTip(tooltipElement, intersected);
+		}
+
+		let data = [
+			{ "id": "110", "text": "110 Ship structure", "children": [{ "id": "111", "text": "111 Ship hull structure", "children": [{ "id": "111.1", "text": "111.1 Decks" }, { "id": "111.2", "text": "111.2 Transverse bulkheads" }, { "id": "111.41", "text": "111.41 Single skin sides" }, { "id": "111.71", "text": "111.71 Single bottom" }] }, { "id": "112", "text": "112 Superstructure" }] },
+			{ "id": "331", "text": "331 Cranes", "children": [{ "id": "331.1", "text": "331.1 Shipboard cranes", "children": [{ "id": "331.11", "text": "331.11 Shipboard crane" }] }] },
+			//{ "id": "331", "text": "331 Cranes", "children": [{ "id": "331.1", "text": "331.1 Shipboard cranes", "children": [{ "id": "331.11", "text": "331.11 Shipboard crane" }] }] },
+			{
+				"id": "400", "text": "400 Propulsion and steering arrangements", "children": [
+					{ "id": "411", "text": "411 Propulsion driver arrangements", "children": [{ "id": "411.1", "text": "411.1 Propulsion engine" }] },
+					{ "id": "413", "text": "413 Propeller arrangements", "children": [{ "id": "413.1", "text": "413.1 Propeller" }] },
+					{ "id": "430", "text": "430 Propulsion and steering thruster arrangements", "children": [{ "id": "433", "text": "433 Propulsion thruster arrangement", "children": [{ "id": "433.1", "text": "433.1 Propulsion thruster" }] }] }
+				]
+			}]
+		// can detail propeller
+
+		let map = { //50 hangar
+			"111.1": ["decks", 2],
+			"111.2": ["bulkheads", 2, [1, 0], [1, 1], [1, 2]],
+			"111.41": ["hull side", 2],
+			"111.71": ["hull bottom", 2],
+			"112": ["superstructure", 2],
+			"331.11": ["frame", 2, [1, 50]],
+			//"331.11": ["crane", 2, [1, 4, 49]],
+			"411.1": ["engines", 2, [1, 51], [1, 52], [1, 53]],
+			"413.1": ["propeller", 2],
+			"433.1": ["thruster", 2]
+		}
+
+		let tree = new Tree('.hierarchy', {
+			data: [{ id: "-1", text: "Functions", children: data }],
+			values: ["-1"],
+			closeDepth: 3,
+			// loaded: function () {
+			// 	//this.values = ["-1"];
+			// 	console.log(this)
+			// 	// console.log("oi")
+			// 	// console.log(this.values)
+			// 	//this.disables = ['0-0-0', '0-0-1', '0-0-2']
+			// },
+			onChange: function () {
+				console.log(this);
+				for (let prop in map) {
+					//console.log(this.leafNodesById[prop].status);
+					let treeStatus = this.leafNodesById[prop].status;
+					let mapStatus = map[prop][1];
+					if (treeStatus !== mapStatus) {
+						if (map[prop][0] !== "bulkheads" && map[prop][0] !== "engines" && map[prop][0] !== "frame") {
+							for (let i = 2; i < map[prop].length; i++) {
+								if (map[prop][i].length === 3) {
+									let cord1 = map[prop][i][0];
+									let cord2 = map[prop][i][1];
+									let cord3 = map[prop][i][2];
+									zUpCont.children[cord1].children[cord2].children[cord3].layers.toggle();
+								} else if (map[prop][i].length === 4) {
+									let cord1 = map[prop][i][0];
+									let cord2 = map[prop][i][1];
+									let cord3 = map[prop][i][2];
+									let cord4 = map[prop][i][3];
+									zUpCont.children[cord1].children[cord2].children[cord3].children[cord4].layers.toggle();
+								}
+							}
+						} else if (map[prop][0] === "engines" || map[prop][0] === "frame") {
+							for (let i = 2; i < map[prop].length; i++) {
+								let cord1 = map[prop][i][0];
+								let cord2 = map[prop][i][1];
+								zUpCont.children[cord1].blocks.children[cord2].layers.toggle();
+							}
+						} else if (map[prop][0] === "bulkheads") {
+							for (let i = 2; i < map[prop].length; i++) {
+								let cord1 = map[prop][i][0];
+								let cord2 = map[prop][i][1];
+								zUpCont.children[cord1].bulkheads.children[cord2].layers.toggle();
+							}
+						}
+						map[prop][1] = treeStatus;
+					}
+				}
+			}
+		})
+	</script>
+</body>
+
+</html>

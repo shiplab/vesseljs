@@ -3,29 +3,29 @@
 		<title>Ship in Ocean</title>
 		<script src="../build/vessel.js"></script>
 
-		<script src="libs/three_r118.js"></script>
-		<script src="libs/STLLoader.js"></script>
-		<script src="libs/GLTFLoader.js"></script>
+		<script src="3D_engine/three_r118.js"></script>
+		<script src="3D_engine/STLLoader.js"></script>
+		<script src="3D_engine/GLTFLoader.js"></script>
 
-		<script src="snippets/Ship3D_v2.js"></script>
+		<script src="3D_engine/Ship3D_v2.js"></script>
 
 		<!-- Upgrading to WaterShader2.js will remove the dependency
 	on Mirror.js as well as open up possibilities for visualizing approximate water flows around vessels. -->
 		<!-- <script src="libs/Mirror.js"></script>-->
 		<!-- <script src="libs/WaterShader.js"></script> -->
-		<script src="libs/Water.js"></script>
+		<script src="3D_engine/Water.js"></script>
 
-		<script src="libs/OrbitControls.js"></script>
-		<script src="libs/dat.gui.min.js"></script>
-		<script src="libs/skybox_from_examples_r118.js"></script>
+		<script src="3D_engine/OrbitControls_v2.js"></script>
+		<script src="3D_engine/dat.gui.min.js"></script>
+		<script src="3D_engine/skybox_from_examples_r118.js"></script>
 		<script src="libs/browse_files_Elias_Hasle.js"></script>
 
-		<script src="snippets/Patch_interpolation.js"></script>
-		<script src="snippets/renderRayCaster.js"></script>
+		<script src="3D_engine/Patch_interpolation.js"></script>
+		<script src="3D_engine/renderRayCaster.js"></script>
 		<!--<script src="Moving_bodies_Elias_Hasle.js"></script>-->
-		<script src="snippets/Playback.js"></script>
+		<script src="3D_engine/Playback.js"></script>
 		<!-- <script src="snippets/Configurable_ocean.js"></script> -->
-		<script src="snippets/Configurable_ocean2.js"></script>
+		<script src="3D_engine/Configurable_ocean_v2.js"></script>
 		<!--<script src="keyboard_arrow_input_Elias_Hasle.js"></script>-->
 	</head>
 
@@ -175,7 +175,7 @@
 			<div><h1 style="font-style: italic">Loading...</h1></div>
 		</div>
 
-		<a id="button" target="_blank" href="https://github.com/ferrari212/vesseljs/blob/master/examples/Gunnerus_Complete_Example.html" title="View source code for animation / cloth on GitHub" style="">
+		<a id="button" target="_blank" href="https://github.com/shiplab/vesseljs/blob/master/examples/Gunnerus_Complete_Example.html" title="View source code on GitHub" style="">
 			<img src="..\examples\images\code-24px.svg" />
 		</a>
 
@@ -337,11 +337,9 @@
 					shipGLTF.rotation.y = -Math.PI / 2
 					shipGLTF.position.set(-1, 0, 0)
 					shipGLTF.name = "ModelGLTF"
-
 					if (shipGLTF.material) {
 						shipGLTF.material.side = THREE.DoubleSide
 					}
-
 					await zUpCont.add(shipGLTF)
 				})
 
@@ -350,13 +348,11 @@
 					if (element.children.lenght == 0) {
 						return
 					}
-
 					element.children.forEach(child => {
 						if (child.group == name) {
 							// Verify if it is visible trought the masks layers
 							child.layers.mask ? child.layers.disable(0) : child.layers.enable(0)
 						}
-
 						toggleElement(child, name)
 					})
 				}
@@ -388,7 +384,6 @@
 								ModelGLTF: "Ship3D",
 								Ship3D: "ModelGLTF"
 							}
-
 							if (element.name == otherName[newValue]) {
 								zUpCont.remove(element)
 							}
@@ -401,23 +396,17 @@
 							case "ModelGLTF":
 								zUpCont.add(shipGLTF)
 								scale[1].domElement.hidden = scale[2].domElement.hidden = true
-
 								break
-
 							case "Ship3D":
 								zUpCont.add(ship3D)
 								scale[1].domElement.hidden = scale[2].domElement.hidden = false
-
 								if (scale[2].__controllers.length == 0) {
 									const HYDRO_RESULTS = ["KMt", "KMl", "LCF", "LCB", "Cb", "Cp"]
-
 									HYDRO_RESULTS.forEach(e => {
 										scale[2].add(hydrostatics, e)
 									})
 								}
-
 								break
-
 							default:
 								break
 						}
@@ -434,12 +423,10 @@
 								scene.getObjectByName("Skybox").visible = true
 								scene.getObjectByName("Ocean").visible = true
 								break
-
 							case "Off":
 								scene.getObjectByName("Skybox").visible = false
 								scene.getObjectByName("Ocean").visible = false
 								break
-
 							default:
 								break
 						}
@@ -447,7 +434,6 @@
 					.name("Scenario")
 				// scene.getObjectByName("Ocean").visible = false
 				scale[0].open()
-
 				;["Machinery", "Tank", "Compartment", "Deck", "Bulkheads", "Hull"].forEach(e => {
 					scale[1]
 						.add(modelStyle, "displayOutline")
@@ -456,13 +442,9 @@
 						})
 						.name(e)
 				})
-
 				scale[1].open()
-
 				scale[2].open()
-
 				// playback.play()
-
 				requestAnimationFrame(animate)
 			})()
 
@@ -503,12 +485,10 @@
 				// Ship3D is the JSON info. of the ship
 				// tooltipElement is the html div that will contain the info
 				// Intersected is the element with the mouse on
-
 				document.body.style.cursor = "pointer"
 
 				var ship = Ship3D.ship
 				var name = intersected.name
-
 				var element = ship.derivedObjects[name] || ship.structure.decks[name] || ship.structure.bulkheads[name]
 
 				// Classes for changing the inner displayed table @ferrari
@@ -516,19 +496,15 @@
 					constructor() {
 						this.innerHTML = `<a onclick="tooltipElement.displayingPropTable = false;" class="close"></a><table>`
 					}
-
 					extendSingleInnerHTML(key, value, unit = "") {
 						this.innerHTML += `<tr><td> ${key} </td><td> ${value} ${unit} </td></tr>`
 					}
-
 					arrayExtendInnerHTML(object, fromNumber = 0, toEnd = 0, unit = "") {
 						var keys = Object.keys(object)
-
 						for (let i = fromNumber; i < keys.length - toEnd; i++) {
 							this.innerHTML += `<tr><td> ${keys[i]} </td><td> ${object[keys[i]]} ${unit} </td></tr>`
 						}
 					}
-
 					closeInnerHTML() {
 						this.innerHTML += `</table>`
 					}
@@ -538,24 +514,17 @@
 				function addTable(block, element) {
 					// Invalidate function in case of element undefined
 					if (element === undefined) return
-
 					var listMarkup = new ListMarkup()
-
 					tooltipElement.displayingPropTable = true
-
 					if (element.id === undefined) {
 						// For structural elements
 						var keys = Object.keys(element)
-
 						listMarkup.extendSingleInnerHTML("Group", element.affiliations.group)
-
 						listMarkup.arrayExtendInnerHTML(element, 1)
 					} else {
 						// For non structural elements
 						listMarkup.extendSingleInnerHTML("Id", element.id)
-
 						listMarkup.arrayExtendInnerHTML(element.baseObject.boxDimensions, 0, 0, "m")
-
 						listMarkup.arrayExtendInnerHTML(element.referenceState, 0, 0, "m")
 					}
 
