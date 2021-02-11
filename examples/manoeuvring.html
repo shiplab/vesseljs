@@ -76,6 +76,26 @@
 			box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
 		}
 
+		#controller-button {
+			position: fixed;
+			bottom: 16px;
+			right: 50%;
+			transform: translate(50%, 0);
+
+			width: 100px;
+			height: 100px;
+
+			/* padding: 12px; */
+			border-radius: 50%;
+			margin-bottom: 0px;
+
+			background-color: #fff;
+			opacity: 0.9;
+			z-index: 999;
+
+			box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
+		}
+
 		#notes {
 			position: fixed;
 			bottom: 16px;
@@ -201,6 +221,8 @@
 			<img src="..\examples\images\code-24px.svg" />
 		</a>
 
+		<canvas id="controller-button"></canvas>
+
 		<div id="notes">
 			<ul>
 				<li>Use w,a,s,d buttom to control the <br> rotation and angle of the propeller; </li>
@@ -286,7 +308,112 @@
 			var scale, modelStyle
 			var speedText, angleText, rotationText
 			var clock, time;
+			var canvas, c, orbitController;				
+
 			;(function main() {
+<<<<<<< Updated upstream
+=======
+				// Create Circunference Class
+				class OrbitController {
+						constructor(canvas){
+							this.canvas = canvas;
+							this.c = this.canvas.getContext('2d');
+							this.c.fillStyle = '#000000';
+							this.c.strokeStyle = '#bebebe';
+
+							Object.assign (this.canvas, {
+								x: this.canvas.width/2,
+								y: this.canvas.height/2,
+								z: 0, // for using Vessel.Vectors
+								radius: 3*this.canvas.width/16,
+								active: false,
+								returnOrigin: function returnOrigin() {
+									// var dist = Vessel.Vectors.normSquared({
+									// 	x: this.x -50,
+									// 	y: this.y -50,
+									// 	z: 0,
+									// })
+
+									while ( Math.abs(this.x -50) > 1 && !this.active) {
+										this.x -= Math.sign(this.x - 50)*0.1;
+										this.y -= Math.sign(this.y - 50)*0.1;	
+										console.log(`x = ${this.x}; y =  ${this.y}`);									
+									}									
+								}
+							})
+
+							// this.canvas.properties = Object.create(props)
+
+							// this.x = canvas.width/2;
+							// this.y = canvas.height/2;
+							// this.z = 0; // for using Vessel.Vectors
+							// this.radius = 3*this.x/8;
+							// this.color = '#000000';
+							// this.c = c;
+							// this.active = false
+						}
+
+					draw() {
+						var props = this.canvas;
+						// debugger
+
+						this.c.beginPath();
+						this.c.arc(props.x, props.y, props.radius , 0, Math.PI*2, false);
+						this.c.fill();
+						this.c.stroke();
+						this.c.closePath();
+					}					
+					
+					update(e) {
+						// console.log(e.touches);
+						// console.log(this.active);
+						if (e.touches && this.active) {
+							// console.log(e.touches[0].pageX-window.innerWidth/2);
+							// console.log(window.innerHeight - e.touches[0].pageY - 66);
+							if (this.x < this.width) {
+								this.x = e.touches[0].pageX-window.innerWidth/2 + 50;
+							}
+
+							if (this.y < this.height) {
+								this.y = - window.innerHeight + e.touches[0].pageY + 116;
+							}
+							
+							console.log(`x = ${this.x}; y =  ${this.y}` );
+							// console.log(this.y);
+
+							e.preventDefault();
+						}
+					}
+
+					toggle() {
+						this.active = !this.active;
+						console.log(this.active);
+						if (!this.active) this.returnOrigin();
+					}
+				}
+
+				// Setup of the canvas
+				canvas = document.querySelector('canvas');
+ 				// c = canvas.getContext('2d');
+
+				canvas.width = 100
+				canvas.height = 100
+				console.log(canvas);
+				console.log(c);
+
+				orbitController = new OrbitController(canvas);
+
+				// canvas.__proto__.orbitController = orbitController;
+
+				orbitController.canvas.addEventListener("touchmove", orbitController.update);
+				orbitController.canvas.addEventListener("touchstart", orbitController.toggle);
+  			orbitController.canvas.addEventListener("touchend", orbitController.toggle);
+				// debugger
+				
+				orbitController.draw();
+				console.log(orbitController);
+
+>>>>>>> Stashed changes
 				//Renderer setup
 				document.body.style.overflow = "hidden"
 				var container = document.createElement("div")
@@ -346,7 +473,7 @@
 				window.addEventListener("resize", onResize, false)
 				onResize()
 				camera.position.set(-60, 20, 0)
-				console.log(zUpCont.position)
+				// console.log(zUpCont.position)
 
 				// controls = new THREE.OrbitControls(camera, renderer.domElement)
 				// controls.enablePan = true
@@ -431,7 +558,7 @@
 
 				manouvringModel = new ManouvringModel(m, I, D)
 				// manouvringModel = new FreeBody(m, 10)
-				console.log(manouvringModel)
+				// console.log(manouvringModel)
 
 				forceVector = [0, 0, 0]
 
