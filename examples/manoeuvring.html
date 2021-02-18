@@ -51,8 +51,8 @@
 		}
 
 		td {
-			border: 1px solid #fff;
 			border-radius: 20%;
+			border: 1px solid #fff;
 			width: 100px;
 		}
 
@@ -76,16 +76,67 @@
 			box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
 		}
 
-		#controller-button {
+		#notes {
+			position: fixed;
+			bottom: 16px;
+			z-index: 999;
+			left: 16px;
+			font-family: 'Cutive Mono', monospace;
+
+			background-color: #fff;
+			opacity: 0.9;
+
+			padding-right: 40px;
+			padding-top: 20px;
+			padding-bottom: 10px;
+		}
+
+		#panel-number {
+			position: fixed;
+			top: 16px;
+			left: 16px;
+
+			text-align: center;
+			background-color: #fff;
+			/* opacity: 0.9; */
+			z-index: 999;
+
+			/* box-shadow: 0 0 4px rgba(0, 0, 0, 0.15); */
+		}
+
+		/* ***************************************************************************************/
+		/*   Title: Sketchbook - Control Box
+		*    Author: @swift502
+		*    Date: 2020
+		*    Code version: 0.4
+		*    Availability: https://github.com/swift502/Sketchbook
+		*
+		****************************************************************************************/
+		.ctrl-key {
+			text-shadow: none;
+			font-weight: bold;
+			display: inline-block;
+			font-family: 'Cutive Mono', monospace;
+			padding: 2px 5px;
+			margin-right: 2px;
+			min-width: 10px;
+			text-align: center;
+			margin-left: 2px;
+			background: #eff0f2;
+			box-shadow: inset 0 0 25px #e8e8e8, 0 1px 0 #c3c3c3, 0 2px 0 #c9c9c9, 0 2px 3px #000;
+			color: #111;
+			border-radius: 2px;
+			font-size: 14px;
+		}
+		/* END */
+		/* ***************************************************************************************/
+	@media all and (max-width: 992px) and (pointer: coarse) {
+		.controller-button {
 			position: fixed;
 			bottom: 16px;
 			right: 50%;
 			transform: translate(50%, 0);
 
-			width: 100px;
-			height: 100px;
-
-			/* padding: 12px; */
 			border-radius: 50%;
 			margin-bottom: 0px;
 
@@ -95,37 +146,12 @@
 
 			box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
 		}
-
-		#notes {
-			position: fixed;
-			bottom: 16px;
-			z-index: 999;
-			left: 16px;
-
-			background-color: #fff;
-			opacity: 0.9;
-
-			padding-right: 40px;
+		.ctrl-key-explanation {
+			display: none;
 		}
+	}
 
-		#panel-number {
-			position: fixed;
-			top: 16px;
-			left: 16px;
-
-			text-align: center;
-
-			/* padding: 5px; */
-			/* border-radius: 10%; */
-			/* margin-bottom: 0px; */
-
-			background-color: #fff;
-			/* opacity: 0.9; */
-			z-index: 999;
-
-			/* box-shadow: 0 0 4px rgba(0, 0, 0, 0.15); */
-		}
-
+		
 		.close {
 			position: absolute;
 			right: 10px;
@@ -152,6 +178,15 @@
 		}
 		.close:after {
 			transform: rotate(-45deg);
+		}
+
+		.unselectable {
+			-webkit-touch-callout: none;
+			-webkit-user-select: none;
+			-khtml-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
 		}
 
 		/* LOADER */
@@ -221,18 +256,29 @@
 			<img src="..\examples\images\code-24px.svg" />
 		</a>
 
-		<canvas id="controller-button"></canvas>
+		<canvas class="controller-button"></canvas>
 
-		<div id="notes">
+		<div id="notes" class="unselectable">
 			<ul>
-				<li>Use w,a,s,d buttom to control the <br> rotation and angle of the propeller; </li>
-				<li>Version in development;</li>
-				<li>Model based on IP500515 course <br> proposed project.</li>
+				<li class="ctrl-key-explanation">Use <span class="ctrl-key">w</span>, <span class="ctrl-key">a</span>, <span class="ctrl-key">s</span>, <span class="ctrl-key">d</span> buttom to control the <br> rotation and angle of the propeller; </li>
+				<li>Version under development;</li>
+				<li>Model based on IP500515 course <br> from NTNU.</li>
 			</ul>
 		</div>
+		<!-- <div  id="notes" class="left-panel">
+			<div class="ctrl-row">
+				<h2 class="controls-title">Controls:</h2>
+				<span class="ctrl-key">' + key + '</span>
+				<span class="ctrl-desc">' + row.desc + '</span>
+				<span class="ctrl-key">' + key + '</span>
+				<span class="ctrl-desc">' + row.desc + '</span>
+			</div>
+		</div>	 -->
 
-		<table id="panel-number">
-			<tr valign="top">
+
+
+		<table id="panel-number" >
+			<tr class="unselectable" valign="top">
 				<td>
 					<p style="font-size: 10px">FWD. Speed</p>
 					<h2 id="speed-text">0.0</h2>
@@ -269,6 +315,17 @@
 				}, 50)
 			})
 
+			//Globals
+			var renderer, camera, gui, stats
+			var scene, zUpCont, playback, bodies, ocean
+			var ship, shipGLTF, shipState, propellers, wave, hullRes, propellerInteraction, rudderModel
+			var manouvringModel
+			var scale, modelStyle
+			var speedText, angleText, rotationText
+			var clock, time;
+			var canvas, c, orbitController;				
+
+
 			document.addEventListener("keydown", onDocumentKeyDown, false)
 			function onDocumentKeyDown(event) {
 				var keyCode = event.which
@@ -300,84 +357,88 @@
 				}
 			}
 
-			//Globals
-			var renderer, camera, gui, stats
-			var scene, zUpCont, playback, bodies, ocean
-			var ship, shipGLTF, shipState, propellers, wave, hullRes, propellerInteraction, rudderModel
-			var manouvringModel, forceVector
-			var scale, modelStyle
-			var speedText, angleText, rotationText
-			var clock, time;
-			var canvas, c, orbitController;				
+			function onOrbitControllerMove() {
+
+				var canvas = orbitController.canvas
+				if (!canvas.active) return
+
+				var n = manouvringModel.state.n
+
+				if(Math.abs(canvas.y) > Math.abs(canvas.x) ) {
+					if (Math.sign(canvas.y) < 0) {
+							if (n <= 5) {
+								manouvringModel.state.n += 0.01;
+								rotationText.innerText = (60 * manouvringModel.state.n).toFixed(0)
+							}
+						} else {
+							if (n >= -5) {
+								manouvringModel.state.n -= 0.01
+								rotationText.innerText = (60 * manouvringModel.state.n).toFixed(0)
+							}	
+						}
+				} else {
+					if (Math.sign(canvas.x) > 0) {
+						manouvringModel.state.rudderAngle += 0.08
+						angleText.innerText = manouvringModel.state.rudderAngle.toFixed(1)
+					} else {
+						manouvringModel.state.rudderAngle -= 0.08	
+						angleText.innerText = manouvringModel.state.rudderAngle.toFixed(1)
+					}
+				}
+			}
 
 			;(function main() {
 				// Create Circunference Class
 				class OrbitController {
-						constructor(canvas){
+						constructor(canvas) {
 							this.canvas = canvas;
 							this.c = this.canvas.getContext('2d');
 							this.c.fillStyle = '#000000';
 							this.c.strokeStyle = '#bebebe';
 
 							Object.assign (this.canvas, {
-								x: this.canvas.width/2,
-								y: this.canvas.height/2,
+								x: 0, //set on the center
+								y: 0,
 								z: 0, // for using Vessel.Vectors
+								canvas: {},
 								radius: 3*this.canvas.width/16,
 								active: false,
 								returnOrigin: function returnOrigin() {
-									// var dist = Vessel.Vectors.normSquared({
-									// 	x: this.x -50,
-									// 	y: this.y -50,
-									// 	z: 0,
-									// })
-
-									while ( Math.abs(this.x -50) > 1 && !this.active) {
-										this.x -= Math.sign(this.x - 50)*0.1;
-										this.y -= Math.sign(this.y - 50)*0.1;	
-										console.log(`x = ${this.x}; y =  ${this.y}`);									
-									}									
-								}
+										this.x -= Math.sign(this.x)*0.04;
+										this.y -= Math.sign(this.y)*0.04;			
+										this.draw();						
+										// console.log(`x = ${this.x}; y =  ${this.y}`);																
+								},
+								draw: () => this.draw()
 							})
 
-							// this.canvas.properties = Object.create(props)
-
-							// this.x = canvas.width/2;
-							// this.y = canvas.height/2;
-							// this.z = 0; // for using Vessel.Vectors
-							// this.radius = 3*this.x/8;
-							// this.color = '#000000';
-							// this.c = c;
-							// this.active = false
+							this.draw()
 						}
 
 					draw() {
 						var props = this.canvas;
-						// debugger
+						var x = (props.x + 1) * props.width/2;
+						var y = (props.y + 1) * props.height/2;
 
+						this.c.clearRect(0, 0, props.width, props.height)
 						this.c.beginPath();
-						this.c.arc(props.x, props.y, props.radius , 0, Math.PI*2, false);
+						this.c.arc(x, y, props.radius , 0, Math.PI*2, false);
 						this.c.fill();
 						this.c.stroke();
 						this.c.closePath();
 					}					
 					
 					update(e) {
-						// console.log(e.touches);
-						// console.log(this.active);
 						if (e.touches && this.active) {
-							// console.log(e.touches[0].pageX-window.innerWidth/2);
-							// console.log(window.innerHeight - e.touches[0].pageY - 66);
 							if (this.x < this.width) {
-								this.x = e.touches[0].pageX-window.innerWidth/2 + 50;
+								this.x = (e.touches[0].pageX-window.innerWidth/2) / 50;
 							}
 
 							if (this.y < this.height) {
-								this.y = - window.innerHeight + e.touches[0].pageY + 116;
+								this.y = (- window.innerHeight + e.touches[0].pageY + 66)/50;
 							}
 							
-							console.log(`x = ${this.x}; y =  ${this.y}` );
-							// console.log(this.y);
+							this.draw();
 
 							e.preventDefault();
 						}
@@ -385,31 +446,26 @@
 
 					toggle() {
 						this.active = !this.active;
-						console.log(this.active);
+						// console.log(this.active);
 						if (!this.active) this.returnOrigin();
+					}
+
+					addTouchEvent() {
+						this.canvas.addEventListener("touchmove", this.update);
+						this.canvas.addEventListener("touchstart", this.toggle);
+						this.canvas.addEventListener("touchend", this.toggle);
 					}
 				}
 
 				// Setup of the canvas
 				canvas = document.querySelector('canvas');
- 				// c = canvas.getContext('2d');
-
 				canvas.width = 100
 				canvas.height = 100
-				console.log(canvas);
-				console.log(c);
 
 				orbitController = new OrbitController(canvas);
-
-				// canvas.__proto__.orbitController = orbitController;
-
-				orbitController.canvas.addEventListener("touchmove", orbitController.update);
-				orbitController.canvas.addEventListener("touchstart", orbitController.toggle);
-  			orbitController.canvas.addEventListener("touchend", orbitController.toggle);
-				// debugger
+				orbitController.addTouchEvent();
 				
-				orbitController.draw();
-				console.log(orbitController);
+				// orbitController.draw();
 
 				//Renderer setup
 				document.body.style.overflow = "hidden"
@@ -554,10 +610,6 @@
 				]
 
 				manouvringModel = new ManouvringModel(m, I, D)
-				// manouvringModel = new FreeBody(m, 10)
-				// console.log(manouvringModel)
-
-				forceVector = [0, 0, 0]
 
 				// //GUI setup (comment out to remove gui)
 				// gui = new dat.GUI()
@@ -578,7 +630,7 @@
 					var cos = Math.cos(rudderAngle)
 					var sin = Math.sin(rudderAngle)
 
-					forceVector = [
+					var forceVector = [
 						propellerInteraction.getForce(manouvringModel.state.n)*cos,
 						propellerInteraction.getForce(manouvringModel.state.n)*sin,
 						propellerInteraction.getForce(manouvringModel.state.n)*sin*20
@@ -596,6 +648,12 @@
 
 					speedText.innerText = manouvringModel.state.V.u.toFixed(1)
 					camera.lookAt(shipGLTF.position.x + 20, 10, -shipGLTF.position.y)
+
+					if ((Math.abs(orbitController.canvas.x) > 0.06 || Math.abs(orbitController.canvas.y) > 0.06) && !orbitController.canvas.active) {
+						orbitController.canvas.returnOrigin();
+					} else {
+						onOrbitControllerMove();
+					}
 				}
 				renderer.render(scene, camera)
 				requestAnimationFrame(animate)
