@@ -493,9 +493,9 @@
 					}
 
 					_CalculateIdealLookat() {
-						// apply Euler angle
+						const idealLookat = new THREE.Vector3(-15, 0, 0)
 						console.log(this._params.quaternion);
-						idealLookat.applyQuaternion(quaternion);
+						idealLookat.applyQuaternion(this._params.quaternion);
 						idealLookat.add(this._params.position);
 						return idealLookat
 					}
