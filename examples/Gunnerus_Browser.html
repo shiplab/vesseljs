@@ -109,6 +109,7 @@
 			opacity: 0;
 		}
 	}
+	/* END LOADER */
 
 	@media screen and (min-width:731px) {
 
@@ -152,23 +153,6 @@
 
 	<script>
 		"use strict";
-
-		// JavaScript for adding loader page
-		window.addEventListener("load", function () {
-			var fadeTarget = document.getElementById("loader-wrapper");
-			var fadeEffect = setInterval(function () {
-				if (!fadeTarget.style.opacity) {
-					fadeTarget.style.opacity = 1;
-				}
-
-				if (fadeTarget.style.opacity > 0) {
-					fadeTarget.style.opacity -= 0.05;
-				} else {
-					clearInterval(fadeEffect);
-					fadeTarget.remove();
-				}
-			}, 50);
-		});
 
 		//Globals
 		var renderer, camera, controls, gui, stats;
@@ -392,6 +376,20 @@
 							break;
 					}
 				}
+
+				var fadeTarget = document.getElementById("loader-wrapper");
+				var fadeEffect = setInterval(function () {
+					if (!fadeTarget.style.opacity) {
+						fadeTarget.style.opacity = 1;
+					}
+
+					if (fadeTarget.style.opacity > 0) {
+						fadeTarget.style.opacity -= 0.05;
+					} else {
+						clearInterval(fadeEffect);
+						fadeTarget.remove();
+					}
+				}, 50);
 			});
 
 			// Recursive function to find element and delete
