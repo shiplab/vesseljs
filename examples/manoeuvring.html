@@ -295,10 +295,10 @@
 			"use strict"
 			
 			//Globals
-			var renderer, camera, thrirdPersonCamera, gui, stats
+			var renderer, camera, thrirdPersonCamera, fixedCamera, gui, stats
 			var scene, zUpCont, playback, bodies, ocean
 			var ship, shipGLTF, shipState, propellers, wave, hullRes, propellerInteraction, rudderModel
-			var manouvringModel
+			var manouvringModel, viewer
 			var scale, modelStyle
 			var speedText, angleText, rotationText
 			var clock, time;
@@ -369,7 +369,7 @@
 			;(function main() {
 				// Create Circunference Class
 				class OrbitController {
-						constructor(canvas) {
+						constructor(canvas, orientation = "bottom", size = 100, marginDistance = 50) {
 
 							window.screenCheck = function() {
 								let check = false;
@@ -379,8 +379,10 @@
 
 							if (!window.screenCheck()) return null
 
+						
+							canvas.width = canvas.height = size;
 							this.canvas = canvas;
-							this.assignCanvasStyle();
+							this.assignCanvasStyle(marginDistance);
 							this.c = this.canvas.getContext('2d');
 							this.c.fillStyle = '#000000';
 							this.c.strokeStyle = '#bebebe';
@@ -391,6 +393,7 @@
 								canvas: {},
 								size: canvas.width,
 								radius: 3*this.canvas.width/16,
+								md: marginDistance,
 								active: false,
 								returnOrigin: function returnOrigin() {
 										this.x -= Math.sign(this.x)*0.04;
@@ -417,9 +420,9 @@
 						this.c.closePath();
 					}
 					
-					assignCanvasStyle() {
+					assignCanvasStyle(md = 50) {
 						this.canvas.style.position = "fixed";
-						this.canvas.style.bottom = "100px";
+						this.canvas.style.bottom = `${md}px`;
 						this.canvas.style.right = "50%";
 						this.canvas.style.transform = "translate(50%, 0)";
 						this.canvas.style.borderRadius = "50%";
@@ -431,15 +434,15 @@
 					
 					update(e) {
 						if (e.touches && this.active) {
-							var circleSize = 100;
-							console.log(this.size);
+							var circleRadius = this.size/2;
+							var marginDistance = this.md + circleRadius;
 
 							if (this.x < this.width) {
-								this.x = (e.touches[0].pageX-window.innerWidth/2) / circleSize;
+								this.x = (e.touches[0].pageX-window.innerWidth/2) / circleRadius;
 							}
 
 							if (this.y < this.height) {
-								this.y = (- window.innerHeight + e.touches[0].pageY + 200)/circleSize;
+								this.y = (- window.innerHeight + e.touches[0].pageY + 100)/circleRadius;
 							}
 							
 							this.draw();
@@ -465,33 +468,50 @@
 					constructor(params) {
 						this._params = params.object;
 						this._camera = params.camera;
+						// debugger
 
 						this._currentPosition = new THREE.Vector3();
 						this._currentLookat = new THREE.Vector3();
 					}
 
 					_CalculateIdealOffset() {
-						const idealOffset = new THREE.Vector3(-20, 0, 70)
-						idealOffset.applyQuaternion(this._params.quaternion);
-						idealOffset.add(this._params.position);
+						const idealOffset = new THREE.Vector3(0, 20, 100)
+						const rotation = new THREE.Euler( 0, this._params.rotation._y, 0, 'XYZ' );
+						const move = new THREE.Vector3( 
+							this._params.position.x,
+							this._params.position.z,
+							-this._params.position.y
+						);
+
+						idealOffset.applyEuler(rotation);
+						idealOffset.add(move);
 						return idealOffset
 					}
 
 					_CalculateIdealLookat() {
-						const idealLookat = new THREE.Vector3(-15, 0, 0)
-						console.log(this._params.quaternion);
-						idealLookat.applyQuaternion(this._params.quaternion);
-						idealLookat.add(this._params.position);
+						const idealLookat = new THREE.Vector3(0, 0, -200);
+						const rotation = new THREE.Euler( 0, this._params.rotation._y, 0 );
+						const move = new THREE.Vector3(
+							this._params.position.x,
+							this._params.position.z,
+							-this._params.position.y
+						);
+					
+						idealLookat.applyEuler(rotation);
+						idealLookat.add(move);
 						return idealLookat
 					}
 
 					Update(timeElapsed) {
 						const idealOffset = this._CalculateIdealOffset();
 						const idealLookat = this._CalculateIdealLookat();
-						// Fill these in
 
-						this._currentPosition.copy(idealOffset)
-						this._currentLookat.copy(idealLookat)
+						// const t = 1 - Math.pow(0.001, timeElapsed) // This is for optimized version
+						// const t = 1 * timeElapsed; // This is for a smoothier camera @ferrari212
+						const t = 4 * timeElapsed; // For a strong moving format @ferrari212
+
+						this._currentPosition.lerp(idealOffset, t);
+						this._currentLookat.lerp(idealLookat, t);
 
 						this._camera.position.copy(this._currentPosition);
 						this._camera.lookAt(this._currentLookat);
@@ -499,14 +519,25 @@
 					}
 				}
 
+				class FixedCamera {
+					constructor(params) {
+						this._params = params.object;
+						this._camera = params.camera;
+					}
+
+					Update() {
+						this._camera.position.set(-60, 20, 0)
+						this._camera.lookAt(this._params.position.x + 20, 10, -this._params.position.y)
+					}
+				}
+
 				// Setup of the canvas
 				// canvas = document.querySelector('canvas');
 				canvas = document.createElement('CANVAS');
-				canvas.width = canvas.height = 200
 				document.body.appendChild(canvas)
 	
 				
-				orbitController = new OrbitController(canvas);
+				orbitController = new OrbitController(canvas, "left", 100, 50);
 				
 				// orbitController.draw();
 
@@ -576,7 +607,8 @@
 				// controls = new THREE.OrbitControls(camera, renderer.domElement)
 				// controls.enablePan = true
 
-				zUpCont.add(new THREE.AxesHelper(1000))
+				// zUpCont.add(new THREE.AxesHelper(1000))
+				scene.add(new THREE.AxesHelper(1000))
 				zUpCont.add(new THREE.HemisphereLight(0xccccff, 0x666688, 1))
 
 				ocean = new Ocean({
@@ -650,6 +682,11 @@
 						object: shipGLTF 
 					});
 
+					fixedCamera = new FixedCamera({
+						camera: camera,
+						object: shipGLTF 
+					});
+
 					// Fade loading page
 					var fadeTarget = document.getElementById("loader-wrapper")
 					var fadeEffect = setInterval(function () {
@@ -680,11 +717,13 @@
 				manouvringModel = new ManouvringModel(m, I, D)
 
 				// //GUI setup (comment out to remove gui)
-				var Test = {view: 0};
+				viewer = {
+					view: 0
+				};
 				gui = new dat.GUI()
 				scale = gui.addFolder( "Dissolution Parameters" );
 				scale
-						.add( Test, 'view', {
+						.add( viewer, 'view', {
 							Fixed: 0,
 							TP: 1
 						} )
@@ -693,9 +732,11 @@
 							switch ( newValue ) {
 								case '0':
 									console.log("Set the camera in the perspective");
+									console.log(viewer);
 									break;
 								case '1':
 									console.log("Set the camera to the new three person viewer");
+									console.log(viewer);
 									break;
 								default:
 									console.log( 'View ' + newValue + ' not found.' );
@@ -738,7 +779,10 @@
 					shipGLTF.position.x += manouvringModel.state.DX.x;
 					shipGLTF.position.y += manouvringModel.state.DX.y;
 					shipGLTF.rotation.y = -Math.PI/2 - manouvringModel.state.yaw;
-					thrirdPersonCamera.Update(timeElapsedS)
+					
+					Math.round(viewer.view) ? fixedCamera.Update() : thrirdPersonCamera.Update(timeElapsedS)
+					// Math.round(viewer.view) ? console.log(true) : console.log(false)
+					// thrirdPersonCamera.Update(timeElapsedS)
 
 					speedText.innerText = manouvringModel.state.V.u.toFixed(1)
 					// camera.lookAt(shipGLTF.position.x + 20, 10, -shipGLTF.position.y)
