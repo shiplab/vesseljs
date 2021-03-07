@@ -15,9 +15,6 @@ function renderRayCaster( mouse, camera, scene, intersectedElement = { name: und
 	// update the picking ray with the camera and mouse position
 	raycaster.setFromCamera( mouse, camera );
 
-	// Ensures just the layers = 1 one will be effected by raycaster
-	raycaster.layers.set( 0 );
-
 	scene.updateMatrixWorld();
 
 	// calculate objects intersecting the picking ray
@@ -87,7 +84,7 @@ function renderRayCaster( mouse, camera, scene, intersectedElement = { name: und
 
 	function returnToOriginalColor() {
 
-		if ( intersectedElement.name != undefined ) {
+		if ( intersectedElement.name != undefined  && intersectedElement.currentHex != undefined ) {
 
 			// Check if there was a previeus touched
 			// Make the previous in its original color

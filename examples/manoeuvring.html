@@ -14,12 +14,6 @@
 		<!-- <script src="libs/WaterShader.js"></script> -->
 		<script src="3D_engine/Water.js"></script>
 
-		<!-- Bootstrap Core CSS -->
-		<link href="libs/bootstrap.min.css" rel="stylesheet" />
-
-		<!-- jQuery Version 1.11.1 -->
-		<script src="libs/jquery.js"></script>
-
 		<!-- <script src="libs/OrbitControls.js"></script> -->
 		<script src="3D_engine/dat.gui.min.js"></script>
 		<script src="3D_engine/skybox_from_examples_r118.js"></script>
@@ -27,7 +21,7 @@
 
 		<script src="3D_engine/Patch_interpolation.js"></script>
 		<script src="3D_engine/renderRayCaster.js"></script>
-		<!--<script src="Moving_bodies_Elias_Hasle.js"></script>-->
+
 		<script src="3D_engine/Playback.js"></script>
 		<!-- <script src="snippets/Configurable_ocean.js"></script> -->
 		<script src="3D_engine/Configurable_ocean_v2.js"></script>
@@ -51,8 +45,8 @@
 		}
 
 		td {
-			border: 1px solid #fff;
 			border-radius: 20%;
+			border: 1px solid #fff;
 			width: 100px;
 		}
 
@@ -81,11 +75,14 @@
 			bottom: 16px;
 			z-index: 999;
 			left: 16px;
+			font-family: 'Cutive Mono', monospace;
 
 			background-color: #fff;
 			opacity: 0.9;
 
 			padding-right: 40px;
+			padding-top: 20px;
+			padding-bottom: 10px;
 		}
 
 		#panel-number {
@@ -94,18 +91,43 @@
 			left: 16px;
 
 			text-align: center;
-
-			/* padding: 5px; */
-			/* border-radius: 10%; */
-			/* margin-bottom: 0px; */
-
 			background-color: #fff;
-			/* opacity: 0.9; */
 			z-index: 999;
-
-			/* box-shadow: 0 0 4px rgba(0, 0, 0, 0.15); */
 		}
 
+		/* ***************************************************************************************/
+		/*   Title: Sketchbook - Control Box
+		*    Author: @swift502
+		*    Date: 2020
+		*    Code version: 0.4
+		*    Availability: https://github.com/swift502/Sketchbook
+		*
+		****************************************************************************************/
+		.ctrl-key {
+			text-shadow: none;
+			font-weight: bold;
+			display: inline-block;
+			font-family: 'Cutive Mono', monospace;
+			padding: 2px 5px;
+			margin-right: 2px;
+			min-width: 10px;
+			text-align: center;
+			margin-left: 2px;
+			background: #eff0f2;
+			box-shadow: inset 0 0 25px #e8e8e8, 0 1px 0 #c3c3c3, 0 2px 0 #c9c9c9, 0 2px 3px #000;
+			color: #111;
+			border-radius: 2px;
+			font-size: 14px;
+		}
+		/* END */
+		/* ***************************************************************************************/
+	@media all and (max-width: 992px) and (pointer: coarse) {
+		.ctrl-key-explanation {	
+			display: none;
+		}
+	}
+
+		
 		.close {
 			position: absolute;
 			right: 10px;
@@ -132,6 +154,15 @@
 		}
 		.close:after {
 			transform: rotate(-45deg);
+		}
+
+		.unselectable {
+			-webkit-touch-callout: none;
+			-webkit-user-select: none;
+			-khtml-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
 		}
 
 		/* LOADER */
@@ -201,15 +232,19 @@
 			<img src="..\examples\images\code-24px.svg" />
 		</a>
 
-		<div id="notes">
+		<canvas class="controller-button"></canvas>
+
+		<div id="notes" class="unselectable">
 			<ul>
-				<li>Use w,a,s,d buttom to control the <br> rotation and angle of the propeller; </li>
-				<li>Version in development;</li>
-				<li>Model based on IP500515 course <br> proposed project.</li>
+				<li class="ctrl-key-explanation">Use <span class="ctrl-key">w</span>, <span class="ctrl-key">a</span>, <span class="ctrl-key">s</span>, <span class="ctrl-key">d</span> buttom to control the <br> rotation and angle of the propeller; </li>
+				<li>Version under development;</li>
+				<li>Model based on IP500515 course <br> from NTNU.</li>
 			</ul>
 		</div>
 
-		<table id="panel-number">
+
+
+		<table id="panel-number" class="unselectable" >
 			<tr valign="top">
 				<td>
 					<p style="font-size: 10px">FWD. Speed</p>
@@ -231,251 +266,597 @@
 
 		<script>
 			"use strict"
-			// JavaScript for adding loader page
-			window.addEventListener("load", function () {
-				var fadeTarget = document.getElementById("loader-wrapper")
-				var fadeEffect = setInterval(function () {
-					if (!fadeTarget.style.opacity) {
-						fadeTarget.style.opacity = 1
-					}
-					if (fadeTarget.style.opacity > 0) {
-						fadeTarget.style.opacity -= 0.05
-					} else {
-						clearInterval(fadeEffect)
-						fadeTarget.remove()
-					}
-				}, 50)
-			})
+			
+			//Globals
+			var renderer, camera, thrirdPersonCamera, fixedCamera, gui, stats;
+			var scene, zUpCont, playback, bodies, ocean;
+			var ship, shipGLTF, shipState, propellers, wave, hullRes, propellerInteraction, rudderModel;
+			var manouvringModel, viewer;
+			var scale, modelStyle;
+			var speedText, angleText, rotationText;
+			var clock, time;
+			var canvas, c, orbitController;
 
-			document.addEventListener("keydown", onDocumentKeyDown, false)
-			function onDocumentKeyDown(event) {
-				var keyCode = event.which
-				var n = manouvringModel.state.n
 
-				switch (keyCode) {
+			document.addEventListener( "keydown", onDocumentKeyDown, false );
+			function onDocumentKeyDown( event ) {
+
+				var keyCode = event.which;
+				var n = manouvringModel.state.n;
+
+				switch ( keyCode ) {
+
 					case 87:
-						if (n <= 5) {
+						if ( n <= 5 ) {
+
 							manouvringModel.state.n += 0.1;
-							rotationText.innerText = (60 * manouvringModel.state.n).toFixed(0)
+							rotationText.innerText = ( 60 * manouvringModel.state.n ).toFixed( 0 );
+
 						}
+
 						break;
 					case 83:
-						if (n >= -5) {
-							manouvringModel.state.n -= 0.1
-							rotationText.innerText = (60 * manouvringModel.state.n).toFixed(0)
-						}					
+						if ( n >= - 5 ) {
+
+							manouvringModel.state.n -= 0.1;
+							rotationText.innerText = ( 60 * manouvringModel.state.n ).toFixed( 0 );
+
+						}
+
 						break;
 					case 65:
-						manouvringModel.state.rudderAngle -= 0.5	
-						angleText.innerText = manouvringModel.state.rudderAngle.toFixed(1)					
+						manouvringModel.state.rudderAngle -= 0.5;
+						angleText.innerText = manouvringModel.state.rudderAngle.toFixed( 1 );
 						break;
 					case 68:
-						manouvringModel.state.rudderAngle += 0.5
-						angleText.innerText = manouvringModel.state.rudderAngle.toFixed(1)		
+						manouvringModel.state.rudderAngle += 0.5;
+						angleText.innerText = manouvringModel.state.rudderAngle.toFixed( 1 );
 						break;
 					default:
 						break;
+
 				}
+
 			}
 
-			//Globals
-			var renderer, camera, gui, stats
-			var scene, zUpCont, playback, bodies, ocean
-			var ship, shipGLTF, shipState, propellers, wave, hullRes, propellerInteraction, rudderModel
-			var manouvringModel, forceVector
-			var scale, modelStyle
-			var speedText, angleText, rotationText
-			var clock, time;
-			;(function main() {
-				//Renderer setup
-				document.body.style.overflow = "hidden"
-				var container = document.createElement("div")
-				container.id = "SimulationWindow"
-				speedText = document.getElementById("speed-text")
-				angleText = document.getElementById("angle-text")
-				rotationText = document.getElementById("rotation-text")
+			function onOrbitControllerMove() {
 
-				Object.assign(container.style, {
+				var canvas = orbitController.canvas;
+				if ( ! canvas.active ) return;
+
+				var n = manouvringModel.state.n;
+
+				if ( Math.abs( canvas.y ) > Math.abs( canvas.x ) ) {
+
+					if ( Math.sign( canvas.y ) < 0 ) {
+
+						if ( n <= 5 ) {
+
+							manouvringModel.state.n += 0.01;
+							rotationText.innerText = ( 60 * manouvringModel.state.n ).toFixed( 0 );
+
+						}
+
+					} else {
+
+						if ( n >= - 5 ) {
+
+							manouvringModel.state.n -= 0.01;
+							rotationText.innerText = ( 60 * manouvringModel.state.n ).toFixed( 0 );
+
+						}
+
+					}
+
+				} else {
+
+					if ( Math.sign( canvas.x ) > 0 ) {
+
+						manouvringModel.state.rudderAngle += 0.08;
+						angleText.innerText = manouvringModel.state.rudderAngle.toFixed( 1 );
+
+					} else {
+
+						manouvringModel.state.rudderAngle -= 0.08;
+						angleText.innerText = manouvringModel.state.rudderAngle.toFixed( 1 );
+
+					}
+
+				}
+
+			}
+
+			( function main() {
+
+				// Create Circunference Class
+				class OrbitController {
+
+					constructor( canvas, orientation = "bottom", size = 100, marginDistance = 50 ) {
+
+						window.screenCheck = function () {
+
+							let check = false;
+							( function ( a ) {
+
+								if ( /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino|android|ipad|playbook|silk/i.test( a ) || /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test( a.substr( 0, 4 ) ) ) check = true;
+
+							} )( navigator.userAgent || navigator.vendor || window.opera );
+
+							return check;
+
+						};
+
+						if ( ! window.screenCheck() ) return null;
+
+
+						canvas.width = canvas.height = size;
+						this.canvas = canvas;
+						this.assignCanvasStyle( marginDistance );
+						this.c = this.canvas.getContext( '2d' );
+						this.c.fillStyle = '#000000';
+						this.c.strokeStyle = '#bebebe';
+
+						Object.assign( this.canvas, {
+							x: 0, //set on the center
+							y: 0,
+							canvas: {},
+							size: canvas.width,
+							radius: 3 * this.canvas.width / 16,
+							md: marginDistance,
+							active: false,
+							returnOrigin: function returnOrigin() {
+
+								this.x -= Math.sign( this.x ) * 0.04;
+								this.y -= Math.sign( this.y ) * 0.04;
+								this.draw();
+
+							},
+							draw: () => this.draw()
+						} );
+
+						this.draw();
+						this.addTouchEvent();
+
+					}
+
+					draw() {
+
+						var props = this.canvas;
+						var x = ( props.x + 1 ) * props.width / 2;
+						var y = ( props.y + 1 ) * props.height / 2;
+
+						this.c.clearRect( 0, 0, props.width, props.height );
+						this.c.beginPath();
+						this.c.arc( x, y, props.radius, 0, Math.PI * 2, false );
+						this.c.fill();
+						this.c.stroke();
+						this.c.closePath();
+
+					}
+
+					assignCanvasStyle( md = 50 ) {
+
+						this.canvas.style.position = "fixed";
+						this.canvas.style.bottom = `${md}px`;
+						this.canvas.style.right = "50%";
+						this.canvas.style.transform = "translate(50%, 0)";
+						this.canvas.style.borderRadius = "50%";
+						this.canvas.style.backgroundColor = "#fff";
+						this.canvas.style.opacity = 0.9;
+						this.canvas.style.zIndex = 999;
+						this.canvas.style.boxShadow = "0 0 4px rgba(0, 0, 0, 0.15)";
+
+					}
+
+					update( e ) {
+
+						if ( e.touches && this.active ) {
+
+							var circleRadius = this.size / 2;
+							var marginDistance = this.md + circleRadius;
+
+							if ( this.x < this.width ) {
+
+								this.x = ( e.touches[ 0 ].pageX - window.innerWidth / 2 ) / circleRadius;
+
+							}
+
+							if ( this.y < this.height ) {
+
+								this.y = ( - window.innerHeight + e.touches[ 0 ].pageY + 100 ) / circleRadius;
+
+							}
+
+							this.draw();
+
+							e.preventDefault();
+
+						}
+
+					}
+
+					toggle() {
+
+						this.active = ! this.active;
+						// console.log(this.active);
+						if ( ! this.active ) this.returnOrigin();
+
+					}
+
+					addTouchEvent() {
+
+						this.canvas.addEventListener( "touchmove", this.update );
+						this.canvas.addEventListener( "touchstart", this.toggle );
+						this.canvas.addEventListener( "touchend", this.toggle );
+
+					}
+
+				}
+
+				class ThirdPersonCamera {
+
+					constructor( params ) {
+
+						this._params = params.object;
+						this._camera = params.camera;
+
+						this._currentPosition = new THREE.Vector3();
+						this._currentLookat = new THREE.Vector3();
+
+					}
+
+					_CalculateIdealOffset() {
+
+						const idealOffset = new THREE.Vector3( 0, 20, 100 );
+						const rotation = new THREE.Euler( 0, this._params.rotation._y, 0, 'XYZ' );
+						const move = new THREE.Vector3(
+							this._params.position.x,
+							this._params.position.z,
+							- this._params.position.y
+						);
+
+						idealOffset.applyEuler( rotation );
+						idealOffset.add( move );
+						return idealOffset;
+
+					}
+
+					_CalculateIdealLookat() {
+
+						const idealLookat = new THREE.Vector3( 0, 0, - 200 );
+						const rotation = new THREE.Euler( 0, this._params.rotation._y, 0 );
+						const move = new THREE.Vector3(
+							this._params.position.x,
+							this._params.position.z,
+							- this._params.position.y
+						);
+
+						idealLookat.applyEuler( rotation );
+						idealLookat.add( move );
+						return idealLookat;
+
+					}
+
+					Update( timeElapsed ) {
+
+						const idealOffset = this._CalculateIdealOffset();
+						const idealLookat = this._CalculateIdealLookat();
+
+						const t = 4 * timeElapsed; // For a strong moving format @ferrari212
+
+						this._currentPosition.lerp( idealOffset, t );
+						this._currentLookat.lerp( idealLookat, t );
+
+						this._camera.position.copy( this._currentPosition );
+						this._camera.lookAt( this._currentLookat );
+
+					}
+
+				}
+
+				class FixedCamera {
+
+					constructor( params ) {
+
+						this._params = params.object;
+						this._camera = params.camera;
+
+					}
+
+					Update() {
+
+						this._camera.position.set( - 60, 20, 0 );
+						this._camera.lookAt( this._params.position.x + 20, 10, - this._params.position.y );
+
+					}
+
+				}
+
+				// Setup of the canvas
+				canvas = document.createElement( 'CANVAS' );
+				document.body.appendChild( canvas );
+
+				orbitController = new OrbitController( canvas, "left", 100, 50 );
+
+				//Renderer setup
+				document.body.style.overflow = "hidden";
+				var container = document.createElement( "div" );
+				container.id = "SimulationWindow";
+				speedText = document.getElementById( "speed-text" );
+				angleText = document.getElementById( "angle-text" );
+				rotationText = document.getElementById( "rotation-text" );
+
+				Object.assign( container.style, {
 					position: "absolute",
 					top: 0,
 					left: 0,
 					width: "100vw",
 					height: "100vh"
-				})
-				document.body.appendChild(container)
-				renderer = new THREE.WebGLRenderer({ antialias: true })
+				} );
+				document.body.appendChild( container );
+				renderer = new THREE.WebGLRenderer( { antialias: true } );
 
-				renderer.setClearColor(0xa9cce3)
-				container.appendChild(renderer.domElement)
+				renderer.setClearColor( 0xa9cce3 );
+				container.appendChild( renderer.domElement );
 
-				playback = new Playback({ parentGUI: gui })
+				playback = new Playback( { parentGUI: gui } );
 
 				//Scene setup:
-				scene = new THREE.Scene()
-				let sun = new THREE.DirectionalLight(0xffffff, 2)
-				sun.position.set(-512, 246, 128)
-				scene.add(sun)
+				scene = new THREE.Scene();
+				let sun = new THREE.DirectionalLight( 0xffffff, 2 );
+				sun.position.set( - 512, 246, 128 );
+				scene.add( sun );
 
 				//Ocean size
-				let oSize = 2048
+				let oSize = 2048;
 
 				//Use Z up from now on:
-				THREE.Object3D.DefaultUp.set(0, 0, 1)
-				zUpCont = new THREE.Group()
-				// This rotation must be deleted in order to garantee the real coordinate
-				// zUpCont.rotation.x = -0.5 * Math.PI;
-				scene.add(zUpCont)
+				THREE.Object3D.DefaultUp.set( 0, 0, 1 );
+				zUpCont = new THREE.Group();
+				scene.add( zUpCont );
 
-				var skybox = new Skybox(oSize)
-				skybox.name = "Skybox"
-				scene.add(skybox)
+				var skybox = new Skybox( oSize );
+				skybox.name = "Skybox";
+				scene.add( skybox );
 
 				//Camera setup
-				camera = new THREE.PerspectiveCamera(26, window.innerWidth / window.innerHeight, 1, 1000000)
+				camera = new THREE.PerspectiveCamera( 26, window.innerWidth / window.innerHeight, 1, 10000 );
 
 				let onResize = function () {
-					let w = container.clientWidth
-					let h = container.clientHeight
-					renderer.setSize(w, h)
-					camera.aspect = w / h
-					camera.updateProjectionMatrix()
-				}
 
-				camera.up.set(0, 1, 0)
+					let w = container.clientWidth;
+					let h = container.clientHeight;
+					renderer.setSize( w, h );
+					camera.aspect = w / h;
+					camera.updateProjectionMatrix();
 
-				window.addEventListener("resize", onResize, false)
-				onResize()
-				camera.position.set(-60, 20, 0)
-				console.log(zUpCont.position)
+				};
 
-				// controls = new THREE.OrbitControls(camera, renderer.domElement)
-				// controls.enablePan = true
+				camera.up.set( 0, 1, 0 );
 
-				// zUpCont.add(new THREE.AxesHelper(1000))
-				zUpCont.add(new THREE.HemisphereLight(0xccccff, 0x666688, 1))
+				window.addEventListener( "resize", onResize, false );
+				onResize();
+				camera.position.set( - 60, 20, 0 );
 
-				ocean = new Ocean({
+				scene.add( new THREE.AxesHelper( 1000 ) );
+				zUpCont.add( new THREE.HemisphereLight( 0xccccff, 0x666688, 1 ) );
+
+				ocean = new Ocean( {
 					parentGUI: gui,
 					sunDir: sun.position.clone().normalize(),
 					size: oSize,
 					segments: 127
-				})
+				} );
 
-				// playback.add(ocean)
-				ocean.name = "Ocean"
-				scene.add(ocean)
-				scene.rotation.x = -Math.PI / 2
+				ocean.name = "Ocean";
+				scene.add( ocean );
+				scene.rotation.x = - Math.PI / 2;
 
 				//Load sample file:
-				new THREE.FileLoader().load("specs/ship_specifications/gunnerus.json", function (content) {
-					ship = new Vessel.Ship(JSON.parse(content))
-					shipState = new Vessel.ShipState(ship.designState.getSpecification())
+				new THREE.FileLoader().load( "specs/ship_specifications/gunnerus.json", function ( content ) {
+
+					ship = new Vessel.Ship( JSON.parse( content ) );
+					shipState = new Vessel.ShipState( ship.designState.getSpecification() );
 
 					// object and functions to handle propeller specifications
-					propellers = {}
+					propellers = {};
 
 					// preload propeller specification
-					var propReq = new XMLHttpRequest()
-					propReq.open("GET", "specs/propeller_specifications/wag_4b_0.55a_1.2p.json", true)
-					propReq.addEventListener("load", function (event) {
-						var response = event.target.response
-						var propeller = JSON.parse(response)
-						usePropSpec(propeller, "wag_4b_0.55a_1.2p.json")
-					})
-					propReq.send(null)
+					var propReq = new XMLHttpRequest();
+					propReq.open( "GET", "specs/propeller_specifications/wag_4b_0.55a_1.2p.json", true );
+					propReq.addEventListener( "load", function ( event ) {
 
-					var usePropSpec = function (propeller, name) {
-						propellers[name.substring(0, name.length - 5)] = propeller
+						var response = event.target.response;
+						var propeller = JSON.parse( response );
+						usePropSpec( propeller, "wag_4b_0.55a_1.2p.json" );
 
-						wave = new Vessel.WaveCreator()
+					} );
+					propReq.send( null );
 
-						hullRes = new Vessel.HullResistance(ship, shipState, propeller, wave)
-						hullRes.writeOutput()
+					var usePropSpec = function ( propeller, name ) {
+
+						propellers[ name.substring( 0, name.length - 5 ) ] = propeller;
+
+						wave = new Vessel.WaveCreator();
+
+						hullRes = new Vessel.HullResistance( ship, shipState, propeller, wave );
+						hullRes.writeOutput();
 
 						// debugger
-						for (var propProp in propellers) {
-							var wagProp = propellers[propProp]
-							propellerInteraction = new Vessel.PropellerInteraction(ship, shipState, wagProp)
-							propellerInteraction.writeOutput()
+						for ( var propProp in propellers ) {
+
+							var wagProp = propellers[ propProp ];
+							propellerInteraction = new Vessel.PropellerInteraction( ship, shipState, wagProp );
+							propellerInteraction.writeOutput();
+
 						}
-					}
-				})
+
+					};
+
+				} );
 
 				// import binary glTF file
-				var boatPath = "specs/GLTF_files/Gunnerus.glb"
-				var loaderGLTF = new THREE.GLTFLoader()
-				loaderGLTF.load(boatPath, async gltf => {
-					shipGLTF = gltf.scene
-					shipGLTF.rotation.x = Math.PI / 2
-					shipGLTF.rotation.y = -Math.PI / 2
-					shipGLTF.position.set(-1, 0, 0)
-					shipGLTF.name = "ModelGLTF"
+				var boatPath = "specs/GLTF_files/Gunnerus.glb";
+				var loaderGLTF = new THREE.GLTFLoader();
+				loaderGLTF.load( boatPath, async gltf => {
 
-					if (shipGLTF.material) {
-						shipGLTF.material.side = THREE.DoubleSide
+					shipGLTF = gltf.scene;
+					shipGLTF.rotation.x = Math.PI / 2;
+					shipGLTF.rotation.y = - Math.PI / 2;
+					shipGLTF.position.set( - 1, 0, 0 );
+					shipGLTF.up.set( 0, 1, 0 );
+					shipGLTF.name = "ModelGLTF";
+
+					if ( shipGLTF.material ) {
+
+						shipGLTF.material.side = THREE.DoubleSide;
+
 					}
-					zUpCont.add(shipGLTF)
-				})
 
-				var m = 1.1e7
+					zUpCont.add( shipGLTF );
+
+					// Insert the GLTF object
+					thrirdPersonCamera = new ThirdPersonCamera( {
+						camera: camera,
+						object: shipGLTF
+					} );
+
+					fixedCamera = new FixedCamera( {
+						camera: camera,
+						object: shipGLTF
+					} );
+
+					// Fade loading page
+					var fadeTarget = document.getElementById( "loader-wrapper" );
+					var fadeEffect = setInterval( function () {
+
+						if ( ! fadeTarget.style.opacity ) {
+
+							fadeTarget.style.opacity = 1;
+
+						}
+
+						if ( fadeTarget.style.opacity > 0 ) {
+
+							fadeTarget.style.opacity -= 0.05;
+
+						} else {
+
+							clearInterval( fadeEffect );
+							fadeTarget.remove();
+
+						}
+
+					}, 50 );
+
+				} );
+
+				var m = 1.1e7;
 				var I = [
-					[0, 0, 0],
-					[0, 0, 8.4e6],
-					[0, 8.4e6, 5.8e8]
-				]
+					[ 0, 0, 0 ],
+					[ 0, 0, 8.4e6 ],
+					[ 0, 8.4e6, 5.8e8 ]
+				];
 				var D = [
-					[3e5, 0, 0],
-					[0, 5.5e5, 6.4e5],
-					[0, 6.4e5, 1.2e8]
-				]
+					[ 3e5, 0, 0 ],
+					[ 0, 5.5e5, 6.4e5 ],
+					[ 0, 6.4e5, 1.2e8 ]
+				];
 
-				manouvringModel = new ManouvringModel(m, I, D)
-				// manouvringModel = new FreeBody(m, 10)
-				console.log(manouvringModel)
-
-				forceVector = [0, 0, 0]
+				manouvringModel = new ManouvringModel( m, I, D );
 
 				// //GUI setup (comment out to remove gui)
-				// gui = new dat.GUI()
-				clock = new THREE.Clock()
-				time = clock.getElapsedTime()
+				viewer = {
+					view: 0
+				};
+				gui = new dat.GUI();
+				scale = gui.addFolder( "Dissolution Parameters" );
+				scale
+					.add( viewer, 'view', {
+						TP: 0,
+						Fixed: 1
+					} )
+					.onChange( function ( newValue ) {
 
-				requestAnimationFrame(animate)
-			})()
+						switch ( newValue ) {
+
+							case '0':
+								break;
+							case '1':
+								break;
+							default:
+								console.log( 'Opition ' + newValue + ' not found.' );
+								break
+						}
+
+					} )
+					.name( "View" );
+				scale.open();
+
+				clock = new THREE.Clock();
+				time = clock.getElapsedTime();
+
+				requestAnimationFrame( animate );
+
+			} )();
 
 
-			function animate(millitime) {
-				ocean.water.material.uniforms.time.value += 1 / 60
-				
-				if (shipGLTF) {
-					propellerInteraction.setSpeed(manouvringModel.state.V.u)
+			function animate( millitime ) {
 
-					var rudderAngle = manouvringModel.state.rudderAngle*Math.PI/180
-					var cos = Math.cos(rudderAngle)
-					var sin = Math.sin(rudderAngle)
+				ocean.water.material.uniforms.time.value += 1 / 60;
 
-					forceVector = [
-						propellerInteraction.getForce(manouvringModel.state.n)*cos,
-						propellerInteraction.getForce(manouvringModel.state.n)*sin,
-						propellerInteraction.getForce(manouvringModel.state.n)*sin*20
-					]
+				if ( shipGLTF ) {
 
-					manouvringModel.setMatrixes(forceVector, shipGLTF.rotation.y + Math.PI/2);
-					manouvringModel.getDisplacements(clock.getElapsedTime() - time,
-																					manouvringModel.state.V, 
-																					manouvringModel)
-					time = clock.getElapsedTime()
+					propellerInteraction.setSpeed( manouvringModel.state.V.u );
+
+					var rudderAngle = manouvringModel.state.rudderAngle * Math.PI / 180;
+					var cos = Math.cos( rudderAngle );
+					var sin = Math.sin( rudderAngle );
+
+					var forceVector = [
+						propellerInteraction.getForce( manouvringModel.state.n ) * cos,
+						propellerInteraction.getForce( manouvringModel.state.n ) * sin,
+						propellerInteraction.getForce( manouvringModel.state.n ) * sin * 20
+					];
+
+					var timeElapsedS = clock.getElapsedTime() - time;
+
+					manouvringModel.setMatrixes( forceVector, shipGLTF.rotation.y + Math.PI / 2 );
+					manouvringModel.getDisplacements( timeElapsedS,
+						manouvringModel.state.V,
+						manouvringModel );
+					time = clock.getElapsedTime();
 
 					shipGLTF.position.x += manouvringModel.state.DX.x;
 					shipGLTF.position.y += manouvringModel.state.DX.y;
-					shipGLTF.rotation.y = -Math.PI/2 - manouvringModel.state.yaw;
+					shipGLTF.rotation.y = - Math.PI / 2 - manouvringModel.state.yaw;
 
-					speedText.innerText = manouvringModel.state.V.u.toFixed(1)
-					camera.lookAt(shipGLTF.position.x + 20, 10, -shipGLTF.position.y)
+					Math.round( viewer.view ) ? fixedCamera.Update() : thrirdPersonCamera.Update( timeElapsedS );
+
+					speedText.innerText = manouvringModel.state.V.u.toFixed( 1 );
+
+					// Improvement: This conditional must be passed internally as a assign function
+					if ( Object.keys( orbitController ).length ) {
+
+						if ( ( Math.abs( orbitController.canvas.x ) > 0.06 || Math.abs( orbitController.canvas.y ) > 0.06 ) && ! orbitController.canvas.active ) {
+
+							orbitController.canvas.returnOrigin();
+
+						} else {
+
+							onOrbitControllerMove();
+
+						}
+
+					}
+
 				}
-				renderer.render(scene, camera)
-				requestAnimationFrame(animate)
+
+				renderer.render( scene, camera );
+				requestAnimationFrame( animate );
+
 			}
+
 		</script>
 	</body>
 </html>
