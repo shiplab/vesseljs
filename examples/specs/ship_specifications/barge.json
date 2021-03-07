@@ -38,7 +38,11 @@
   			"stations": [0, 1],
   			"table": [[0, 0], [1, 1], [1, 1]]
   		},
-  		"buttockHeights": {}
+  		"buttockHeights": {},
+      "affiliations": {
+        "SBSD": "Hull",
+        "group": "structure"
+      }
   	},
   	"decks": {
       "BallastTop": {
@@ -48,14 +52,22 @@
 				"xFwd": 22.5,
 				"yCentre": 0,
 				"breadth": 10,
-				"density": 7850
+				"density": 7850,
+        "affiliations": {
+          "SBSD": "Hull",
+          "group": "structure"
+        }
 			}
     },
   	"bulkheads": {
   		"AB": {
   			"xAft": 11.25,
   			"thickness": 0.01,
-  			"density": 7850
+  			"density": 7850,
+        "affiliations": {
+          "SBSD": "Hull",
+          "group": "structure"
+        }
   		}
   	}
   },
@@ -122,6 +134,7 @@
       "id": "Tank1",
       "baseObject": "cargo",
       "affiliations": {
+        "SBSD": "Liquid and dry bulk cargo",
         "group": "cargo tanks",
         "Deck": "CargoDeck",
         "SFI": "102"
@@ -136,6 +149,7 @@
       "id": "Tank2",
       "baseObject": "cargo",
       "affiliations": {
+        "SBSD": "Liquid and dry bulk cargo",
         "group": "cargo tanks",
         "Deck": "CargoDeck",
         "SFI": "103"
@@ -150,6 +164,7 @@
       "id": "Tank3",
       "baseObject": "ballast",
       "affiliations": {
+        "SBSD": "Ballast and Void",
         "group": "ballast tanks",
         "Deck": "BallastDeck",
         "SFI": "104"
@@ -164,6 +179,7 @@
       "id": "Tank4",
       "baseObject": "ballast",
       "affiliations": {
+        "SBSD": "Ballast and Void",
         "group": "ballast tanks",
         "Deck": "BallastDeck",
         "SFI": "105"

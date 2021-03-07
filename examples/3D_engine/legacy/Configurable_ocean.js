@@ -143,7 +143,7 @@ function Ocean(params) {
 	The mirror effect does not account for geometry, and there is no self-mirroring. But it mostly looks OK anyway. On tall waves, one can see that the rendered texture is stretched.
 	*/
 	try {
-		let waterNormals = new THREE.TextureLoader().load("textures/waternormals.jpg");
+		let waterNormals = new THREE.TextureLoader().load("3D_engine/textures/waternormals.jpg");
 		waterNormals.wrapS = waterNormals.wrapT = THREE.RepeatWrapping;
 		this.water = new THREE.Water(renderer, camera, scene, {
 			textureWidth: 512,
