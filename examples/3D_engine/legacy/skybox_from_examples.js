@@ -3,7 +3,7 @@ function Skybox(size) {
 	var cubeMap = new THREE.CubeTexture([]);
 	cubeMap.format = THREE.RGBFormat;
 	var loader = new THREE.ImageLoader();
-	loader.load("textures/skyboxsun25degtest1.png", function (image) {
+	loader.load("3D_engine/textures/skyboxsun25degtest1.png", function (image) {
 		var getSide = function (x, y) {
 			var size = 1024;
 			var canvas = document.createElement("canvas");

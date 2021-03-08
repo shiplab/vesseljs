@@ -493,6 +493,7 @@ function Hull3D(hull, design_draft) {
 
 	this.hull = hull;
 	this.group = "Hull3D"
+	this.name = "Hull3D"
 	this.design_draft = design_draft !== undefined ? design_draft : 0.5 * hull.attributes.Depth;
 	this.upperColor = typeof hull.style.upperColor !== "undefined" ? hull.style.upperColor : 0x33aa33;
 	this.lowerColor = typeof hull.style.lowerColor !== "undefined" ? hull.style.lowerColor : 0xaa3333;
