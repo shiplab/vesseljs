@@ -26,6 +26,7 @@
 		<!--Map libraries-->
 		<script src="libs/d3.v3.min.js"></script>
 		<script src="snippets/LineChartClass.js"></script>
+		<script src="snippets/lineChart.js"></script>
 
 		<script src="3D_engine/Playback.js"></script>
 		<!-- <script src="snippets/Configurable_ocean.js"></script> -->
@@ -88,6 +89,18 @@
 			padding-right: 40px;
 			padding-top: 20px;
 			padding-bottom: 10px;
+		}
+
+		#graphics {
+			border-radius: 5%;
+			position: fixed;
+			top: 75px;
+			z-index: 999;
+			right: 16px;
+			font-family: 'Cutive Mono', monospace;
+
+			background-color: #fff;
+			opacity: 0.9;
 		}
 
 		#panel-number {
@@ -226,15 +239,28 @@
 			}
 		}
 		/* LOADER */
-		
+
+		/* Style required for D3.js */
+		svg {
+					font: 10px sans-serif;
+					z-index: 999;
+				}
+
+		.axis path,
+		.axis line {
+			fill: none;
+			stroke: #000;
+			shape-rendering: crispEdges;
+		}
+		/* End Style required for D3.js */
 	</style>
 
 	<body>
 		<!-- This is the loader wraper, unncoment this to see the loading page -->
-		<div id="loader-wrapper">
+		<!-- <div id="loader-wrapper">
 			<div class="loader loader-white loader-1"></div>
 			<div><h1 style="font-style: italic">Loading...</h1></div>
-		</div>
+		</div> -->
 
 		<canvas class="controller-button"></canvas>
 
@@ -242,7 +268,18 @@
 			<img src="..\examples\images\code-24px.svg" />
 		</a>
 
+		<div id="graphics">
+			<div class="container">
+				<div id="lineChart"></div>
+			</div>	
+		</div>
+
 		<div id="notes" class="unselectable">
+			<!-- <div class="container">
+				<h3>Results Visualization</h3>
+				<p>Adapted from <a href="https://bl.ocks.org/mbostock/3887118" target="_blank">this page</a>.</p>
+				<div id="lineChart"></div>
+			</div> -->
 			<ul>
 				<li class="ctrl-key-explanation">Use <span class="ctrl-key">w</span>, <span class="ctrl-key">a</span>, <span class="ctrl-key">s</span>, <span class="ctrl-key">d</span> buttom to control the <br> rotation and angle of the propeller; </li>
 				<li>Version under development;</li>
@@ -282,7 +319,7 @@
 			var scale, modelStyle;
 			var speedText, angleText, rotationText;
 			var clock, time;
-			var canvas, c, orbitController;
+			var canvas, c, orbitController, lineChart;
 
 
 			document.addEventListener( "keydown", onDocumentKeyDown, false );
@@ -807,28 +844,28 @@
 						object: shipGLTF
 					} );
 
-					// Fade loading page
-					var fadeTarget = document.getElementById( "loader-wrapper" );
-					var fadeEffect = setInterval( function () {
+					// Fade loading page UNCOMENT THIS PART
+					// var fadeTarget = document.getElementById( "loader-wrapper" );
+					// var fadeEffect = setInterval( function () {
 
-						if ( ! fadeTarget.style.opacity ) {
+					// 	if ( ! fadeTarget.style.opacity ) {
 
-							fadeTarget.style.opacity = 1;
+					// 		fadeTarget.style.opacity = 1;
 
-						}
+					// 	}
 
-						if ( fadeTarget.style.opacity > 0 ) {
+					// 	if ( fadeTarget.style.opacity > 0 ) {
 
-							fadeTarget.style.opacity -= 0.05;
+					// 		fadeTarget.style.opacity -= 0.05;
 
-						} else {
+					// 	} else {
 
-							clearInterval( fadeEffect );
-							fadeTarget.remove();
+					// 		clearInterval( fadeEffect );
+					// 		fadeTarget.remove();
 
-						}
+					// 	}
 
-					}, 50 );
+					// }, 50 );
 
 				} );
 
@@ -865,6 +902,37 @@
 
 				requestAnimationFrame( animate );
 
+				// it is not possible to insert here
+				var keyResults = [];
+				keyResults.push({x: -50, y: -2.3213});
+				keyResults.push({x: 0, y: 86.5250626214614});
+				keyResults.push({x: 200, y: 286.5250626214614});
+				keyResults.push({x: 500, y: 489.47357210655627});
+				// var lineChart = new LineChartClass("lineChart1", keyResults, "x", "x - name");
+				var labelObj = {
+					xkey: "x", 
+					xlabel: "Time (s)",
+					ykey: "y",
+					ylabel: "New Name"
+				}
+				lineChart = new LineChartClass("lineChart1", keyResults, labelObj);
+				// lineChart("lineChart1", keyResults, "x", "x - name");
+				// debugger
+
+	// lineChart.svg.append("rect")
+  // .attr('class', 'legend-rect')
+  // .attr("x", 100)
+  // .attr("y", 100)
+  // .attr("width", 20)
+  // .attr("height", 20)
+  // .style("fill", "red");
+
+	// lineChart.svg.append("circle")
+  // .attr('cx',206.661513 )
+  //   .attr('cy', 35.05917399 )
+  //   .attr('r','10px')
+  //   .style('fill', 'red');    
+
 			} )();
 
 
@@ -895,6 +963,8 @@
 					shipGLTF.position.x += manoeuvringModel.DX.x;
 					shipGLTF.position.y += manoeuvringModel.DX.y;
 					shipGLTF.rotation.y = - Math.PI / 2 - manoeuvringModel.yaw;
+
+					lineChart.draw(shipGLTF.position.x,shipGLTF.position.y)
 
 					Math.round( viewer.view ) ? fixedCamera.Update() : thrirdPersonCamera.Update( timeElapsedS );
 
