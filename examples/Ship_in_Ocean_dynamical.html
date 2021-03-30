@@ -29,7 +29,40 @@
 	<script src="libs/numeric-1.2.6.min.js"></script>
 </head>
 
+<style>
+	
+		/* ******* Signature template ******* */
+
+		#info {
+			position: absolute;
+			color: #011C40;
+			top: 0px;
+			width: 100%;
+			padding: 10px;
+			box-sizing: border-box;
+			text-align: center;
+			-moz-user-select: none;
+			-webkit-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+			pointer-events: none;
+			z-index: 1;
+		}
+
+		#info a {
+			color: #A60D0D;
+			pointer-events: auto;
+		}
+
+		/* ******* ******* ******* */
+
+</style>
+
 <body>
+	<div id="info">
+		<a href="http://vesseljs.org/" target="_blank" rel="noopener">Vesse.js</a> 6DOF <br/>
+		Author: <a href="https://shiptodata.com/" target="_blank" rel="noopener">Felipe Ferrari</a> - Msc. Student Ship Design <br>
+	</div>
 	<script>
 		"use strict";
 

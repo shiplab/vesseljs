@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>Ship in Ocean</title>
+		<title>Ship in Manoeuvring</title>
 		<!-- <script src="../build/vessel.js"></script> -->
 		<script src="../build/vessel_with_dopri.js"></script>
 
@@ -75,6 +75,31 @@
 			box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
 		}
 
+		/* ******* Signature template ******* */
+
+		#info {
+			position: absolute;
+			color: #011C40;
+			top: 0px;
+			width: 100%;
+			padding: 10px;
+			box-sizing: border-box;
+			text-align: center;
+			-moz-user-select: none;
+			-webkit-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+			pointer-events: none;
+			z-index: 1;
+		}
+
+		#info a {
+			color: #A60D0D;
+			pointer-events: auto;
+		}
+
+		/* ******* ******* ******* */
+
 		#notes {
 			position: fixed;
 			bottom: 16px;
@@ -86,8 +111,8 @@
 			opacity: 0.9;
 
 			padding-right: 40px;
-			padding-top: 20px;
-			padding-bottom: 10px;
+			padding-top: 5px;
+			padding-bottom: 5px;
 		}
 
 		#panel-number {
@@ -230,6 +255,11 @@
 	</style>
 
 	<body>
+		<div id="info">
+			<a href="http://vesseljs.org/" target="_blank" rel="noopener">Vesse.js</a> Manoeuvring <br/>
+			Author: <a href="https://shiptodata.com/" target="_blank" rel="noopener">Felipe Ferrari</a> - Msc. Student Ship Design
+		</div>
+
 		<!-- This is the loader wraper, unncoment this to see the loading page -->
 		<div id="loader-wrapper">
 			<div class="loader loader-white loader-1"></div>
@@ -246,7 +276,7 @@
 			<ul>
 				<li class="ctrl-key-explanation">Use <span class="ctrl-key">w</span>, <span class="ctrl-key">a</span>, <span class="ctrl-key">s</span>, <span class="ctrl-key">d</span> buttom to control the <br> rotation and angle of the propeller; </li>
 				<li>Version under development;</li>
-				<li>Model based on IP500515 course <br> from NTNU.</li>
+				<li>Hydrodinamic coeff. values based on exammple <br> from NTNU IP500515 course.</li>
 			</ul>
 		</div>
 
@@ -672,9 +702,9 @@
 				zUpCont = new THREE.Group();
 				scene.add( zUpCont );
 
-				var test = new CheckPoint('Test', 10, 10, 20 );
-				zUpCont.add(test.mesh);
-				zUpCont.add(test.light);
+				// var test = new CheckPoint('Test', 10, 10, 20 );
+				// zUpCont.add(test.mesh);
+				// zUpCont.add(test.light);
 
 				var skybox = new Skybox( oSize );
 				skybox.name = "Skybox";
@@ -697,7 +727,6 @@
 
 				window.addEventListener( "resize", onResize, false );
 				onResize();
-				camera.position.set( - 60, 20, 0 );
 
 				zUpCont.add( new THREE.AxesHelper( 1000 ) );
 				zUpCont.add( new THREE.HemisphereLight( 0xccccff, 0x666688, 1 ) );
@@ -834,7 +863,7 @@
 
 				// //GUI setup (comment out to remove gui)
 				viewer = {
-					view: 0
+					view: 1
 				};
 				gui = new dat.GUI();
 				scale = gui.addFolder( "Dissolution Parameters" );
@@ -876,14 +905,17 @@
 
 					// make this inside the Vessel.js
 					manoeuvringModel.setSpeed( manoeuvringModel.V.u );
-					var rudderAngle = manoeuvringModel.rudderAngle * Math.PI / 180;
-					var cos = Math.cos( rudderAngle );
-					var sin = Math.sin( rudderAngle );
+					var propellerAngle = manoeuvringModel.rudderAngle * Math.PI / 180;
+					var cos = Math.cos( propellerAngle );
+					var sin = Math.sin( propellerAngle );
+
+					var rotationStates = propellerInteraction.getByRotation( manoeuvringModel.n );
+
 
 					var forceVector = [
-						propellerInteraction.getForce( manoeuvringModel.n ) * cos,
-						propellerInteraction.getForce( manoeuvringModel.n ) * sin,
-						propellerInteraction.getForce( manoeuvringModel.n ) * sin * 20
+						rotationStates.Ft * cos,
+						rotationStates.Ft * sin,
+						rotationStates.Ft * sin * 20
 					];
 
 					var timeElapsedS = clock.getElapsedTime() - time;
