@@ -6,6 +6,12 @@ Then in javascript use classes and functions with a vessel prefix. Example:
 let ship = new vessel.Ship(someSpecification);
 */
 
+// * ATTENTION * //
+// This is a temporary version that allows the manouvring calculation by using the
+// dormand prince approx.
+// This version will be deleted by june 2021 and merged with the vessel.js
+console.warn('This version will be deleted by june 2021 and merged with the vessel.js');
+
 "use strict";
 
 var vessel = {};
@@ -269,58 +275,45 @@ function trapezoidCalculation(xbase0, xbase1, xtop0, xtop1, ybase, ytop) {
 }
 
 function combineAreas(array) {
-	let A = 0
-	let xc = 0
-	let yc = 0
-	let maxX = 0,
-		minX = 0,
-		maxY = 0,
-		minY = 0
-	let L = array.length
-	let foundMinY = false // Marker to find the maximun non zero point
-	let foundMaxY = false // Marker to find the maximun non zero point
+	let A = 0;
+	let xc = 0;
+	let yc = 0;
+	let maxX = 0, minX = 0, maxY = 0, minY = 0;
+	let L = array.length;
 	for (let i = 0; i < L; i++) {
-		let e = array[i]
-		A += e.A
-		xc += e.xc * e.A
-		yc += e.yc * e.A
-		if (!isNaN(e.maxX) && e.maxX > maxX) maxX = e.maxX
-		if (!isNaN(e.minX) && e.minX < minX) minX = e.minX
-		if (!isNaN(e.maxY) && e.maxY > maxY && !foundMaxY && foundMinY) {
-			maxY = e.maxY
-			if (e.A === 0) {
-				foundMaxY = true
-			}
-		}
-		if (!isNaN(e.minY) && !foundMinY) {
-			if (e.A !== 0) {
-				minY = e.minY
-				foundMinY = true //Sets the first not null or zero point
-			}
-		}
+		let e = array[i];
+		A += e.A;
+		xc += e.xc * e.A;
+		yc += e.yc * e.A;
+		if (!isNaN(e.maxX) && e.maxX > maxX)
+			maxX = e.maxX;
+		if (!isNaN(e.minX) && e.minX < minX)
+			minX = e.minX;
+		if (!isNaN(e.maxY) && e.maxY > maxY)
+			maxY = e.maxY;
+		if (!isNaN(e.minY) && e.minY < minY)
+			minY = e.minY;
 	}
-	if (!foundMaxY) maxY = array[L-1].maxY //if foundMaxY is false then the ship is a barge and a different logic must apply @ferrari212
-
-	let Ix = 0
-	let Iy = 0
+	let Ix = 0;
+	let Iy = 0;
 
 	if (A !== 0) {
-		xc /= A
-		yc /= A
+		xc /= A;
+		yc /= A;
 	} else {
 		//console.warn("Zero area combination.");
 		//console.trace();
-		xc /= L
-		yc /= L
+		xc /= L;
+		yc /= L;
 	}
 
 	for (let i = 0; i < array.length; i++) {
-		let e = array[i]
-		Ix += steiner(e.Ix, e.A, e.yc, yc)
-		Iy += steiner(e.Iy, e.A, e.xc, xc)
+		let e = array[i];
+		Ix += steiner(e.Ix, e.A, e.yc, yc);
+		Iy += steiner(e.Iy, e.A, e.xc, xc);
 	}
 
-	return { A: A, xc: xc, yc: yc, Ix: Ix, Iy: Iy, maxX: maxX, minX: minX, maxY: maxY, minY: minY }
+	return {A: A, xc: xc, yc: yc, Ix: Ix, Iy: Iy, maxX: maxX, minX: minX, maxY: maxY, minY: minY};
 }
 
 //x and y here refers to coordinates in the plane that is being calculated on.
@@ -2676,6 +2669,140 @@ Object.defineProperties(HullResistance.prototype, {
 });
 // This module simulates the propeller and its interaction with hull and engine.
 
+// @ferrari212
+function Manoeuvring(ship, states, hullResitance, propellerInteraction, m, I, D, initial_yaw = 0) {
+	if (typeof numeric !== "function") {
+		console.error("Manoeuvring requires the numeric.js library.")
+		return null
+	}
+
+	StateModule.call(this, ship, states);
+	if (typeof this.states.discrete.FloatingCondition === "undefined") {
+		this.setDraft();
+	}
+	if (typeof this.states.discrete.Speed === "undefined") { // if vessel does not have a speed state
+		this.setSpeed(); // use its design speed
+	}
+	
+	this.hullResitance = hullResitance;
+	this.propellerInteraction = propellerInteraction;
+
+	Object.assign(this, { 
+		// X: {x:0, y:0, yaw: 0},
+		DX: {x:0, y:0, yaw: 0},
+		V: {u:0, v:0, yaw_dot:0},
+		n: 0,
+		yaw: initial_yaw,
+		rudderAngle: 0
+	})
+
+	this.setSpeed(0);
+
+	this.M = [[m, 0, 0],
+              [0, m, 0],
+              [0, 0, 0]
+            ];
+  this.I = I;
+
+	if (D === undefined) {
+		console.warn('Model with no defined damping value')
+		D = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+	}
+
+	// debugger
+	// this.resistanceState = this.states.discrete.HullResistance.state;
+
+	this.M_RB = numeric.add(this.M, this.I)
+  this.INVM = numeric.inv(this.M_RB)
+  this.INVMD = numeric.dot(numeric.neg(this.INVM), D)   
+  this.setMatrixes()
+
+	// Think about what would be writen
+	this.output = ["V", "efficiency"];
+
+}
+
+Manoeuvring.prototype = Object.create(StateModule.prototype);
+
+Object.assign(Manoeuvring.prototype, {
+	constructor: Manoeuvring,
+	setMatrixes: function (F = [0, 0, 0], yaw = 0) {
+		// debugger
+    this.R = this.parseR(yaw)
+    this.A = this.parseA(this.R, this.INVMD)
+    const INVMF = numeric.dot(this.INVM, F)
+    this.B = this.parseB(INVMF)
+  },
+	parseA: function (R, M) {
+    var A = []
+
+    for (let i = 0; i < 6; i++){
+      A.push([0, 0, 0, 0, 0, 0]);
+    }
+
+    for (let i = 0; i < 6; i++) {
+      for (let j = 0; j < 6; j++) {
+        if (j < 3) {
+          A[i][j] =  0
+        } else {
+          A[i][j] = i < 3  ? R[i][j-3] : M[i-3][j-3]
+        }        
+      }      
+    }
+    return A
+  },
+	parseB: function (INVMF) {
+    return [0, 0, 0, INVMF[0], INVMF[1], INVMF[2]]
+  },
+	parseR: function (yaw) {
+    var trig = {cos: Math.cos(yaw), sin: Math.sin(yaw)}
+    return [[trig.cos, -trig.sin, 0], 
+            [trig.sin, trig.cos, 0],
+            [0, 0, 1]
+          ];
+  },
+	getDerivatives: function (V = {u: 0, v:0, yaw_dot: 0}) {
+    var X = [0,
+             0,
+             0,
+             V.u,
+             V.v,
+             V.yaw_dot
+            ]
+
+    var X_dot = numeric.add(numeric.dot(this.A, X), this.B)
+
+    return X_dot
+  },
+	getDisplacements: function (dt) {
+    // Parse matrix V
+    var X = [0,
+						 0,
+						 0,
+						 this.V.u,
+						 this.V.v,
+						 this.V.yaw_dot];
+
+		var self = this;
+    var sol = numeric.dopri(0, dt, X, function (t,V) { return self.getDerivatives({u: X[3], v:X[4], yaw_dot: X[5]}) }, 1e-8, 100).at(dt);
+        
+    // Get global coordinates variation (dx, dy, dyaw)
+    // Get local velocity (du, dv, dyaw_dot)
+    this.DX = {x: sol[0], y: sol[1], yaw: sol[2]}
+    this.V = {u: sol[3], v: sol[4], yaw_dot: sol[5]}
+    this.yaw += this.DX.yaw
+  }
+});
+
+// Object.defineProperties(HullResistance.prototype, {
+// 	setMatrixes: StateModule.prototype.memoized(function (F = [0, 0, 0], yaw = 0) {
+//     this.R = this.parseR(yaw)
+//     this.A = this.parseA(this.R, this.INVMD)
+//     const INVMF = numeric.dot(this.INVM, F)
+//     this.B = this.parseB(INVMF)
+//   })
+// })
+
 function PropellerInteraction(ship, states, propeller, rho = 1025) {
 	StateModule.call(this, ship, states); // get resistance results in N, W from vessel state
 	this.propeller = propeller;
@@ -2685,9 +2812,9 @@ function PropellerInteraction(ship, states, propeller, rho = 1025) {
 	if (typeof this.states.discrete.Speed === "undefined") { // if vessel does not have a speed state
 		this.setSpeed(); // use its design speed
 	}
-	// debugger
 	this.speedState = this.states.discrete.Speed.state;
 	this.floatState = this.states.discrete.FloatingCondition.state;
+	// debugger
 	this.resistanceState = this.states.discrete.HullResistance.state;
 	this.rho = rho; // kg/m³
 	this.output = ["propulsion"];
@@ -2701,14 +2828,29 @@ PropellerInteraction.prototype = Object.create(StateModule.prototype);
 Object.assign(PropellerInteraction.prototype, {
 	constructor: PropellerInteraction,
 	getByRotation: function (n) {
-		if (n === 0) return 0;
+		if (n === 0) return {Ft: 0, Pp: 0};
 
+		var lcb = 100 * (this.floatState.LCB - (this.floatState.minXs + this.floatState.LWL / 2)) / this.floatState.LWL; // %
 		var J = this.propulsion.Va /(Math.abs(n) * this.propeller.D);
 
 		var KT = this.propeller.beta1 - this.propeller.beta2 * J;
-		var T = KT * this.rho * Math.pow(n, 2) * Math.pow(this.propeller.D, 5);
-		var Ftadd =	Math.sign(n)* T * this.propeller.noProps * (1 - this.resistanceState.t);
-		return Ftadd;
+		var KQ = this.propeller.gamma1 - this.propeller.gamma2 * J;
+
+		var etar;
+		if (this.propeller.noProps === 1) {
+			etar = 0.9922 - 0.05908 * this.propeller.AeAo + 0.07424 * (this.floatState.Cp - 0.0225 * lcb);
+		} else if (this.propeller.noProps === 2) {
+			etar = 0.9737 + 0.111 * (this.floatState.Cp - 0.0225 * lcb) - 0.06325 * this.propeller.P / this.propeller.D;
+		}
+
+		var T = KT * this.rho * Math.pow(n, 2) * Math.pow(this.propeller.D, 4);
+		var Q = KQ * this.rho * Math.pow(n, 2) * Math.pow(this.propeller.D, 5);
+		// console.log( `T: ${T}; Q: ${Q}`);
+
+		var Ft =	Math.sign(n)* T * this.propeller.noProps * (1 - this.resistanceState.t);
+		var Po =	2 * Math.PI * Math.abs(Q * n) * this.propeller.noProps;
+		var Pp =	Po * etar;
+		return {Ft, Pp};
 	},
 });
 
@@ -2840,6 +2982,7 @@ Object.assign(vessel, {
 	Positioning: Positioning,
 	FuelConsumption: FuelConsumption,
 	HullResistance: HullResistance,
+	Manoeuvring: Manoeuvring,
 	PropellerInteraction: PropellerInteraction,
 	browseShip: browseShip,
 	loadShip: loadShip,

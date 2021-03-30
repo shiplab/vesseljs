@@ -48,9 +48,40 @@
 	color:#fff!important;
 	background-color:#f44336!important}
 
+/* ******* Signature template ******* */
+
+#info {
+			position: absolute;
+			color: #011C40;
+			top: 0px;
+			width: 100%;
+			padding: 10px;
+			box-sizing: border-box;
+			text-align: center;
+			-moz-user-select: none;
+			-webkit-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+			pointer-events: none;
+			z-index: 1;
+		}
+
+		#info a {
+			color: #A60D0D;
+			pointer-events: auto;
+		}
+
+		/* ******* ******* ******* */
+
 </style>
 
 <body>
+	<div id="info">
+		<a href="http://vesseljs.org/" target="_blank" rel="noopener">Vessel.js</a> Mooring Parametric <br/>
+		Calculations: <a href="https://shiptodata.com/" target="_blank" rel="noopener">Felipe Ferrari</a> - Msc. Student Ship Design <br>
+		Simulation and Graphics: <a href="https://www.ntnu.edu/employees/diogo.kramel" target="_blank" rel="noopener">Diogo Kramel</a> - Phd. Candidate
+	</div>
+
 	<script>
 		"use strict";
 		// globals
