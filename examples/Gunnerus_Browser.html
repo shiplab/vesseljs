@@ -234,16 +234,6 @@
 			// zUpCont.add(new THREE.AxesHelper(1000))
 			zUpCont.add(new THREE.HemisphereLight(0xccccff, 0x666688, 1));
 
-			ocean = new Ocean({
-				parentGUI: gui,
-				sunDir: sun.position.clone().normalize(),
-				size: oSize,
-				segments: 127,
-			});
-
-			// playback.add(ocean)
-			ocean.name = "Ocean";
-			//scene.add(ocean);
 			scene.rotation.x = -Math.PI / 2;
 
 			// scene.rotation.x = Math.PI;
@@ -262,15 +252,10 @@
 				ship3D.name = "Ship3D";
 				ship3D.show = "on";
 				zUpCont.add(ship3D);
-				for (let index = 0; index < zUpCont.children[1].decks.children.length; index++) {
-					zUpCont.children[1].decks.children[index].layers.disable(0);
-				}
-				for (let index = 0; index < zUpCont.children[1].hull3D.children.length; index++) {
-					zUpCont.children[1].hull3D.children[index].layers.disable(0);
-				}
-				for (let index = 0; index < zUpCont.children[1].blocks.children.length; index++) {
-					zUpCont.children[1].blocks.children[index].layers.disable(0);
-				}
+
+				ship3D.decks.children.forEach(e => e.layers.disable(0))
+				ship3D.hull3D.children.forEach(e => e.layers.disable(0))
+				ship3D.blocks.children.forEach(e => e.layers.disable(0))
 			});
 
 			// import binary glTF file
@@ -288,94 +273,59 @@
 					shipGLTF.material.side = THREE.DoubleSide;
 				}
 
-				await zUpCont.add(shipGLTF);
-				zUpCont.children[1].blocks.children[49].layers.toggle();
-				//zUpCont.children[1].blocks.children[50].layers.toggle();
-				for (let index = 0; index < zUpCont.children[2].children[4].children.length; index++) {
-					switch (zUpCont.children[2].children[4].children[index].name) {
-						case "Decals":
-							map["112"].push([2, 4, index]);
-							break;
-						case "VesselGlass":
-							map["111.41"].push([2, 4, index]);
-							break;
-						case "bridgeGlass":
-							map["112"].push([2, 4, index]);
-							break;
-						case "Deck":
-							map["111.1"].push([2, 4, index]);
-							break;
-						case "WhitePaint":
-							map["112"].push([2, 4, index]);
-							break;
-						case "bridgeInside":
-							map["112"].push([2, 4, index]);
-							break;
-						case "WindowCover":
-							map["112"].push([2, 4, index]);
-							break;
-						case "Hull":
-							map["111.41"].push([2, 4, index, 0]);
-							map["111.41"].push([2, 4, index, 1]);
-							map["111.71"].push([2, 4, index, 2]);
-							map["111.41"].push([2, 4, index, 3]);
-							zUpCont.children[2].children[4].children[index].children[0].material.side = THREE.DoubleSide;
-							zUpCont.children[2].children[4].children[index].children[1].material.side = THREE.DoubleSide;
-							zUpCont.children[2].children[4].children[index].children[2].material.side = THREE.DoubleSide;
-							zUpCont.children[2].children[4].children[index].children[3].material.side = THREE.DoubleSide;
-							break;
-						case "PTS_Propeller":
-							map["413.1"].push([2, 4, index]);
-							break;
-						case "PTS_PropellerFrame":
-							map["413.1"].push([2, 4, index]);
-							break;
-						case "STB_Propeller":
-							map["413.1"].push([2, 4, index]);
-							break;
-						case "STB_PropellerFrame":
-							map["413.1"].push([2, 4, index]);
-							break;
-						case "Thruster_Front":
-							map["433.1"].push([2, 4, index]);
-							break;
-						case "BluePaint":
-							map["112"].push([2, 4, index]);
-							break;
-						case "bridgeBlue":
-							map["112"].push([2, 4, index]);
-							break;
-						case "bridge":
-							map["112"].push([2, 4, index]);
-							break;
-						case "radar":
-							map["112"].push([2, 4, index, 0]);
-							map["112"].push([2, 4, index, 1]);
-							break;
-						case "safeRing":
-							map["112"].push([2, 4, index, 0]);
-							map["112"].push([2, 4, index, 1]);
-							break;
-						case "Stairs":
-							map["112"].push([2, 4, index, 0]);
-							map["112"].push([2, 4, index, 1]);
-							break;
-						case "vesselShared":
-							map["112"].push([2, 4, index]);
-							break;
-						case "vesselShared_bridge":
-							map["112"].push([2, 4, index, 0]);
-							map["112"].push([2, 4, index, 1]);
-							map["112"].push([2, 4, index, 2]);
-							break;
-						case "Exhaust":
-							map["112"].push([2, 4, index]);
-							break;
-						case "Railing":
-							map["111.41"].push([2, 4, index]);
-							break;
-					}
+				zUpCont.add(shipGLTF);
+
+				// Taking off the crane in the viewr
+				zUpCont.getObjectByName("Pallfinger_Crane").layers.toggle()
+				
+				var root = zUpCont.getObjectByName("RootNode")
+
+				root.getObjectByName("Hull_0").material.side = THREE.DoubleSide
+				root.getObjectByName("Hull_1").material.side = THREE.DoubleSide
+				root.getObjectByName("Hull_2").material.side = THREE.DoubleSide
+				root.getObjectByName("Hull_3").material.side = THREE.DoubleSide
+
+
+				// This supStructObj should merge in map, the reason that obstruct
+				// the complete integration is there is some of elements who had children
+				// which the toggle function is not able to map @ferrai212
+				var supStructObj = {
+					Decals: ["112"],
+					vesselShared_bridge_2: ["112"],
+					VesselGlass: ["111.41"],
+					bridgeGlass: ["112"],
+					WhitePaint: ["112"],
+					bridgeInside: ["112"],
+					WindowCover: ["112"],
+					BluePaint: ["112"],
+					bridgeBlue: ["112"],
+					bridge: ["112"],
+					radar: ["112", "112"],
+					safeRing: ["112", "112"],
+					Stairs: ["112", "112"],
+					vesselShared: ["112"],
+					vesselShared_bridge: ["112", "112", "112"],
+					Exhaust: ["112"],
+					Railing: ["111.41"]
 				}
+
+				root.children.forEach((e, i) => {
+					var objectName = e.name;
+					var keyName = supStructObj[objectName];
+
+					if ( !keyName ) { return }
+				
+					if (keyName.length === 1) {
+						map[keyName[0]].push(objectName)
+					} else {
+
+						for (let i = 0; i < e.children.length; i++) {
+							const name = e.children[i].name;
+							map[keyName[0]].push(name)							
+						}
+
+					}
+				})
 
 				var fadeTarget = document.getElementById("loader-wrapper");
 				var fadeEffect = setInterval(function () {
@@ -411,117 +361,6 @@
 					toggleElement(child, name);
 				});
 			}
-
-			// modelStyle = {
-			// 	model: "ModelGLTF",
-			// 	scene: "On",
-			// 	displayOutline: true,
-			// };
-
-			// //GUI setup (comment out to remove gui)
-			// gui = new dat.GUI();
-
-			// scale = gui.addFolder("Visualization parameters");
-			// scale
-			// 	.add(modelStyle, "model", {
-			// 		Model: "ModelGLTF",
-			// 		Blocks: "Ship3D",
-			// 	})
-			// 	.onChange(newValue => {
-			// 		function verifyElement(element) {
-			// 			var otherName = {
-			// 				ModelGLTF: "Ship3D",
-			// 				Ship3D: "ModelGLTF",
-			// 			};
-
-			// 			if (element.name == otherName[newValue]) {
-			// 				zUpCont.remove(element);
-			// 			}
-			// 		}
-
-			// 		zUpCont.children.forEach(verifyElement);
-
-			// 		// Switch function
-			// 		switch (newValue) {
-			// 			case "ModelGLTF":
-			// 				zUpCont.add(shipGLTF);
-			// 				scale.domElement.hidden = true;
-			// 				break;
-
-			// 			case "Ship3D":
-			// 				zUpCont.add(ship3D);
-			// 				scale.domElement.hidden = false;
-			// 				break;
-
-			// 			default:
-			// 				break;
-			// 		}
-			// 	})
-			// 	.name("View");
-			// scale
-			// 	.add(modelStyle, "scene", {
-			// 		On: "On",
-			// 		Off: "Off",
-			// 	})
-			// 	.onChange(newValue => {
-			// 		switch (newValue) {
-			// 			case "On":
-			// 				scene.getObjectByName("Skybox").visible = true;
-			// 				scene.getObjectByName("Ocean").visible = true;
-			// 				break;
-
-			// 			case "Off":
-			// 				scene.getObjectByName("Skybox").visible = false;
-			// 				scene.getObjectByName("Ocean").visible = false;
-			// 				break;
-
-			// 			default:
-			// 				break;
-			// 		}
-			// 	})
-			// 	.name("Scenario");
-
-			// scene.getObjectByName("Ocean").visible = false
-			// scale.open();
-
-			// scale = gui.addFolder("Check Box List");
-			// scale.domElement.hidden = true;
-			// scale
-			// 	.add(modelStyle, "displayOutline")
-			// 	.onChange(newValue => {
-			// 		toggleElement(zUpCont, "Machinery");
-			// 	})
-			// 	.name("Machinery");
-
-			// scale
-			// 	.add(modelStyle, "displayOutline")
-			// 	.onChange(newValue => {
-			// 		toggleElement(zUpCont, "Tank");
-			// 	})
-			// 	.name("Tank");
-
-			// scale
-			// 	.add(modelStyle, "displayOutline")
-			// 	.onChange(newValue => {
-			// 		toggleElement(zUpCont, "Compartment");
-			// 	})
-			// 	.name("Compartment");
-
-			// scale
-			// 	.add(modelStyle, "displayOutline")
-			// 	.onChange(newValue => {
-			// 		toggleElement(zUpCont, "Deck");
-			// 	})
-			// 	.name("Deck");
-
-			// scale
-			// 	.add(modelStyle, "displayOutline")
-			// 	.onChange(newValue => {
-			// 		toggleElement(zUpCont, "Bulkheads");
-			// 	})
-			// 	.name("Bulkheads");
-
-			// scale.open();
 
 			dat.GUI.toggleHide();
 
@@ -589,16 +428,16 @@
 		// can detail propeller
 
 		let map = { //50 hangar
-			"111.1": ["decks", 2],
-			"111.2": ["bulkheads", 2, [1, 0], [1, 1], [1, 2]],
-			"111.41": ["hull side", 2],
-			"111.71": ["hull bottom", 2],
+			"111.1": ["decks", 2, "Deck"],
+			"111.2": ["bulkheads", 2, "AB", "B23", "FB"],
+			"111.41": ["hull side", 2, "Hull_0", "Hull_1", "Hull_3"],
+			"111.71": ["hull bottom", 2, "Hull_2"],
 			"112": ["superstructure", 2],
-			"331.11": ["frame", 2, [1, 50]],
+			"331.11": ["frame", 2, "SH_GROUP_A_FRAME_ROV_HANGAR"],
 			//"331.11": ["crane", 2, [1, 4, 49]],
-			"411.1": ["engines", 2, [1, 51], [1, 52], [1, 53]],
-			"413.1": ["propeller", 2],
-			"433.1": ["thruster", 2]
+			"411.1": ["engines", 2, "NOGVA_Scania_bk_l", "NOGVA_Scania_bk_c", "NOGVA_Scania_bk_r"],
+			"413.1": ["propeller", 2, "PTS_Propeller", "PTS_PropellerFrame", "STB_PropellerFrame", "STB_Propeller"],
+			"433.1": ["thruster", 2, "Thruster_Front"]
 		}
 
 		let tree = new Tree('.hierarchy', {
@@ -606,46 +445,17 @@
 			values: ["-1"],
 			closeDepth: 3,
 			// loaded: function () {
-			// 	//this.values = ["-1"];
 			// 	console.log(this)
-			// 	// console.log("oi")
-			// 	// console.log(this.values)
-			// 	//this.disables = ['0-0-0', '0-0-1', '0-0-2']
 			// },
 			onChange: function () {
-				console.log(this);
 				for (let prop in map) {
-					//console.log(this.leafNodesById[prop].status);
+					// Maybe it is necessary to use the getObjectByName
 					let treeStatus = this.leafNodesById[prop].status;
-					let mapStatus = map[prop][1];
+					let mapStatus = map[prop][1];					
 					if (treeStatus !== mapStatus) {
-						if (map[prop][0] !== "bulkheads" && map[prop][0] !== "engines" && map[prop][0] !== "frame") {
-							for (let i = 2; i < map[prop].length; i++) {
-								if (map[prop][i].length === 3) {
-									let cord1 = map[prop][i][0];
-									let cord2 = map[prop][i][1];
-									let cord3 = map[prop][i][2];
-									zUpCont.children[cord1].children[cord2].children[cord3].layers.toggle();
-								} else if (map[prop][i].length === 4) {
-									let cord1 = map[prop][i][0];
-									let cord2 = map[prop][i][1];
-									let cord3 = map[prop][i][2];
-									let cord4 = map[prop][i][3];
-									zUpCont.children[cord1].children[cord2].children[cord3].children[cord4].layers.toggle();
-								}
-							}
-						} else if (map[prop][0] === "engines" || map[prop][0] === "frame") {
-							for (let i = 2; i < map[prop].length; i++) {
-								let cord1 = map[prop][i][0];
-								let cord2 = map[prop][i][1];
-								zUpCont.children[cord1].blocks.children[cord2].layers.toggle();
-							}
-						} else if (map[prop][0] === "bulkheads") {
-							for (let i = 2; i < map[prop].length; i++) {
-								let cord1 = map[prop][i][0];
-								let cord2 = map[prop][i][1];
-								zUpCont.children[cord1].bulkheads.children[cord2].layers.toggle();
-							}
+						for (let i = 2; i < map[prop].length; i++) {
+							var name = map[prop][i];								
+							zUpCont.getObjectByName(name).layers.toggle();
 						}
 						map[prop][1] = treeStatus;
 					}
