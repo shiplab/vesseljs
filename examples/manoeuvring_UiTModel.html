@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>Ship in Manoeuvring</title>
+		<title>Ship in Ocean</title>
 		<!-- <script src="../build/vessel.js"></script> -->
 		<script src="../build/vessel_with_dopri.js"></script>
 
@@ -26,6 +26,7 @@
 		<!--Map libraries-->
 		<script src="libs/d3.v3.min.js"></script>
 		<script src="snippets/LineChartClass.js"></script>
+		<!-- <script src="snippets/lineChart.js"></script> -->
 
 		<script src="3D_engine/Playback.js"></script>
 		<!-- <script src="snippets/Configurable_ocean.js"></script> -->
@@ -75,31 +76,6 @@
 			box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
 		}
 
-		/* ******* Signature template ******* */
-
-		#info {
-			position: absolute;
-			color: #011C40;
-			top: 0px;
-			width: 100%;
-			padding: 10px;
-			box-sizing: border-box;
-			text-align: center;
-			-moz-user-select: none;
-			-webkit-user-select: none;
-			-ms-user-select: none;
-			user-select: none;
-			pointer-events: none;
-			z-index: 1;
-		}
-
-		#info a {
-			color: #A60D0D;
-			pointer-events: auto;
-		}
-
-		/* ******* ******* ******* */
-
 		#notes {
 			position: fixed;
 			bottom: 16px;
@@ -115,9 +91,33 @@
 			padding-bottom: 5px;
 		}
 
+		#graphic1 {
+			border-radius: 5%;
+			position: fixed;
+			top: 120px;
+			z-index: 999;
+			right: 16px;
+			font-family: 'Cutive Mono', monospace;
+
+			background-color: #fff;
+			opacity: 0.7;
+		}
+
+		#graphic2 {
+			border-radius: 5%;
+			position: fixed;
+			top: 120px;
+			z-index: 999;
+			left: 16px;
+			font-family: 'Cutive Mono', monospace;
+
+			background-color: #fff;
+			opacity: 0.7;
+		}
+
 		#panel-number {
 			position: fixed;
-			top: 16px;
+			top: 0px;
 			left: 16px;
 
 			text-align: center;
@@ -251,22 +251,28 @@
 			}
 		}
 		/* LOADER */
-		
+
+		/* Style required for D3.js */
+		svg {
+					font: 10px sans-serif;
+					z-index: 999;
+				}
+
+		.axis path,
+		.axis line {
+			fill: none;
+			stroke: #000;
+			shape-rendering: crispEdges;
+		}
+		/* End Style required for D3.js */
 	</style>
 
 	<body>
-		<div id="info">
-			<a href="http://vesseljs.org/" target="_blank" rel="noopener">Vessel.js</a> Manoeuvring <br/>
-			Author: <a href="https://shiptodata.com/" target="_blank" rel="noopener">Felipe Ferrari</a> - Msc. Student Ship Design
-			<br>
-			Drawing: <a href="https://www.ntnu.edu/" target="_blank" rel="noopener">NTNU</a>
-		</div>
-
 		<!-- This is the loader wraper, unncoment this to see the loading page -->
-		<div id="loader-wrapper">
+		<!-- <div id="loader-wrapper">
 			<div class="loader loader-white loader-1"></div>
 			<div><h1 style="font-style: italic">Loading...</h1></div>
-		</div>
+		</div> -->
 
 		<canvas class="controller-button"></canvas>
 
@@ -274,11 +280,28 @@
 			<img src="..\examples\images\code-24px.svg" />
 		</a>
 
+		<div id="graphic1">
+			<div class="container">
+				<div id="lineChart-positon"></div>
+			</div>	
+		</div>
+
+		<div id="graphic2">
+			<div class="container">
+				<div id="lineChart-eff"></div>
+			</div>	
+		</div>
+
 		<div id="notes" class="unselectable">
+			<!-- <div class="container">
+				<h3>Results Visualization</h3>
+				<p>Adapted from <a href="https://bl.ocks.org/mbostock/3887118" target="_blank">this page</a>.</p>
+				<div id="lineChart"></div>
+			</div> -->
 			<ul>
 				<li class="ctrl-key-explanation">Use <span class="ctrl-key">w</span>, <span class="ctrl-key">a</span>, <span class="ctrl-key">s</span>, <span class="ctrl-key">d</span> buttom to control the <br> rotation and angle of the propeller; </li>
-				<li>Version under development;</li>
-				<li>Hydrodinamic coeff. values based on exammple <br> from NTNU IP500515 course.</li>
+				<!-- <li>Version under development;</li> -->
+				<!-- <li>Model based on IP500515 course <br> from NTNU.</li> -->
 			</ul>
 		</div>
 
@@ -314,7 +337,7 @@
 			var scale, modelStyle;
 			var speedText, angleText, rotationText;
 			var clock, time;
-			var canvas, c, orbitController;
+			var canvas, c, orbitController, lineChart, lineChart2;
 
 
 			document.addEventListener( "keydown", onDocumentKeyDown, false );
@@ -326,7 +349,7 @@
 				switch ( keyCode ) {
 
 					case 87:
-						if ( n <= 5 ) {
+						if ( n <= 4 ) {
 
 							manoeuvringModel.n += 0.1;
 							rotationText.innerText = ( 60 * manoeuvringModel.n ).toFixed( 0 );
@@ -335,7 +358,7 @@
 
 						break;
 					case 83:
-						if ( n >= - 5 ) {
+						if ( n >= - 4 ) {
 
 							manoeuvringModel.n -= 0.1;
 							rotationText.innerText = ( 60 * manoeuvringModel.n ).toFixed( 0 );
@@ -532,10 +555,12 @@
 				}
 
 				class CheckPoint {
-					constructor(name, radius, max, min) {
-						this.position= {x: 10, y: 10};
+					constructor(name, position = {x: -10, y: -10} , radius = 10, max = 450, min = 450) {
+						this.position= position;
 						this.radius = radius
 						this.color = "#ffff00"
+
+						debugger
 						
 						this.addMesh();
 						this.addLight();
@@ -557,10 +582,10 @@
 					}
 
 					addLight() {
-						this.light = new THREE.PointLight( this.color, 10, 100 );
+						this.light = new THREE.PointLight( this.color, 2, 100 );
 						this.light.castShadow = true;
 						// The distance are inverted due Vessel.js rotation @ferrari212
-						this.light.position.set( this.position.x, 10, -this.position.y );
+						this.light.position.set( this.position.x, this.position.y, 10 );
 					}
 
 					locatedInside(x, y) {
@@ -593,7 +618,6 @@
 						// with Y up in Three.js reference to Z up in Vessel.js @ferrari212
 						this.rotateTaitBryan = Vessel.Vectors.rotateTaitBryan;
 						this.rotVector = new THREE.Vector3(-Math.PI/2 , 0, 0);
-						// debugger
 					}
 
 					_CalculateIdealOffset() {
@@ -615,11 +639,10 @@
 
 						const idealLookat = new THREE.Vector3( 0, 0, - 200 );
 						const rotation = new THREE.Euler( 0, this._params.rotation._y, 0 );
-						const move = new THREE.Vector3(
-							this._params.position.x,
-							this._params.position.z,
-							- this._params.position.y
-						);
+						
+						const transformed =  this.rotateTaitBryan(this._params.position, this.rotVector);
+						
+						const move = new THREE.Vector3(transformed.x, transformed.y, transformed.z);
 
 						idealLookat.applyEuler( rotation );
 						idealLookat.add( move );
@@ -704,9 +727,6 @@
 				zUpCont = new THREE.Group();
 				scene.add( zUpCont );
 
-				// var test = new CheckPoint('Test', 10, 10, 20 );
-				// zUpCont.add(test.mesh);
-				// zUpCont.add(test.light);
 
 				var skybox = new Skybox( oSize );
 				skybox.name = "Skybox";
@@ -758,7 +778,7 @@
 
 					// preload propeller specification
 					var propReq = new XMLHttpRequest();
-					propReq.open( "GET", "specs/propeller_specifications/wag_4b_0.55a_1.2p.json", true );
+					propReq.open( "GET", "specs/propeller_specifications/rolls_royce_500_azipod.json", true );
 					propReq.addEventListener( "load", function ( event ) {
 
 						var response = event.target.response;
@@ -786,22 +806,59 @@
 
 						}
 
-						// debugger
-
 						// Pass the manouvring functions here
-						var m = 1.1e7;
+						
+						// var m = 7e4;
+						var m = ship.getWeight().mass;
 						var I = [
 							[ 0, 0, 0 ],
 							[ 0, 0, 8.4e6 ],
-							[ 0, 8.4e6, 5.8e9 ]
+							[ 0, 8.4e6, 5.8e8 ]
 						];
 						var D = [
-							[ 3e5, 0, 0 ],
-							[ 0, 5.5e5, 6.4e5 ],
-							[ 0, 6.4e5, 1.2e8 ]
+							[ 3e4, 0, 0 ],
+							[ 0, 5.5e4, 6.4e4 ],
+							[ 0, 6.4e4, 1.2e5 ]
 						];
 
 						manoeuvringModel = new Vessel.Manoeuvring( ship, shipState, hullRes, propellerInteraction, m, I, D );
+
+						// it is not possible to insert here
+						var keyResults = [];
+						keyResults.push({x: -50, y: -2.3213});
+						keyResults.push({x: 0, y: 186.5250626214614});
+						keyResults.push({x: 400, y: -200});
+						keyResults.push({x: 400, y: 400});
+						
+						var checkPoint = [] 
+
+						keyResults.forEach((e, i) => {
+							checkPoint.push(new CheckPoint('Test', e, 10 ));
+							scene.add(checkPoint[i].mesh);
+						scene.add(checkPoint[i].light);
+						});
+
+						// checkPoint = new CheckPoint('Test', keyResults[0], 10 );
+						// scene.add(checkPoint.mesh);
+						// scene.add(checkPoint.light);
+
+						// var lineChart = new PositionGraph("lineChart1", keyResults, "x", "x - name");
+						var labelObj1 = {
+							xkey: "x", 
+							xlabel: "Position X (m)",
+							ykey: "y",
+							ylabel: "Position Y (m)"
+						}
+						lineChart = new PositionGraph("lineChart1", keyResults, labelObj1, "lineChart-positon");
+						
+						var labelObj2 = {
+							xkey: "x", 
+							xlabel: "Rotation (%)",
+							ykey: "y",
+							ylabel: "MCR (%)"
+						}
+						lineChart2 = new ConsGraph("lineChart2", keyResults, labelObj2, "lineChart-eff");
+						lineChart2.drawLineGeneric(0, 0, manoeuvringModel.propeller)
 
 					};
 
@@ -826,6 +883,8 @@
 					}
 
 					zUpCont.add( shipGLTF );
+					camera.position.set( 0, 0, 0 );
+
 
 					// Insert the GLTF object
 					thrirdPersonCamera = new ThirdPersonCamera( {
@@ -833,39 +892,41 @@
 						object: shipGLTF
 					} );
 
+					camera
+
 					fixedCamera = new FixedCamera( {
 						camera: camera,
 						object: shipGLTF
 					} );
 
-					// Fade loading page
-					var fadeTarget = document.getElementById( "loader-wrapper" );
-					var fadeEffect = setInterval( function () {
+					// Fade loading page UNCOMENT THIS PART
+					// var fadeTarget = document.getElementById( "loader-wrapper" );
+					// var fadeEffect = setInterval( function () {
 
-						if ( ! fadeTarget.style.opacity ) {
+					// 	if ( ! fadeTarget.style.opacity ) {
 
-							fadeTarget.style.opacity = 1;
+					// 		fadeTarget.style.opacity = 1;
 
-						}
+					// 	}
 
-						if ( fadeTarget.style.opacity > 0 ) {
+					// 	if ( fadeTarget.style.opacity > 0 ) {
 
-							fadeTarget.style.opacity -= 0.05;
+					// 		fadeTarget.style.opacity -= 0.05;
 
-						} else {
+					// 	} else {
 
-							clearInterval( fadeEffect );
-							fadeTarget.remove();
+					// 		clearInterval( fadeEffect );
+					// 		fadeTarget.remove();
 
-						}
+					// 	}
 
-					}, 50 );
+					// }, 50 );s
 
 				} );
 
 				// //GUI setup (comment out to remove gui)
 				viewer = {
-					view: 1
+					view: 0
 				};
 				gui = new dat.GUI();
 				scale = gui.addFolder( "View Style" );
@@ -896,6 +957,7 @@
 
 				requestAnimationFrame( animate );
 
+				
 			} )();
 
 
@@ -913,6 +975,8 @@
 
 					var rotationStates = manoeuvringModel.getPropResult( manoeuvringModel.n );
 
+					// console.log( `Fp: ${propeller.Fp.toFixed(0)};Pp: ${propeller.Pp.toFixed(0)}`);
+					// console.log(rotationStates);
 
 					var forceVector = [
 						rotationStates.Fp * cos,
@@ -921,6 +985,7 @@
 					];
 
 					var timeElapsedS = clock.getElapsedTime() - time;
+					console.log(timeElapsedS);
 
 					manoeuvringModel.setMatrixes( forceVector, shipGLTF.rotation.y + Math.PI / 2 );
 					manoeuvringModel.getDisplacements( timeElapsedS);
@@ -929,6 +994,9 @@
 					shipGLTF.position.x += manoeuvringModel.DX.x;
 					shipGLTF.position.y += manoeuvringModel.DX.y;
 					shipGLTF.rotation.y = - Math.PI / 2 - manoeuvringModel.yaw;
+
+					lineChart.draw(shipGLTF.position.x,	shipGLTF.position.y)
+					lineChart2.draw(Math.abs(manoeuvringModel.n)/5,	rotationStates.Pp/1000000)
 
 					Math.round( viewer.view ) ? fixedCamera.Update() : thrirdPersonCamera.Update( timeElapsedS );
 
