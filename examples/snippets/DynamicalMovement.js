@@ -1,4 +1,5 @@
 //@ferrari212
+// dependecies: numeric.js
 
 /*This code is based on work developed by Thiago G. Monteiro, Jiafeng Xu and Henrique M. Gaspar.*/
 /*source: http://www.shiplab.hials.org/app/6dof/.*/
@@ -6,6 +7,11 @@
 /*The code will require the main ship dimensions*/
 
 function DynamicalMovement(ship, states, userParameters, Ini, oceanDepth) {
+	if (typeof numeric !== "function") {
+		console.error("DynamicalMovement requires the numeric.js library.")
+		return null
+	}
+
 	this.ship = ship;
 	this.states = states;
 

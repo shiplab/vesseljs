@@ -2704,15 +2704,30 @@ function Manoeuvring(ship, states, hullResitance, propellerInteraction, m, I, D,
 
 	this.m = m || ship.getWeight().mass;
 
+	// Using the notation of Rigid body and additional
+	// Must sum later with the adm
 	// this.M = [[this.m, 0, 0],
   //             [0, this.m, 0],
   //             [0, 0, 0]
   //           ];
-	this.M = [
+	this.M_RB = [
 							[ 1.1e6, 0, 0],
-              [0,  1.1e6, 0],
-              [0, 0, 0]
-            ];
+              [0,  1.1e6, 8.4e5],
+              [0, 8.4e5,  5.8e8]
+            ]; 
+						
+						
+	// var Imatrix = [
+	// 	[ 0, 0, 0 ],
+	// 	[ 0, -Yvaccadm, 0],
+	// 	[ 0, 0, approxI - 0.5*rho*Math.pow(attributes.LOA, 5) * Nraccadm ]
+	// ];
+
+	// var Imatrix = [
+	// 	[ 0, 0, 0 ],
+	// 	[ 0, 0, 8.4e5],
+	// 	[ 0, 8.4e5, 5.8e8]
+	// ];
 
 	// The approximaxion is given by the inercia of an Elipsoid in water
 	var attributes = this.ship.structure.hull.attributes;
@@ -2722,27 +2737,14 @@ function Manoeuvring(ship, states, hullResitance, propellerInteraction, m, I, D,
 	var approxI = I || Math.PI * rho * attributes.LOA * attributes.BOA * T * ( 4 * Math.pow(T, 2) + Math.pow(attributes.BOA, 2) )/120;
 
 	var teste = {x: 1, y: 1, z: 1}
-	var Vadm = Math.sqrt(dot(teste, teste));
+	// The values were admensioness without thinking in Vadm
+	// var Vadm = Math.sqrt(dot(teste, teste));
 
-	var CL = 0.5*rho*Math.pow(attributes.LOA, 2)*Vadm;
-	var CLL = CL * attributes.LOA;
-	var CLLL = CLL * attributes.LOA;
+	// var CL = 0.5*rho*Math.pow(attributes.LOA, 2)*Vadm;
+	// var CLL = CL * attributes.LOA;
+	// var CLLL = CLL * attributes.LOA;
 
-	
-
-	// var Imatrix = [
-	// 	[ 0, 0, 0 ],
-	// 	[ 0, -Yvaccadm, 0],
-	// 	[ 0, 0, approxI - 0.5*rho*Math.pow(attributes.LOA, 5) * Nraccadm ]
-	// ];
-
-	var Imatrix = [
-		[ 0, 0, 0 ],
-		[ 0, 0, 8.4e5],
-		[ 0, 8.4e5, 5.8e8]
-	];
-
-	this.I = Imatrix;
+	// this.I = Imatrix;
 
 	// Coef. for adimensionals
 	// var V = 
@@ -2750,15 +2752,13 @@ function Manoeuvring(ship, states, hullResitance, propellerInteraction, m, I, D,
 	// var Vadm = Math.sqrt(dot(this.V, this.V));
 
 	// Taking as Psr aprox 0.7
-	Vsadm = Vs/Math.pow(attributes.LOA, 3);
-	var delta_SR = 1 - 0.7/(28.7*Vsadm + 0.54)
 
 	// Those are negatives because they are in the other side of the equation
 	
 
 	if (D === undefined) {
 		console.warn('Model with no defined damping value, generic values choosen instead')
-		var D = [
+		this.D = [
 			[ 3e4, 0, 0 ],
 			[ 0, 5.5e4, 6.4e4 ],
 			[ 0, 6.4e4, 1.2e7 ]
@@ -2766,8 +2766,10 @@ function Manoeuvring(ship, states, hullResitance, propellerInteraction, m, I, D,
 		// var D = [
 		// 	[ 0, 0, 0 ],
 		// 	[ 0, -CL * Yvadm, -CL * Yvadm - CLL * Yradm ],
-		// 	[ 0, -CL * Yvadm - CLL * Nvadm, -CLLL * Nradm ]
+		// 	[ 0, -CL * Yvadm - CLL * Nvadm, -CLLL * Nrdn ]
 		// ];
+	} else {
+		this.D = D;
 	}
 
 	// debugger
@@ -2778,7 +2780,7 @@ function Manoeuvring(ship, states, hullResitance, propellerInteraction, m, I, D,
 	// I think the M is not the mass in the function, it must account for the damping
 	
 	
-  this.setMatrixes()
+  // this.setMatrixes()
 
 	// Think about what would be writen
 	this.output = ["coefficients"];
@@ -2822,9 +2824,9 @@ Object.assign(Manoeuvring.prototype, {
 		return {Fp, Pp};
 	},
 	setMatrixes: function (F = [0, 0, 0], yaw = 0) {
-		this.M_RB = numeric.add(this.M, this.I)
+		// this.M_RB = numeric.add(this.M, this.I)
 	  this.INVM = numeric.inv(this.M_RB)
-  	this.INVMD = numeric.dot(numeric.neg(this.INVM), D) 
+  	this.INVMD = numeric.dot(numeric.neg(this.INVM), this.D) 
     
 		this.R = this.parseR(yaw)
     this.A = this.parseA(this.R, this.INVMD)
@@ -2893,16 +2895,32 @@ Object.assign(Manoeuvring.prototype, {
 });
 Object.defineProperties(Manoeuvring.prototype, {
 	coefficients: StateModule.prototype.memoized(function() {
-		var Yvaccadm = -Math.PI * Math.pow(T/attributes.LOA, 2);
-		var Nraccadm = -Math.PI * Math.pow(T/attributes.LOA, 2) / 12;
-		var Yvadm = -(0.145 + 2.25/ld - 0.2*delta_SR);
-		var madm = this.m/(0.5*rho*Math.pow(attributes.LOA, 2)*attributes.Depth)
-		var Yradm = madm -(0.282 + 0.1*delta_SR) + (0.0086*delta_SR + 0.004) * ld;
-		var Nvadm = -(0.222 + 0.1*delta_SR) + 0.00484*ld;
-		var Nradm = -(0.0424 - 0.03*delta_SR) - (0.004*delta_SR - 0.00027) * ld;
+		var L = this.ship.structure.hull.attributes.LOA;
+		var D = this.ship.structure.hull.attributes.Depth;
+		var Vs = this.states.discrete.FloatingCondition.state.Vs;
+		var T = this.ship.designState.calculationParameters.Draft_design;
+		// var dot = Vessel.Vectors.dot
+
+		Vsdn = Vs/Math.pow(attributes.LOA, 3);
+		var delta_SR = 1 - 0.7/(28.7*Vsdn + 0.54)
+
+		var Yvaccdn = -Math.PI * Math.pow(T/L, 2);
+		var Nraccdn = -Math.PI * Math.pow(T/L, 2) / 12;
+		var Yvdn = -(0.145 + 2.25/ld - 0.2*delta_SR);
+		var mdn = this.m/(0.5*rho*Math.pow(L, 2)*D)
+		var Yrdn = mdn -(0.282 + 0.1*delta_SR) + (0.0086*delta_SR + 0.004) * ld;
+		var Nvdn = -(0.222 + 0.1*delta_SR) + 0.00484*ld;
+		var Nrdn = -(0.0424 - 0.03*delta_SR) - (0.004*delta_SR - 0.00027) * ld;
 		// debugger
-		console.log(a);
-		return {a}
+
+		return {Yvaccdn, Nraccdn, Yvdn, Yrdn, Nvdn, Nrdn }
+	}, "coefficients"),
+	dn: StateModule.prototype.memoized(function() {
+		var Cl = 0.5*rho*Math.pow(attributes.LOA, 2);
+		var Cll = Cl * attributes.LOA;
+		var Clll = Cll * attributes.LOA;
+
+		return	{Cl, Cll, Clll}	
 	}, "coefficients")
 });
 
