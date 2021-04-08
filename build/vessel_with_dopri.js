@@ -2702,24 +2702,82 @@ function Manoeuvring(ship, states, hullResitance, propellerInteraction, m, I, D,
 
 	this.setSpeed(0);
 
-	this.M = [[m, 0, 0],
-              [0, m, 0],
+	this.m = m || ship.getWeight().mass;
+
+	// this.M = [[this.m, 0, 0],
+  //             [0, this.m, 0],
+  //             [0, 0, 0]
+  //           ];
+	this.M = [
+							[ 1.1e6, 0, 0],
+              [0,  1.1e6, 0],
               [0, 0, 0]
             ];
-  this.I = I;
+
+	// The approximaxion is given by the inercia of an Elipsoid in water
+	var attributes = this.ship.structure.hull.attributes;
+	var Vs = this.states.discrete.FloatingCondition.state.Vs;
+	var T = this.ship.designState.calculationParameters.Draft_design;
+	var dot = Vessel.Vectors.dot
+	var approxI = I || Math.PI * rho * attributes.LOA * attributes.BOA * T * ( 4 * Math.pow(T, 2) + Math.pow(attributes.BOA, 2) )/120;
+
+	var teste = {x: 1, y: 1, z: 1}
+	var Vadm = Math.sqrt(dot(teste, teste));
+
+	var CL = 0.5*rho*Math.pow(attributes.LOA, 2)*Vadm;
+	var CLL = CL * attributes.LOA;
+	var CLLL = CLL * attributes.LOA;
+
+	
+
+	// var Imatrix = [
+	// 	[ 0, 0, 0 ],
+	// 	[ 0, -Yvaccadm, 0],
+	// 	[ 0, 0, approxI - 0.5*rho*Math.pow(attributes.LOA, 5) * Nraccadm ]
+	// ];
+
+	var Imatrix = [
+		[ 0, 0, 0 ],
+		[ 0, 0, 8.4e5],
+		[ 0, 8.4e5, 5.8e8]
+	];
+
+	this.I = Imatrix;
+
+	// Coef. for adimensionals
+	// var V = 
+	var ld = attributes.LOA/attributes.Depth;
+	// var Vadm = Math.sqrt(dot(this.V, this.V));
+
+	// Taking as Psr aprox 0.7
+	Vsadm = Vs/Math.pow(attributes.LOA, 3);
+	var delta_SR = 1 - 0.7/(28.7*Vsadm + 0.54)
+
+	// Those are negatives because they are in the other side of the equation
+	
 
 	if (D === undefined) {
-		console.warn('Model with no defined damping value')
-		D = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+		console.warn('Model with no defined damping value, generic values choosen instead')
+		var D = [
+			[ 3e4, 0, 0 ],
+			[ 0, 5.5e4, 6.4e4 ],
+			[ 0, 6.4e4, 1.2e7 ]
+		];
+		// var D = [
+		// 	[ 0, 0, 0 ],
+		// 	[ 0, -CL * Yvadm, -CL * Yvadm - CLL * Yradm ],
+		// 	[ 0, -CL * Yvadm - CLL * Nvadm, -CLLL * Nradm ]
+		// ];
 	}
 
 	// debugger
 	// this.resistanceState = this.states.discrete.HullResistance.state;
 
+	// The function I and M are the ones subject to a global state value in Memoized
+	// Or since they use the numeric function they can be neglected in here
 	// I think the M is not the mass in the function, it must account for the damping
-	this.M_RB = numeric.add(this.M, this.I)
-  this.INVM = numeric.inv(this.M_RB)
-  this.INVMD = numeric.dot(numeric.neg(this.INVM), D)   
+	
+	
   this.setMatrixes()
 
 	// Think about what would be writen
@@ -2764,8 +2822,11 @@ Object.assign(Manoeuvring.prototype, {
 		return {Fp, Pp};
 	},
 	setMatrixes: function (F = [0, 0, 0], yaw = 0) {
-		// debugger
-    this.R = this.parseR(yaw)
+		this.M_RB = numeric.add(this.M, this.I)
+	  this.INVM = numeric.inv(this.M_RB)
+  	this.INVMD = numeric.dot(numeric.neg(this.INVM), D) 
+    
+		this.R = this.parseR(yaw)
     this.A = this.parseA(this.R, this.INVMD)
     const INVMF = numeric.dot(this.INVM, F)
     this.B = this.parseB(INVMF)
@@ -2832,7 +2893,13 @@ Object.assign(Manoeuvring.prototype, {
 });
 Object.defineProperties(Manoeuvring.prototype, {
 	coefficients: StateModule.prototype.memoized(function() {
-		var a = 10;
+		var Yvaccadm = -Math.PI * Math.pow(T/attributes.LOA, 2);
+		var Nraccadm = -Math.PI * Math.pow(T/attributes.LOA, 2) / 12;
+		var Yvadm = -(0.145 + 2.25/ld - 0.2*delta_SR);
+		var madm = this.m/(0.5*rho*Math.pow(attributes.LOA, 2)*attributes.Depth)
+		var Yradm = madm -(0.282 + 0.1*delta_SR) + (0.0086*delta_SR + 0.004) * ld;
+		var Nvadm = -(0.222 + 0.1*delta_SR) + 0.00484*ld;
+		var Nradm = -(0.0424 - 0.03*delta_SR) - (0.004*delta_SR - 0.00027) * ld;
 		// debugger
 		console.log(a);
 		return {a}

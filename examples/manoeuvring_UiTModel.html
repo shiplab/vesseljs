@@ -559,8 +559,6 @@
 						this.position= position;
 						this.radius = radius
 						this.color = "#ffff00"
-
-						debugger
 						
 						this.addMesh();
 						this.addLight();
@@ -808,20 +806,23 @@
 
 						// Pass the manouvring functions here
 						
-						// var m = 7e4;
-						var m = ship.getWeight().mass;
-						var I = [
-							[ 0, 0, 0 ],
-							[ 0, 0, 8.4e6 ],
-							[ 0, 8.4e6, 5.8e8 ]
-						];
-						var D = [
-							[ 3e4, 0, 0 ],
-							[ 0, 5.5e4, 6.4e4 ],
-							[ 0, 6.4e4, 1.2e5 ]
-						];
+						var m = 4e5;
+						// var m = ship.getWeight().mass;
+						var I = 5.8e8;
+						// var I = [
+						// 	[ 0, 0, 0 ],
+						// 	[ 0, 0, 8.4e6 ],
+						// 	[ 0, 8.4e6, 5.8e8 ]
+						// ];
+						// var D = [
+						// 	[ 3e4, 0, 0 ],
+						// 	[ 0, 5.5e4, 6.4e4 ],
+						// 	[ 0, 6.4e4, 1.2e5 ]
+						// ];
 
-						manoeuvringModel = new Vessel.Manoeuvring( ship, shipState, hullRes, propellerInteraction, m, I, D );
+						manoeuvringModel = new Vessel.Manoeuvring( ship, shipState, hullRes, propellerInteraction, m, I );
+						// manoeuvringModel = new Vessel.Manoeuvring( ship, shipState, hullRes, propellerInteraction );
+						debugger
 
 						// it is not possible to insert here
 						var keyResults = [];
@@ -956,7 +957,6 @@
 				time = clock.getElapsedTime();
 
 				requestAnimationFrame( animate );
-
 				
 			} )();
 
@@ -985,7 +985,6 @@
 					];
 
 					var timeElapsedS = clock.getElapsedTime() - time;
-					console.log(timeElapsedS);
 
 					manoeuvringModel.setMatrixes( forceVector, shipGLTF.rotation.y + Math.PI / 2 );
 					manoeuvringModel.getDisplacements( timeElapsedS);

@@ -9,7 +9,7 @@ SFOC(load) = a\*load³ + b\*load²+ c\*load + d
 Where load is the ratio between an engine's current working load and its MCR. An example of engine specification would be:
 ```json
 {
-	"MCR": 11000,
+	"MCR": 11000, // [kW]
 	"a": 90,
 	"b": 130,
 	"c": 210,
