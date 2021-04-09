@@ -26,6 +26,7 @@
 		<!--Map libraries-->
 		<script src="libs/d3.v3.min.js"></script>
 		<script src="snippets/LineChartClass.js"></script>
+		<script src="snippets/ManoeuvringMovement.js"></script>
 		<!-- <script src="snippets/lineChart.js"></script> -->
 
 		<script src="3D_engine/Playback.js"></script>
@@ -333,59 +334,19 @@
 			var scene, zUpCont, playback, bodies, ocean;
 			var ship, shipGLTF, shipState, propellers, wave, hullRes, propellerInteraction, rudderModel;
 			var shipDOPRI, shipStateDOPRI;
-			var manoeuvringModel, viewer;
+			var manoeuvring, manoeuvringMovement, viewer;
 			var scale, modelStyle;
 			var speedText, angleText, rotationText;
 			var clock, time;
 			var canvas, c, orbitController, lineChart, lineChart2;
 
 
-			document.addEventListener( "keydown", onDocumentKeyDown, false );
-			function onDocumentKeyDown( event ) {
-
-				var keyCode = event.which;
-				var n = manoeuvringModel.n;
-
-				switch ( keyCode ) {
-
-					case 87:
-						if ( n <= 4 ) {
-
-							manoeuvringModel.n += 0.1;
-							rotationText.innerText = ( 60 * manoeuvringModel.n ).toFixed( 0 );
-
-						}
-
-						break;
-					case 83:
-						if ( n >= - 4 ) {
-
-							manoeuvringModel.n -= 0.1;
-							rotationText.innerText = ( 60 * manoeuvringModel.n ).toFixed( 0 );
-
-						}
-						break;
-					case 65:
-						manoeuvringModel.rudderAngle -= 0.5;
-						angleText.innerText = manoeuvringModel.rudderAngle.toFixed( 1 );
-						break;
-					case 68:
-						manoeuvringModel.rudderAngle += 0.5;
-						angleText.innerText = manoeuvringModel.rudderAngle.toFixed( 1 );
-						break;
-					default:
-						break;
-
-				}
-
-			}
-
 			function onOrbitControllerMove() {
 
 				var canvas = orbitController.canvas;
 				if ( ! canvas.active ) return;
 
-				var n = manoeuvringModel.n;
+				var n = manoeuvringMovement.mvr.n;
 
 				if ( Math.abs( canvas.y ) > Math.abs( canvas.x ) ) {
 
@@ -393,8 +354,8 @@
 
 						if ( n <= 5 ) {
 
-							manoeuvringModel.n += 0.01;
-							rotationText.innerText = ( 60 * manoeuvringModel.n ).toFixed( 0 );
+							manoeuvringMovement.mvr.n += 0.01;
+							rotationText.innerText = ( 60 * manoeuvringMovement.mvr.n ).toFixed( 0 );
 
 						}
 
@@ -402,8 +363,8 @@
 
 						if ( n >= - 5 ) {
 
-							manoeuvringModel.n -= 0.01;
-							rotationText.innerText = ( 60 * manoeuvringModel.n ).toFixed( 0 );
+							manoeuvringMovement.mvr.n -= 0.01;
+							rotationText.innerText = ( 60 * manoeuvringMovement.mvr.n ).toFixed( 0 );
 
 						}
 
@@ -413,13 +374,13 @@
 
 					if ( Math.sign( canvas.x ) > 0 ) {
 
-						manoeuvringModel.rudderAngle += 0.08;
-						angleText.innerText = manoeuvringModel.rudderAngle.toFixed( 1 );
+						manoeuvringMovement.mvr.rudderAngle += 0.08;
+						angleText.innerText = manoeuvringMovement.mvr.rudderAngle.toFixed( 1 );
 
 					} else {
 
-						manoeuvringModel.rudderAngle -= 0.08;
-						angleText.innerText = manoeuvringModel.rudderAngle.toFixed( 1 );
+						manoeuvringMovement.mvr.rudderAngle -= 0.08;
+						angleText.innerText = manoeuvringMovement.mvr.rudderAngle.toFixed( 1 );
 
 					}
 
@@ -820,9 +781,50 @@
 						// 	[ 0, 6.4e4, 1.2e5 ]
 						// ];
 
-						manoeuvringModel = new Vessel.Manoeuvring( ship, shipState, hullRes, propellerInteraction, m, I );
-						// manoeuvringModel = new Vessel.Manoeuvring( ship, shipState, hullRes, propellerInteraction );
-						debugger
+						manoeuvring = new Vessel.Manoeuvring( ship, shipState, hullRes, propellerInteraction, m, I );
+						
+						manoeuvringMovement = new ManoeuvringMovement(manoeuvring)
+						document.addEventListener( "keydown", onDocumentKeyDown, false );
+
+						function onDocumentKeyDown( event ) {
+
+							var keyCode = event.which;
+							var n = manoeuvringMovement.mvr.n;
+
+							switch ( keyCode ) {
+
+								case 87:
+									if ( n <= 4 ) {
+
+										manoeuvringMovement.mvr.n += 0.1;
+										rotationText.innerText = ( 60 * manoeuvringMovement.mvr.n ).toFixed( 0 );
+
+									}
+
+									break;
+								case 83:
+									if ( n >= - 4 ) {
+
+										manoeuvringMovement.mvr.n -= 0.1;
+										rotationText.innerText = ( 60 * manoeuvringMovement.mvr.n ).toFixed( 0 );
+
+									}
+									break;
+								case 65:
+									manoeuvringMovement.mvr.rudderAngle -= 0.5;
+									angleText.innerText = manoeuvringMovement.mvr.rudderAngle.toFixed( 1 );
+									break;
+								case 68:
+									manoeuvringMovement.mvr.rudderAngle += 0.5;
+									angleText.innerText = manoeuvringMovement.mvr.rudderAngle.toFixed( 1 );
+									break;
+								default:
+									break;
+
+							}
+
+						}
+						// debugger
 
 						// it is not possible to insert here
 						var keyResults = [];
@@ -859,7 +861,7 @@
 							ylabel: "MCR (%)"
 						}
 						lineChart2 = new ConsGraph("lineChart2", keyResults, labelObj2, "lineChart-eff");
-						lineChart2.drawLineGeneric(0, 0, manoeuvringModel.propeller)
+						lineChart2.drawLineGeneric(0, 0, manoeuvringMovement.mvr.propeller)
 
 					};
 
@@ -968,12 +970,12 @@
 				if ( shipGLTF ) {
 
 					// make this inside the Vessel.js
-					manoeuvringModel.setSpeed( manoeuvringModel.V.u );
-					var propellerAngle = manoeuvringModel.rudderAngle * Math.PI / 180;
+					manoeuvring.setSpeed( manoeuvringMovement.mvr.V.u );
+					var propellerAngle = manoeuvringMovement.mvr.rudderAngle * Math.PI / 180;
 					var cos = Math.cos( propellerAngle );
 					var sin = Math.sin( propellerAngle );
 
-					var rotationStates = manoeuvringModel.getPropResult( manoeuvringModel.n );
+					var rotationStates = manoeuvring.getPropResult( manoeuvringMovement.mvr.n );
 
 					// console.log( `Fp: ${propeller.Fp.toFixed(0)};Pp: ${propeller.Pp.toFixed(0)}`);
 					// console.log(rotationStates);
@@ -986,20 +988,20 @@
 
 					var timeElapsedS = clock.getElapsedTime() - time;
 
-					manoeuvringModel.setMatrixes( forceVector, shipGLTF.rotation.y + Math.PI / 2 );
-					manoeuvringModel.getDisplacements( timeElapsedS);
+					manoeuvringMovement.setMatrixes( forceVector, shipGLTF.rotation.y + Math.PI / 2 );
+					manoeuvringMovement.getDisplacements( timeElapsedS);
 					time = clock.getElapsedTime();
 
-					shipGLTF.position.x += manoeuvringModel.DX.x;
-					shipGLTF.position.y += manoeuvringModel.DX.y;
-					shipGLTF.rotation.y = - Math.PI / 2 - manoeuvringModel.yaw;
+					shipGLTF.position.x += manoeuvringMovement.mvr.DX.x;
+					shipGLTF.position.y += manoeuvringMovement.mvr.DX.y;
+					shipGLTF.rotation.y = - Math.PI / 2 - manoeuvringMovement.mvr.yaw;
 
 					lineChart.draw(shipGLTF.position.x,	shipGLTF.position.y)
-					lineChart2.draw(Math.abs(manoeuvringModel.n)/5,	rotationStates.Pp/1000000)
+					lineChart2.draw(Math.abs(manoeuvringMovement.mvr.n)/5,	rotationStates.Pp/1000000)
 
 					Math.round( viewer.view ) ? fixedCamera.Update() : thrirdPersonCamera.Update( timeElapsedS );
 
-					speedText.innerText = manoeuvringModel.V.u.toFixed( 1 );
+					speedText.innerText = manoeuvringMovement.mvr.V.u.toFixed( 1 );
 
 					// Improvement: This conditional must be passed internally as a assign function
 					if ( Object.keys( orbitController ).length ) {

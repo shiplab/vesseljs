@@ -2685,6 +2685,7 @@ function Manoeuvring(ship, states, hullResitance, propellerInteraction, m, I, D,
 	}
 
 	this.resistanceState = this.states.discrete.HullResistance.state;	
+	// debugger
 	this.propellerInteraction = propellerInteraction;
 	this.rho = propellerInteraction.rho;
 	this.propeller = this.propellerInteraction.propeller
@@ -2796,7 +2797,6 @@ Object.assign(Manoeuvring.prototype, {
 	constructor: Manoeuvring,
 	getPropResult: function (n) {
 		if (n === 0) return {Fp: 0, Pp: 0};
-		// debugger
 
 		var Va = this.propellerInteraction.propulsion.Va
 
@@ -2822,76 +2822,7 @@ Object.assign(Manoeuvring.prototype, {
 		var Pp =	Po * etar;
 		// debugger
 		return {Fp, Pp};
-	},
-	setMatrixes: function (F = [0, 0, 0], yaw = 0) {
-		// this.M_RB = numeric.add(this.M, this.I)
-	  this.INVM = numeric.inv(this.M_RB)
-  	this.INVMD = numeric.dot(numeric.neg(this.INVM), this.D) 
-    
-		this.R = this.parseR(yaw)
-    this.A = this.parseA(this.R, this.INVMD)
-    const INVMF = numeric.dot(this.INVM, F)
-    this.B = this.parseB(INVMF)
-  },
-	parseA: function (R, M) {
-    var A = []
-
-    for (let i = 0; i < 6; i++){
-      A.push([0, 0, 0, 0, 0, 0]);
-    }
-
-    for (let i = 0; i < 6; i++) {
-      for (let j = 0; j < 6; j++) {
-        if (j < 3) {
-          A[i][j] =  0
-        } else {
-          A[i][j] = i < 3  ? R[i][j-3] : M[i-3][j-3]
-        }        
-      }      
-    }
-    return A
-  },
-	parseB: function (INVMF) {
-    return [0, 0, 0, INVMF[0], INVMF[1], INVMF[2]]
-  },
-	parseR: function (yaw) {
-    var trig = {cos: Math.cos(yaw), sin: Math.sin(yaw)}
-    return [[trig.cos, -trig.sin, 0], 
-            [trig.sin, trig.cos, 0],
-            [0, 0, 1]
-          ];
-  },
-	getDerivatives: function (V = {u: 0, v:0, yaw_dot: 0}) {
-    var X = [0,
-             0,
-             0,
-             V.u,
-             V.v,
-             V.yaw_dot
-            ]
-
-    var X_dot = numeric.add(numeric.dot(this.A, X), this.B)
-
-    return X_dot
-  },
-	getDisplacements: function (dt) {
-    // Parse matrix V
-    var X = [0,
-						 0,
-						 0,
-						 this.V.u,
-						 this.V.v,
-						 this.V.yaw_dot];
-
-		var self = this;
-    var sol = numeric.dopri(0, dt, X, function (t,V) { return self.getDerivatives({u: X[3], v:X[4], yaw_dot: X[5]}) }, 1e-8, 100).at(dt);
-        
-    // Get global coordinates variation (dx, dy, dyaw)
-    // Get local velocity (du, dv, dyaw_dot)
-    this.DX = {x: sol[0], y: sol[1], yaw: sol[2]}
-    this.V = {u: sol[3], v: sol[4], yaw_dot: sol[5]}
-    this.yaw += this.DX.yaw
-  }
+	}
 });
 Object.defineProperties(Manoeuvring.prototype, {
 	coefficients: StateModule.prototype.memoized(function() {
