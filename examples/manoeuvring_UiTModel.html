@@ -14,6 +14,8 @@
 		<!-- <script src="libs/Mirror.js"></script>-->
 		<!-- <script src="libs/WaterShader.js"></script> -->
 		<script src="3D_engine/Water.js"></script>
+		<script src="3D_engine/ThirdPersonCamera.js"></script>
+		<script src="3D_engine/SpatialHashGrid.js"></script>
 
 		<!-- <script src="libs/OrbitControls.js"></script> -->
 		<script src="3D_engine/dat.gui.min.js"></script>
@@ -36,6 +38,8 @@
 
 		<script src="../source/classes/FreeBody.js"></script>
 		<script src="libs/numeric-1.2.6.min.js"></script>
+		<script src="//mrdoob.github.io/stats.js/build/stats.min.js"></script>
+
 	</head>
 
 	<style>
@@ -333,8 +337,8 @@
 			var renderer, camera, thrirdPersonCamera, fixedCamera, gui, stats;
 			var scene, zUpCont, playback, bodies, ocean;
 			var ship, shipGLTF, shipState, propellers, wave, hullRes, propellerInteraction, rudderModel;
-			var shipDOPRI, shipStateDOPRI;
-			var manoeuvring, manoeuvringMovement, viewer;
+			// var shipDOPRI, shipStateDOPRI;
+			var manoeuvring, manoeuvringMovement, viewer, grid;
 			var scale, modelStyle;
 			var speedText, angleText, rotationText;
 			var clock, time;
@@ -528,7 +532,7 @@
 					}
 
 					addMesh() {
-						this.geometry = new THREE.OctahedronGeometry(this.radius/2);
+						this.geometry = new THREE.OctahedronGeometry(this.radius);
 						this.material = new THREE.MeshBasicMaterial( {
 																	color: this.color,
 																	transparent: true,
@@ -561,69 +565,6 @@
 					randomLocation(min, max) {
 						return Math.sign(Math.random()-.5) * randomIntFromRange(min, max);
 					}
-				}
-
-				class ThirdPersonCamera {
-
-					constructor( params ) {
-
-						this._params = params.object;
-						this._camera = params.camera;
-
-						this._currentPosition = new THREE.Vector3();
-						this._currentLookat = new THREE.Vector3();
-						
-						// To assign the transformation of coordinates
-						// with Y up in Three.js reference to Z up in Vessel.js @ferrari212
-						this.rotateTaitBryan = Vessel.Vectors.rotateTaitBryan;
-						this.rotVector = new THREE.Vector3(-Math.PI/2 , 0, 0);
-					}
-
-					_CalculateIdealOffset() {
-
-						const idealOffset = new THREE.Vector3( 0, 20, 100 );
-						const rotation = new THREE.Euler( 0, this._params.rotation._y, 0, 'XYZ' );
-						
-						const transformed =  this.rotateTaitBryan(this._params.position, this.rotVector)
-
-						const move = new THREE.Vector3(transformed.x, transformed.y, transformed.z);
-
-						idealOffset.applyEuler( rotation );
-						idealOffset.add( move );
-						return idealOffset;
-
-					}
-
-					_CalculateIdealLookat() {
-
-						const idealLookat = new THREE.Vector3( 0, 0, - 200 );
-						const rotation = new THREE.Euler( 0, this._params.rotation._y, 0 );
-						
-						const transformed =  this.rotateTaitBryan(this._params.position, this.rotVector);
-						
-						const move = new THREE.Vector3(transformed.x, transformed.y, transformed.z);
-
-						idealLookat.applyEuler( rotation );
-						idealLookat.add( move );
-						return idealLookat;
-
-					}
-
-					Update( timeElapsed ) {
-
-						const idealOffset = this._CalculateIdealOffset();
-						const idealLookat = this._CalculateIdealLookat();
-
-						const t = 4 * timeElapsed; // For a strong moving format @ferrari212
-
-						this._currentPosition.lerp( idealOffset, t );
-						this._currentLookat.lerp( idealLookat, t );
-
-						this._camera.position.copy( this._currentPosition );
-						this._camera.lookAt( this._currentLookat );
-
-					}
-
 				}
 
 				class FixedCamera {
@@ -691,6 +632,9 @@
 				skybox.name = "Skybox";
 				scene.add( skybox );
 
+				stats = new Stats();
+				document.body.appendChild(stats.dom);
+
 				//Camera setup
 				camera = new THREE.PerspectiveCamera( 26, window.innerWidth / window.innerHeight, 1, 10000 );
 
@@ -742,7 +686,7 @@
 
 						var response = event.target.response;
 						var propeller = JSON.parse( response );
-						usePropSpec( propeller, "wag_4b_0.55a_1.2p.json" );
+						usePropSpec( propeller, "rolls_royce_500_azipod.json" );
 
 					} );
 					propReq.send( null );
@@ -824,22 +768,39 @@
 							}
 
 						}
-						// debugger
 
-						// it is not possible to insert here
+						const BOUNDS = [[-500.0, -500.0], [500.0, 500.0]];
+						const RADIUS = 5
+						// const RADIUS = ship.structure.hull.attributes.BOA
+						const DIVISIONS = [200, 200];
+						grid = new SpatialHashGrid(BOUNDS, DIVISIONS);
+
 						var keyResults = [];
-						keyResults.push({x: -50, y: -2.3213});
-						keyResults.push({x: 0, y: 186.5250626214614});
-						keyResults.push({x: 400, y: -200});
-						keyResults.push({x: 400, y: 400});
+						keyResults.push({position: {x: 50, y: 0.00}, radius: RADIUS, name: "A"});
+						keyResults.push({position: {x: 0, y: 186.52}, radius: RADIUS, name: "B"});
+						keyResults.push({position: {x: 0, y: -200}, radius: RADIUS, name: "C"});
+						keyResults.push({position: {x: 400, y: 400}, radius: RADIUS, name: "D"});
 						
-						var checkPoint = [] 
+						var checkPoint = []
 
-						keyResults.forEach((e, i) => {
-							checkPoint.push(new CheckPoint('Test', e, 10 ));
-							scene.add(checkPoint[i].mesh);
-						scene.add(checkPoint[i].light);
-						});
+						for (let i = 0; i < keyResults.length; i++) {
+							const POS = keyResults[i].position;
+							const R = keyResults[i].radius;
+							const N = keyResults[i].name;
+							
+							checkPoint.push(new CheckPoint('Test', POS, R ));
+							const client = grid.NewClient(POS, { w: R, h: R }, N);
+
+							zUpCont.add(checkPoint[i].mesh);
+							zUpCont.add(checkPoint[i].light);							
+						}
+
+						// keyResults.forEach((e, i) => {
+						// 	checkPoint.push(new CheckPoint('Test', e.position, e.radius ));
+
+						// 	zUpCont.add(checkPoint[i].mesh);
+						// 	zUpCont.add(checkPoint[i].light);
+						// });
 
 						// checkPoint = new CheckPoint('Test', keyResults[0], 10 );
 						// scene.add(checkPoint.mesh);
@@ -852,7 +813,7 @@
 							ykey: "y",
 							ylabel: "Position Y (m)"
 						}
-						lineChart = new PositionGraph("lineChart1", keyResults, labelObj1, "lineChart-positon");
+						lineChart = new PositionGraph("lineChart1", keyResults.map(e => e.position), labelObj1, "lineChart-positon");
 						
 						var labelObj2 = {
 							xkey: "x", 
@@ -870,7 +831,7 @@
 				// import binary glTF file
 				var boatPath = "specs/GLTF_files/Gunnerus.glb";
 				var loaderGLTF = new THREE.GLTFLoader();
-				loaderGLTF.load( boatPath, async gltf => {
+				loaderGLTF.load( boatPath, gltf => {
 
 					shipGLTF = gltf.scene;
 					shipGLTF.rotation.x = Math.PI / 2;
@@ -895,12 +856,33 @@
 						object: shipGLTF
 					} );
 
-					camera
+					
+
+					// const grid = new SpatialHashGrid(BOUNDS, DIMENSIONS);
+					
+					// const client = grid.NewClient(parameters);
+
+					// client.position = newPosition;
+					// grid.UpdateClient(client);
+
+					// const nearby = grid.FindNearby(location, bounds);
+
+					// grid.RemoveClient(client);
 
 					fixedCamera = new FixedCamera( {
 						camera: camera,
 						object: shipGLTF
 					} );
+
+					Object.assign(camera, {toggle: {
+							TP: (dt) => {
+								thrirdPersonCamera.Update(dt);
+							},
+							Fixed: () => {								
+								fixedCamera.Update();
+							} 
+					}})
+					debugger
 
 					// Fade loading page UNCOMENT THIS PART
 					// var fadeTarget = document.getElementById( "loader-wrapper" );
@@ -923,33 +905,33 @@
 
 					// 	}
 
-					// }, 50 );s
+					// }, 50 );
 
 				} );
 
 				// //GUI setup (comment out to remove gui)
 				viewer = {
-					view: 0
+					view: "TP"
 				};
 				gui = new dat.GUI();
 				scale = gui.addFolder( "View Style" );
 				scale
 					.add( viewer, 'view', {
-						TP: 0,
-						Fixed: 1
+						TP: "TP",
+						Fixed: "Fixed"
 					} )
 					.onChange( function ( newValue ) {
 
-						switch ( newValue ) {
+						// switch ( newValue ) {
 
-							case '0':
-								break;
-							case '1':
-								break;
-							default:
-								console.log( 'Opition ' + newValue + ' not found.' );
-								break
-						}
+						// 	case '0':
+						// 		break;
+						// 	case '1':
+						// 		break;
+						// 	default:
+						// 		console.log( 'Opition ' + newValue + ' not found.' );
+						// 		break
+						// }
 
 					} )
 					.name( "View" );
@@ -964,6 +946,8 @@
 
 
 			function animate( millitime ) {
+
+				stats.begin();
 
 				ocean.water.material.uniforms.time.value += 1 / 60;
 
@@ -999,9 +983,18 @@
 					lineChart.draw(shipGLTF.position.x,	shipGLTF.position.y)
 					lineChart2.draw(Math.abs(manoeuvringMovement.mvr.n)/5,	rotationStates.Pp/1000000)
 
-					Math.round( viewer.view ) ? fixedCamera.Update() : thrirdPersonCamera.Update( timeElapsedS );
+					// Math.round( viewer.view ) ? fixedCamera.Update() : thrirdPersonCamera.Update( timeElapsedS );
+					camera.toggle[viewer.view](timeElapsedS);
+					// console.log(viewer.view);
 
 					speedText.innerText = manoeuvringMovement.mvr.V.u.toFixed( 1 );
+
+					var clients = grid.FindNearby(shipGLTF.position, {w: .5, h: .5})
+					// console.log("The cliets are:", clients.values());
+					for (let item of clients) {
+						// console.log(item);
+						// grid.RemoveClient(item);
+					}
 
 					// Improvement: This conditional must be passed internally as a assign function
 					if ( Object.keys( orbitController ).length ) {
@@ -1017,9 +1010,11 @@
 						}
 
 					}
-
 				}
 				renderer.render( scene, camera );
+				
+				stats.end();
+
 				requestAnimationFrame( animate );
 
 			}

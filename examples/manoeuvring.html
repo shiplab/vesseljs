@@ -14,6 +14,7 @@
 		<!-- <script src="libs/Mirror.js"></script>-->
 		<!-- <script src="libs/WaterShader.js"></script> -->
 		<script src="3D_engine/Water.js"></script>
+		<script src="3D_engine/ThirdPersonCamera.js"></script>
 
 		<!-- <script src="libs/OrbitControls.js"></script> -->
 		<script src="3D_engine/dat.gui.min.js"></script>
@@ -577,71 +578,6 @@
 					randomLocation(min, max) {
 						return Math.sign(Math.random()-.5) * randomIntFromRange(min, max);
 					}
-				}
-
-				class ThirdPersonCamera {
-
-					constructor( params ) {
-
-						this._params = params.object;
-						this._camera = params.camera;
-
-						this._currentPosition = new THREE.Vector3();
-						this._currentLookat = new THREE.Vector3();
-						
-						// To assign the transformation of coordinates
-						// with Y up in Three.js reference to Z up in Vessel.js @ferrari212
-						this.rotateTaitBryan = Vessel.Vectors.rotateTaitBryan;
-						this.rotVector = new THREE.Vector3(-Math.PI/2 , 0, 0);
-						// debugger
-					}
-
-					_CalculateIdealOffset() {
-
-						const idealOffset = new THREE.Vector3( 0, 20, 100 );
-						const rotation = new THREE.Euler( 0, this._params.rotation._y, 0, 'XYZ' );
-						
-						const transformed =  this.rotateTaitBryan(this._params.position, this.rotVector)
-
-						const move = new THREE.Vector3(transformed.x, transformed.y, transformed.z);
-
-						idealOffset.applyEuler( rotation );
-						idealOffset.add( move );
-						return idealOffset;
-
-					}
-
-					_CalculateIdealLookat() {
-
-						const idealLookat = new THREE.Vector3( 0, 0, - 200 );
-						const rotation = new THREE.Euler( 0, this._params.rotation._y, 0 );
-						const move = new THREE.Vector3(
-							this._params.position.x,
-							this._params.position.z,
-							- this._params.position.y
-						);
-
-						idealLookat.applyEuler( rotation );
-						idealLookat.add( move );
-						return idealLookat;
-
-					}
-
-					Update( timeElapsed ) {
-
-						const idealOffset = this._CalculateIdealOffset();
-						const idealLookat = this._CalculateIdealLookat();
-
-						const t = 4 * timeElapsed; // For a strong moving format @ferrari212
-
-						this._currentPosition.lerp( idealOffset, t );
-						this._currentLookat.lerp( idealLookat, t );
-
-						this._camera.position.copy( this._currentPosition );
-						this._camera.lookAt( this._currentLookat );
-
-					}
-
 				}
 
 				class FixedCamera {
