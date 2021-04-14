@@ -38,6 +38,31 @@
 	</head>
 
 	<style>
+		/* ******* Signature template ******* */
+
+		#info {
+			position: absolute;
+			color: #011C40;
+			top: 0px;
+			width: 100%;
+			padding: 10px;
+			box-sizing: border-box;
+			text-align: center;
+			-moz-user-select: none;
+			-webkit-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+			pointer-events: none;
+			z-index: 1;
+		}
+
+		#info a {
+			color: #A60D0D;
+			pointer-events: auto;
+		}
+
+		/* ******* ******* ******* */
+
 		table {
 			margin-top: 15px;
 			margin-bottom: 10px;
@@ -268,6 +293,12 @@
 	</style>
 
 	<body>
+		<div id="info">
+			<a href="http://vesseljs.org/" target="_blank" rel="noopener">Vessel.js</a> Manoeuvring Complete <br/>
+			Author: <a href="https://shiptodata.com/" target="_blank" rel="noopener">Felipe Ferrari</a> - Msc. Student Ship Design
+			<br>
+			Supervisor: <a href="https://www.ntnu.edu/employees/henrique.gaspar" target="_blank" rel="noopener">Henrique M. Gaspar</a>
+		</div>
 		<!-- This is the loader wraper, unncoment this to see the loading page -->
 		<!-- <div id="loader-wrapper">
 			<div class="loader loader-white loader-1"></div>
