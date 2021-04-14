@@ -1,0 +1,12 @@
+{
+	"noProps": 2,
+	"noBlades": 4,
+	"D": 1.9,
+	"P": 1.2,
+	"AeAo": 0.55,
+	"beta1": 0.57,
+	"beta2": 0.44,
+	"gamma1": 0.105,
+	"gamma2": 0.077,
+	"maxRot": 239
+}

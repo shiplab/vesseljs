@@ -2670,7 +2670,7 @@ Object.defineProperties(HullResistance.prototype, {
 // This module simulates the propeller and its interaction with hull and engine.
 
 // @ferrari212
-function Manoeuvring(ship, states, hullResitance, propellerInteraction, m, I, D, initial_yaw = 0) {
+function Manoeuvring(ship, states, hullResitance, propellerInteraction, m, I, D, initial_yaw = 0, rho = 1025) {
 	if (typeof numeric !== "function") {
 		console.error("Manoeuvring requires the numeric.js library.")
 		return null
@@ -2683,9 +2683,13 @@ function Manoeuvring(ship, states, hullResitance, propellerInteraction, m, I, D,
 	if (typeof this.states.discrete.Speed === "undefined") { // if vessel does not have a speed state
 		this.setSpeed(); // use its design speed
 	}
-	
-	this.hullResitance = hullResitance;
+
+	this.resistanceState = this.states.discrete.HullResistance.state;	
 	this.propellerInteraction = propellerInteraction;
+	this.rho = propellerInteraction.rho;
+	this.propeller = this.propellerInteraction.propeller
+	this.speedState = this.states.discrete.Speed.state;
+	this.floatState = this.states.discrete.FloatingCondition.state;
 
 	Object.assign(this, { 
 		// X: {x:0, y:0, yaw: 0},
@@ -2712,13 +2716,17 @@ function Manoeuvring(ship, states, hullResitance, propellerInteraction, m, I, D,
 	// debugger
 	// this.resistanceState = this.states.discrete.HullResistance.state;
 
+	// I think the M is not the mass in the function, it must account for the damping
 	this.M_RB = numeric.add(this.M, this.I)
   this.INVM = numeric.inv(this.M_RB)
   this.INVMD = numeric.dot(numeric.neg(this.INVM), D)   
   this.setMatrixes()
 
 	// Think about what would be writen
-	this.output = ["V", "efficiency"];
+	this.output = ["coefficients"];
+
+	this.cacheDependence = ["PropellerInteraction", "FloatingCondition"];
+	this.cache = {};
 
 }
 
@@ -2726,6 +2734,35 @@ Manoeuvring.prototype = Object.create(StateModule.prototype);
 
 Object.assign(Manoeuvring.prototype, {
 	constructor: Manoeuvring,
+	getPropResult: function (n) {
+		if (n === 0) return {Fp: 0, Pp: 0};
+		// debugger
+
+		var Va = this.propellerInteraction.propulsion.Va
+
+		var lcb = 100 * (this.floatState.LCB - (this.floatState.minXs + this.floatState.LWL / 2)) / this.floatState.LWL; // %
+		var J = Va/(Math.abs(n) * this.propeller.D);
+
+		var KT = this.propeller.beta1 - this.propeller.beta2 * J;
+		var KQ = this.propeller.gamma1 - this.propeller.gamma2 * J;
+
+		var etar;
+		if (this.propeller.noProps === 1) {
+			etar = 0.9922 - 0.05908 * this.propeller.AeAo + 0.07424 * (this.floatState.Cp - 0.0225 * lcb);
+		} else if (this.propeller.noProps === 2) {
+			etar = 0.9737 + 0.111 * (this.floatState.Cp - 0.0225 * lcb) - 0.06325 * this.propeller.P / this.propeller.D;
+		}
+
+		var T = KT * this.rho * Math.pow(n, 2) * Math.pow(this.propeller.D, 4);
+		var Q = KQ * this.rho * Math.pow(n, 2) * Math.pow(this.propeller.D, 5);
+		// console.log( `T: ${T}; Q: ${Q}`);
+
+		var Fp =	Math.sign(n)* T * this.propeller.noProps * (1 - this.resistanceState.t);
+		var Po =	2 * Math.PI * Math.abs(Q * n) * this.propeller.noProps;
+		var Pp =	Po * etar;
+		// debugger
+		return {Fp, Pp};
+	},
 	setMatrixes: function (F = [0, 0, 0], yaw = 0) {
 		// debugger
     this.R = this.parseR(yaw)
@@ -2793,6 +2830,14 @@ Object.assign(Manoeuvring.prototype, {
     this.yaw += this.DX.yaw
   }
 });
+Object.defineProperties(Manoeuvring.prototype, {
+	coefficients: StateModule.prototype.memoized(function() {
+		var a = 10;
+		// debugger
+		console.log(a);
+		return {a}
+	}, "coefficients")
+});
 
 // Object.defineProperties(HullResistance.prototype, {
 // 	setMatrixes: StateModule.prototype.memoized(function (F = [0, 0, 0], yaw = 0) {
@@ -2827,37 +2872,13 @@ PropellerInteraction.prototype = Object.create(StateModule.prototype);
 
 Object.assign(PropellerInteraction.prototype, {
 	constructor: PropellerInteraction,
-	getByRotation: function (n) {
-		if (n === 0) return {Ft: 0, Pp: 0};
-
-		var lcb = 100 * (this.floatState.LCB - (this.floatState.minXs + this.floatState.LWL / 2)) / this.floatState.LWL; // %
-		var J = this.propulsion.Va /(Math.abs(n) * this.propeller.D);
-
-		var KT = this.propeller.beta1 - this.propeller.beta2 * J;
-		var KQ = this.propeller.gamma1 - this.propeller.gamma2 * J;
-
-		var etar;
-		if (this.propeller.noProps === 1) {
-			etar = 0.9922 - 0.05908 * this.propeller.AeAo + 0.07424 * (this.floatState.Cp - 0.0225 * lcb);
-		} else if (this.propeller.noProps === 2) {
-			etar = 0.9737 + 0.111 * (this.floatState.Cp - 0.0225 * lcb) - 0.06325 * this.propeller.P / this.propeller.D;
-		}
-
-		var T = KT * this.rho * Math.pow(n, 2) * Math.pow(this.propeller.D, 4);
-		var Q = KQ * this.rho * Math.pow(n, 2) * Math.pow(this.propeller.D, 5);
-		// console.log( `T: ${T}; Q: ${Q}`);
-
-		var Ft =	Math.sign(n)* T * this.propeller.noProps * (1 - this.resistanceState.t);
-		var Po =	2 * Math.PI * Math.abs(Q * n) * this.propeller.noProps;
-		var Pp =	Po * etar;
-		return {Ft, Pp};
-	},
 });
 
 Object.defineProperties(PropellerInteraction.prototype, {
 	propulsion: StateModule.prototype.memoized(function() {
 		// convert vessel speed from knots to m/s
 		if (this.speedSI === 0) {
+			// Change the console error  @ferrari212
 			console.error("Speed equals to zero, try getForce() method to get boolard pull or use changeSpeed() method to set a non null value.")
 		}
 		var speedSI = 0.514444 * this.speedState.speed;
