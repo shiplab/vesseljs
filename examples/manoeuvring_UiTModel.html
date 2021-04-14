@@ -711,12 +711,11 @@
 
 						// Pass the manouvring functions here
 						
-						var m = 4e5;
-						// var m = ship.getWeight().mass;
-						var I = 5.8e8;
+						// var m = 4e5;
+						// var I = 5.8e8;
 						// var I = [
-						// 	[ 0, 0, 0 ],
-						// 	[ 0, 0, 8.4e6 ],
+						// 	[ 4e5, 0, 0 ],
+						// 	[ 0, 4e5, 8.4e6 ],
 						// 	[ 0, 8.4e6, 5.8e8 ]
 						// ];
 						// var D = [
@@ -725,7 +724,8 @@
 						// 	[ 0, 6.4e4, 1.2e5 ]
 						// ];
 
-						manoeuvring = new Vessel.Manoeuvring( ship, shipState, hullRes, propellerInteraction, m, I );
+						// manoeuvring = new Vessel.Manoeuvring( ship, shipState, hullRes, propellerInteraction, m, I );
+						manoeuvring = new Vessel.Manoeuvring( ship, shipState, hullRes, propellerInteraction );
 						
 						manoeuvringMovement = new ManoeuvringMovement(manoeuvring)
 						document.addEventListener( "keydown", onDocumentKeyDown, false );
@@ -882,7 +882,7 @@
 								fixedCamera.Update();
 							} 
 					}})
-					debugger
+					// debugger
 
 					// Fade loading page UNCOMENT THIS PART
 					// var fadeTarget = document.getElementById( "loader-wrapper" );
@@ -954,7 +954,7 @@
 				if ( shipGLTF ) {
 
 					// make this inside the Vessel.js
-					manoeuvring.setSpeed( manoeuvringMovement.mvr.V.u );
+					manoeuvring.setSpeed( manoeuvringMovement.mvr.V.u * 1.96);
 					var propellerAngle = manoeuvringMovement.mvr.rudderAngle * Math.PI / 180;
 					var cos = Math.cos( propellerAngle );
 					var sin = Math.sin( propellerAngle );
@@ -964,10 +964,15 @@
 					// console.log( `Fp: ${propeller.Fp.toFixed(0)};Pp: ${propeller.Pp.toFixed(0)}`);
 					// console.log(rotationStates);
 
+					// hullRes.setSpeed(manoeuvringMovement.mvr.V.u * 1.943844)
+					var Rt =  hullRes.totalResistance.Rtadd
+					// debugger
+					console.log(rotationStates.Fp * cos - Rt, Rt);
+
 					var forceVector = [
-						rotationStates.Fp * cos,
+						rotationStates.Fp * cos - Rt,
 						rotationStates.Fp * sin,
-						rotationStates.Fp * sin * 20
+						rotationStates.Fp * sin * 10
 					];
 
 					var timeElapsedS = clock.getElapsedTime() - time;
@@ -976,6 +981,12 @@
 					manoeuvringMovement.getDisplacements( timeElapsedS);
 					time = clock.getElapsedTime();
 
+					// if (anoeuvringMovement.mvr.DX === undefined) {
+						
+					// } else {
+
+					// }
+
 					shipGLTF.position.x += manoeuvringMovement.mvr.DX.x;
 					shipGLTF.position.y += manoeuvringMovement.mvr.DX.y;
 					shipGLTF.rotation.y = - Math.PI / 2 - manoeuvringMovement.mvr.yaw;
@@ -983,10 +994,9 @@
 					lineChart.draw(shipGLTF.position.x,	shipGLTF.position.y)
 					lineChart2.draw(Math.abs(manoeuvringMovement.mvr.n)/5,	rotationStates.Pp/1000000)
 
-					// Math.round( viewer.view ) ? fixedCamera.Update() : thrirdPersonCamera.Update( timeElapsedS );
 					camera.toggle[viewer.view](timeElapsedS);
-					// console.log(viewer.view);
 
+					// speedText.innerText = (manoeuvringMovement.mvr.V.u * 1.943844).toFixed( 1 );
 					speedText.innerText = manoeuvringMovement.mvr.V.u.toFixed( 1 );
 
 					var clients = grid.FindNearby(shipGLTF.position, {w: .5, h: .5})
