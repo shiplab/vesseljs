@@ -727,6 +727,12 @@
 						// manoeuvring = new Vessel.Manoeuvring( ship, shipState, hullRes, propellerInteraction, m, I );
 						manoeuvring = new Vessel.Manoeuvring( ship, shipState, hullRes, propellerInteraction );
 						
+						// const N = [
+						// 						[ 3e4, 0, 0 ],
+						// 						[ 0, 5.5e4, 6.4e4 ],
+						// 						[ 0, 6.4e4, 1.2e7 ]
+						// 					];
+
 						manoeuvringMovement = new ManoeuvringMovement(manoeuvring)
 						document.addEventListener( "keydown", onDocumentKeyDown, false );
 
@@ -821,7 +827,7 @@
 							ykey: "y",
 							ylabel: "MCR (%)"
 						}
-						lineChart2 = new ConsGraph("lineChart2", keyResults, labelObj2, "lineChart-eff");
+						lineChart2 = new ConsGraph("lineChart2", keyResults.map(e => e.position), labelObj2, "lineChart-eff");
 						lineChart2.drawLineGeneric(0, 0, manoeuvringMovement.mvr.propeller)
 
 					};
@@ -854,9 +860,7 @@
 					thrirdPersonCamera = new ThirdPersonCamera( {
 						camera: camera,
 						object: shipGLTF
-					} );
-
-					
+					} );					
 
 					// const grid = new SpatialHashGrid(BOUNDS, DIMENSIONS);
 					
@@ -882,30 +886,28 @@
 								fixedCamera.Update();
 							} 
 					}})
-					// debugger
 
-					// Fade loading page UNCOMENT THIS PART
-					// var fadeTarget = document.getElementById( "loader-wrapper" );
-					// var fadeEffect = setInterval( function () {
+					var fadeTarget = document.getElementById( "loader-wrapper" );
+					var fadeEffect = setInterval( function () {
 
-					// 	if ( ! fadeTarget.style.opacity ) {
+						if ( ! fadeTarget.style.opacity ) {
 
-					// 		fadeTarget.style.opacity = 1;
+							fadeTarget.style.opacity = 1;
 
-					// 	}
+						}
 
-					// 	if ( fadeTarget.style.opacity > 0 ) {
+						if ( fadeTarget.style.opacity > 0 ) {
 
-					// 		fadeTarget.style.opacity -= 0.05;
+							fadeTarget.style.opacity -= 0.05;
 
-					// 	} else {
+						} else {
 
-					// 		clearInterval( fadeEffect );
-					// 		fadeTarget.remove();
+							clearInterval( fadeEffect );
+							fadeTarget.remove();
 
-					// 	}
+						}
 
-					// }, 50 );
+					}, 50 );
 
 				} );
 
@@ -996,8 +998,8 @@
 
 					camera.toggle[viewer.view](timeElapsedS);
 
-					// speedText.innerText = (manoeuvringMovement.mvr.V.u * 1.943844).toFixed( 1 );
-					speedText.innerText = manoeuvringMovement.mvr.V.u.toFixed( 1 );
+					speedText.innerText = (manoeuvringMovement.mvr.V.u * 1.943844).toFixed( 1 );
+					// speedText.innerText = manoeuvringMovement.mvr.V.u.toFixed( 1 );
 
 					var clients = grid.FindNearby(shipGLTF.position, {w: .5, h: .5})
 					// console.log("The cliets are:", clients.values());

@@ -1,12 +1,13 @@
 // @ferrari212
 // This class requires the numeric.js
 class ManoeuvringMovement {
-  constructor(manoeuvring) {
+  constructor(manoeuvring, N) {
     this.mvr = manoeuvring;
     this.getPropResult = manoeuvring.getPropResult;
+    this.N = N
   }
 
-  setMatrixes (F = [0, 0, 0], yaw = 0, M, N) {
+  setMatrixes (F = [0, 0, 0], yaw = 0) {
 		// this.M_RB = numeric.add(this.M, this.I)
     let mvr = this.mvr
     let h = mvr.hydroCoeff
@@ -19,36 +20,23 @@ class ManoeuvringMovement {
 			[ 0, 0, -h.Nracc ]
 		];  
 
-    // This is N
-    // const M_A = [
-		// 	[ 0, 0, 0 ],
-		// 	[ 0, -CL * Yvadm, -CL * Yvadm - CLL * Yradm ],
-		// 	[ 0, -CL * Yvadm - CLL * Nvadm, -CLLL * Nrdn ]
-		// ];    
-
-	  // const M = numeric.add(mvr.M_RB, M_A)
-    const M = [[ 1.1e5, 0, 0 ],
-							[ 0, 1.1e5, 8.4e4 ],
-							[ 0, 8.4e4, 5.8e6 ]]
+	  const M = numeric.add(mvr.M_RB, M_A)
+    // const M = [[ 1.1e5, 0, 0 ],
+		// 					[ 0, 1.1e5, 8.4e4 ],
+		// 					[ 0, 8.4e4, 5.8e6 ]]
 	  mvr.INVM = numeric.inv(M)
 
     // The value of N is in relation with the damping
   	// mvr.INVMN = numeric.dot(numeric.neg(mvr.INVM), mvr.N)
-    const {Cl, Cll, Clll}	 = mvr.dn
-    // const N = [
-		// 	[ 0, 0, 0 ],
-		// 	[ 0, -Cl * h.Yvdn, mvr.m * u - Cll * h.Yrdn ],
-		// 	[ 0, -h.Yvacc * u - Cll * h.Nvdn, -Clll * h.Nrdn ]
-		// ];
-    const N = [
-			[ 3e4, 0, 0 ],
-			[ 0, 5.5e4, 6.4e4 ],
-			[ 0, 6.4e4, 1.2e7 ]
+    const {Cl, Cll, Clll}	 = mvr.dn;
+
+    const N = this.N || [
+			[ 0, 0, 0 ],
+			[ 0, -Cl * h.Yvdn, mvr.m * u - Cll * h.Yrdn ],
+			[ 0, -h.Yvacc * u - Cll * h.Nvdn, -Clll * h.Nrdn ]
 		];
 
   	mvr.INVMN = numeric.dot(numeric.neg(mvr.INVM), N) 
-    // console.log(M, N);
-    debugger
     
 		mvr.R = this.parseR(yaw)
     mvr.A = this.parseA(mvr.R, mvr.INVMN)
