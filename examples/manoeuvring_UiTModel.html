@@ -687,6 +687,7 @@
 						var response = event.target.response;
 						var propeller = JSON.parse( response );
 						usePropSpec( propeller, "rolls_royce_500_azipod.json" );
+						// usePropSpec( propeller, "wag_4b_0.55a_1.2p.json" );
 
 					} );
 					propReq.send( null );
@@ -727,13 +728,13 @@
 						// manoeuvring = new Vessel.Manoeuvring( ship, shipState, hullRes, propellerInteraction, m, I );
 						manoeuvring = new Vessel.Manoeuvring( ship, shipState, hullRes, propellerInteraction );
 						
-						// const N = [
-						// 						[ 3e4, 0, 0 ],
-						// 						[ 0, 5.5e4, 6.4e4 ],
-						// 						[ 0, 6.4e4, 1.2e7 ]
-						// 					];
+						const N = [
+												[ 0, 0, 0 ],
+												[ 0, 5.5e4, 6.4e4 ],
+												[ 0, 6.4e4, 1.2e7 ]
+											];
 
-						manoeuvringMovement = new ManoeuvringMovement(manoeuvring)
+						manoeuvringMovement = new ManoeuvringMovement(manoeuvring, N)
 						document.addEventListener( "keydown", onDocumentKeyDown, false );
 
 						function onDocumentKeyDown( event ) {

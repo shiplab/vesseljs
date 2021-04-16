@@ -2775,21 +2775,21 @@ function Manoeuvring(ship, states, hullResitance, propellerInteraction, m, I, N,
 	// Those are negatives because they are in the other side of the equation
 	
 
-	if (N === undefined) {
-		console.warn('Model with no defined damping value, generic values choosen instead')
-		this.N = [
-			[ 3e4, 0, 0 ],
-			[ 0, 5.5e4, 6.4e4 ],
-			[ 0, 6.4e4, 1.2e7 ]
-		];
-		// var N = [
-		// 	[ 0, 0, 0 ],
-		// 	[ 0, -CL * Yvadm, -CL * Yvadm - CLL * Yradm ],
-		// 	[ 0, -CL * Yvadm - CLL * Nvadm, -CLLL * Nrdn ]
-		// ];
-	} else {
-		this.N = N;
-	}
+	// if (N === undefined) {
+	// 	console.warn('Model with no defined damping value, generic values choosen instead')
+	// 	this.N = [
+	// 		[ 3e4, 0, 0 ],
+	// 		[ 0, 5.5e4, 6.4e4 ],
+	// 		[ 0, 6.4e4, 1.2e7 ]
+	// 	];
+	// 	// var N = [
+	// 	// 	[ 0, 0, 0 ],
+	// 	// 	[ 0, -CL * Yvadm, -CL * Yvadm - CLL * Yradm ],
+	// 	// 	[ 0, -CL * Yvadm - CLL * Nvadm, -CLLL * Nrdn ]
+	// 	// ];
+	// } else {
+	// 	this.N = N;
+	// }
 
 	// debugger
 	// this.resistanceState = this.states.discrete.HullResistance.state;
@@ -2856,12 +2856,17 @@ Object.defineProperties(Manoeuvring.prototype, {
 		var delta_SR = 1 - 0.7/(28.7*Vsdn + 0.54)
 
 		const ld = L/D
+		// 
+		// const bl = 
 
+		// Change for Clarke formulas, given a better prediction
 		var Yvaccdn = -Math.PI * Math.pow(T/L, 2);
+		var Yraccdn = -Math.PI * Math.pow(T/L, 2);
 		var Nraccdn = -Math.PI * Math.pow(T/L, 2) / 12;
 		var Yvacc = Yvaccdn * 0.5 * rho *  Math.pow(L, 3);
 		var Nracc = Nraccdn * 0.5 * rho *  Math.pow(L, 4);
 
+		// Lee formulas
 		var Yvdn = -(0.145 + 2.25/ld - 0.2*delta_SR);
 		var mdn = this.m/(0.5*rho*Math.pow(L, 2)*D)
 		var Yrdn = mdn -(0.282 + 0.1*delta_SR) + (0.0086*delta_SR + 0.004) * ld;
