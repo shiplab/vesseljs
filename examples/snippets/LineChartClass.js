@@ -1,6 +1,6 @@
 // adapted from https://bl.ocks.org/mbostock/3887118
 class LineChartClass {
-	// Function to create a chart line with d3.js
+	// Class to create a chart line with d3.js
 	// id: set id in the svg (string)
 	// data: data object containing the {time: xkey used (float), ykey: value defined for ykey key (value)}
 	// xkey: key to define xkey key (stringxlabel)
@@ -34,7 +34,6 @@ class PositionGraph extends LineChartClass {
 
 		var fontSize = "10";
 
-		// debugger
 		// changed the widht and height
 		var x = d3.scale.linear()
 		.range([0, this.width]); // This is where the axis is placed: from 0px to (this.width)px
@@ -79,7 +78,6 @@ class PositionGraph extends LineChartClass {
 			.append("g")
 			.attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
 
-		// debugger
 		// x.domain(d3.extent(data, function(d) {return d[xkey]})).nice();
 		// y.domain([-10, d3.max(data, function(d) {return d[ykey];})]).nice();
 		x.domain([-500, 500]).nice();
@@ -188,11 +186,9 @@ class PositionGraph extends LineChartClass {
 class ConsGraph extends LineChartClass {
 	constructor(id, data, objLabel, parentId, size) {
 		super(id, data, objLabel, parentId , size)
-		// debugger
 
 		var fontSize = "10";
 
-		// debugger
 		// changed the widht and height
 		var x = d3.scale.linear()
 		.range([0, this.width]); // This is where the axis is placed: from 0px to (this.width)px
@@ -237,7 +233,6 @@ class ConsGraph extends LineChartClass {
 			.append("g")
 			.attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
 
-		// debugger
 		// x.domain(d3.extent(data, function(d) {return d[xkey]})).nice();
 		// y.domain([-10, d3.max(data, function(d) {return d[ykey];})]).nice();
 		x.domain([0, 1]).nice();
@@ -334,7 +329,6 @@ class ConsGraph extends LineChartClass {
 		var xf = this.x;
 		var yf = this.y;
 
-		// debugger
 
 		this.svg.append("circle")
 			.attr('cx', xf(x))
@@ -361,7 +355,6 @@ class ConsGraph extends LineChartClass {
 		var rotAtMaxPot = PotMax/maxTorque;
 
 		var xFin = rotAtMaxPot / maxRot;
-		debugger		
 
 		// This is for appending the value path
 		// svg.append("path")

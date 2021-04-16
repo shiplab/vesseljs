@@ -6,7 +6,7 @@ class ManoeuvringMovement {
     this.getPropResult = manoeuvring.getPropResult;
   }
 
-  setMatrixes (F = [0, 0, 0], yaw = 0) {
+  setMatrixes (F = [0, 0, 0], yaw = 0, M, N) {
 		// this.M_RB = numeric.add(this.M, this.I)
     let mvr = this.mvr
     let h = mvr.hydroCoeff

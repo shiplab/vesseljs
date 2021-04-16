@@ -1260,6 +1260,7 @@ Object.assign(Hull.prototype, {
 		//sectionCalculation can potentially be served some nulls.
 		let sc = sectionCalculation({xs: sts, ymins: star, ymaxs: port});
 		let LWL = sc.maxX - sc.minX;
+		debugger
 		let BWL = sc.maxY - sc.minY;
 		let Cwp = sc.A / (LWL * BWL);
 		let APP = this.attributes.APP || sc.minX;
