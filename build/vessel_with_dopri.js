@@ -2670,7 +2670,7 @@ Object.defineProperties(HullResistance.prototype, {
 // This module simulates the propeller and its interaction with hull and engine.
 
 // @ferrari212
-function Manoeuvring(ship, states, hullResitance, propellerInteraction, m, I, D, initial_yaw = 0, rho = 1025) {
+function Manoeuvring(ship, states, hullResitance, propellerInteraction, m, I, N, initial_yaw = 0, rho = 1025) {
 	if (typeof numeric !== "function") {
 		console.error("Manoeuvring requires the numeric.js library.")
 		return null
@@ -2685,6 +2685,7 @@ function Manoeuvring(ship, states, hullResitance, propellerInteraction, m, I, D,
 	}
 
 	this.resistanceState = this.states.discrete.HullResistance.state;	
+	// debugger
 	this.propellerInteraction = propellerInteraction;
 	this.rho = propellerInteraction.rho;
 	this.propeller = this.propellerInteraction.propeller
@@ -2702,28 +2703,93 @@ function Manoeuvring(ship, states, hullResitance, propellerInteraction, m, I, D,
 
 	this.setSpeed(0);
 
-	this.M = [[m, 0, 0],
-              [0, m, 0],
-              [0, 0, 0]
-            ];
-  this.I = I;
+	const W = ship.getWeight()
+	this.m = m || W.mass;
+						
+	// var Imatrix = [
+	// 	[ 0, 0, 0 ],
+	// 	[ 0, -Yvaccadm, 0],
+	// 	[ 0, 0, approxI - 0.5*rho*Math.pow(attributes.LOA, 5) * Nraccadm ]
+	// ];
 
-	if (D === undefined) {
-		console.warn('Model with no defined damping value')
-		D = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]
+	// var I = [
+	// 	[ 0, 0, 0 ],
+	// 	[ 0, 0, 8.4e6 ],
+	// 	[ 0, 8.4e6, 5.8e8 ]
+	// ];
+	// var D = [
+	// 	[ 3e4, 0, 0 ],
+	// 	[ 0, 5.5e4, 6.4e4 ],
+	// 	[ 0, 6.4e4, 1.2e5 ]
+	// ];
+
+	// The approximaxion is given by the inercia of an Elipsoid in water
+	var attributes = this.ship.structure.hull.attributes;
+	var Vs = this.states.discrete.FloatingCondition.state.Vs;
+	var T = this.ship.designState.calculationParameters.Draft_design;
+	var dot = Vessel.Vectors.dot
+	var approxI = I || Math.PI * rho * attributes.LOA * attributes.BOA * T * ( 4 * Math.pow(T, 2) + Math.pow(attributes.BOA, 2) )/120;
+
+	var teste = {x: 1, y: 1, z: 1}
+	// The values were admensioness without thinking in Vadm
+	// var Vadm = Math.sqrt(dot(teste, teste));
+
+	// Using the notation of Rigid body and additional
+	// Must sum later with the adm
+	// this.M = [[this.m, 0, 0],
+  //             [0, this.m, 0],
+  //             [0, 0, 0]
+  //           ];
+	this.M_RB = [
+		[ this.m, 0, 0],
+		[0,  this.m, 0],
+		[0, 0,  approxI]
+	]; 
+
+	// var CL = 0.5*rho*Math.pow(attributes.LOA, 2)*Vadm;
+	// var CLL = CL * attributes.LOA;
+	// var CLLL = CLL * attributes.LOA;
+
+	// this.I = Imatrix;
+
+	// Coef. for adimensionals
+	// var V = 
+	var ld = attributes.LOA/attributes.Depth;
+	// var Vadm = Math.sqrt(dot(this.V, this.V));
+
+	// Taking as Psr aprox 0.7
+
+	// Those are negatives because they are in the other side of the equation
+	
+
+	if (N === undefined) {
+		console.warn('Model with no defined damping value, generic values choosen instead')
+		this.N = [
+			[ 3e4, 0, 0 ],
+			[ 0, 5.5e4, 6.4e4 ],
+			[ 0, 6.4e4, 1.2e7 ]
+		];
+		// var N = [
+		// 	[ 0, 0, 0 ],
+		// 	[ 0, -CL * Yvadm, -CL * Yvadm - CLL * Yradm ],
+		// 	[ 0, -CL * Yvadm - CLL * Nvadm, -CLLL * Nrdn ]
+		// ];
+	} else {
+		this.N = N;
 	}
 
 	// debugger
 	// this.resistanceState = this.states.discrete.HullResistance.state;
 
+	// The function I and M are the ones subject to a global state value in Memoized
+	// Or since they use the numeric function they can be neglected in here
 	// I think the M is not the mass in the function, it must account for the damping
-	this.M_RB = numeric.add(this.M, this.I)
-  this.INVM = numeric.inv(this.M_RB)
-  this.INVMD = numeric.dot(numeric.neg(this.INVM), D)   
-  this.setMatrixes()
+	
+	
+  // this.setMatrixes()
 
 	// Think about what would be writen
-	this.output = ["coefficients"];
+	this.output = ["hydroCoeff", "dn"];
 
 	this.cacheDependence = ["PropellerInteraction", "FloatingCondition"];
 	this.cache = {};
@@ -2736,7 +2802,6 @@ Object.assign(Manoeuvring.prototype, {
 	constructor: Manoeuvring,
 	getPropResult: function (n) {
 		if (n === 0) return {Fp: 0, Pp: 0};
-		// debugger
 
 		var Va = this.propellerInteraction.propulsion.Va
 
@@ -2762,81 +2827,46 @@ Object.assign(Manoeuvring.prototype, {
 		var Pp =	Po * etar;
 		// debugger
 		return {Fp, Pp};
-	},
-	setMatrixes: function (F = [0, 0, 0], yaw = 0) {
-		// debugger
-    this.R = this.parseR(yaw)
-    this.A = this.parseA(this.R, this.INVMD)
-    const INVMF = numeric.dot(this.INVM, F)
-    this.B = this.parseB(INVMF)
-  },
-	parseA: function (R, M) {
-    var A = []
-
-    for (let i = 0; i < 6; i++){
-      A.push([0, 0, 0, 0, 0, 0]);
-    }
-
-    for (let i = 0; i < 6; i++) {
-      for (let j = 0; j < 6; j++) {
-        if (j < 3) {
-          A[i][j] =  0
-        } else {
-          A[i][j] = i < 3  ? R[i][j-3] : M[i-3][j-3]
-        }        
-      }      
-    }
-    return A
-  },
-	parseB: function (INVMF) {
-    return [0, 0, 0, INVMF[0], INVMF[1], INVMF[2]]
-  },
-	parseR: function (yaw) {
-    var trig = {cos: Math.cos(yaw), sin: Math.sin(yaw)}
-    return [[trig.cos, -trig.sin, 0], 
-            [trig.sin, trig.cos, 0],
-            [0, 0, 1]
-          ];
-  },
-	getDerivatives: function (V = {u: 0, v:0, yaw_dot: 0}) {
-    var X = [0,
-             0,
-             0,
-             V.u,
-             V.v,
-             V.yaw_dot
-            ]
-
-    var X_dot = numeric.add(numeric.dot(this.A, X), this.B)
-
-    return X_dot
-  },
-	getDisplacements: function (dt) {
-    // Parse matrix V
-    var X = [0,
-						 0,
-						 0,
-						 this.V.u,
-						 this.V.v,
-						 this.V.yaw_dot];
-
-		var self = this;
-    var sol = numeric.dopri(0, dt, X, function (t,V) { return self.getDerivatives({u: X[3], v:X[4], yaw_dot: X[5]}) }, 1e-8, 100).at(dt);
-        
-    // Get global coordinates variation (dx, dy, dyaw)
-    // Get local velocity (du, dv, dyaw_dot)
-    this.DX = {x: sol[0], y: sol[1], yaw: sol[2]}
-    this.V = {u: sol[3], v: sol[4], yaw_dot: sol[5]}
-    this.yaw += this.DX.yaw
-  }
+	}
 });
 Object.defineProperties(Manoeuvring.prototype, {
-	coefficients: StateModule.prototype.memoized(function() {
-		var a = 10;
+	hydroCoeff: StateModule.prototype.memoized(function() {
+		var L = this.ship.structure.hull.attributes.LOA;
+		var D = this.ship.structure.hull.attributes.Depth;
+		var Vs = this.states.discrete.FloatingCondition.state.Vs;
+		var T = this.ship.designState.calculationParameters.Draft_design;
+		var rho = this.rho
+		// var dot = Vessel.Vectors.dot
 		// debugger
-		console.log(a);
-		return {a}
-	}, "coefficients")
+
+		Vsdn = Vs/Math.pow(L, 3);
+		var delta_SR = 1 - 0.7/(28.7*Vsdn + 0.54)
+
+		const ld = L/D
+
+		var Yvaccdn = -Math.PI * Math.pow(T/L, 2);
+		var Nraccdn = -Math.PI * Math.pow(T/L, 2) / 12;
+		var Yvacc = Yvaccdn * 0.5 * rho *  Math.pow(L, 3);
+		var Nracc = Nraccdn * 0.5 * rho *  Math.pow(L, 4);
+
+		var Yvdn = -(0.145 + 2.25/ld - 0.2*delta_SR);
+		var mdn = this.m/(0.5*rho*Math.pow(L, 2)*D)
+		var Yrdn = mdn -(0.282 + 0.1*delta_SR) + (0.0086*delta_SR + 0.004) * ld;
+		var Nvdn = -(0.222 + 0.1*delta_SR) + 0.00484*ld;
+		var Nrdn = -(0.0424 - 0.03*delta_SR) - (0.004*delta_SR - 0.00027) * ld;
+		// debugger
+
+		return {Yvacc, Nracc, Yvdn, Yrdn, Nvdn, Nrdn }
+	}, "hydroCoeff"),
+	dn: StateModule.prototype.memoized(function() {
+		const L = this.ship.structure.hull.attributes.LOA;
+		
+		var Cl = 0.5*this.rho*Math.pow(L, 2);
+		var Cll = Cl * L;
+		var Clll = Cll * L;
+
+		return	{Cl, Cll, Clll}	
+	}, "dn")
 });
 
 // Object.defineProperties(HullResistance.prototype, {

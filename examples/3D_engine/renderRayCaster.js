@@ -4,9 +4,9 @@ function renderRayCaster( mouse, camera, scene, intersectedElement = { name: und
 	// https://threejs.org/docs/#api/en/core/Raycaster;
 	// https://github.com/mrdoob/three.js/blob/master/examples/webgl_interactive_cubes_ortho.html
 	// mouse: {x: float, y: float}; position normalized from -1 to 1 of the relative position of the mouse
-	// camera: obj; THREE.js camera object
-	// scene: obj; THREE.js scene object
-	// intersectedElement : obj; Previous intersected element
+	// camera: THREE.js camera object (obj)
+	// scene: THREE.js scene object (obj)
+	// intersectedElement : Previous intersected element (obj)
 	//
 	// return new intersected element object
 
