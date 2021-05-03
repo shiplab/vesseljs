@@ -2,6 +2,10 @@
 // This class requires the numeric.js
 class ManoeuvringMovement {
   constructor(manoeuvring, N) {
+    if (typeof numeric !== "function") {
+      console.error("Manoeuvring requires the numeric.js library.")
+    }
+
     this.mvr = manoeuvring;
     this.getPropResult = manoeuvring.getPropResult;
     this.N = N
@@ -16,8 +20,8 @@ class ManoeuvringMovement {
     // In this case the M_A is constant and the value ws left as it is
     const M_A = [
 			[ 0, 0, 0 ],
-			[ 0, -h.Yvacc, 0 ],
-			[ 0, 0, -h.Nracc ]
+			[ 0, -h.Yvacc, -h.Yracc ],
+			[ 0, -h.Yvacc, -h.Nracc ]
 		];  
 
 	  const M = numeric.add(mvr.M_RB, M_A)
@@ -32,8 +36,8 @@ class ManoeuvringMovement {
 
     const N = this.N || [
 			[ 0, 0, 0 ],
-			[ 0, -Cl * h.Yvdn, mvr.m * u - Cll * h.Yrdn ],
-			[ 0, -h.Yvacc * u - Cll * h.Nvdn, -Clll * h.Nrdn ]
+			[ 0, -Cl * h.Yvdn, (mvr.m * u - Cll * h.Yrdn) ],
+			[ 0, (-h.Yvacc * u - Cll * h.Nvdn), -h.Yracc * u  - Clll * h.Nrdn  ]
 		];
 
   	mvr.INVMN = numeric.dot(numeric.neg(mvr.INVM), N) 

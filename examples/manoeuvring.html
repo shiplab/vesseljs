@@ -309,7 +309,7 @@
 			//Globals
 			var renderer, camera, thrirdPersonCamera, fixedCamera, gui, stats;
 			var scene, zUpCont, playback, bodies, ocean;
-			var ship, shipGLTF, shipState, propellers, wave, hullRes, propellerInteraction, rudderModel;
+			var ship, shipGLTF, shipState, propellers, wave, hullRes, propellerInteraction, rudderModel, fuelCons;
 			var shipDOPRI, shipStateDOPRI;
 			var manoeuvringModel, viewer;
 			var scale, modelStyle;
@@ -562,13 +562,6 @@
 						this.light.castShadow = true;
 						// The distance are inverted due Vessel.js rotation @ferrari212
 						this.light.position.set( this.position.x, 10, -this.position.y );
-					}
-
-					locatedInside(x, y) {
-						// It was chosen to use a squared area than a central distance to improve efficiency with at the expense of accuracy
-						if (Math.abs(this.x - x) && Math.abs(this.y - x)) {
-							
-						}
 					}
 
 					randomIntFromRange(min, max) {
