@@ -1,21 +1,27 @@
 // @ferrari212
 // This class requires the numeric.js
 class ManoeuvringMovement {
-  constructor(manoeuvring, N) {
+  constructor(manoeuvring) {
     if (typeof numeric !== "function") {
       console.error("Manoeuvring requires the numeric.js library.")
     }
 
     this.mvr = manoeuvring;
+    this.manoeuvring = manoeuvring.manoeuvring;
+    this.states = manoeuvring.states;
     this.getPropResult = manoeuvring.getPropResult;
-    this.N = N
+    this.dt = 0;
+
   }
+
+  // Insert this inside the ship maneuvring function
+  
 
   setMatrixes (F = [0, 0, 0], yaw = 0) {
 		// this.M_RB = numeric.add(this.M, this.I)
     let mvr = this.mvr
     let h = mvr.hydroCoeff
-    let u = mvr.V.u
+    let u = this.states.V.u
 
     // In this case the M_A is constant and the value ws left as it is
     const M_A = [
@@ -34,9 +40,9 @@ class ManoeuvringMovement {
   	// mvr.INVMN = numeric.dot(numeric.neg(mvr.INVM), mvr.N)
     const {Cl, Cll, Clll}	 = mvr.dn;
 
-    const N = this.N || [
+    const N = this.manoeuvring.N || [
 			[ 0, 0, 0 ],
-			[ 0, -Cl * h.Yvdn, (mvr.m * u - Cll * h.Yrdn) ],
+			[ 0, -Cl * h.Yvdn, (this.manoeuvring.m * u - Cll * h.Yrdn) ],
 			[ 0, (-h.Yvacc * u - Cll * h.Nvdn), -h.Yracc * u  - Clll * h.Nrdn  ]
 		];
 
@@ -85,9 +91,9 @@ class ManoeuvringMovement {
     var X = [0,
              0,
              0,
-             V.u,
-             V.v,
-             V.yaw_dot
+             this.states.V.u,
+             this.states.V.v,
+             this.states.V.yaw_dot
             ]
 
     var X_dot = numeric.add(numeric.dot(mvr.A, X), mvr.B)
@@ -97,23 +103,23 @@ class ManoeuvringMovement {
 
 	getDisplacements (dt) {
     let self = this;
-    let mvr = this.mvr;
 
     // Parse matrix V
     var X = [0,
 						 0,
 						 0,
-						 mvr.V.u,
-						 mvr.V.v,
-						 mvr.V.yaw_dot];
+						 this.states.V.u,
+						 this.states.V.v,
+						 this.states.V.yaw_dot
+            ];
 
 		
     let sol = numeric.dopri(0, dt, X, function (t,V) { return self.getDerivatives({u: X[3], v:X[4], yaw_dot: X[5]}) }, 1e-8, 100).at(dt);
         
     // Get global coordinates variation (dx, dy, dyaw)
     // Get local velocity (du, dv, dyaw_dot)
-    mvr.DX = {x: sol[0], y: sol[1], yaw: sol[2]}
-    mvr.V = {u: sol[3], v: sol[4], yaw_dot: sol[5]}
-    mvr.yaw += mvr.DX.yaw
+    this.states.DX = {x: sol[0], y: sol[1], yaw: sol[2]}
+    this.states.V = {u: sol[3], v: sol[4], yaw_dot: sol[5]}
+    this.states.yaw += this.states.DX.yaw
   }
 }

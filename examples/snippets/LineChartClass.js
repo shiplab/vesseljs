@@ -2,7 +2,7 @@
 class LineChartClass {
 	// Class to create a chart line with d3.js
 	// id: set id in the svg (string)
-	// data: data object containing the {time: xkey used (float), ykey: value defined for ykey key (value)}
+	// data: data object containing the {xkey: xkey used (float), ykey: value defined for ykey key (float)}
 	// xkey: key to define xkey key (stringxlabel)
 	// ylabel: xAxisBottom title (string)
 	// ykey: key to define ykey key (string)
@@ -151,23 +151,7 @@ class PositionGraph extends LineChartClass {
 
 		this.svg.selectAll(".dot")
 			.style("fill", "steelblue");
-
-
-			// MODELS OF APPEND FUNCTIONS
-
-			// lineChart.svg.append("rect")
-			// .attr('class', 'legend-rect')
-			// .attr("x", 100)
-			// .attr("y", 100)
-			// .attr("width", 20)
-			// .attr("height", 20)
-			// .style("fill", "red");
-
-			// 	lineChart.svg.append("circle")
-			// .attr('cx',106.661513 )
-			//   .attr('cy', 35.05917399 )
-			//   .attr('r','100px')
-			//   .style('fill', 'red');  
+			
 	}
 
 	draw = (x, y, r = 1, color = "red") => {
@@ -179,6 +163,30 @@ class PositionGraph extends LineChartClass {
 			.attr('cy', yf(y) )
 			.attr('r', r + 'px')
 			.style('fill', color);    
+	}
+
+	drawLabel = (x, y, name = "undef.", fontSize = 12, color = "black") => {
+		var xf = this.x;
+		var yf = this.y;
+		var h = this.height;
+
+		// debugger
+
+		this.svg.append("g")
+			.attr("class", "Teste")
+			.attr("transform", "translate( 0, " + yf(y) + ")")
+			// .call(xAxisBottom)
+			.attr("font-size", fontSize)
+			.append("text")
+			.attr("class", "label")
+			.attr("x", xf(x))
+			.attr("y", () => {
+				// debugger
+				return (y < 450 ? -fontSize : fontSize)
+			})
+			.style("text-anchor", "middle")
+			.text(name);
+		
 	}
 	
 }
@@ -206,11 +214,6 @@ class ConsGraph extends LineChartClass {
 			.scale(x)
 			.tickSize(1);
 
-		// var xAxisTop = d3.svg.axis()
-		// 	.scale(x)
-		// 	.orient("top")
-		// 	.tickSize(1);
-
 		var yAxisLeft = d3.svg.axis()
 			.scale(y)
 			.orient("left")
@@ -221,11 +224,6 @@ class ConsGraph extends LineChartClass {
 			.orient("right")
 			.tickSize(1);
 
-		// var yAxisRight = d3.svg.axis()
-		// 	.scale(y)
-		// 	.orient("right")
-		// 	.tickSize(1);
-
 		this.svg = d3.select("#" + this.parentId).append("svg")
 			.attr("id", id)
 			.attr("width", this.width + this.margin.left + this.margin.right)
@@ -233,8 +231,6 @@ class ConsGraph extends LineChartClass {
 			.append("g")
 			.attr("transform", "translate(" + this.margin.left + "," + this.margin.top + ")");
 
-		// x.domain(d3.extent(data, function(d) {return d[xkey]})).nice();
-		// y.domain([-10, d3.max(data, function(d) {return d[ykey];})]).nice();
 		x.domain([0, 1]).nice();
 		y.domain([0, 1]).nice();
 
@@ -260,12 +256,6 @@ class ConsGraph extends LineChartClass {
 			.call(xAxisCenter)
 			.attr("font-size", 0)
 
-		// this.svg.append("g")
-		// 	.attr("class", "x axis")
-		// 	.attr("transform", "translate(0, 0)")
-		// 	.call(xAxisTop)
-		// 	.attr("font-size", fontSize)
-
 		this.svg.append("g")
 			.attr("class", "y axis")
 			.call(yAxisLeft)
@@ -277,15 +267,6 @@ class ConsGraph extends LineChartClass {
 			.attr("dy", ".71em")
 			.style("text-anchor", "end")
 			.text(objLabel.ylabel);
-
-		// this.svg.append("g")
-		// 	.attr("class", "y axis")
-		// 	.attr("transform", "translate(" + this.width + ", 0)")
-		// 	.call(yAxisRight)
-		// 	.attr("font-size", fontSize)
-		// 	.append("text")
-		// 	.attr("class", "label")
-		// 	.attr("transform", "rotate(-90)")
 
 		this.svg.append("g")
 			.attr("class", "y axis")
@@ -337,17 +318,17 @@ class ConsGraph extends LineChartClass {
 			.style('fill', color);    
 	}
 
-	drawLineGeneric = (x, y, propeller, r = 1, color = "red") => {
+	drawLineGeneric = (x, y, manoeuvring, r = 1, color = "red") => {
 		var xf = this.x;
 		var yf = this.y;
 		
-		var maxTorque = 400000; // Maximum torque of the motor [N.m]
-		var maxRot = propeller.maxRot / 60 // Maximum Rotation of the motor [Hz]
-		var PotMax = 2*500000; // this is especified in the motor example and should be let here
+		var maxTorque = manoeuvring.maxTorque; // Maximum torque of the motor [N.m]
+		var maxRot = manoeuvring.maxPropRot/60 // Maximum Rotation of the motor [Hz]
+		var PotMax = 2*500; // this is especified in the motor example and should be let here
 		var minRot = 0.1 * maxRot; // [Hz]
 
 		// The maximun Q is when J = 0. KQ = gamma1
-		// var Qmax = propeller.gamma1 * 1025 * Math.pow(minRot, 2) * Math.pow(propeller.D, 5);
+		// var Qmax = manoeuvring.gamma1 * 1025 * Math.pow(minRot, 2) * Math.pow(manoeuvring.D, 5);
 		var PotMin = maxTorque * minRot;
 
 		var yini	= PotMin/PotMax;

@@ -2683,7 +2683,8 @@ Object.defineProperties(HullResistance.prototype, {
 // This module simulates the propeller and its interaction with hull and engine.
 
 // @ferrari212
-function Manoeuvring(ship, states, hullResistance, propellerInteraction, m, I, initial_yaw = 0, rho = 1025) {
+// function Manoeuvring(ship, states, hullResistance, propellerInteraction, m, I, initial_yaw = 0, rho = 1025) {
+function Manoeuvring(ship, states, hullResistance, propellerInteraction, fuelConsumption, manoeuvring, rho = 1025) {
 	
 	StateModule.call(this, ship, states);
 	if (typeof this.states.discrete.FloatingCondition === "undefined") {
@@ -2696,21 +2697,38 @@ function Manoeuvring(ship, states, hullResistance, propellerInteraction, m, I, i
 	// debugger
 	this.hullRes = hullResistance
 	this.propellerInteraction = propellerInteraction;
+	this.fuelConsumption = fuelConsumption
+	this.powerPlant = fuelConsumption.powerPlant
+	this.manoeuvring = manoeuvring;
+	this.state = {}
 	this.rho = propellerInteraction.rho;
 	this.propeller = this.propellerInteraction.propeller
 	this.speedState = this.states.discrete.Speed.state;
 	this.floatState = this.states.discrete.FloatingCondition.state;
 	this.resistanceState = this.states.discrete.HullResistance.state;	
 
+	const YAW = manoeuvring.initial_yaw || 0;
+	const AN = manoeuvring.initial_angle || 0;
 	// The modules bellow use the value in knots for the ship speed,
 	// here it is going to be used the values in SI (m/s). @ferrari212
-	Object.assign(this, { 
+	Object.assign(this.states, { 
 		DX: {x:0, y:0, yaw: 0},
 		V: {u:0, v:0, yaw_dot:0},
 		n: 0,
-		yaw: initial_yaw,
-		rudderAngle: 0
+		yaw: YAW,
+		rudderAngle: AN,
+		load: 0
 	})
+
+	var engines = this.powerPlant.main.engines
+	this.powerPlant.engCapac = [];
+	var engCapac = this.powerPlant.engCapac
+
+	for (var i = 0; i < engines.length; i++) {
+		engCapac[i] = engines[i].MCR;
+	}
+
+	this.totalCapac = engCapac.reduce((a, b) => a + b, 0);
 
 	// The function simplify the resitence curve by Rt = k*u^2
 	// the interpolation could be improved by other types of functions interporlation @ferrari212
@@ -2736,15 +2754,14 @@ function Manoeuvring(ship, states, hullResistance, propellerInteraction, m, I, i
 	this.getRes = intResist(this);
 
 	const W = ship.getWeight()
-	this.m = m || W.mass;
+	this.m = manoeuvring.m || W.mass;
 				
 	// The approximaxion is given by the inercia of an Elipsoid in water
 	var attributes = this.ship.structure.hull.attributes;
-	var Vs = this.states.discrete.FloatingCondition.state.Vs;
 	var T = this.ship.designState.calculationParameters.Draft_design;
-	var approxI = I || Math.PI * rho * attributes.LOA * attributes.BOA * T * ( 4 * Math.pow(T, 2) + Math.pow(attributes.BOA, 2) )/120;
+	var approxI = manoeuvring.I || Math.PI * rho * attributes.LOA * attributes.BOA * T * ( 4 * Math.pow(T, 2) + Math.pow(attributes.BOA, 2) )/120;
 
-	this.M_RB = [
+	this.M_RB = manoeuvring.M || [
 		[ this.m, 0, 0],
 		[0,  this.m, 0],
 		[0, 0,  approxI]
@@ -2762,7 +2779,7 @@ Manoeuvring.prototype = Object.create(StateModule.prototype);
 Object.assign(Manoeuvring.prototype, {
 	constructor: Manoeuvring,
 	getPropResult: function (n) {
-		if (n === 0) return {Fp: 0, Pp: 0};
+		if (n === 0) return {Fp: 0, Pp: 0, cons: 0};
 
 		var Va = this.propellerInteraction.propulsion.Va
 
@@ -2786,8 +2803,77 @@ Object.assign(Manoeuvring.prototype, {
 		var Fp =	Math.sign(n)* T * this.propeller.noProps * (1 - this.resistanceState.t);
 		var Po =	2 * Math.PI * Math.abs(Q * n) * this.propeller.noProps;
 		var Pp =	Po * etar;
-		// debugger
-		return {Fp, Pp};
+
+		var cons = this.getFuelCons(Pp)
+
+		return {Fp, Pp, cons};
+	},
+	getFuelCons: function(Pp) {
+			// share load among engines in a system's array
+			function shareLoad(system, load) {
+				var triggerRatio = 0.8; // define loading rate at which next engine in the power system will be activated for sharing loads
+				var cons = 0;
+	
+				var engCapac = [];
+				for (var i = 0; i < system.engines.length; i++) {
+					engCapac[i] = system.engines[i].MCR;
+				}
+	
+				if (typeof system.etag === "number") { // diesel electrical system
+					load = load / (system.etas * system.etag);
+				} else { // diesel mechanical system
+					load = load / system.etas; // consumption rate in kg/s
+				}
+	
+				// distribute loads among engines
+				var totalCapac = engCapac.reduce((a, b) => a + b, 0);
+				var partCapac = totalCapac - engCapac[engCapac.length - 1];
+				var loads = Array(engCapac.length);
+				if (load <= triggerRatio * partCapac) { // if not all engines are loaded above trigger ratio, load them according to trigger rate ceil
+					var capSum = 0;
+					loads.fill(0);
+					for (var eng = 0; eng < engCapac.length; eng++) {
+						capSum += engCapac[eng];
+						if (load <= triggerRatio * capSum) { // if engines can support load
+							for (i = 0; i <= eng; i++) { // distribute load proportionally to engines' capacities
+								loads[i] = load / capSum;
+							}
+							break;
+						}
+					}
+				} else if (triggerRatio * partCapac < load && load <= totalCapac) { // if all engines are loaded above trigger ratio, make them all have same load %
+					loads.fill(load / totalCapac);
+				} else if (load > totalCapac) {
+					console.error("Engines are overloaded. Power plant can't provide current required power.");
+					loads.fill(1);
+				}
+	
+				// calculate SFOC value for each activated engine
+				var SFOC;
+				for (i = 0; i < loads.length; i++) {
+					if (loads[i] > 0) { // if engine is active
+						if (system.engines[i].polOrder === 3) {
+							SFOC = system.engines[i].a * Math.pow(loads[i], 3) + system.engines[i].b * Math.pow(loads[i], 2) + system.engines[i].c * loads[i] + system.engines[i].d;
+						} else if (system.engines[i].polOrder === 2) {
+							SFOC = system.engines[i].a * Math.pow(loads[i], 2) + system.engines[i].b * loads[i] + system.engines[i].c;
+						}
+						cons += SFOC / (1000) * loads[i] * engCapac[i]; // consumption rate in kg/g
+					}
+				}
+				return cons;
+			}
+			
+			var consumptionRate;
+
+			if (typeof this.powerPlant.auxiliary === "object") { // calculate results for vessels which have main and auxiliary power systems
+				// change the propeller states for the maneuvering proppeller
+				consumptionRate = this.powerPlant.main.noSys * shareLoad(powerPlant.main, Pp / (1000 * this.powerPlant.main.noSys));
+				consumptionRate += shareLoad(this.powerPlant.auxiliary, this.auxPowerState.Paux / 1000);
+			} else { // calculate results for vessels which have only one power system
+				consumptionRate = shareLoad(this.powerPlant.main, Pp / 1000);
+			}
+			return consumptionRate;
+		
 	}
 });
 Object.defineProperties(Manoeuvring.prototype, {

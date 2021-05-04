@@ -23,7 +23,6 @@ class CheckPoint {
                           transparent: true,
                           opacity: 0.9,
                           wireframe: true,
-                          emissive: this.color
                         } );
     this.mesh = new THREE.Mesh( this.geometry, this.material );
     this.mesh.position.set(this.position.x, this.position.y, 10);
@@ -59,6 +58,8 @@ class CheckPoint {
 
       this.material.color.setRGB(1,x,0);
       this.mesh.rotation.z += ROT;
+      this.light.color.setRGB(1,x,0);
+      
       return x
     }
 
