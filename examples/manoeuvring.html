@@ -80,7 +80,7 @@
 
 			background-color: #fff;
 			opacity: 0.9;
-			z-index: 999;
+			z-index: 110;
 
 			box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
 		}
@@ -96,7 +96,7 @@
 
 			background-color: #fff;
 			opacity: 0.9;
-			z-index: 999;
+			z-index: 110;
 
 			box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
 		}
@@ -129,7 +129,7 @@
 		#notes {
 			position: fixed;
 			bottom: 16px;
-			z-index: 999;
+			z-index: 100;
 			right: 156px;
 			font-family: 'Cutive Mono', monospace;
 
@@ -146,7 +146,7 @@
 			border-radius: 5%;
 			position: fixed;
 			top: 140px;
-			z-index: 999;
+			z-index: 100;
 			right: 16px;
 			font-family: 'Cutive Mono', monospace;
 
@@ -160,7 +160,7 @@
 
 			text-align: center;
 			background-color: #fff;
-			z-index: 999;
+			z-index: 100;
 		}
 
 		/* ***************************************************************************************/
@@ -294,7 +294,7 @@
 		/* Style required for D3.js */
 		svg {
 					font: 10px sans-serif;
-					z-index: 999;
+					z-index: 100;
 				}
 
 		.axis path,
@@ -861,6 +861,11 @@
 				};
 				gui = new dat.GUI();
 				scale = gui.addFolder( "View Style" );
+				scale.add({
+					"Click to read paper": function () {
+						window.open("https://observablehq.com/@ferrari212/simulation-model-a-brief-method");
+					}
+				}, "Click to read paper")
 				scale
 					.add( viewer, 'view', {
 						TP: "TP",
@@ -941,9 +946,16 @@
 						d3.selectAll("#" + NAME).style("fill", "red");
 
 						remainCheck -= 1
-						scale.__controllers[0].object.checkPoint = remainCheck
+						scale.__controllers[1].object.checkPoint = remainCheck
 
 						grid.RemoveClient(item);
+
+						if ( !remainCheck ) {
+						
+						if (window.confirm("Congratulations! You got all checkpoints, replay? ")) {
+									window.location.replace("https://shiplab.github.io/vesseljs/examples/manoeuvring.html");
+								}
+						};
 						
 					}
 
