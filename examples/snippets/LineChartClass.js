@@ -389,6 +389,15 @@ class ConsGraph extends LineChartClass {
 			.attr("class", "label")
 			.style("text-anchor", "start")
 			.text("Minimun Rotation");
+		
+			this.svg.append("g")
+			.attr("transform", "translate( " + ( xf(1) - 5 ) +" , " + (yf(0)  - 2) + " ) rotate(-90)")
+			.attr("font-size", FONTSIZE)
+			.style("fill",color)
+			.append("text")
+			.attr("class", "label")
+			.style("text-anchor", "start")
+			.text("Maximum Rotation");
 
 		this.svg.append("g")
 			.attr("transform", "translate( " + ( xf(minRot) + 10 ) +" , " + (yf(yini)  - 20) + " ) rotate(-" +( SLOPE + 1 )+")")
