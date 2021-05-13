@@ -1,6 +1,6 @@
 <html>
 	<head>
-		<title>Ship in Ocean</title>
+		<title>Ship in Manoeuvring</title>
 		<!-- <script src="../build/vessel.js"></script> -->
 		<script src="../build/vessel_with_dopri.js"></script>
 
@@ -15,6 +15,7 @@
 		<!-- <script src="libs/WaterShader.js"></script> -->
 		<script src="3D_engine/Water.js"></script>
 		<script src="3D_engine/ThirdPersonCamera.js"></script>
+		<script src="3D_engine/CheckPoint.js"></script>
 		<script src="3D_engine/SpatialHashGrid.js"></script>
 
 		<!-- <script src="libs/OrbitControls.js"></script> -->
@@ -28,6 +29,7 @@
 		<!--Map libraries-->
 		<script src="libs/d3.v3.min.js"></script>
 		<script src="snippets/LineChartClass.js"></script>
+		<script src="snippets/controllerManoeuvring.js"></script>
 		<script src="snippets/ManoeuvringMovement.js"></script>
 		<!-- <script src="snippets/lineChart.js"></script> -->
 
@@ -38,7 +40,7 @@
 
 		<script src="../source/classes/FreeBody.js"></script>
 		<script src="libs/numeric-1.2.6.min.js"></script>
-		<script src="//mrdoob.github.io/stats.js/build/stats.min.js"></script>
+		<!-- <script src="//mrdoob.github.io/stats.js/build/stats.min.js"></script> -->
 
 	</head>
 
@@ -106,15 +108,57 @@
 			box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
 		}
 
-		#notes {
+		#question-button {
 			position: fixed;
 			bottom: 16px;
+			right: 96px;
+
+			padding: 12px;
+			border-radius: 50%;
+			margin-bottom: 0px;
+
+			background-color: #fff;
+			opacity: 0.9;
 			z-index: 999;
-			left: 16px;
+
+			box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
+		}
+
+		/* ******* Signature template ******* */
+
+		#info {
+			position: absolute;
+			color: #011C40;
+			top: 0px;
+			width: 100%;
+			padding: 10px;
+			box-sizing: border-box;
+			text-align: center;
+			-moz-user-select: none;
+			-webkit-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+			pointer-events: none;
+			z-index: 1;
+		}
+
+		#info a {
+			color: #A60D0D;
+			pointer-events: auto;
+		}
+
+		/* ******* ******* ******* */
+
+		#notes {
+			position: fixed;
+			bottom: 4px;
+			z-index: 999;
+			right: 156px;
 			font-family: 'Cutive Mono', monospace;
 
 			background-color: #fff;
 			opacity: 0.9;
+			visibility: hidden;
 
 			padding-right: 40px;
 			padding-top: 5px;
@@ -124,7 +168,7 @@
 		#graphic1 {
 			border-radius: 5%;
 			position: fixed;
-			top: 120px;
+			top: 140px;
 			z-index: 999;
 			right: 16px;
 			font-family: 'Cutive Mono', monospace;
@@ -136,7 +180,7 @@
 		#graphic2 {
 			border-radius: 5%;
 			position: fixed;
-			top: 120px;
+			top: 140px;
 			z-index: 999;
 			left: 16px;
 			font-family: 'Cutive Mono', monospace;
@@ -147,7 +191,7 @@
 
 		#panel-number {
 			position: fixed;
-			top: 0px;
+			top: 16px;
 			left: 16px;
 
 			text-align: center;
@@ -181,8 +225,9 @@
 		}
 		/* END */
 		/* ***************************************************************************************/
+		
 		@media all and (max-width: 992px) and (pointer: coarse) {
-			.ctrl-key-explanation {	
+			#question-button {	
 				display: none;
 			}
 		}
@@ -299,23 +344,31 @@
 
 	<body>
 		<div id="info">
-			<a href="http://vesseljs.org/" target="_blank" rel="noopener">Vessel.js</a> Manoeuvring Complete <br/>
+
+			<a href="http://vesseljs.org/" target="_blank" rel="noopener">Vessel.js</a> - Manoeuvring Model - In partnership with <a href="https://uit.no/startsida" target="_blank" rel="noopener">UiT</a>  <br/>
 			Author: <a href="https://shiptodata.com/" target="_blank" rel="noopener">Felipe Ferrari</a> - Msc. Student Ship Design
 			<br>
 			Supervisor: <a href="https://www.ntnu.edu/employees/henrique.gaspar" target="_blank" rel="noopener">Henrique M. Gaspar</a>
+			<br>
+			Drawing: <a href="https://www.ntnu.edu/" target="_blank" rel="noopener">NTNU</a>
 		</div>
+
 		<!-- This is the loader wraper, unncoment this to see the loading page -->
-		<!-- <div id="loader-wrapper">
+		<div id="loader-wrapper">
 			<div class="loader loader-white loader-1"></div>
-			<div><h1 style="font-style: italic">Loading...</h1></div>
-		</div> -->
+			<div><h1 id="loading" style="font-style: italic">Loading...</h1></div>
+		</div>
 
 		<canvas class="controller-button"></canvas>
+			
+		<a id="question-button">
+			<img src="..\examples\images\help-black-24dp.svg" />
+		</a>
 
 		<a id="code-button" target="_blank" href="https://github.com/ferrari212/vesseljs/blob/master/examples/manoeuvring.html" title="View source code for animation / cloth on GitHub" style="">
 			<img src="..\examples\images\code-24px.svg" />
 		</a>
-
+	
 		<div id="graphic1">
 			<div class="container">
 				<div id="lineChart-positon"></div>
@@ -329,15 +382,8 @@
 		</div>
 
 		<div id="notes" class="unselectable">
-			<!-- <div class="container">
-				<h3>Results Visualization</h3>
-				<p>Adapted from <a href="https://bl.ocks.org/mbostock/3887118" target="_blank">this page</a>.</p>
-				<div id="lineChart"></div>
-			</div> -->
 			<ul>
 				<li class="ctrl-key-explanation">Use <span class="ctrl-key">w</span>, <span class="ctrl-key">a</span>, <span class="ctrl-key">s</span>, <span class="ctrl-key">d</span> buttom to control the <br> rotation and angle of the propeller; </li>
-				<!-- <li>Version under development;</li> -->
-				<!-- <li>Model based on IP500515 course <br> from NTNU.</li> -->
 			</ul>
 		</div>
 
@@ -358,6 +404,11 @@
 					<h2 id="rotation-text">0</h2>
 					<p style="font-size: 10px">RPM</p>
 				</td>
+				<td>
+					<p style="font-size: 10px">Cons. Rate</p>
+					<h2 id="consumption-text">0</h2>
+					<p style="font-size: 10px">kg/h</p>
+				</td>
 			</tr>
 		</table>
 
@@ -367,236 +418,57 @@
 			//Globals
 			var renderer, camera, thrirdPersonCamera, fixedCamera, gui, stats;
 			var scene, zUpCont, playback, bodies, ocean;
-			var ship, shipGLTF, shipState, propellers, wave, hullRes, propellerInteraction, rudderModel;
-			// var shipDOPRI, shipStateDOPRI;
+			var ship, shipGLTF, shipState, propellers, wave, hullRes, propellerInteraction, rudderModel, fuelCons;
 			var manoeuvring, manoeuvringMovement, viewer, grid;
-			var scale, modelStyle;
-			var speedText, angleText, rotationText;
-			var clock, time;
-			var canvas, c, orbitController, lineChart, lineChart2;
-
-
-			function onOrbitControllerMove() {
-
-				var canvas = orbitController.canvas;
-				if ( ! canvas.active ) return;
-
-				var n = manoeuvringMovement.mvr.n;
-
-				if ( Math.abs( canvas.y ) > Math.abs( canvas.x ) ) {
-
-					if ( Math.sign( canvas.y ) < 0 ) {
-
-						if ( n <= 5 ) {
-
-							manoeuvringMovement.mvr.n += 0.01;
-							rotationText.innerText = ( 60 * manoeuvringMovement.mvr.n ).toFixed( 0 );
-
-						}
-
-					} else {
-
-						if ( n >= - 5 ) {
-
-							manoeuvringMovement.mvr.n -= 0.01;
-							rotationText.innerText = ( 60 * manoeuvringMovement.mvr.n ).toFixed( 0 );
-
-						}
-
-					}
-
-				} else {
-
-					if ( Math.sign( canvas.x ) > 0 ) {
-
-						manoeuvringMovement.mvr.rudderAngle += 0.08;
-						angleText.innerText = manoeuvringMovement.mvr.rudderAngle.toFixed( 1 );
-
-					} else {
-
-						manoeuvringMovement.mvr.rudderAngle -= 0.08;
-						angleText.innerText = manoeuvringMovement.mvr.rudderAngle.toFixed( 1 );
-
-					}
-
-				}
-
-			}
+			var scale, modelStyle, remainCheck, totalFuel;
+			var speedText, angleText, rotationText, consumptionText
+			var clock, time, checkPoint;
+			var canvas, c, lineChart, lineChart2;
 
 			( function main() {
 
-				// Create Circunference Class
-				class OrbitController {
+				window.screenCheck = function () {
 
-					constructor( canvas, orientation = "bottom", size = 100, marginDistance = 50 ) {
+				let check = false;
+				( function ( a ) {
 
-						window.screenCheck = function () {
+					if ( /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino|android|ipad|playbook|silk/i.test( a ) || /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test( a.substr( 0, 4 ) ) ) check = true;
 
-							let check = false;
-							( function ( a ) {
+				} )( navigator.userAgent || navigator.vendor || window.opera );
 
-								if ( /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino|android|ipad|playbook|silk/i.test( a ) || /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test( a.substr( 0, 4 ) ) ) check = true;
+				return check;
 
-							} )( navigator.userAgent || navigator.vendor || window.opera );
+				};
 
-							return check;
+				if ( window.screenCheck() ) {
+					document.getElementById("loading").innerHTML = "Simulation not suitable for mobile, redirecting..."
 
-						};
-
-						if ( ! window.screenCheck() ) return null;
-
-
-						canvas.width = canvas.height = size;
-						this.canvas = canvas;
-						this.assignCanvasStyle( marginDistance );
-						this.c = this.canvas.getContext( '2d' );
-						this.c.fillStyle = '#000000';
-						this.c.strokeStyle = '#bebebe';
-
-						Object.assign( this.canvas, {
-							x: 0, //set on the center
-							y: 0,
-							canvas: {},
-							size: canvas.width,
-							radius: 3 * this.canvas.width / 16,
-							md: marginDistance,
-							active: false,
-							returnOrigin: function returnOrigin() {
-
-								this.x -= Math.sign( this.x ) * 0.04;
-								this.y -= Math.sign( this.y ) * 0.04;
-								this.draw();
-
-							},
-							draw: () => this.draw()
-						} );
-
-						this.draw();
-						this.addTouchEvent();
-
+					const f = () => {
+						setTimeout(function(){ window.location.replace("https://shiplab.github.io/vesseljs/examples/manoeuvring.html"); }, 3000);
+						// setTimeout(console.warn("Teste"), 4000)
+						return 						
 					}
 
-					draw() {
-
-						var props = this.canvas;
-						var x = ( props.x + 1 ) * props.width / 2;
-						var y = ( props.y + 1 ) * props.height / 2;
-
-						this.c.clearRect( 0, 0, props.width, props.height );
-						this.c.beginPath();
-						this.c.arc( x, y, props.radius, 0, Math.PI * 2, false );
-						this.c.fill();
-						this.c.stroke();
-						this.c.closePath();
-
+					async function sleep() {
+							await f();
+							return null;
 					}
 
-					assignCanvasStyle( md = 50 ) {
+					sleep();
 
-						this.canvas.style.position = "fixed";
-						this.canvas.style.bottom = `${md}px`;
-						this.canvas.style.right = "50%";
-						this.canvas.style.transform = "translate(50%, 0)";
-						this.canvas.style.borderRadius = "50%";
-						this.canvas.style.backgroundColor = "#fff";
-						this.canvas.style.opacity = 0.9;
-						this.canvas.style.zIndex = 999;
-						this.canvas.style.boxShadow = "0 0 4px rgba(0, 0, 0, 0.15)";
+					return null
+				};
 
-					}
-
-					update( e ) {
-
-						if ( e.touches && this.active ) {
-
-							var circleRadius = this.size / 2;
-							var marginDistance = this.md + circleRadius;
-
-							if ( this.x < this.width ) {
-
-								this.x = ( e.touches[ 0 ].pageX - window.innerWidth / 2 ) / circleRadius;
-
-							}
-
-							if ( this.y < this.height ) {
-
-								this.y = ( - window.innerHeight + e.touches[ 0 ].pageY + 100 ) / circleRadius;
-
-							}
-
-							this.draw();
-
-							e.preventDefault();
-
-						}
-
-					}
-
-					toggle() {
-
-						this.active = ! this.active;
-						// console.log(this.active);
-						if ( ! this.active ) this.returnOrigin();
-
-					}
-
-					addTouchEvent() {
-
-						this.canvas.addEventListener( "touchmove", this.update );
-						this.canvas.addEventListener( "touchstart", this.toggle );
-						this.canvas.addEventListener( "touchend", this.toggle );
-
-					}
-
+				var hideElement = () => {
+					document.getElementById("notes").style.visibility = "hidden";
 				}
 
-				class CheckPoint {
-					constructor(name, position = {x: -10, y: -10} , radius = 10, max = 450, min = 450) {
-						this.position= position;
-						this.radius = radius
-						this.color = "#ffff00"
-						
-						this.addMesh();
-						this.addLight();
-
-						
-					}
-
-					addMesh() {
-						this.geometry = new THREE.OctahedronGeometry(this.radius);
-						this.material = new THREE.MeshBasicMaterial( {
-																	color: this.color,
-																	transparent: true,
-																	opacity: 0.9,
-																	wireframe: true,
-																	emissive: this.color
-																} );
-						this.mesh = new THREE.Mesh( this.geometry, this.material );
-						this.mesh.position.set(this.position.x, this.position.y, 10);
-					}
-
-					addLight() {
-						this.light = new THREE.PointLight( this.color, 2, 100 );
-						this.light.castShadow = true;
-						// The distance are inverted due Vessel.js rotation @ferrari212
-						this.light.position.set( this.position.x, this.position.y, 10 );
-					}
-
-					locatedInside(x, y) {
-						// It was chosen to use a squared area than a central distance to improve efficiency with at the expense of accuracy
-						if (Math.abs(this.x - x) && Math.abs(this.y - x)) {
-							
-						}
-					}
-
-					randomIntFromRange(min, max) {
-						return Math.floor(Math.random() * (max - min + 1) + min);
-					}
-
-					randomLocation(min, max) {
-						return Math.sign(Math.random()-.5) * randomIntFromRange(min, max);
-					}
+				var showElement = () => {
+					document.getElementById("notes").style.visibility = "visible";
 				}
+
+				document.getElementById("question-button").addEventListener("mouseenter", showElement);				
+				document.getElementById("question-button").addEventListener("mouseleave", hideElement);				
 
 				class FixedCamera {
 
@@ -615,12 +487,6 @@
 					}
 				}
 
-				// Setup of the canvas
-				canvas = document.createElement( 'CANVAS' );
-				document.body.appendChild( canvas );
-
-				orbitController = new OrbitController( canvas, "left", 100, 50 );
-
 				//Renderer setup
 				document.body.style.overflow = "hidden";
 				var container = document.createElement( "div" );
@@ -628,6 +494,7 @@
 				speedText = document.getElementById( "speed-text" );
 				angleText = document.getElementById( "angle-text" );
 				rotationText = document.getElementById( "rotation-text" );
+				consumptionText = document.getElementById( "consumption-text" );
 
 				Object.assign( container.style, {
 					position: "absolute",
@@ -663,8 +530,8 @@
 				skybox.name = "Skybox";
 				scene.add( skybox );
 
-				stats = new Stats();
-				document.body.appendChild(stats.dom);
+				// stats = new Stats();
+				// document.body.appendChild(stats.dom);
 
 				//Camera setup
 				camera = new THREE.PerspectiveCamera( 26, window.innerWidth / window.innerHeight, 1, 10000 );
@@ -700,164 +567,136 @@
 
 				//Load sample file:
 				new THREE.FileLoader().load( "specs/ship_specifications/gunnerus.json", function ( content ) {
-
-					// ship = new Vessel.Ship( JSON.parse( content ) );
-					// shipState = new Vessel.ShipState( ship.designState.getSpecification() );
 					
-					ship = new Vessel.Ship( JSON.parse( content ) );
-					shipState = new Vessel.ShipState( ship.designState.getSpecification() );
+				ship = new Vessel.Ship( JSON.parse( content ) );
+				shipState = new Vessel.ShipState( ship.designState.getSpecification() );
 
-					// object and functions to handle propeller specifications
-					propellers = {};
+				// object and functions to handle propeller and power plant especifications
+				propellers = {};
+				var powerPlants = {};				
 
-					// preload propeller specification
-					var propReq = new XMLHttpRequest();
-					propReq.open( "GET", "specs/propeller_specifications/rolls_royce_500_azipod.json", true );
-					propReq.addEventListener( "load", function ( event ) {
+				// It is recommended to pass the XMLHttpRequest from false to true but it is necessary to solve the async issue
+				var propReq = new XMLHttpRequest();
+				propReq.open( "GET", "specs/propeller_specifications/rolls_royce_500_azipod.json", true );
+				propReq.addEventListener( "load", function ( event ) {
 
 						var response = event.target.response;
 						var propeller = JSON.parse( response );
+
+						var usePropSpec = function ( propeller, name ) {
+
+							propellers[ name.substring( 0, name.length - 5 ) ] = propeller;
+
+							wave = new Vessel.WaveCreator();
+
+							hullRes = new Vessel.HullResistance( ship, shipState, propeller, wave );
+							hullRes.writeOutput();
+
+
+							for ( var propProp in propellers ) {
+
+								var wagProp = propellers[ propProp ];
+								propellerInteraction = new Vessel.PropellerInteraction( ship, shipState, wagProp );
+								propellerInteraction.writeOutput();
+
+							}
+
+							// load engine specification
+							var powReq = new XMLHttpRequest();
+							powReq.open("GET", "specs/power_plant_specifications/gunnerus_power_plant.json", true);
+							powReq.addEventListener("load", function (event) {
+								var response = event.target.response;
+								var powerPlant = JSON.parse(response);
+
+								var usePowSpec = function (powerPlant, name) {
+									powerPlants[name.substring(0, name.length - 5)] = powerPlant;
+
+									for (var powProp in powerPlants) {
+										var plant = powerPlants[ powProp ];
+										fuelCons = new Vessel.FuelConsumption(ship, shipState, plant);
+										fuelCons.writeOutput();
+									}
+								};
+
+								usePowSpec(powerPlant, "gunnerus_power_plant.json");
+
+
+								var manSpec = new XMLHttpRequest();
+									manSpec.open("GET", "specs/maneuvering_specifications/man_sample.json", true)
+									manSpec.addEventListener("load", function (event) {
+										var response = event.target.response;
+										var man = JSON.parse(response);
+								
+								manoeuvring = new Vessel.Manoeuvring( ship, shipState, hullRes, propellerInteraction, fuelCons, man );
+								manoeuvringMovement = new ManoeuvringMovement(manoeuvring)
+
+								// Insertion of the label grphics
+								const BOUNDS = [[-500.0, -500.0], [500.0, 500.0]];
+								const RADIUS = 5
+
+								const DIVISIONS = [200, 200];
+								grid = new SpatialHashGrid(BOUNDS, DIVISIONS);
+
+								var keyResults = [];
+
+								remainCheck = "3";
+								totalFuel = 0;
+
+								const NAMECHECKPOINT = ["A", "B", "C"]
+
+								for (let i = 0; i < parseInt(remainCheck); i++) {
+									keyResults.push({ radius: RADIUS, name: NAMECHECKPOINT[i]	});
+									
+								}
+								
+								checkPoint = []
+
+								for (let i = 0; i < keyResults.length; i++) {							
+									checkPoint.push(new CheckPoint(keyResults[i]));
+									
+									const POS = checkPoint[i].position;
+									keyResults[i].position = POS;
+									const R = checkPoint[i].radius;
+									const N = checkPoint[i].name;
+
+									const client = grid.NewClient(POS, { w: R, h: R }, N);
+
+									zUpCont.add(checkPoint[i].mesh);
+									zUpCont.add(checkPoint[i].light);							
+								}
+
+
+								var labelObj1 = {
+									xkey: "x", 
+									xlabel: "Position X (m)",
+									ykey: "y",
+									ylabel: "Position Y (m)"
+								}
+								lineChart = new PositionGraph("lineChart1", keyResults.map(e => e.position), labelObj1, "lineChart-positon");
+								keyResults.forEach(e => lineChart.drawLabel(e.position.x, e.position.y, e.name));
+								var labelObj2 = {
+									xkey: "x", 
+									xlabel: "Rotation (%)",
+									ykey: "y",
+									ylabel: "MCR (%)"
+								}
+								lineChart2 = new ConsGraph("lineChart2", keyResults.map(e => e.position), labelObj2, "lineChart-eff");
+								lineChart2.drawLineGeneric(0, 0, manoeuvringMovement.manoeuvring)
+
+							})
+									manSpec.send(null);
+
+							});
+							powReq.send(null);
+
+						};
+
 						usePropSpec( propeller, "rolls_royce_500_azipod.json" );
 
 					} );
 					propReq.send( null );
-
-					var usePropSpec = function ( propeller, name ) {
-
-						propellers[ name.substring( 0, name.length - 5 ) ] = propeller;
-
-						wave = new Vessel.WaveCreator();
-
-						hullRes = new Vessel.HullResistance( ship, shipState, propeller, wave );
-						hullRes.writeOutput();
-
-						
-						for ( var propProp in propellers ) {
-
-							var wagProp = propellers[ propProp ];
-							propellerInteraction = new Vessel.PropellerInteraction( ship, shipState, wagProp );
-							propellerInteraction.writeOutput();
-
-						}
-
-						// Pass the manouvring functions here
-						
-						// var m = 4e5;
-						// var I = 5.8e8;
-						// var I = [
-						// 	[ 4e5, 0, 0 ],
-						// 	[ 0, 4e5, 8.4e6 ],
-						// 	[ 0, 8.4e6, 5.8e8 ]
-						// ];
-						// var D = [
-						// 	[ 3e4, 0, 0 ],
-						// 	[ 0, 5.5e4, 6.4e4 ],
-						// 	[ 0, 6.4e4, 1.2e5 ]
-						// ];
-
-						// manoeuvring = new Vessel.Manoeuvring( ship, shipState, hullRes, propellerInteraction, m, I );
-						manoeuvring = new Vessel.Manoeuvring( ship, shipState, hullRes, propellerInteraction );
-						
-						manoeuvringMovement = new ManoeuvringMovement(manoeuvring)
-						document.addEventListener( "keydown", onDocumentKeyDown, false );
-
-						function onDocumentKeyDown( event ) {
-
-							var keyCode = event.which;
-							var n = manoeuvringMovement.mvr.n;
-
-							switch ( keyCode ) {
-
-								case 87:
-									if ( n <= 4 ) {
-
-										manoeuvringMovement.mvr.n += 0.1;
-										rotationText.innerText = ( 60 * manoeuvringMovement.mvr.n ).toFixed( 0 );
-
-									}
-
-									break;
-								case 83:
-									if ( n >= - 4 ) {
-
-										manoeuvringMovement.mvr.n -= 0.1;
-										rotationText.innerText = ( 60 * manoeuvringMovement.mvr.n ).toFixed( 0 );
-
-									}
-									break;
-								case 65:
-									manoeuvringMovement.mvr.rudderAngle -= 0.5;
-									angleText.innerText = manoeuvringMovement.mvr.rudderAngle.toFixed( 1 );
-									break;
-								case 68:
-									manoeuvringMovement.mvr.rudderAngle += 0.5;
-									angleText.innerText = manoeuvringMovement.mvr.rudderAngle.toFixed( 1 );
-									break;
-								default:
-									break;
-
-							}
-
-						}
-
-						const BOUNDS = [[-500.0, -500.0], [500.0, 500.0]];
-						const RADIUS = 5
-						// const RADIUS = ship.structure.hull.attributes.BOA
-						const DIVISIONS = [200, 200];
-						grid = new SpatialHashGrid(BOUNDS, DIVISIONS);
-
-						var keyResults = [];
-						keyResults.push({position: {x: 50, y: 0.00}, radius: RADIUS, name: "A"});
-						keyResults.push({position: {x: 0, y: 186.52}, radius: RADIUS, name: "B"});
-						keyResults.push({position: {x: 0, y: -200}, radius: RADIUS, name: "C"});
-						keyResults.push({position: {x: 400, y: 400}, radius: RADIUS, name: "D"});
-						
-						var checkPoint = []
-
-						for (let i = 0; i < keyResults.length; i++) {
-							const POS = keyResults[i].position;
-							const R = keyResults[i].radius;
-							const N = keyResults[i].name;
-							
-							checkPoint.push(new CheckPoint('Test', POS, R ));
-							const client = grid.NewClient(POS, { w: R, h: R }, N);
-
-							zUpCont.add(checkPoint[i].mesh);
-							zUpCont.add(checkPoint[i].light);							
-						}
-
-						// keyResults.forEach((e, i) => {
-						// 	checkPoint.push(new CheckPoint('Test', e.position, e.radius ));
-
-						// 	zUpCont.add(checkPoint[i].mesh);
-						// 	zUpCont.add(checkPoint[i].light);
-						// });
-
-						// checkPoint = new CheckPoint('Test', keyResults[0], 10 );
-						// scene.add(checkPoint.mesh);
-						// scene.add(checkPoint.light);
-
-						// var lineChart = new PositionGraph("lineChart1", keyResults, "x", "x - name");
-						var labelObj1 = {
-							xkey: "x", 
-							xlabel: "Position X (m)",
-							ykey: "y",
-							ylabel: "Position Y (m)"
-						}
-						lineChart = new PositionGraph("lineChart1", keyResults.map(e => e.position), labelObj1, "lineChart-positon");
-						
-						var labelObj2 = {
-							xkey: "x", 
-							xlabel: "Rotation (%)",
-							ykey: "y",
-							ylabel: "MCR (%)"
-						}
-						lineChart2 = new ConsGraph("lineChart2", keyResults, labelObj2, "lineChart-eff");
-						lineChart2.drawLineGeneric(0, 0, manoeuvringMovement.mvr.propeller)
-
-					};
-
 				} );
+				// End of the request chain
 
 				// import binary glTF file
 				var boatPath = "specs/GLTF_files/Gunnerus.glb";
@@ -880,25 +719,11 @@
 					zUpCont.add( shipGLTF );
 					camera.position.set( 0, 0, 0 );
 
-
 					// Insert the GLTF object
 					thrirdPersonCamera = new ThirdPersonCamera( {
 						camera: camera,
 						object: shipGLTF
 					} );
-
-					
-
-					// const grid = new SpatialHashGrid(BOUNDS, DIMENSIONS);
-					
-					// const client = grid.NewClient(parameters);
-
-					// client.position = newPosition;
-					// grid.UpdateClient(client);
-
-					// const nearby = grid.FindNearby(location, bounds);
-
-					// grid.RemoveClient(client);
 
 					fixedCamera = new FixedCamera( {
 						camera: camera,
@@ -913,36 +738,36 @@
 								fixedCamera.Update();
 							} 
 					}})
-					// debugger
 
-					// Fade loading page UNCOMENT THIS PART
-					// var fadeTarget = document.getElementById( "loader-wrapper" );
-					// var fadeEffect = setInterval( function () {
+					var fadeTarget = document.getElementById( "loader-wrapper" );
+					var fadeEffect = setInterval( function () {
 
-					// 	if ( ! fadeTarget.style.opacity ) {
+						if ( ! fadeTarget.style.opacity ) {
 
-					// 		fadeTarget.style.opacity = 1;
+							fadeTarget.style.opacity = 1;
 
-					// 	}
+						}
 
-					// 	if ( fadeTarget.style.opacity > 0 ) {
+						if ( fadeTarget.style.opacity > 0 ) {
 
-					// 		fadeTarget.style.opacity -= 0.05;
+							fadeTarget.style.opacity -= 0.05;
 
-					// 	} else {
+						} else {
 
-					// 		clearInterval( fadeEffect );
-					// 		fadeTarget.remove();
+							clearInterval( fadeEffect );
+							fadeTarget.remove();
 
-					// 	}
+						}
 
-					// }, 50 );
+					}, 50 );
 
 				} );
 
 				// //GUI setup (comment out to remove gui)
 				viewer = {
-					view: "TP"
+					view: "TP",
+					totalFuel: "0",
+					checkPoint: "3"
 				};
 				gui = new dat.GUI();
 				scale = gui.addFolder( "View Style" );
@@ -951,21 +776,13 @@
 						TP: "TP",
 						Fixed: "Fixed"
 					} )
-					.onChange( function ( newValue ) {
-
-						// switch ( newValue ) {
-
-						// 	case '0':
-						// 		break;
-						// 	case '1':
-						// 		break;
-						// 	default:
-						// 		console.log( 'Opition ' + newValue + ' not found.' );
-						// 		break
-						// }
-
-					} )
 					.name( "View" );
+				scale
+					.add( viewer, 'totalFuel')
+					.name( "Cons. Fuel (g)" ).listen();
+				scale
+					.add( viewer, 'checkPoint')
+					.name( "Remain" ).listen();
 				scale.open();
 
 				clock = new THREE.Clock();
@@ -978,83 +795,83 @@
 
 			function animate( millitime ) {
 
-				stats.begin();
+				// stats.begin();
 
 				ocean.water.material.uniforms.time.value += 1 / 60;
 
 				if ( shipGLTF ) {
 
 					// make this inside the Vessel.js
-					manoeuvring.setSpeed( manoeuvringMovement.mvr.V.u * 1.96);
-					var propellerAngle = manoeuvringMovement.mvr.rudderAngle * Math.PI / 180;
+					manoeuvring.setSpeed( manoeuvringMovement.states.V.u * 1.96);
+					var propellerAngle = manoeuvringMovement.states.rudderAngle * Math.PI / 180;
 					var cos = Math.cos( propellerAngle );
 					var sin = Math.sin( propellerAngle );
 
-					var rotationStates = manoeuvring.getPropResult( manoeuvringMovement.mvr.n );
+					var rotationStates = manoeuvring.getPropResult( manoeuvringMovement.states.n );
 
-					// console.log( `Fp: ${propeller.Fp.toFixed(0)};Pp: ${propeller.Pp.toFixed(0)}`);
-					// console.log(rotationStates);
+					var Rt =  manoeuvring.getRes( manoeuvringMovement.states.V.u);
 
-					// hullRes.setSpeed(manoeuvringMovement.mvr.V.u * 1.943844)
-					var Rt =  hullRes.totalResistance.Rtadd
-					// debugger
-					console.log(rotationStates.Fp * cos - Rt, Rt);
+					const distHel = manoeuvringMovement.manoeuvring.distHel
 
 					var forceVector = [
 						rotationStates.Fp * cos - Rt,
 						rotationStates.Fp * sin,
-						rotationStates.Fp * sin * 10
+						rotationStates.Fp * sin * distHel
 					];
 
-					var timeElapsedS = clock.getElapsedTime() - time;
+					manoeuvringMovement.dt = clock.getElapsedTime() - time;
 
 					manoeuvringMovement.setMatrixes( forceVector, shipGLTF.rotation.y + Math.PI / 2 );
-					manoeuvringMovement.getDisplacements( timeElapsedS);
-					time = clock.getElapsedTime();
+					manoeuvringMovement.getDisplacements( manoeuvringMovement.dt );
 
-					// if (anoeuvringMovement.mvr.DX === undefined) {
-						
-					// } else {
+					var position = shipGLTF.position
 
-					// }
-
-					shipGLTF.position.x += manoeuvringMovement.mvr.DX.x;
-					shipGLTF.position.y += manoeuvringMovement.mvr.DX.y;
-					shipGLTF.rotation.y = - Math.PI / 2 - manoeuvringMovement.mvr.yaw;
-
-					lineChart.draw(shipGLTF.position.x,	shipGLTF.position.y)
-					lineChart2.draw(Math.abs(manoeuvringMovement.mvr.n)/5,	rotationStates.Pp/1000000)
-
-					camera.toggle[viewer.view](timeElapsedS);
-
-					// speedText.innerText = (manoeuvringMovement.mvr.V.u * 1.943844).toFixed( 1 );
-					speedText.innerText = manoeuvringMovement.mvr.V.u.toFixed( 1 );
-
-					var clients = grid.FindNearby(shipGLTF.position, {w: .5, h: .5})
-					// console.log("The cliets are:", clients.values());
-					for (let item of clients) {
-						// console.log(item);
-						// grid.RemoveClient(item);
+					if (Math.abs(position.x) > 500 || Math.abs(position.y) > 500) {
+						position.x = 0;
+						position.y = 0;
 					}
 
-					// Improvement: This conditional must be passed internally as a assign function
-					if ( Object.keys( orbitController ).length ) {
+					position.x += manoeuvringMovement.states.DX.x;
+					position.y += manoeuvringMovement.states.DX.y;
+					shipGLTF.rotation.y = - Math.PI / 2 - manoeuvringMovement.states.yaw;
+					manoeuvringMovement.states.load = rotationStates.Pp * 0.001/manoeuvring.totalCapac;
 
-						if ( ( Math.abs( orbitController.canvas.x ) > 0.06 || Math.abs( orbitController.canvas.y ) > 0.06 ) && ! orbitController.canvas.active ) {
+					time = clock.getElapsedTime();
+					lineChart.draw(position.x,	position.y)
+					lineChart2.draw(Math.abs(manoeuvringMovement.states.n * 60)/manoeuvringMovement.manoeuvring.maxPropRot,	manoeuvringMovement.states.load)
 
-							orbitController.canvas.returnOrigin();
+					checkPoint.forEach(e => {e.update()})
 
-						} else {
+					camera.toggle[viewer.view](manoeuvringMovement.dt);
 
-							onOrbitControllerMove();
+					speedText.innerText = (manoeuvringMovement.states.V.u * 1.943844).toFixed( 1 );
+					
+					consumptionText.innerText = (rotationStates.cons).toFixed( 1 );
+					totalFuel += manoeuvringMovement.dt*rotationStates.cons/3.6
+					scale.__controllers[0].object.totalFuel = totalFuel.toFixed()
+					
+					var clients = grid.FindNearby(position, {w: .5, h: .5})
+					for (let item of clients) {
+						const NAME = item.name;
+						checkPoint.forEach(e => {
+							if(e.name === NAME) {
+								e.update = e.transientChange
+							}
+						})
 
-						}
+						d3.selectAll("#" + NAME).style("fill", "red");
 
+						remainCheck -= 1
+						scale.__controllers[0].object.checkPoint = remainCheck
+
+						grid.RemoveClient(item);
+						
 					}
 				}
+
 				renderer.render( scene, camera );
 				
-				stats.end();
+				// stats.end();
 
 				requestAnimationFrame( animate );
 
