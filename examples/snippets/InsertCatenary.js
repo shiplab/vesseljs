@@ -1,6 +1,6 @@
 // Catenary class will conect point A to point B
-// it will have as variable other specification about the Cables
-// it will return the geometry and the forces if appliable and
+// it have as variable specifications about the Cables
+// and return the geometry and forces (if applicable) and
 // hanged line geometry
 
 class Catenary {

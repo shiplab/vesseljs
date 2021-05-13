@@ -56,7 +56,7 @@
 	<div class="col-md-12 text-center">
 		<h2>Fuel Consumption Simulation</h2>
 		<p>Quick parametric fuel consumption simulation app. Read more about this app <a
-				href="https://vesseljs.org/papers/COMPIT_2018.pdf" target="_blank">here</a>.
+				href="https://raw.githubusercontent.com/wiki/shiplab/vesseljs/files/COMPIT_2018.pdf">here</a>.
 			<a href="https://github.com/shiplab/vesseljs/blob/master/examples/path.html" target="_blank">View
 				source</a>.
 		</p>
@@ -599,6 +599,7 @@
 						var propInt = new Vessel.PropellerInteraction(ship, states, wagProp);
 						propInt.writeOutput();
 
+						debugger
 						var fuelCons = new Vessel.FuelConsumption(ship, states, powSys);
 						fuelCons.setAuxPower(auxPower);
 						fuelCons.writeOutput();
