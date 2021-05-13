@@ -140,17 +140,6 @@ class PositionGraph extends LineChartClass {
 			.append("text")
 			.attr("class", "label")
 			.attr("transform", "rotate(-90)")
-
-		this.svg.selectAll(".dot")
-			.data(data)
-			.enter().append("circle")
-			.attr("class", "dot")
-			.attr("r", 5)
-			.attr("cx", function(d) {return x(d[objLabel.xkey]);})
-			.attr("cy", function(d) {return y(d[objLabel.ykey]);});
-
-		this.svg.selectAll(".dot")
-			.style("fill", "steelblue");
 			
 	}
 
@@ -170,10 +159,23 @@ class PositionGraph extends LineChartClass {
 		var yf = this.y;
 		var h = this.height;
 
+		this.svg
+			.append("circle")
+			.attr("class", "dot")
+			.attr('id', name)
+			.attr("r", 5)
+			.attr("cx", function(d) {return xf(x);})
+			.attr("cy", function(d) {return yf(y);});
+
+		// USE THIS COMMAND TO THE TOUCHED 
+		// d3.selectAll("#fillThis").style("fill", "red");
+
+		this.svg.selectAll(".dot")
+			.style("fill", "steelblue");
+
 		// debugger
 
 		this.svg.append("g")
-			.attr("class", "Teste")
 			.attr("transform", "translate( 0, " + yf(y) + ")")
 			// .call(xAxisBottom)
 			.attr("font-size", fontSize)
@@ -181,8 +183,7 @@ class PositionGraph extends LineChartClass {
 			.attr("class", "label")
 			.attr("x", xf(x))
 			.attr("y", () => {
-				// debugger
-				return (y < 450 ? -fontSize : fontSize)
+				return (y < 400 ? -fontSize : fontSize)
 			})
 			.style("text-anchor", "middle")
 			.text(name);
@@ -318,67 +319,85 @@ class ConsGraph extends LineChartClass {
 			.style('fill', color);    
 	}
 
-	drawLineGeneric = (x, y, manoeuvring, r = 1, color = "red") => {
+	drawLineGeneric = (x, y, manoeuvring, r = 1, color = "green") => {
 		var xf = this.x;
 		var yf = this.y;
+
+		const FONTSIZE = "10";
 		
 		var maxTorque = manoeuvring.maxTorque; // Maximum torque of the motor [N.m]
 		var maxRot = manoeuvring.maxPropRot/60 // Maximum Rotation of the motor [Hz]
 		var PotMax = 2*500; // this is especified in the motor example and should be let here
-		var minRot = 0.1 * maxRot; // [Hz]
+		var minRot = 0.1; // percentage from the maximun
 
 		// The maximun Q is when J = 0. KQ = gamma1
 		// var Qmax = manoeuvring.gamma1 * 1025 * Math.pow(minRot, 2) * Math.pow(manoeuvring.D, 5);
 		var PotMin = maxTorque * minRot;
-
 		var yini	= PotMin/PotMax;
-
 		var rotAtMaxPot = PotMax/maxTorque;
-
 		var xFin = rotAtMaxPot / maxRot;
-
-		// This is for appending the value path
-		// svg.append("path")
-    //   .datum(data)
-    //   .attr("fill", "none")
-    //   .attr("stroke", "black")
-    //   .attr("stroke-width", 2.5)
-    //   .attr("stroke-linejoin", "round")
-    //   .attr("stroke-linecap", "round")
-    //   .attr("stroke-dasharray", `0,${l}`)
-    //   .attr("d", line)
-
-		// data = {orient: "left", name: "1956", x: 3683.6965, y: 2.3829}
-
+		const SLOPE = Math.atan((1 - yini)/(xFin - minRot)) * (180/Math.PI);
+		
 		// Appending Lines
 		this.svg.append("line")
 			.style("stroke-dasharray", ("10,3"))  // dash
-			.style("stroke", "red")  // colour the line
-			.attr("x1", xf(0.1))     
+			.style("stroke", color)
+			.attr("x1", xf(minRot))     
 			.attr("y1", yf(0))    
-			.attr("x2", xf(0.1))
+			.attr("x2", xf(minRot))
 			.attr("y2", yf(yini));
 		this.svg.append("line")
 			.style("stroke-dasharray", ("10,3"))  // dash
-			.style("stroke", "red")  // colour the line 
-			.attr("x1", xf(0.1))
+			.style("stroke", color) 
+			.attr("x1", xf(minRot))
 			.attr("y1", yf(yini))
 			.attr("x2", xf(xFin))
 			.attr("y2", yf(1));
 		this.svg.append("line")
 			.style("stroke-dasharray", ("10,3"))  // dash
-			.style("stroke", "red")  // colour the line 
+			.style("stroke", color) 
 			.attr("x1", xf(xFin))
 			.attr("y1", yf(1))
 			.attr("x2", xf(1))
 			.attr("y2", yf(1));
 		this.svg.append("line")
 			.style("stroke-dasharray", ("10,3"))  // dash
-			.style("stroke", "red")  // colour the line 
+			.style("stroke", color) 
 			.attr("x1", xf(1))
 			.attr("y1", yf(1))
 			.attr("x2", xf(1))
 			.attr("y2", yf(0));
+
+		this.svg.append("g")
+			.attr("transform", "translate( 0, 0 )")
+			.attr("font-size", FONTSIZE)
+			.style("fill",color)
+			.append("text")
+			.attr("class", "label")
+			.attr("x", xf(xFin))
+			.attr("y", () => {
+				return -5
+			})
+			.style("text-anchor", "start")
+			.text("Maxmun Power");
+
+		this.svg.append("g")
+			.attr("transform", "translate( " + ( xf(minRot) - 5 ) +" , " + (yf(0)  - 2) + " ) rotate(-90)")
+			.attr("font-size", FONTSIZE)
+			.style("fill",color)
+			.append("text")
+			.attr("class", "label")
+			.style("text-anchor", "start")
+			.text("Minimun Rotation");
+
+		this.svg.append("g")
+			.attr("transform", "translate( " + ( xf(minRot) + 10 ) +" , " + (yf(yini)  - 20) + " ) rotate(-" +( SLOPE + 1 )+")")
+			.attr("font-size", FONTSIZE)
+			.style("fill",color)
+			.append("text")
+			.attr("class", "label")
+			.style("text-anchor", "start")
+			.text("Maximun Torque");
 	}
 	
 }

@@ -11,15 +11,16 @@ function onDocumentKeyDown( event ) {
   const DT = manoeuvringMovement.dt;
   const MAN = manoeuvringMovement.manoeuvring;
   const F = MAN.maxPropRot / 60;
+  const T = MAN.maxTorque;
   const L = manoeuvringMovement.states.load;
-  // console.log(manoeuvringMovement);
+	const LT = Math.abs(n * T);
 
 	switch ( keyCode ) {
 
 		case 87:
 			if ( n <= F ) {
 
-        if( L > 1 ) { break; }
+        if( L > 1 || LT < L ) { break; }
 
 				manoeuvringMovement.states.n += MAN.helRate * DT;
 				rotationText.innerText = ( 60 * manoeuvringMovement.states.n ).toFixed( 0 );
@@ -30,7 +31,7 @@ function onDocumentKeyDown( event ) {
 		case 83:
 			if ( n >= - F ) {
 
-        if( L > 1 ) { break; }
+        if( L > 1 || LT < L ) { break; }
 
 				manoeuvringMovement.states.n -= MAN.helRate * DT;
 				rotationText.innerText = ( 60 * manoeuvringMovement.states.n ).toFixed( 0 );

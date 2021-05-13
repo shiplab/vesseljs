@@ -4,8 +4,8 @@ Dependecies: numeric.js
 
 All the values units are considered in SI sysetm
 m: mass (kg)
-I: Inertia Matrix (3x3)
-D: Damping Matrix (3x3)
+I: Inertia Matrix (3x3) (kg * m²)
+D: Damping Matrix (3x3) (kg  * s)
 yaw: Yaw angle (rad)
 */
 
@@ -19,18 +19,28 @@ class FreeBody {
   }
 }
 
-class ManouvringModel extends FreeBody {  
+class ManoeuvringModel extends FreeBody {  
   constructor(m, I, D, initial_yaw = 0){
     super(m, I, D)
 
-    this.state = { 
+    Object.assign(this, { 
       // X: {x:0, y:0, yaw: 0},
       DX: {x:0, y:0, yaw: 0},
       V: {u:0, v:0, yaw_dot:0},
       n: 0,
       yaw: initial_yaw,
       rudderAngle: 0
-    }
+    })
+    // debugger
+
+    // this.state = { 
+    //   // X: {x:0, y:0, yaw: 0},
+    //   DX: {x:0, y:0, yaw: 0},
+    //   V: {u:0, v:0, yaw_dot:0},
+    //   n: 0,
+    //   yaw: initial_yaw,
+    //   rudderAngle: 0
+    // }
 
     if (D === undefined) {
       console.warn('Model with no defined damping value')
@@ -104,8 +114,8 @@ class ManouvringModel extends FreeBody {
         
     // Get global coordinates variation (dx, dy, dyaw)
     // Get local velocity (du, dv, dyaw_dot)
-    this.state.DX = {x: sol[0], y: sol[1], yaw: sol[2]}
-    this.state.V = {u: sol[3], v: sol[4], yaw_dot: sol[5]}
-    this.state.yaw += this.state.DX.yaw
+    this.DX = {x: sol[0], y: sol[1], yaw: sol[2]}
+    this.V = {u: sol[3], v: sol[4], yaw_dot: sol[5]}
+    this.yaw += this.DX.yaw
   }
 }

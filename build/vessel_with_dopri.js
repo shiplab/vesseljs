@@ -2374,7 +2374,7 @@ Object.defineProperties(FuelConsumption.prototype, {
 				loads.fill(1);
 			}
 
-			// calculate SFOC value for each activated engine
+			// calculate SFOC value for each activated 
 			var SFOC;
 			for (i = 0; i < loads.length; i++) {
 				if (loads[i] > 0) { // if engine is active
@@ -2784,7 +2784,7 @@ Object.assign(Manoeuvring.prototype, {
 		var Va = this.propellerInteraction.propulsion.Va
 
 		var lcb = 100 * (this.floatState.LCB - (this.floatState.minXs + this.floatState.LWL / 2)) / this.floatState.LWL; // %
-		var J = Va/(Math.abs(n) * this.propeller.D);
+		var J = Math.abs(Va/(n * this.propeller.D));
 
 		var KT = this.propeller.beta1 - this.propeller.beta2 * J;
 		var KQ = this.propeller.gamma1 - this.propeller.gamma2 * J;
