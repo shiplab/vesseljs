@@ -31,13 +31,8 @@ class ManoeuvringMovement {
 		];  
 
 	  const M = numeric.add(mvr.M_RB, M_A)
-    // const M = [[ 1.1e5, 0, 0 ],
-		// 					[ 0, 1.1e5, 8.4e4 ],
-		// 					[ 0, 8.4e4, 5.8e6 ]]
 	  mvr.INVM = numeric.inv(M)
 
-    // The value of N is in relation with the damping
-  	// mvr.INVMN = numeric.dot(numeric.neg(mvr.INVM), mvr.N)
     const {Cl, Cll, Clll}	 = mvr.dn;
 
     const N = this.manoeuvring.N || [

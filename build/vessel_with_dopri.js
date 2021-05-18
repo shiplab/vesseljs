@@ -2694,7 +2694,6 @@ function Manoeuvring(ship, states, hullResistance, propellerInteraction, fuelCon
 		this.setSpeed(); // use its design speed
 	}
 
-	// debugger
 	this.hullRes = hullResistance
 	this.propellerInteraction = propellerInteraction;
 	this.fuelConsumption = fuelConsumption
@@ -2710,7 +2709,7 @@ function Manoeuvring(ship, states, hullResistance, propellerInteraction, fuelCon
 	const YAW = manoeuvring.initial_yaw || 0;
 	const AN = manoeuvring.initial_angle || 0;
 	// The modules bellow use the value in knots for the ship speed,
-	// here it is going to be used the values in SI (m/s). @ferrari212
+	// for the maneuvering model it is going to be used the values in SI (m/s). @ferrari212
 	Object.assign(this.states, { 
 		DX: {x:0, y:0, yaw: 0},
 		V: {u:0, v:0, yaw_dot:0},
