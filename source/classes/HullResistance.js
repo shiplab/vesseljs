@@ -89,7 +89,6 @@ Object.defineProperties(HullResistance.prototype, {
 	}, "coefficients"),
 	calmResistance: StateModule.prototype.memoized(function() { // N, total hull resistance in calm waters
 		var at = 0.95 * (this.coefficients.Taft - this.coefficients.Taft * 0.9225) * this.floatState.BWL * 0.89 * this.tr; // transom stern area
-		var c3 = 0.56 * (Math.pow(this.coefficients.abt, 1.5)) / (this.floatState.BWL * this.coefficients.T * (0.31 * Math.pow(this.coefficients.abt, 0.5) + this.coefficients.Tfore - this.coefficients.hb));
 		var rf = 0.5 * this.rho * Math.pow(this.coefficients.speedSI, 2) * this.coefficients.wa * this.coefficients.cf; // frictional resistance
 
 		var fnt;
@@ -160,33 +159,23 @@ Object.defineProperties(HullResistance.prototype, {
 		}
 		var c17 = 6919.3 * Math.pow(this.floatState.Cm, -1.3346) * Math.pow(this.floatState.Vs / Math.pow(this.floatState.LWL, 3), 2.00977) * Math.pow(this.floatState.LWL / this.floatState.BWL - 2, 1.40692);
 		var m3 = -7.2035 * Math.pow(this.floatState.BWL / this.floatState.LWL, 0.326869) * Math.pow(this.coefficients.T / this.floatState.BWL, 0.605375);
-		var m4_0_4 = c15 * 0.4 * Math.exp(-0.034 * Math.pow(0.4, -3.29));
-		var rwa_0_4 = c1 * this.coefficients.c2 * c5 * this.floatState.Vs * this.rho * this.g * Math.exp(m1 * Math.pow(0.4, -0.9) + m4_0_4 * Math.cos(lambda * Math.pow(0.4, -2)));
-		var m4_0_55 = c15 * 0.4 * Math.exp(-0.034 * Math.pow(0.55, -3.29));
-		var rwa_0_55 = c17 * this.coefficients.c2 * c5 * this.floatState.Vs * this.rho * this.g * Math.exp(m3 * Math.pow(0.55, -0.9) + m4_0_55 * Math.cos(lambda *
-			Math.pow(0.55, -2)));
-
-		var m4, rwa, rwb, rwab;
-		if (fn === 0) {
-			m4 = 0;
-			rwa = 0; // wave resistance for Froude < 0.4
-			rwb = 0; // wave resistance for Froude > 0.55
-			rwab = 0;
-		} else {
-			m4 = c15 * 0.4 * Math.exp(-0.034 * Math.pow(fn, -3.29));
-			rwa = c1 * this.coefficients.c2 * c5 * this.floatState.Vs * this.rho * this.g * Math.exp(m1 * Math.pow(fn, -0.9) + m4 * Math.cos(lambda * Math.pow(fn, -2)));
-			rwb = c17 * this.coefficients.c2 * c5 * this.floatState.Vs * this.rho * this.g * Math.exp(m3 * Math.pow(fn, -0.9) + m4 * Math.cos(lambda * Math.pow(fn, -2)));
-			rwab = rwa_0_4 + (10 * fn - 4) * (rwa_0_55 - rwa_0_4) / 1.5;
-		}
+		var m4 = c15 * 0.4 * Math.exp(-0.034 * Math.pow(fn, -3.29));
 
 		var rw;
-		if (fn < 0.4) {
-			rw = rwa;
+		if (fn === 0) {
+			rw = 0;
+		} else if (fn < 0.4) { // rwa, the wave resistance for Froude < 0.4
+			rw = c1 * this.coefficients.c2 * c5 * this.floatState.Vs * this.rho * this.g * Math.exp(m1 * Math.pow(fn, -0.9) + m4 * Math.cos(lambda * Math.pow(fn, -2)));
 		} else if (fn <= 0.55) {
-			rw = rwab;
-		} else {
-			rw = rwb;
+			var m4_0_4 = c15 * 0.4 * Math.exp(-0.034 * Math.pow(0.4, -3.29));
+			var rwa_0_4 = c1 * this.coefficients.c2 * c5 * this.floatState.Vs * this.rho * this.g * Math.exp(m1 * Math.pow(0.4, -0.9) + m4_0_4 * Math.cos(lambda * Math.pow(0.4, -2)));
+			var m4_0_55 = c15 * 0.4 * Math.exp(-0.034 * Math.pow(0.55, -3.29));
+			var rwa_0_55 = c17 * this.coefficients.c2 * c5 * this.floatState.Vs * this.rho * this.g * Math.exp(m3 * Math.pow(0.55, -0.9) + m4_0_55 * Math.cos(lambda * Math.pow(0.55, -2)));
+			rw = rwa_0_4 + (10 * fn - 4) * (rwa_0_55 - rwa_0_4) / 1.5;
+		} else { // rwb, the wave resistance for Froude > 0.55
+			rw = c17 * this.coefficients.c2 * c5 * this.floatState.Vs * this.rho * this.g * Math.exp(m3 * Math.pow(fn, -0.9) + m4 * Math.cos(lambda * Math.pow(fn, -2)));
 		}
+
 		var fni = this.coefficients.speedSI / Math.sqrt(this.g * (this.coefficients.Tfore - this.coefficients.hb - 0.25 * Math.pow(this.coefficients.abt, 0.5)) + (0.15 * Math.pow(this.coefficients.speedSI, 2)));
 		var pb = (0.56 * Math.pow(this.coefficients.abt, 0.5)) / (this.coefficients.Tfore - 1.5 * this.coefficients.hb);
 
