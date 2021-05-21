@@ -81,6 +81,7 @@ class ManoeuvringMovement {
   }
 
   getDerivatives (V = {u: 0, v:0, yaw_dot: 0}) {
+    
     let mvr = this.mvr
 
     var X = [0,
@@ -94,6 +95,7 @@ class ManoeuvringMovement {
     var X_dot = numeric.add(numeric.dot(mvr.A, X), mvr.B)
 
     return X_dot
+    
   }
 
 	getDisplacements (dt) {
