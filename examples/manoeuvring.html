@@ -19,6 +19,7 @@
 		<script src="3D_engine/SpatialHashGrid.js"></script>
 
 		<!-- <script src="libs/OrbitControls.js"></script> -->
+		<script src="3D_engine/OrbitControls_v2.js"></script>
 		<script src="3D_engine/dat.gui.min.js"></script>
 		<script src="3D_engine/skybox_from_examples_r118.js"></script>
 		<script src="libs/browse_files_Elias_Hasle.js"></script>
@@ -85,10 +86,26 @@
 			box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
 		}
 
-		#question-button {
+		#math-button {
 			position: fixed;
 			bottom: 16px;
 			right: 96px;
+
+			padding: 12px;
+			border-radius: 50%;
+			margin-bottom: 0px;
+
+			background-color: #fff;
+			opacity: 0.9;
+			z-index: 110;
+
+			box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
+		}
+
+		#question-button {
+			position: fixed;
+			bottom: 16px;
+			right: 176px;
 
 			padding: 12px;
 			border-radius: 50%;
@@ -128,9 +145,9 @@
 
 		#notes {
 			position: fixed;
-			bottom: 16px;
+			bottom: 4px;
 			z-index: 100;
-			right: 156px;
+			right: 206px;
 			font-family: 'Cutive Mono', monospace;
 
 			background-color: #fff;
@@ -328,6 +345,10 @@
 			<img src="..\examples\images\help-black-24dp.svg" />
 		</a>
 
+		<a id="math-button" target="_blank" href="https://observablehq.com/@ferrari212/simulation-model-a-brief-method" title="View source code for animation / cloth on GitHub" style="">
+			<img src="..\examples\images\superscript-black-24dp.svg" />
+		</a>
+
 		<a id="code-button" target="_blank" href="https://github.com/ferrari212/vesseljs/blob/master/examples/manoeuvring.html" title="View source code for animation / cloth on GitHub" style="">
 			<img src="..\examples\images\code-24px.svg" />
 		</a>
@@ -369,7 +390,7 @@
 			"use strict"
 			
 			//Globals
-			var renderer, camera, thrirdPersonCamera, fixedCamera, gui;
+			var renderer, camera, controls, thrirdPersonCamera, fixedCamera, orbitalCamera, gui;
 			var scene, zUpCont, playback, bodies, ocean;
 			var ship, shipGLTF, shipState, propellers, wave, hullRes, propellerInteraction, rudderModel, fuelCons;
 			var manoeuvring, manoeuvringMovement, viewer, grid;
@@ -391,7 +412,7 @@
 
 						if ( n <= 5 ) {
 
-							manoeuvringMovement.states.n += 0.01;
+							manoeuvringMovement.states.n += 1;
 							rotationText.innerText = ( 60 * manoeuvringMovement.states.n ).toFixed( 0 );
 
 						}
@@ -400,7 +421,7 @@
 
 						if ( n >= - 5 ) {
 
-							manoeuvringMovement.states.n -= 0.01;
+							manoeuvringMovement.states.n -= 1;
 							rotationText.innerText = ( 60 * manoeuvringMovement.states.n ).toFixed( 0 );
 
 						}
@@ -411,12 +432,12 @@
 
 					if ( Math.sign( canvas.x ) > 0 ) {
 
-						manoeuvringMovement.states.rudderAngle += 0.08;
+						manoeuvringMovement.states.rudderAngle += 3;
 						angleText.innerText = manoeuvringMovement.states.rudderAngle.toFixed( 1 );
 
 					} else {
 
-						manoeuvringMovement.states.rudderAngle -= 0.08;
+						manoeuvringMovement.states.rudderAngle -= 3;
 						angleText.innerText = manoeuvringMovement.states.rudderAngle.toFixed( 1 );
 
 					}
@@ -583,6 +604,34 @@
 					}
 				}
 
+				class OrbitalCamera {
+
+					constructor( params ) {
+
+						this._params = params.object;
+						this._camera = params.camera;
+						this._control = params.control;
+						this._idCanvas = params.idCanvas || "canvas";
+
+					}
+
+					Update() {
+
+						this._control.enableRotate  = true;
+						document.getElementById(this._idCanvas).style.cursor = "grab";
+						this._camera.lookAt( this._params.position.x + 2, 2, - this._params.position.y );
+						this._control.target.set( this._params.position.x + 2, 2, - this._params.position.y );
+
+					}
+
+					Disable() {
+
+						document.getElementById(this._idCanvas).style.cursor = "default";
+						this._control.enableRotate  = false;
+
+					}
+				}
+
 				// Setup of the canvas
 				canvas = document.createElement( 'CANVAS' );
 				document.body.appendChild( canvas );
@@ -645,6 +694,13 @@
 				};
 
 				camera.up.set( 0, 1, 0 );
+				controls = new THREE.OrbitControls( camera, renderer.domElement );
+				controls.maxDistance = 0.5 * oSize;
+				controls.enablePan = false;
+				controls.enableRotate  = false;
+				controls.maxPolarAngle = Math.PI / 2
+				camera.position.set( - oSize * 0.06,  oSize * 0.02, - oSize * 0.02 );
+
 
 				window.addEventListener( "resize", onResize, false );
 				onResize();
@@ -806,7 +862,6 @@
 					}
 
 					zUpCont.add( shipGLTF );
-					camera.position.set( 0, 0, 0 );
 
 					// Insert the GLTF object
 					thrirdPersonCamera = new ThirdPersonCamera( {
@@ -819,13 +874,25 @@
 						object: shipGLTF
 					} );
 
+					orbitalCamera = new OrbitalCamera( {
+						camera: camera,
+						object: shipGLTF,
+						control: controls,
+						idCanvas: "SimulationWindow"
+					} );
+
 					Object.assign(camera, {toggle: {
 							TP: (dt) => {
+								orbitalCamera.Disable()						
 								thrirdPersonCamera.Update(dt);
 							},
-							Fixed: () => {								
+							Fixed: () => {		
+								orbitalCamera.Disable()												
 								fixedCamera.Update();
-							} 
+							}, 
+							Orbital: () => {								
+								orbitalCamera.Update();
+							}  
 					}})
 
 					var fadeTarget = document.getElementById( "loader-wrapper" );
@@ -854,7 +921,7 @@
 
 				// //GUI setup (comment out to remove gui)
 				viewer = {
-					view: "Fixed",
+					view: "Orbital",
 					checkPoint: "3"
 				};
 				gui = new dat.GUI();
@@ -867,7 +934,8 @@
 				scale
 					.add( viewer, 'view', {
 						TP: "TP",
-						Fixed: "Fixed"
+						Fixed: "Fixed",
+						Orbital: "Orbital"
 					} )
 					.name( "View" );
 					scale
