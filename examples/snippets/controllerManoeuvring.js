@@ -25,6 +25,8 @@ function onDocumentKeyDown( event ) {
 				manoeuvringMovement.states.n += MAN.helRate * DT;
 				rotationText.innerText = ( 60 * manoeuvringMovement.states.n ).toFixed( 0 );
 
+			} else {
+				n = F
 			}
 
 			break;
@@ -36,6 +38,8 @@ function onDocumentKeyDown( event ) {
 				manoeuvringMovement.states.n -= MAN.helRate * DT;
 				rotationText.innerText = ( 60 * manoeuvringMovement.states.n ).toFixed( 0 );
 
+			} else {
+				n = -F
 			}
 
 			break;
