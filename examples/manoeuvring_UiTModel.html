@@ -46,31 +46,6 @@
 	</head>
 
 	<style>
-		/* ******* Signature template ******* */
-
-		#info {
-			position: absolute;
-			color: #011C40;
-			top: 0px;
-			width: 100%;
-			padding: 10px;
-			box-sizing: border-box;
-			text-align: center;
-			-moz-user-select: none;
-			-webkit-user-select: none;
-			-ms-user-select: none;
-			user-select: none;
-			pointer-events: none;
-			z-index: 1;
-		}
-
-		#info a {
-			color: #A60D0D;
-			pointer-events: auto;
-		}
-
-		/* ******* ******* ******* */
-
 		table {
 			margin-top: 15px;
 			margin-bottom: 10px;
@@ -248,7 +223,6 @@
 				display: none;
 			}
 		}
-
 		
 		.close {
 			position: absolute;
@@ -685,7 +659,7 @@
 								manoeuvring = new Vessel.Manoeuvring( ship, shipState, hullRes, propellerInteraction, fuelCons, man );
 								manoeuvringMovement = new ManoeuvringMovement(manoeuvring)
 
-								// Insertion of the label grphics
+								// Insertion of the label graphics
 								const BOUNDS = [[-500.0, -500.0], [500.0, 500.0]];
 								const RADIUS = 5
 
