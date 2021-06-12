@@ -1,0 +1,1249 @@
+<html>
+	<head>
+		<title>Ship in Manoeuvring</title>
+		<!-- <script src="../build/vessel.js"></script> -->
+		<script src="../build/vessel_with_dopri.js"></script>
+
+		<script src="3D_engine/three_r118.js"></script>
+		<script src="3D_engine/GLTFLoader.js"></script>
+		<script src="3D_engine/DRACOLoader.js"></script>
+
+		<script src="3D_engine/Ship3D_v2.js"></script>
+
+		<!-- Upgrading to WaterShader2.js will remove the dependency
+	on Mirror.js as well as open up possibilities for visualizing approximate water flows around vessels. -->
+		<!-- <script src="libs/Mirror.js"></script>-->
+		<!-- <script src="libs/WaterShader.js"></script> -->
+		<script src="3D_engine/Water.js"></script>
+		<script src="3D_engine/ThirdPersonCamera.js"></script>
+		<script src="3D_engine/CheckPoint.js"></script>
+		<script src="3D_engine/SpatialHashGrid.js"></script>
+
+		<!-- <script src="libs/OrbitControls.js"></script> -->
+		<script src="3D_engine/OrbitControls_v2.js"></script>
+		<script src="3D_engine/dat.gui.min.js"></script>
+		<script src="3D_engine/skybox_from_examples_r118.js"></script>
+		<script src="libs/browse_files_Elias_Hasle.js"></script>
+
+		<script src="3D_engine/Patch_interpolation.js"></script>
+		<script src="3D_engine/renderRayCaster.js"></script>
+
+		<!--Map libraries-->
+		<script src="libs/d3.v3.min.js"></script>
+		<script src="snippets/LineChartClass.js"></script>
+		<script src="snippets/controllerManoeuvring.js"></script>
+		<script src="snippets/ManoeuvringMovement.js"></script>
+		<!-- <script src="snippets/lineChart.js"></script> -->
+
+		<!-- Tooltip Libraries -->
+		<script src="libs/popper.js"></script>
+		<script src="libs/bootstrap.bundle.min.js"></script>
+
+		<script src="3D_engine/Playback.js"></script>
+		<!-- <script src="snippets/Configurable_ocean.js"></script> -->
+		<script src="3D_engine/Configurable_ocean_v2.js"></script>
+		<!--<script src="keyboard_arrow_input_Elias_Hasle.js"></script>-->
+
+		<script src="../source/classes/FreeBody.js"></script>
+		<script src="libs/numeric-1.2.6.min.js"></script>
+	</head>
+
+	<style>
+		table {
+			margin-top: 15px;
+			margin-bottom: 10px;
+			border-radius: 10%;
+		}
+
+		table,
+		td {
+			color: #fff;
+			background-color: #000;
+		}
+
+		td {
+			border-radius: 20%;
+			border: 1px solid #fff;
+			width: 100px;
+		}
+
+		tr {
+			background-color: #000;
+		}
+
+		#code-button {
+			position: fixed;
+			bottom: 16px;
+			right: 16px;
+
+			padding: 12px;
+			border-radius: 50%;
+			margin-bottom: 0px;
+
+			background-color: #fff;
+			opacity: 0.9;
+			z-index: 110;
+
+			box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
+		}
+
+		#math-button {
+			position: fixed;
+			bottom: 16px;
+			right: 96px;
+
+			padding: 12px;
+			border-radius: 50%;
+			margin-bottom: 0px;
+
+			background-color: #fff;
+			opacity: 0.9;
+			z-index: 110;
+
+			box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
+		}
+
+		#question-button {
+			position: fixed;
+			bottom: 16px;
+			right: 176px;
+
+			padding: 12px;
+			border-radius: 50%;
+			margin-bottom: 0px;
+
+			background-color: #fff;
+			opacity: 0.9;
+			z-index: 110;
+
+			box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
+		}
+
+		/* ******* Signature template ******* */
+
+		#info {
+			position: absolute;
+			color: #011C40;
+			top: 0px;
+			width: 100%;
+			padding: 10px;
+			box-sizing: border-box;
+			text-align: center;
+			-moz-user-select: none;
+			-webkit-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+			pointer-events: none;
+			z-index: 1;
+		}
+
+		#info a {
+			color: #a60d0d;
+			pointer-events: auto;
+		}
+
+		/* ******* ******* ******* */
+
+		#notes {
+			position: fixed;
+			bottom: 4px;
+			z-index: 100;
+			right: 206px;
+			font-family: "Cutive Mono", monospace;
+
+			background-color: #fff;
+			opacity: 0.9;
+			visibility: hidden;
+
+			padding-right: 40px;
+			padding-top: 5px;
+			padding-bottom: 5px;
+		}
+
+		#graphic1 {
+			border-radius: 5%;
+			position: fixed;
+			top: 225px;
+			z-index: 100;
+			right: 16px;
+			font-family: "Cutive Mono", monospace;
+
+			background-color: #fff;
+			opacity: 0.7;
+		}
+
+		#graphic2 {
+			border-radius: 5%;
+			position: fixed;
+			top: 225px;
+			z-index: 100;
+			left: 16px;
+			font-family: 'Cutive Mono', monospace;
+
+			background-color: #fff;
+			opacity: 0.7;
+		}
+
+		#panel-number {
+			position: fixed;
+			top: 16px;
+			left: 16px;
+
+			text-align: center;
+			background-color: #fff;
+			z-index: 100;
+		}
+
+		/* ***************************************************************************************/
+		/*   Title: Sketchbook - Control Box
+		*    Author: @swift502
+		*    Date: 2020
+		*    Code version: 0.4
+		*    Availability: https://github.com/swift502/Sketchbook
+		*
+		****************************************************************************************/
+		.ctrl-key {
+			text-shadow: none;
+			font-weight: bold;
+			display: inline-block;
+			font-family: "Cutive Mono", monospace;
+			padding: 2px 5px;
+			margin-right: 2px;
+			min-width: 10px;
+			text-align: center;
+			margin-left: 2px;
+			background: #eff0f2;
+			box-shadow: inset 0 0 25px #e8e8e8, 0 1px 0 #c3c3c3, 0 2px 0 #c9c9c9, 0 2px 3px #000;
+			color: #111;
+			border-radius: 2px;
+			font-size: 14px;
+		}
+		/* END */
+		/* ***************************************************************************************/
+
+		@media all and (max-width: 992px) and (pointer: coarse) {
+			#question-button {
+				display: none;
+			}
+		}
+
+		.close {
+			position: absolute;
+			right: 10px;
+			top: 5px;
+			width: 16px;
+			height: 22px;
+			opacity: 0.6;
+		}
+		.close:hover {
+			opacity: 1;
+			cursor: pointer;
+		}
+		.close:before,
+		.close:after {
+			position: absolute;
+			left: 10px;
+			content: " ";
+			height: 10px;
+			width: 2px;
+			background-color: #fff;
+		}
+		.close:before {
+			transform: rotate(45deg);
+		}
+		.close:after {
+			transform: rotate(-45deg);
+		}
+
+		.unselectable {
+			-webkit-touch-callout: none;
+			-webkit-user-select: none;
+			-khtml-user-select: none;
+			-moz-user-select: none;
+			-ms-user-select: none;
+			user-select: none;
+		}
+
+		/* LOADER */
+		#loader-wrapper {
+			width: 100%;
+			height: 100%;
+			text-align: center;
+			position: absolute;
+			top: 0;
+			left: 0;
+			background-color: #00509e;
+			color: #fff;
+			font-family: Helvetica;
+			z-index: 105;
+		}
+
+		.loader {
+			display: inline-block;
+			width: 50px;
+			height: 50px;
+			position: relative;
+			margin-top: 17%;
+			border-radius: 50%;
+			vertical-align: middle;
+		}
+		.loader,
+		.loader:before,
+		.loader:after {
+			animation: 1s infinite ease-in-out;
+		}
+		.loader:before,
+		.loader:after {
+			width: 100%;
+			height: 100%;
+			border-radius: 50%;
+			position: absolute;
+			top: 0;
+			left: 0;
+		}
+
+		.loader-white {
+			background-color: #fff;
+		}
+
+		.loader-1 {
+			animation-name: loader1;
+		}
+		@-webkit-keyframes loader1 {
+			from {
+				transform: scale(0);
+				opacity: 1;
+			}
+			to {
+				transform: scale(1);
+				opacity: 0;
+			}
+		}
+		/* LOADER */
+
+		/* Style required for D3.js */
+		svg {
+			font: 10px sans-serif;
+			z-index: 100;
+		}
+
+		.axis path,
+		.axis line {
+			fill: none;
+			stroke: #000;
+			shape-rendering: crispEdges;
+		}
+		/* End Style required for D3.js */
+	</style>
+
+	<body>
+		<div id="info">
+			<a href="http://vesseljs.org/" target="_blank" rel="noopener">Vessel.js</a> Trondheim Map<br />
+			Author: <a href="https://shiptodata.com/" target="_blank" rel="noopener">Felipe Ferrari</a> - Msc. Student Ship Design
+			<br>
+			Supervisor: <a href="https://www.ntnu.edu/employees/henrique.gaspar" target="_blank" rel="noopener">Henrique M. Gaspar</a>
+			<br>
+			CAD Models: <a href="https://www.ntnu.edu/ihb" target="_blank" rel="noopener">IHB NTNU</a>
+			<br>
+			Terrain Models: <a href="https://kart.trondheim.kommune.no/3d_bymodell/" target="_blank" rel="noopener">Trondheim municipality</a>
+		</div>
+
+		<!-- This is the loader wraper, unncoment this to see the loading page -->
+		<div id="loader-wrapper">
+			<div class="loader loader-white loader-1"></div>
+			<div><h1 style="font-style: italic">Loading...</h1></div>
+		</div>
+
+		<canvas class="controller-button"></canvas>
+
+		<a id="question-button">
+			<img src="..\examples\images\help-black-24dp.svg" />
+		</a>
+
+		<a id="math-button" target="_blank" href="https://observablehq.com/@ferrari212/simulation-model-a-brief-method" title="View mathematical model" style="">
+			<img src="..\examples\images\superscript-black-24dp.svg" />
+		</a>
+		
+		<a id="code-button" target="_blank" href="https://github.com/ferrari212/vesseljs/blob/master/examples/manoeuvring.html" title="View source code for animation / cloth on GitHub" style="">
+			<img src="..\examples\images\code-24px.svg" />
+		</a>
+
+		<div id="graphic1">
+			<div class="container">
+				<div id="lineChart-position"></div>
+			</div>
+		</div>
+
+		<div id="graphic2">
+			<div class="container">
+				<div id="lineChart-eff"></div>
+			</div>	
+		</div>
+
+		<div id="notes" class="ctrl-key-explanation unselectable">
+			<ul>
+				<li>
+					Use <span class="ctrl-key">w</span>, <span class="ctrl-key">a</span>, <span class="ctrl-key">s</span>, <span class="ctrl-key">d</span> buttom to control the <br />
+					rotation and angle of the propeller;
+				</li>
+			</ul>
+		</div>
+
+		<table id="panel-number" class="unselectable">
+			<tr valign="top">
+				<td>
+					<p style="font-size: 10px">FWD. Speed</p>
+					<h2 id="speed-text">0.0</h2>
+					<p style="font-size: 10px">knots</p>
+				</td>
+				<td>
+					<p style="font-size: 10px">Prop. Angle</p>
+					<h2 id="angle-text">0.0</h2>
+					<p style="font-size: 10px">degree</p>
+				</td>
+				<td>
+					<p style="font-size: 10px">Prop. Rotation</p>
+					<h2 id="rotation-text">0</h2>
+					<p style="font-size: 10px">RPM</p>
+				</td>
+				<td>
+					<p style="font-size: 10px">Cons. Rate</p>
+					<h2 id="consumption-text">0</h2>
+					<p style="font-size: 10px">kg/h</p>
+				</td>
+			</tr>
+		</table>
+
+		<script>
+			"use strict"
+
+			//Globals
+			var renderer, camera, controls, thirdPersonCamera, fixedCamera, orbitalCamera, gui;
+			var scene, zUpCont, playback, bodies, ocean;
+			var ship, shipGLTF, shipState, propellers, wave, hullRes, propellerInteraction, rudderModel, fuelCons;
+			var manoeuvring, manoeuvringMovement, viewer, grid;
+			var scale, modelStyle, remainCheck, totalFuel;
+			var speedText, angleText, rotationText, consumptionText;
+			var clock, time, checkPoint;
+			var canvas, c, orbitController, lineChart, lineChart2;
+
+			function onOrbitControllerMove() {
+
+				var canvas = orbitController.canvas;
+				if ( ! canvas.active ) return;
+
+				var n = manoeuvringMovement.states.n;
+
+				if ( Math.abs( canvas.y ) > Math.abs( canvas.x ) ) {
+
+					if ( Math.sign( canvas.y ) < 0 ) {
+
+						if ( n <= 5 ) {
+
+							manoeuvringMovement.states.n += 0.01;
+							rotationText.innerText = ( 60 * manoeuvringMovement.states.n ).toFixed( 0 );
+
+						}
+
+					} else {
+
+						if ( n >= - 5 ) {
+
+							manoeuvringMovement.states.n -= 0.01;
+							rotationText.innerText = ( 60 * manoeuvringMovement.states.n ).toFixed( 0 );
+
+						}
+
+					}
+
+				} else {
+
+					if ( Math.sign( canvas.x ) > 0 ) {
+
+						manoeuvringMovement.states.rudderAngle += 0.08;
+						angleText.innerText = manoeuvringMovement.states.rudderAngle.toFixed( 1 );
+
+					} else {
+
+						manoeuvringMovement.states.rudderAngle -= 0.08;
+						angleText.innerText = manoeuvringMovement.states.rudderAngle.toFixed( 1 );
+
+					}
+
+				}
+
+			}
+
+
+			;(function main() {
+
+				var hideElement = () => {
+
+					document.getElementById( "notes" ).style.visibility = "hidden";
+
+				};
+
+				var showElement = () => {
+
+					document.getElementById( "notes" ).style.visibility = "visible";
+
+				};
+
+				document.getElementById( "question-button" ).addEventListener( "mouseenter", showElement );
+				document.getElementById( "question-button" ).addEventListener( "mouseleave", hideElement );
+
+				class FixedCamera {
+
+					constructor( params ) {
+
+						this._params = params.object;
+						this._camera = params.camera;
+
+					}
+
+					Update() {
+
+						this._camera.position.set( - 60, 20, 0 );
+						this._camera.lookAt( this._params.position.x + 20, 10, - this._params.position.y );
+
+					}
+
+				}
+
+				class OrbitalCamera {
+
+					constructor( params ) {
+
+						this._params = params.object;
+						this._camera = params.camera;
+						this._control = params.control;
+						this._idCanvas = params.idCanvas || "canvas";
+
+					}
+
+					Update() {
+
+						this._control.enableRotate  = true;
+						document.getElementById(this._idCanvas).style.cursor = "grab";
+						this._camera.lookAt( this._params.position.x + 2, 2, - this._params.position.y );
+						this._control.target.set( this._params.position.x + 2, 2, - this._params.position.y );
+
+					}
+
+					Disable() {
+
+						document.getElementById(this._idCanvas).style.cursor = "default";
+						this._control.enableRotate  = false;
+
+					}
+
+				}
+
+
+				// Create Circumference Class
+				class OrbitController {
+
+					constructor( canvas, moverFunction, orientation = "bottom", size = 100, marginDistance = 50 ) {
+
+						window.screenCheck = function () {
+
+							let check = false
+										;( function ( a ) {
+
+								if ( /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino|android|ipad|playbook|silk/i.test( a ) || /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test( a.substr( 0, 4 ) ) ) check = true;
+
+							} )( navigator.userAgent || navigator.vendor || window.opera );
+
+							return check;
+
+						};
+
+						if ( ! window.screenCheck() ) return null;
+
+						canvas.width = canvas.height = size;
+						this.canvas = canvas;
+						this.assignCanvasStyle( marginDistance );
+						this.c = this.canvas.getContext( "2d" );
+						this.c.fillStyle = "#000000";
+						this.c.strokeStyle = "#bebebe";
+
+						this.moveOrbit = moverFunction;
+
+						Object.assign( this.canvas, {
+							x: 0, //set on the center
+							y: 0,
+							canvas: {},
+							size: canvas.width,
+							radius: ( 3 * this.canvas.width ) / 16,
+							md: marginDistance,
+							active: false,
+							returnOrigin: function returnOrigin() {
+
+								this.x -= Math.sign( this.x ) * 0.04;
+								this.y -= Math.sign( this.y ) * 0.04;
+								this.draw();
+
+							},
+							draw: () => this.draw()
+						} );
+
+						this.draw();
+						this.addTouchEvent();
+
+					}
+
+					draw() {
+
+						var props = this.canvas;
+						var x = ( ( props.x + 1 ) * props.width ) / 2;
+						var y = ( ( props.y + 1 ) * props.height ) / 2;
+
+						this.c.clearRect( 0, 0, props.width, props.height );
+						this.c.beginPath();
+						this.c.arc( x, y, props.radius, 0, Math.PI * 2, false );
+						this.c.fill();
+						this.c.stroke();
+						this.c.closePath();
+
+					}
+
+					assignCanvasStyle( md = 50 ) {
+
+						this.canvas.style.position = "fixed";
+						this.canvas.style.bottom = `${md}px`;
+						this.canvas.style.right = "50%";
+						this.canvas.style.transform = "translate(50%, 0)";
+						this.canvas.style.borderRadius = "50%";
+						this.canvas.style.backgroundColor = "#fff";
+						this.canvas.style.opacity = 0.9;
+						this.canvas.style.zIndex = 999;
+						this.canvas.style.boxShadow = "0 0 4px rgba(0, 0, 0, 0.15)";
+
+					}
+
+					update( e ) {
+
+						if ( e.touches && this.active ) {
+
+							var circleRadius = this.size / 2;
+							var marginDistance = this.md + circleRadius;
+
+							if ( this.x < this.width ) {
+
+								this.x = ( e.touches[ 0 ].pageX - window.innerWidth / 2 ) / circleRadius;
+
+							}
+
+							if ( this.y < this.height ) {
+
+								this.y = ( - window.innerHeight + e.touches[ 0 ].pageY + 100 ) / circleRadius;
+
+							}
+
+							this.draw();
+
+							e.preventDefault();
+
+						}
+
+					}
+
+					toggle() {
+
+						this.active = ! this.active;
+
+						if ( ! this.active ) this.returnOrigin();
+
+					}
+
+					addTouchEvent() {
+
+						this.canvas.addEventListener( "touchmove", this.update );
+						this.canvas.addEventListener( "touchstart", this.toggle );
+						this.canvas.addEventListener( "touchend", this.toggle );
+
+					}
+
+				}
+
+				// Setup of the canvas
+				canvas = document.createElement( "CANVAS" );
+				document.body.appendChild( canvas );
+
+				orbitController = new OrbitController( canvas, onOrbitControllerMove, "left", 100, 50 );
+
+				//Renderer setup
+				document.body.style.overflow = "hidden";
+				var container = document.createElement( "div" );
+				container.id = "SimulationWindow";
+				speedText = document.getElementById( "speed-text" );
+				angleText = document.getElementById( "angle-text" );
+				rotationText = document.getElementById( "rotation-text" );
+				consumptionText = document.getElementById( "consumption-text" );
+
+				Object.assign( container.style, {
+					position: "absolute",
+					top: 0,
+					left: 0,
+					width: "100vw",
+					height: "100vh"
+				} );
+				document.body.appendChild( container );
+				renderer = new THREE.WebGLRenderer( { antialias: true } );
+
+				renderer.setClearColor( 0xa9cce3 );
+				container.appendChild( renderer.domElement );
+
+				playback = new Playback( { parentGUI: gui } );
+
+				//Scene setup:
+				scene = new THREE.Scene();
+				let sun = new THREE.DirectionalLight( 0xffffff, 2 );
+				sun.position.set( - 512, 246, 128 );
+				scene.add( sun );
+
+				//Ocean size
+				let oSize = 2048;
+
+				//Use Z up from now on:
+				THREE.Object3D.DefaultUp.set( 0, 0, 1 );
+				zUpCont = new THREE.Group();
+				scene.add( zUpCont );
+
+				var skybox = new Skybox( oSize );
+				skybox.name = "Skybox";
+				skybox.scale.set( 100, 100, 100 );
+				scene.add( skybox );
+
+				//Camera setup
+				camera = new THREE.PerspectiveCamera( 26, window.innerWidth / window.innerHeight, 1, 10000 );
+				camera.position.set( oSize * 0.04, oSize * 0.005, - oSize * 0.03 );
+				camera.lookAt( zUpCont.position );
+
+				let onResize = function () {
+
+					let w = container.clientWidth;
+					let h = container.clientHeight;
+					renderer.setSize( w, h );
+					camera.aspect = w / h;
+					camera.updateProjectionMatrix();
+
+				};
+
+				camera.up.set( 0, 1, 0 );
+				controls = new THREE.OrbitControls( camera, renderer.domElement );
+				controls.enablePan = true;
+				controls.minDistance = 30;
+				controls.maxDistance = 200;
+				controls.maxPolarAngle = Math.PI / 2 - 0.1;
+
+				window.addEventListener( "resize", onResize, false );
+				onResize();
+
+				zUpCont.add( new THREE.AxesHelper( 1000 ) );
+				zUpCont.add( new THREE.HemisphereLight( 0xccccff, 0x666688, 1 ) );
+
+				ocean = new Ocean( {
+					parentGUI: gui,
+					sunDir: sun.position.clone().normalize(),
+					size: oSize,
+					segments: 127
+				} );
+
+				ocean.name = "Ocean";
+				scene.add( ocean );
+				scene.rotation.x = - Math.PI / 2;
+
+				//Load sample file:
+				new THREE.FileLoader().load( "specs/ship_specifications/gunnerus.json", function ( content ) {
+
+					ship = new Vessel.Ship( JSON.parse( content ) );
+					shipState = new Vessel.ShipState( ship.designState.getSpecification() );
+
+					// object and functions to handle propeller and power plant specifications
+					propellers = {};
+					var powerPlants = {};
+
+					// It is recommended to pass the XMLHttpRequest from false to true but it is necessary to solve the async issue
+					var propReq = new XMLHttpRequest();
+					propReq.open( "GET", "specs/propeller_specifications/rolls_royce_500_azipod.json", true );
+					propReq.addEventListener( "load", function ( event ) {
+
+						var response = event.target.response;
+						var propeller = JSON.parse( response );
+
+						var usePropSpec = function ( propeller, name ) {
+
+							propellers[ name.substring( 0, name.length - 5 ) ] = propeller;
+
+							wave = new Vessel.WaveCreator();
+
+							hullRes = new Vessel.HullResistance( ship, shipState, propeller, wave );
+							hullRes.writeOutput();
+
+							for ( var propProp in propellers ) {
+
+								var wagProp = propellers[ propProp ];
+								propellerInteraction = new Vessel.PropellerInteraction( ship, shipState, wagProp );
+								propellerInteraction.writeOutput();
+
+							}
+
+							// load engine specification
+							var powReq = new XMLHttpRequest();
+							powReq.open( "GET", "specs/power_plant_specifications/gunnerus_power_plant.json", true );
+							powReq.addEventListener( "load", function ( event ) {
+
+								var response = event.target.response;
+								var powerPlant = JSON.parse( response );
+
+								var usePowSpec = function ( powerPlant, name ) {
+
+									powerPlants[ name.substring( 0, name.length - 5 ) ] = powerPlant;
+
+									for ( var powProp in powerPlants ) {
+
+										var plant = powerPlants[ powProp ];
+										fuelCons = new Vessel.FuelConsumption( ship, shipState, plant );
+										fuelCons.writeOutput();
+
+									}
+
+								};
+
+								usePowSpec( powerPlant, "gunnerus_power_plant.json" );
+
+								var manSpec = new XMLHttpRequest();
+								manSpec.open( "GET", "specs/maneuvering_specifications/man_sample.json", true );
+								manSpec.addEventListener( "load", function ( event ) {
+
+									var response = event.target.response;
+									var man = JSON.parse( response );
+
+									manoeuvring = new Vessel.Manoeuvring( ship, shipState, hullRes, propellerInteraction, fuelCons, man );
+									manoeuvringMovement = new ManoeuvringMovement( manoeuvring );
+
+									// Insertion of the label graphics
+									const BOUNDS = [
+										[ - 500.0, - 500.0 ],
+										[ 500.0, 500.0 ]
+									];
+									const RADIUS = 5;
+
+									const DIVISIONS = [ 200, 200 ];
+									grid = new SpatialHashGrid( BOUNDS, DIVISIONS );
+
+									var keyResults = [];
+
+									remainCheck = "3";
+									totalFuel = 0;
+
+									const NAMECHECKPOINT = [ "A", "B", "C" ];
+
+									for ( let i = 0; i < parseInt( remainCheck ); i ++ ) {
+
+										keyResults.push( { radius: RADIUS, name: NAMECHECKPOINT[ i ] } );
+
+									}
+
+									checkPoint = [];
+
+									for ( let i = 0; i < keyResults.length; i ++ ) {
+
+										checkPoint.push( new CheckPoint( keyResults[ i ] ) );
+
+										const POS = checkPoint[ i ].position;
+										keyResults[ i ].position = POS;
+										const R = checkPoint[ i ].radius;
+										const N = checkPoint[ i ].name;
+
+										const client = grid.NewClient( POS, { w: R, h: R }, N );
+
+										zUpCont.add( checkPoint[ i ].mesh );
+										zUpCont.add( checkPoint[ i ].light );
+
+									}
+
+								var labelObj1 = {
+									xkey: "x",
+									xlabel: "Position X (m)",
+									ykey: "y",
+									ylabel: "Position Y (m)"
+								};
+								lineChart = new PositionGraph("lineChart1", keyResults.map(e => e.position), labelObj1, "lineChart-position", { width: 275, height:275 } );
+								keyResults.forEach( e => lineChart.drawLabel( e.position.x, e.position.y, e.name ) );
+								var labelObj2 = {
+									xkey: "x", 
+									xlabel: "Rotation (%)",
+									ykey: "y",
+									ylabel: "MCR (%)"
+								}
+
+								lineChart2 = new ConsGraph("lineChart2", keyResults.map(e => e.position), labelObj2, "lineChart-eff", { width: 275, height:275 } );
+								lineChart2.drawLineGeneric(0, 0, manoeuvringMovement.manoeuvring);
+
+								} );
+								manSpec.send( null );
+
+							} );
+							powReq.send( null );
+
+						};
+
+						usePropSpec( propeller, "rolls_royce_500_azipod.json" );
+
+					} );
+					propReq.send( null );
+
+				} );
+				// End of the request chain
+
+				// import binary glTF file
+				var boatPath = "specs/GLTF_files/Gunnerus.glb";
+				var loaderGLTF = new THREE.GLTFLoader();
+				loaderGLTF.load( boatPath, gltf => {
+
+					shipGLTF = gltf.scene;
+					shipGLTF.rotation.x = Math.PI / 2;
+					shipGLTF.rotation.y = - Math.PI / 2;
+					shipGLTF.position.set( - 1, 0, 0 );
+					shipGLTF.up.set( 0, 1, 0 );
+					shipGLTF.name = "ModelGLTF";
+
+					if ( shipGLTF.material ) {
+
+						shipGLTF.material.side = THREE.DoubleSide;
+
+					}
+
+					zUpCont.add( shipGLTF );
+
+					// Insert the GLTF object
+					thirdPersonCamera = new ThirdPersonCamera( {
+						camera: camera,
+						object: shipGLTF
+					} );
+
+					fixedCamera = new FixedCamera( {
+						camera: camera,
+						object: shipGLTF
+					} );
+
+					orbitalCamera = new OrbitalCamera( {
+						camera: camera,
+						object: shipGLTF,
+						control: controls,
+						idCanvas: "SimulationWindow"
+					} );
+
+					Object.assign( camera, {
+						toggle: {
+							TP: (dt) => {
+								orbitalCamera.Disable()						
+								thirdPersonCamera.Update( dt );
+							},
+							Fixed: () => {
+								orbitalCamera.Disable()						
+								fixedCamera.Update();
+							},
+							Orbital: () => {								
+								orbitalCamera.Update();
+							}
+						}
+					} );
+
+				} );
+
+				var displaceObject = {
+					x: - 1200,
+					y: - 5500,
+					z: - 1
+				};
+
+				// Optional: Provide a DRACOLoader instance to decode compressed mesh data
+				THREE.DRACOLoader.setDecoderPath( '3D_engine/dracoDecoder/gltf' );
+				THREE.DRACOLoader.setDecoderConfig( { type: 'js' } );
+				loaderGLTF.setDRACOLoader( new THREE.DRACOLoader() );
+
+				var terrainPath = "specs/GLTF_files/terrain.glb";
+				loaderGLTF.load( terrainPath, gltf => {
+
+					let terrainGLTF = gltf.scene;
+					terrainGLTF.name = "terrainGLTF";
+
+					if ( terrainGLTF.material ) {
+
+						terrainGLTF.material.side = THREE.DoubleSide;
+
+					}
+
+					terrainGLTF.traverse( o => {
+
+						// Note: In the further would be ideal to find a way to insert the texture
+						if ( o.isMesh ) {
+
+							let e = scene.getObjectByName( o.name );
+							let material = new THREE.MeshBasicMaterial( { color: 0xbababa } );
+
+							o.material.color.setHSL( 0.0, 1.0, 0.99 );
+
+						}
+
+					} );
+
+					Object.assign( terrainGLTF.position, displaceObject );
+					zUpCont.add( terrainGLTF );
+
+					var fadeTarget = document.getElementById( "loader-wrapper" );
+					var fadeEffect = setInterval( function () {
+
+						if ( ! fadeTarget.style.opacity ) {
+
+							fadeTarget.style.opacity = 1;
+
+						}
+
+						if ( fadeTarget.style.opacity > 0 ) {
+
+							fadeTarget.style.opacity -= 0.05;
+
+						} else {
+
+							clearInterval( fadeEffect );
+							fadeTarget.remove();
+
+						}
+
+					}, 50 );
+
+				}, null, e => {
+
+								console.error( e );
+
+				} );
+
+				var dracoTerrainPath = "specs/GLTF_files/dracoTerrain.glb";
+				loaderGLTF.load( dracoTerrainPath, gltf => {
+
+					let terrainGLTF = gltf.scene;
+					terrainGLTF.name = "terrainDraco";
+
+					if ( terrainGLTF.material ) {
+
+						terrainGLTF.material.side = THREE.DoubleSide;
+
+					}
+
+					terrainGLTF.traverse( o => {
+
+						// Note: In the further would be ideal to find a way to insert the texture
+						if ( o.isMesh ) {
+
+							let e = scene.getObjectByName( o.name );
+							let material = new THREE.MeshBasicMaterial( { color: 0xbababa } );
+
+							o.material.color.setHSL( 0.0, 1.0, 0.99 );
+
+						}
+
+					} );
+
+					Object.assign( terrainGLTF.position, displaceObject );
+					zUpCont.add( terrainGLTF );
+
+				}, null, e => {
+
+								console.error( e );
+
+				} );
+
+				var cityPath = "specs/GLTF_files/city.glb";
+				loaderGLTF.load( cityPath, gltf => {
+
+					let cityGLTF = gltf.scene;
+					cityGLTF.name = "cityGLTF";
+
+					if ( cityGLTF.material ) {
+
+						cityGLTF.material.side = THREE.DoubleSide;
+
+					}
+
+					Object.assign( cityGLTF.position, displaceObject );
+					zUpCont.add( cityGLTF );
+
+				} );
+
+				document.getElementById("graphic1").style.visibility = "hidden"  
+				document.getElementById("graphic2").style.visibility = "hidden"  
+
+				//GUI setup
+				viewer = {
+					view: "Orbital",
+					totalFuel: "0",
+					checkPoint: "3",
+					viewLoc: false,
+					viewCons: false
+				};
+				gui = new dat.GUI();
+				scale = gui.addFolder( "View Style" );
+				scale.add(
+					{
+						"Click to read paper": function () {
+							window.open( "https://observablehq.com/@ferrari212/simulation-model-a-brief-method" );
+						}
+					},
+					"Click to read paper"
+				);
+				scale
+					.add( viewer, "view", {
+						TP: "TP",
+						Fixed: "Fixed",
+						Orbital: "Orbital"
+					} )
+					.name( "View" );
+				scale
+					.add( viewer, 'totalFuel')
+					.name( "Cons. Fuel (g)" ).listen();
+				scale
+					.add( viewer, "checkPoint" )
+					.name( "Remain" ).listen();
+				scale
+					.add( viewer, "viewLoc" )
+					.onChange( function (newValue) {
+						document.getElementById("graphic1").style.visibility = newValue ? "visible" : "hidden"  
+					} )
+					.name( "View Loc." ).listen();
+				scale
+					.add( viewer, "viewCons" )
+					.onChange( function (newValue) {
+						document.getElementById("graphic2").style.visibility = newValue ? "visible" : "hidden"  
+					} )
+					.name( "View Power" ).listen();
+				scale.open();
+
+				// End GUI setup
+
+				clock = new THREE.Clock();
+				time = clock.getElapsedTime();
+
+				requestAnimationFrame( animate );
+
+				}
+				)();
+
+				function animate( millitime ) {
+
+				ocean.water.material.uniforms.time.value += 1 / 60;
+
+				if ( shipGLTF && manoeuvring ) {
+
+					// make this inside the Vessel.js
+					manoeuvring.setSpeed( manoeuvringMovement.states.V.u * 1.96 );
+					var propellerAngle = ( manoeuvringMovement.states.rudderAngle * Math.PI ) / 180;
+					var cos = Math.cos( propellerAngle );
+					var sin = Math.sin( propellerAngle );
+
+					var rotationStates = manoeuvring.getPropResult( manoeuvringMovement.states.n );
+
+					var Rt = manoeuvring.getRes( manoeuvringMovement.states.V.u );
+
+					const distHel = manoeuvringMovement.manoeuvring.distHel;
+
+					var forceVector = [ rotationStates.Fp * cos - Rt, rotationStates.Fp * sin, rotationStates.Fp * sin * distHel ];
+
+					manoeuvringMovement.dt = clock.getElapsedTime() - time;
+
+					manoeuvringMovement.setMatrixes( forceVector, shipGLTF.rotation.y + Math.PI / 2 );
+					manoeuvringMovement.getDisplacements( manoeuvringMovement.dt );
+
+					var position = shipGLTF.position;
+
+					if ( Math.abs( position.x ) > 500 || Math.abs( position.y ) > 500 ) {
+
+						position.x = 0;
+						position.y = 0;
+
+					}
+
+					position.x += manoeuvringMovement.states.DX.x;
+					position.y += manoeuvringMovement.states.DX.y;
+					shipGLTF.rotation.y = - Math.PI / 2 - manoeuvringMovement.states.yaw;
+					manoeuvringMovement.states.load = ( rotationStates.Pp * 0.001 ) / manoeuvring.totalCapac;
+
+					time = clock.getElapsedTime();
+					lineChart.draw( position.x, position.y );
+					lineChart2.draw(	Math.abs(manoeuvringMovement.states.n * 60)/manoeuvringMovement.manoeuvring.maxPropRot,	manoeuvringMovement.states.load	)
+
+					checkPoint.forEach( e => {
+
+						e.update();
+
+					} );
+
+					camera.toggle[ viewer.view ]( manoeuvringMovement.dt );
+
+					speedText.innerText = ( manoeuvringMovement.states.V.u * 1.943844 ).toFixed( 1 );
+					
+					consumptionText.innerText = (rotationStates.cons).toFixed( 1 );
+					totalFuel += manoeuvringMovement.dt*rotationStates.cons/3.6
+					scale.__controllers[1].object.totalFuel = totalFuel.toFixed()
+
+					var clients = grid.FindNearby( position, { w: 0.5, h: 0.5 } );
+					for ( let item of clients ) {
+
+						const NAME = item.name;
+						checkPoint.forEach( e => {
+
+							if ( e.name === NAME ) {
+
+								e.update = e.transientChange;
+
+							}
+
+						} );
+
+						d3.selectAll( "#" + NAME ).style( "fill", "red" );
+
+						remainCheck -= 1;
+						scale.__controllers[ 1 ].object.checkPoint = remainCheck;
+
+						grid.RemoveClient( item );
+
+						if ( ! remainCheck ) {
+
+							if ( window.confirm( "Congratulations! You got all checkpoints, replay? " ) ) {
+
+								window.location.replace( "https://shiplab.github.io/vesseljs/examples/manoeuvring.html" );
+
+							}
+
+						}
+
+					}
+
+					// Improvement: This conditional must be passed internally as a assign function
+					if ( Object.keys( orbitController ).length ) {
+
+						if ( ( Math.abs( orbitController.canvas.x ) > 0.06 || Math.abs( orbitController.canvas.y ) > 0.06 ) && ! orbitController.canvas.active ) {
+
+							orbitController.canvas.returnOrigin();
+
+						} else {
+
+							orbitController.moveOrbit();
+
+						}
+
+					}
+
+				}
+
+				renderer.render( scene, camera );
+				requestAnimationFrame( animate );
+
+				}
+
+		</script>
+	</body>
+</html>
