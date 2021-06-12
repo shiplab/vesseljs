@@ -356,7 +356,7 @@
 			<img src="..\examples\images\help-black-24dp.svg" />
 		</a>
 
-		<a id="math-button" target="_blank" href="https://observablehq.com/@ferrari212/simulation-model-a-brief-method" title="View source code for animation / cloth on GitHub" style="">
+		<a id="math-button" target="_blank" href="https://observablehq.com/@ferrari212/simulation-model-a-brief-method" title="View mathematical model" style="">
 			<img src="..\examples\images\superscript-black-24dp.svg" />
 		</a>
 
@@ -366,7 +366,7 @@
 	
 		<div id="graphic1">
 			<div class="container">
-				<div id="lineChart-positon"></div>
+				<div id="lineChart-position"></div>
 			</div>	
 		</div>
 
@@ -382,7 +382,7 @@
 			</ul>
 		</div>
 
-		<table id="panel-number" class="unselectable" >
+		<table id="panel-number" class="unselectable">
 			<tr valign="top">
 				<td>
 					<p style="font-size: 10px">FWD. Speed</p>
@@ -411,12 +411,12 @@
 			"use strict"
 			
 			//Globals
-			var renderer, camera, controls, thrirdPersonCamera, fixedCamera, orbitalCamera, gui, stats;
+			var renderer, camera, controls, thirdPersonCamera, fixedCamera, orbitalCamera, gui, stats;
 			var scene, zUpCont, playback, bodies, ocean;
 			var ship, shipGLTF, shipState, propellers, wave, hullRes, propellerInteraction, rudderModel, fuelCons;
 			var manoeuvring, manoeuvringMovement, viewer, grid;
 			var scale, modelStyle, remainCheck, totalFuel;
-			var speedText, angleText, rotationText, consumptionText
+			var speedText, angleText, rotationText, consumptionText;
 			var clock, time, checkPoint;
 			var canvas, c, lineChart, lineChart2;
 
@@ -458,11 +458,13 @@
 				}
 
 				var showElement = () => {
-					document.getElementById("notes").style.visibility = "visible";
-				}
 
-				document.getElementById("question-button").addEventListener("mouseenter", showElement);				
-				document.getElementById("question-button").addEventListener("mouseleave", hideElement);				
+					document.getElementById( "notes" ).style.visibility = "visible";
+				
+				};
+
+				document.getElementById( "question-button" ).addEventListener( "mouseenter", showElement );
+				document.getElementById( "question-button" ).addEventListener( "mouseleave", hideElement );
 
 				class FixedCamera {
 
@@ -479,6 +481,7 @@
 						this._camera.lookAt( this._params.position.x + 20, 10, - this._params.position.y );
 
 					}
+
 				}
 
 				class OrbitalCamera {
@@ -507,6 +510,7 @@
 						this._control.enableRotate  = false;
 
 					}
+
 				}
 
 				//Renderer setup
@@ -546,7 +550,6 @@
 				THREE.Object3D.DefaultUp.set( 0, 0, 1 );
 				zUpCont = new THREE.Group();
 				scene.add( zUpCont );
-
 
 				var skybox = new Skybox( oSize );
 				skybox.name = "Skybox";
@@ -621,7 +624,6 @@
 							hullRes = new Vessel.HullResistance( ship, shipState, propeller, wave );
 							hullRes.writeOutput();
 
-
 							for ( var propProp in propellers ) {
 
 								var wagProp = propellers[ propProp ];
@@ -671,7 +673,7 @@
 								remainCheck = "3";
 								totalFuel = 0;
 
-								const NAMECHECKPOINT = ["A", "B", "C"]
+								const NAMECHECKPOINT = [ "A", "B", "C" ];
 
 								for (let i = 0; i < parseInt(remainCheck); i++) {
 									keyResults.push({ radius: RADIUS, name: NAMECHECKPOINT[i]	});
@@ -680,18 +682,18 @@
 								
 								checkPoint = []
 
-								for (let i = 0; i < keyResults.length; i++) {							
-									checkPoint.push(new CheckPoint(keyResults[i]));
+								for ( let i = 0; i < keyResults.length; i++ ) {							
+									checkPoint.push( new CheckPoint( keyResults[i] ) );
 									
 									const POS = checkPoint[i].position;
 									keyResults[i].position = POS;
 									const R = checkPoint[i].radius;
 									const N = checkPoint[i].name;
 
-									const client = grid.NewClient(POS, { w: R, h: R }, N);
+									const client = grid.NewClient( POS, { w: R, h: R }, N );
 
-									zUpCont.add(checkPoint[i].mesh);
-									zUpCont.add(checkPoint[i].light);							
+									zUpCont.add( checkPoint[i].mesh );
+									zUpCont.add( checkPoint[i].light );							
 								}
 
 
@@ -700,9 +702,9 @@
 									xlabel: "Position X (m)",
 									ykey: "y",
 									ylabel: "Position Y (m)"
-								}
-								lineChart = new PositionGraph("lineChart1", keyResults.map(e => e.position), labelObj1, "lineChart-positon");
-								keyResults.forEach(e => lineChart.drawLabel(e.position.x, e.position.y, e.name));
+								};
+								lineChart = new PositionGraph("lineChart1", keyResults.map(e => e.position), labelObj1, "lineChart-position");
+								keyResults.forEach( e => lineChart.drawLabel( e.position.x, e.position.y, e.name ) );
 								var labelObj2 = {
 									xkey: "x", 
 									xlabel: "Rotation (%)",
@@ -712,11 +714,11 @@
 								lineChart2 = new ConsGraph("lineChart2", keyResults.map(e => e.position), labelObj2, "lineChart-eff");
 								lineChart2.drawLineGeneric(0, 0, manoeuvringMovement.manoeuvring)
 
-							})
-									manSpec.send(null);
+								} );
+								manSpec.send( null );
 
-							});
-							powReq.send(null);
+							} );
+							powReq.send( null );
 
 						};
 
@@ -724,6 +726,7 @@
 
 					} );
 					propReq.send( null );
+
 				} );
 				// End of the request chain
 
@@ -748,7 +751,7 @@
 					zUpCont.add( shipGLTF );
 
 					// Insert the GLTF object
-					thrirdPersonCamera = new ThirdPersonCamera( {
+					thirdPersonCamera = new ThirdPersonCamera( {
 						camera: camera,
 						object: shipGLTF
 					} );
@@ -765,10 +768,11 @@
 						idCanvas: "SimulationWindow"
 					} );
 
-					Object.assign(camera, {toggle: {
+					Object.assign( camera, {
+						toggle: {
 							TP: (dt) => {
 								orbitalCamera.Disable()						
-								thrirdPersonCamera.Update(dt);
+								thirdPersonCamera.Update( dt );
 							},
 							Fixed: () => {	
 								orbitalCamera.Disable()						
@@ -777,7 +781,8 @@
 							Orbital: () => {								
 								orbitalCamera.Update();
 							} 
-					}})
+						}
+					} );
 
 					var fadeTarget = document.getElementById( "loader-wrapper" );
 					var fadeEffect = setInterval( function () {
@@ -811,13 +816,16 @@
 				};
 				gui = new dat.GUI();
 				scale = gui.addFolder( "View Style" );
-				scale.add({
+				scale.add(
+					{
 					"Click to read paper": function () {
-						window.open("https://observablehq.com/@ferrari212/simulation-model-a-brief-method");
+						window.open( "https://observablehq.com/@ferrari212/simulation-model-a-brief-method" );
 					}
-				}, "Click to read paper")
+				},
+				 "Click to read paper"
+				);
 				scale
-					.add( viewer, 'view', {
+					.add( viewer, "view", {
 						TP: "TP",
 						Fixed: "Fixed",
 						Orbital: "Orbital"
@@ -827,7 +835,7 @@
 					.add( viewer, 'totalFuel')
 					.name( "Cons. Fuel (g)" ).listen();
 				scale
-					.add( viewer, 'checkPoint')
+					.add( viewer, "checkPoint" )
 					.name( "Remain" ).listen();
 				scale.open();
 
@@ -836,28 +844,26 @@
 
 				requestAnimationFrame( animate );	
 							
-			} )();
-
+			}
+			)();
 
 			function animate( millitime ) {
-
-				// stats.begin();
 
 				ocean.water.material.uniforms.time.value += 1 / 60;
 
 				if ( shipGLTF ) {
 
 					// make this inside the Vessel.js
-					manoeuvring.setSpeed( manoeuvringMovement.states.V.u * 1.96);
-					var propellerAngle = manoeuvringMovement.states.rudderAngle * Math.PI / 180;
+					manoeuvring.setSpeed( manoeuvringMovement.states.V.u * 1.96 );
+					var propellerAngle = ( manoeuvringMovement.states.rudderAngle * Math.PI ) / 180;
 					var cos = Math.cos( propellerAngle );
 					var sin = Math.sin( propellerAngle );
 
 					var rotationStates = manoeuvring.getPropResult( manoeuvringMovement.states.n );
 
-					var Rt =  manoeuvring.getRes( manoeuvringMovement.states.V.u);
+					var Rt = manoeuvring.getRes( manoeuvringMovement.states.V.u );
 
-					const distHel = manoeuvringMovement.manoeuvring.distHel
+					const distHel = manoeuvringMovement.manoeuvring.distHel;
 
 					var forceVector = [
 						rotationStates.Fp * cos - Rt,
@@ -870,56 +876,71 @@
 					manoeuvringMovement.setMatrixes( forceVector, shipGLTF.rotation.y + Math.PI / 2 );
 					manoeuvringMovement.getDisplacements( manoeuvringMovement.dt );
 
-					var position = shipGLTF.position
+					var position = shipGLTF.position;
 
-					if (Math.abs(position.x) > 500 || Math.abs(position.y) > 500) {
+					if ( Math.abs( position.x ) > 500 || Math.abs( position.y ) > 500 ) {
+
 						position.x = 0;
 						position.y = 0;
+
 					}
 
 					position.x += manoeuvringMovement.states.DX.x;
 					position.y += manoeuvringMovement.states.DX.y;
 					shipGLTF.rotation.y = - Math.PI / 2 - manoeuvringMovement.states.yaw;
-					manoeuvringMovement.states.load = rotationStates.Pp * 0.001/manoeuvring.totalCapac;
+					manoeuvringMovement.states.load = ( rotationStates.Pp * 0.001 ) / manoeuvring.totalCapac;
 
 					time = clock.getElapsedTime();
-					lineChart.draw(position.x,	position.y)
-					lineChart2.draw(Math.abs(manoeuvringMovement.states.n * 60)/manoeuvringMovement.manoeuvring.maxPropRot,	manoeuvringMovement.states.load)
+					lineChart.draw( position.x, position.y );
+					lineChart2.draw(	Math.abs(manoeuvringMovement.states.n * 60)/manoeuvringMovement.manoeuvring.maxPropRot,	manoeuvringMovement.states.load	)
 
-					checkPoint.forEach(e => {e.update()})
+					checkPoint.forEach( e => {
 
-					camera.toggle[viewer.view](manoeuvringMovement.dt);
+						e.update();
 
-					speedText.innerText = (manoeuvringMovement.states.V.u * 1.943844).toFixed( 1 );
-					// console.log(rotationStates.cons);
+					} );
+
+					camera.toggle[ viewer.view ]( manoeuvringMovement.dt );
+
+					speedText.innerText = ( manoeuvringMovement.states.V.u * 1.943844 ).toFixed( 1 );
+
 					consumptionText.innerText = (rotationStates.cons).toFixed( 1 );
 					totalFuel += manoeuvringMovement.dt*rotationStates.cons/3.6
 					scale.__controllers[1].object.totalFuel = totalFuel.toFixed()
 					
-					var clients = grid.FindNearby(position, {w: .5, h: .5})
-					for (let item of clients) {
+					var clients = grid.FindNearby( position, { w: 0.5, h: 0.5 } );
+					for ( let item of clients ) {
+
 						const NAME = item.name;
-						checkPoint.forEach(e => {
-							if(e.name === NAME) {
-								e.update = e.transientChange
+						checkPoint.forEach( e => {
+
+							if ( e.name === NAME ) {
+
+								e.update = e.transientChange;
+
 							}
-						})
 
-						d3.selectAll("#" + NAME).style("fill", "red");
+						} );
 
-						remainCheck -= 1
-						scale.__controllers[1].object.checkPoint = remainCheck
+						d3.selectAll( "#" + NAME ).style( "fill", "red" );
 
-						grid.RemoveClient(item);
+						remainCheck -= 1;
+						scale.__controllers[ 1 ].object.checkPoint = remainCheck;
 
-						if ( !remainCheck ) {
-						
-								if (window.confirm("Congratulations! You got all checkpoints, replay? ")) {
-									window.location.replace("https://shiplab.github.io/vesseljs/examples/manoeuvring_UiTModel.html");
-								}
-						};
+						grid.RemoveClient( item );
+
+						if ( ! remainCheck ) {
+
+							if ( window.confirm( "Congratulations! You got all checkpoints, replay? " ) ) {
+
+								window.location.replace( "https://shiplab.github.io/vesseljs/examples/manoeuvring.html" );
+
+							}
+
+						}
 						
 					}
+
 				}
 
 				renderer.render( scene, camera );

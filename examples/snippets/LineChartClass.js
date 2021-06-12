@@ -85,7 +85,7 @@ class PositionGraph extends LineChartClass {
 
 		data.fit = {x ,y}
 		this.x = x
-		this.y = y
+		this.y = y   
 
 		this.svg.append("g")
 			.attr("class", "x axis")
@@ -151,7 +151,8 @@ class PositionGraph extends LineChartClass {
 			.attr('cx', xf(x))
 			.attr('cy', yf(y) )
 			.attr('r', r + 'px')
-			.style('fill', color);    
+			.style('fill', color);
+			
 	}
 
 	drawLabel = (x, y, name = "undef.", fontSize = 12, color = "black") => {
@@ -172,8 +173,6 @@ class PositionGraph extends LineChartClass {
 
 		this.svg.selectAll(".dot")
 			.style("fill", "steelblue");
-
-		// debugger
 
 		this.svg.append("g")
 			.attr("transform", "translate( 0, " + yf(y) + ")")

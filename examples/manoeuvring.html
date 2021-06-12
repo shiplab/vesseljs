@@ -345,7 +345,7 @@
 			<img src="..\examples\images\help-black-24dp.svg" />
 		</a>
 
-		<a id="math-button" target="_blank" href="https://observablehq.com/@ferrari212/simulation-model-a-brief-method" title="View source code for animation / cloth on GitHub" style="">
+		<a id="math-button" target="_blank" href="https://observablehq.com/@ferrari212/simulation-model-a-brief-method" title="View mathematical model" style="">
 			<img src="..\examples\images\superscript-black-24dp.svg" />
 		</a>
 
@@ -355,7 +355,7 @@
 
 		<div id="graphic1">
 			<div class="container">
-				<div id="lineChart-positon"></div>
+				<div id="lineChart-position"></div>
 			</div>	
 		</div>
 
@@ -825,7 +825,7 @@
 										ykey: "y",
 										ylabel: "Position Y (m)"
 									}
-									lineChart = new PositionGraph("lineChart1", keyResults.map(e => e.position), labelObj1, "lineChart-positon");
+									lineChart = new PositionGraph("lineChart1", keyResults.map(e => e.position), labelObj1, "lineChart-position");
 									keyResults.forEach(e => lineChart.drawLabel(e.position.x, e.position.y, e.name));	
 
 									})
