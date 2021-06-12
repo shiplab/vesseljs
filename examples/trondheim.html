@@ -1136,7 +1136,7 @@
 
 				ocean.water.material.uniforms.time.value += 1 / 60;
 
-				if ( shipGLTF ) {
+				if ( shipGLTF && manoeuvring ) {
 
 					// make this inside the Vessel.js
 					manoeuvring.setSpeed( manoeuvringMovement.states.V.u * 1.96 );
