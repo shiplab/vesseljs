@@ -20,6 +20,9 @@ class ThirdPersonCamera {
 
     this._params = params.object;
     this._camera = params.camera;
+    
+    this._idealOffset = params.idealOffset || undefined;
+    this._idealLookat = params.idealLookat || undefined;
 
     this._currentPosition = new THREE.Vector3();
     this._currentLookat = new THREE.Vector3();
@@ -32,7 +35,7 @@ class ThirdPersonCamera {
 
   _CalculateIdealOffset() {
 
-    const idealOffset = new THREE.Vector3( 0, 20, 100 );
+    const idealOffset = this._idealOffset ? new THREE.Vector3( this._idealOffset.x, this._idealOffset.y, this._idealOffset.z ) : new THREE.Vector3( 0, 20, 100 );
     const rotation = new THREE.Euler( 0, this._params.rotation._y, 0, 'XYZ' );
     
     const transformed =  this.rotateTaitBryan(this._params.position, this.rotVector)
@@ -47,7 +50,7 @@ class ThirdPersonCamera {
 
   _CalculateIdealLookat() {
 
-    const idealLookat = new THREE.Vector3( 0, 0, - 200 );
+    const idealLookat = this.idealLookat ? new THREE.Vector3( this.idealLookat.x, this.idealLookat.y, this.idealLookat.z ) : new THREE.Vector3( 0, 0, - 200 );
     const rotation = new THREE.Euler( 0, this._params.rotation._y, 0 );
     
     const transformed =  this.rotateTaitBryan(this._params.position, this.rotVector);
