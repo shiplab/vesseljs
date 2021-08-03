@@ -45,11 +45,11 @@ function onDocumentKeyDown( event ) {
 			break;
 		case 65:
 			manoeuvringMovement.states.rudderAngle -= MAN.rudderRate * DT;
-			angleText.innerText = manoeuvringMovement.states.rudderAngle.toFixed( 1 );
+			angleText.innerText = ( manoeuvringMovement.states.rudderAngle % 360 ).toFixed( 1 );
 			break;
 		case 68:
 			manoeuvringMovement.states.rudderAngle += MAN.rudderRate * DT;
-			angleText.innerText = manoeuvringMovement.states.rudderAngle.toFixed( 1 );
+			angleText.innerText = ( manoeuvringMovement.states.rudderAngle  % 360 ).toFixed( 1 );
 			break;
 		default:
 			break;

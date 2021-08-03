@@ -19,9 +19,6 @@
 		<!-- Bootstrap Core JavaScript -->
 		<script src="libs/bootstrap.min.js"></script>
 
-		<!-- D3JavaScript -->
-		<script src="libs/d3_v4.9.1.js"></script>
-
 		<!-- Three script -->
 		<script src="3D_engine/legacy/three.js"></script>
 		<script src="3D_engine/STLLoader.js"></script>
@@ -34,7 +31,7 @@
 		<script type="text/javascript" src="libs/renderjson.js"></script>
 
 		<!--Ship3D class for three.js-->
-		<script src="3D_engine/legacy/Ship3D.js"></script>
+		<script src="3D_engine/Ship3D_v2.js"></script>
 
 		<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 		<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -171,12 +168,20 @@
 				if (ship3D !== undefined) {
 					scene.remove(ship3D)
 				}
-				ship3D = new Ship3D(ship, "specs/STL files")
+				ship3D = new Ship3D(ship, {
+					shipState: ship.designState.clone(),
+					stlPath: "specs/STL files",
+					upperColor: 0x33aa33,
+					lowerColor: 0xaa3333,
+					hullOpacity: 1,
+					deckOpacity: 1,
+					objectOpacity: 1
+				});
 				scene.add(ship3D)
 
 				let LOA = ship.structure.hull.attributes.LOA
-				camera.position.set(0.7 * LOA, 0.7 * LOA, 0.7 * LOA)
-				controls.target = new THREE.Vector3(LOA / 2, 0, 0)
+				camera.position.set(0.3 * LOA, 0.7 * LOA, 0.7 * LOA)
+				controls.target = new THREE.Vector3(0, 0, 0)
 				controls.update()
 				animate()
 			}
