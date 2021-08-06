@@ -158,7 +158,7 @@
 		// read available specifications
 		var dropList = document.getElementById("spec-list");
 		var specListReq = new XMLHttpRequest();
-		specListReq.open("GET", "specs/ship_specifications/README.md", true);
+		specListReq.open("GET", "specs/ship_specifications/README.txt", true);
 		specListReq.addEventListener("load", function (event) {
 			var response = event.target.response;
 			var specNames = response.split("\r\n").map(label => label.substring(2));;
