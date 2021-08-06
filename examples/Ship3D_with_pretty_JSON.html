@@ -158,7 +158,7 @@
 		// read available specifications
 		var dropList = document.getElementById("spec-list");
 		var specListReq = new XMLHttpRequest();
-		specListReq.open("GET", "specs/ship_specifications/README.md", true);
+		specListReq.open("GET", "ship_specs/README.md", true);
 		specListReq.addEventListener("load", function (event) {
 			var response = event.target.response;
 			var specNames = response.split("\r\n").map(label => label.substring(2));;
@@ -180,7 +180,7 @@
 			var specReq = new XMLHttpRequest();
 			var fileName = dropList.options[dropList.selectedIndex].text;
 			console.log(fileName);
-			specReq.open("GET", "specs/ship_specifications/" + fileName, true);
+			specReq.open("GET", "ship_specs/" + fileName, true);
 			specReq.addEventListener("load", function (event) {
 				var contents = event.target.response;
 				useFileData(contents);
@@ -205,7 +205,7 @@
 		}
 
 		//Load sample file:
-		new THREE.FileLoader().load("specs/ship_specifications/PX121.json", useFileData)
+		new THREE.FileLoader().load("ship_specs/PX121.json", useFileData)
 
 		function useFileData(contents) {
 			var shipspec = JSON.parse(contents)
@@ -216,7 +216,7 @@
 			}
 			ship3D = new Ship3D(ship, {
 				shipState: ship.designState.clone(),
-				stlPath: "specs/STL files",
+				stlPath: "3D_models/STL/various",
 				upperColor: 0x33aa33,
 				lowerColor: 0xaa3333,
 				hullOpacity: 1,

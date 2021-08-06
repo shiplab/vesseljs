@@ -164,7 +164,7 @@
 	})();
 
 	// load default spec
-	new THREE.FileLoader().load("specs/ship_specifications/barge.json", useShipSpec);
+	new THREE.FileLoader().load("ship_specs/barge.json", useShipSpec);
 
 	function useShipSpec(contents) {
 		shipspec = JSON.parse(contents);

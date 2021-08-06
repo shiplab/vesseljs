@@ -289,7 +289,7 @@
 	};
 
 	// load default spec
-	new THREE.FileLoader().load("specs/ship_specifications/PX121.json", useShipSpec);
+	new THREE.FileLoader().load("ship_specs/PX121.json", useShipSpec);
 
 	function useShipSpec(contents) {
 		shipspec = JSON.parse(contents);
@@ -297,7 +297,7 @@
 		if (typeof ship3D !== "undefined") {
 			scene.remove(ship3D);
 		}
-		ship3D = new Ship3D(shipVis, "specs/STL files");
+		ship3D = new Ship3D(shipVis, "3D_models/STL/various");
 		scene.add(ship3D);
 
 		document.getElementById("length").innerHTML = (shipVis.structure.hull.attributes.LOA).toFixed(2);
@@ -389,7 +389,7 @@
 
 	// preload propeller specification
 	var propReq = new XMLHttpRequest();
-	propReq.open("GET", "specs/propeller_specifications/wag_4b_0.55a_1.2p.json", true);
+	propReq.open("GET", "others/propeller_specifications/wag_4b_0.55a_1.2p.json", true);
 	propReq.addEventListener("load", function (event) {
 		var response = event.target.response;
 		var propeller = JSON.parse(response);
@@ -429,7 +429,7 @@
 
 	// preload propeller specification
 	var powReq = new XMLHttpRequest();
-	powReq.open("GET", "specs/power_plant_specifications/powerPlant1.json", true);
+	powReq.open("GET", "others/power_plant_specifications/powerPlant1.json", true);
 	powReq.addEventListener("load", function (event) {
 		var response = event.target.response;
 		var powerPlant = JSON.parse(response);

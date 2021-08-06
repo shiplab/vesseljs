@@ -163,7 +163,7 @@
 	})();
 
 	// load default spec
-	new THREE.FileLoader().load("specs/ship_specifications/barge.json", useShipSpec);
+	new THREE.FileLoader().load("ship_specs/barge.json", useShipSpec);
 
 	function useShipSpec(contents) {
 		shipspec = JSON.parse(contents);
@@ -244,6 +244,8 @@
 			};
 			keyResults.push(res);
 		}
+
+		console.log(keyResults);
 
 		lineChart("lineChart1", keyResults, "fill", "Filling");
 		lineChart("lineChart2", keyResults, "draft", "Draft (m)");

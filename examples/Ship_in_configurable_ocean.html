@@ -111,7 +111,7 @@
 			playback.add(ocean);
 			zUpCont.add(ocean);
 
-			Vessel.loadShip("specs/ship_specifications/PX121.json", function(ship) {
+			Vessel.loadShip("ship_specs/PX121.json", function(ship) {
 				//A few modifications before generating the 3D model (does not move or scale decks/bulkheads/objects):
 				/*let ha = ship.structure.hull.attributes;
 				ha.LOA = 100;
@@ -119,7 +119,7 @@
 				ha.Depth = 12;*/
 
 				ship3D = new Ship3D(ship, {
-					stlPath: "specs/STL files",
+					stlPath: "3D_models/STL/various",
 					upperColor: 0x33aa33,
 					lowerColor: 0xaa3333,
 					hullOpacity: 1,

@@ -117,7 +117,7 @@
 
 			function callback(ship) {
 				let ship3D = new Ship3D(ship, {
-					stlPath: "specs/STL files",
+					stlPath: "3D_models/STL/various",
 					upperColor: 0x33aa33,
 					lowerColor: 0xaa3333,
 					hullOpacity: 1,
@@ -170,7 +170,7 @@
 			let designs = ["PX121", "blockCase", "prismaticHull", "trapezoidPrismHull"];
 			function addShip() {
 				let design = designs[0];//designs[Math.floor(Math.random()*designs.length)];
-				Vessel.loadShip("specs/ship_specifications/" + design + ".json", callback);
+				Vessel.loadShip("ship_specs/" + design + ".json", callback);
 			}
 
 			/*bodies = new MultiBodies({parentGUI: gui,

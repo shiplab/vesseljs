@@ -157,7 +157,7 @@
 			scene.add(grid);
 
 			//Load sample file:
-			new THREE.FileLoader().load("specs/ship_specifications/PX121.json", function(contents) {
+			new THREE.FileLoader().load("ship_specs/PX121.json", function(contents) {
 				var shipspec = JSON.parse(contents);
 				displayContents(shipspec.designState); //show state only
 				ship = new Vessel.Ship(shipspec);
@@ -165,7 +165,7 @@
 				if (ship3D !== undefined) {
 					scene.remove(ship3D);
 				}
-				ship3D = new Ship3D(ship, "specs/STL files");
+				ship3D = new Ship3D(ship, "3D_models/STL/various");
 				ship3D.position.z = -ship.calculateDraft();
 				scene.add(ship3D);
 
