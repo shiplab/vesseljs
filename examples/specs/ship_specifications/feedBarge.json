@@ -1,0 +1,1594 @@
+{
+	"designState": {
+		"calculationParameters": {
+			"LWL_design": 30,
+			"Draft_design": 2.121348637,
+			"Cb_design": 1,
+			"speed": 0,
+			"crew": "",
+			"K": "",
+			"Co": "",
+			"tripDuration": ""
+		},
+		"objectOverrides": {
+			"common": {
+				"fullness": ""
+			}
+		}
+	},
+	"header":{
+		"author": ["Tanguy Teulet"]
+	},
+	"structure": {
+		"hull": {
+			"attributes": {
+				"LOA": 30,
+				"BOA": 19,
+				"Depth": 3.6,
+				"APP": 0,
+				"bulb": false,
+				"transom": false,
+				"cstern": "",
+				"prismaticLengthRatio": 1,
+				"appendices": {}
+			},
+			"halfBreadths": {
+				"waterlines": [0, 0, 1],
+				"stations": [0, 1],
+ 				"table": [[0, 0], [1, 1], [1, 1]]
+			},
+			"style": {
+				"upperColor": "#12cc2e",
+				"lowerColor": "#de1d37",
+				"opacity": 0.4
+			},
+			"buttockHeights": {}
+		},
+		"decks": {
+			"Deck_Floor": {
+				"affiliations": {
+					"group": "Deck"
+				},
+				"style": {
+					"color": "#12cc2e",
+					"opacity": 0.4
+				},
+				"zFloor": 3.6,
+				"thickness": 0.01,
+				"xAft": 0,
+				"xFwd": 30,
+				"yCentre": 0,
+				"breadth": 19,
+				"density": 7850
+			}
+	},
+		"bulkheads": {}
+	},
+	"baseObjects": [
+		{
+			"id": "storage_room.stl",
+			"affiliations": {
+				"group": "Compartment"
+			},
+			"boxDimensions": {
+				"length": 18.9,
+				"breadth": 5.3,
+				"height": 3.6
+			},
+			"capabilities": {},
+			"file3D": "",
+			"baseState": {
+				"fullness": 0.5
+			},
+			"weightInformation": {
+				"lightweight": 50000,
+				"cg": [16.15, -4.95, 0]
+			}
+		},
+		{
+			"id": "machinery_room.stl",
+			"affiliations": {
+				"group": "Compartment"
+			},
+			"boxDimensions": {
+				"length": 8.2,
+				"breadth": 8.5,
+				"height": 3.6
+			},
+			"capabilities": {},
+			"file3D": "",
+			"baseState": {
+				"fullness": 0.5
+			},
+			"weightInformation": {
+				"lightweight": 10000,
+				"cg": [15, 1.95, 0]
+			}
+		},
+		{
+			"id": "storage_room_concrete_bed.stl",
+			"affiliations": {
+				"group": "Compartment"
+			},
+			"boxDimensions": {
+				"length": 20.665,
+				"breadth": 5.7,
+				"height": 0.2125
+			},
+			"capabilities": {},
+			"file3D": "",
+			"baseState": {
+				"fullness": 0.5
+			},
+			"weightInformation": {
+				"lightweight": 57600,
+				"cg": [15, -6.15, 0]
+			}
+		},
+		{
+			"id": "machinery_room_concrete_bed.stl",
+			"affiliations": {
+				"group": "Compartment"
+			},
+			"boxDimensions": {
+				"length": 8.671,
+				"breadth": 9,
+				"height": 0.2125
+			},
+			"capabilities": {},
+			"file3D": "",
+			"baseState": {
+				"fullness": 0.5
+			},
+			"weightInformation": {
+				"lightweight": 38400,
+				"cg": [15, 1.2, 0]
+			}
+		},
+		{
+			"id": "Main_deck.stl",
+			"affiliations": {
+				"group": "Compartment"
+			},
+			"boxDimensions": {
+				"length": 8.5,
+				"breadth": 10.5,
+				"height": 4.1
+			},
+			"capabilities": {},
+			"file3D": "",
+			"baseState": {
+				"fullness": 0.5
+			},
+			"weightInformation": {
+				"lightweight": 0,
+				"cg": [0, 0, 0]
+			}
+		},
+		{
+			"id": "garage.stl",
+			"affiliations": {
+				"group": "Compartment"
+			},
+			"boxDimensions": {
+				"length": 4.7,
+				"breadth": 10.5,
+				"height": 4.1
+			},
+			"capabilities": {},
+			"file3D": "",
+			"baseState": {
+				"fullness": 0.5
+			},
+			"weightInformation": {
+				"lightweight": 5000,
+				"cg": [13.1, 2.2, 3.6]
+			}
+		},
+		{
+			"id": "entrance.stl",
+			"affiliations": {
+				"group": "Compartment"
+			},
+			"boxDimensions": {
+				"length": 1.65,
+				"breadth": 2,
+				"height": 4.1
+			},
+			"capabilities": {},
+			"file3D": "",
+			"baseState": {
+				"fullness": 0.5
+			},
+			"weightInformation": {
+				"lightweight": 0,
+				"cg": [0, 0, 0]
+			}
+		},
+		{
+			"id": "WC.stl",
+			"affiliations": {
+				"group": "Compartment"
+			},
+			"boxDimensions": {
+				"length": 1.65,
+				"breadth": 2,
+				"height": 4.1
+			},
+			"capabilities": {},
+			"file3D": "",
+			"baseState": {
+				"fullness": 0.5
+			},
+			"weightInformation": {
+				"lightweight": 0,
+				"cg": [0, 0, 0]
+			}
+		},
+		{
+			"id": "Stairs_down.stl",
+			"affiliations": {
+				"group": "Compartment"
+			},
+			"boxDimensions": {
+				"length": 2.3,
+				"breadth": 4.2,
+				"height": 4.1
+			},
+			"capabilities": {},
+			"file3D": "",
+			"baseState": {
+				"fullness": 0.5
+			},
+			"weightInformation": {
+				"lightweight": 0,
+				"cg": [0, 0, 0]
+			}
+		},
+		{
+			"id": "Clean_area.stl",
+			"affiliations": {
+				"group": "Compartment"
+			},
+			"boxDimensions": {
+				"length": 2.15,
+				"breadth": 4.0,
+				"height": 4.1
+			},
+			"capabilities": {},
+			"file3D": "",
+			"baseState": {
+				"fullness": 0.5
+			},
+			"weightInformation": {
+				"lightweight": 500,
+				"cg": [11.825, -1.1, 3.6]
+			}
+		},
+		{
+			"id": "Dirty_area.stl",
+			"affiliations": {
+				"group": "Compartment"
+			},
+			"boxDimensions": {
+				"length": 3.8,
+				"breadth": 2.3,
+				"height": 4.1
+			},
+			"capabilities": {},
+			"file3D": "",
+			"baseState": {
+				"fullness": 0.5
+			},
+			"weightInformation": {
+				"lightweight": 500,
+				"cg": [12.65, 6.25, 3.6]
+			}
+		},
+		{
+			"id": "Top_deck.stl",
+			"affiliations": {
+				"group": "Compartment"
+			},
+			"boxDimensions": {
+				"length": 8.5,
+				"breadth": 11.4,
+				"height": 3
+			},
+			"capabilities": {},
+			"file3D": "",
+			"baseState": {
+				"fullness": 0.5
+			},
+			"weightInformation": {
+				"lightweight": 0,
+				"cg": [0, 0, 0]
+			}
+		},
+		{
+			"id": "Room1.stl",
+			"affiliations": {
+				"group": "Compartment"
+			},
+			"boxDimensions": {
+				"length": 2.4,
+				"breadth": 2.0,
+				"height": 3.0
+			},
+			"capabilities": {},
+			"file3D": "",
+			"baseState": {
+				"fullness": 0.5
+			},
+			"weightInformation": {
+				"lightweight": 0,
+				"cg": [0, 0, 0]
+			}
+		},
+		{
+			"id": "Room2.stl",
+			"affiliations": {
+				"group": "Compartment"
+			},
+			"boxDimensions": {
+				"length": 1.6,
+				"breadth": 2.0,
+				"height": 3.0
+			},
+			"capabilities": {},
+			"file3D": "",
+			"baseState": {
+				"fullness": 0.5
+			},
+			"weightInformation": {
+				"lightweight": 0,
+				"cg": [0, 0, 0]
+			}
+		},
+		{
+			"id": "Room3.stl",
+			"affiliations": {
+				"group": "Compartment"
+			},
+			"boxDimensions": {
+				"length": 2.2,
+				"breadth": 3.1,
+				"height": 3.0
+			},
+			"capabilities": {},
+			"file3D": "",
+			"baseState": {
+				"fullness": 0.5
+			},
+			"weightInformation": {
+				"lightweight": 0,
+				"cg": [0, 0, 0]
+			}
+		},
+		{
+			"id": "Office.stl",
+			"affiliations": {
+				"group": "Compartment"
+			},
+			"boxDimensions": {
+				"length": 2.3,
+				"breadth": 4.0,
+				"height": 3.0
+			},
+			"capabilities": {},
+			"file3D": "",
+			"baseState": {
+				"fullness": 0.5
+			},
+			"weightInformation": {
+				"lightweight": 0,
+				"cg": [0, 0, 0]
+			}
+		},
+		{
+			"id": "Stairs_up.stl",
+			"affiliations": {
+				"group": "Compartment"
+			},
+			"boxDimensions": {
+				"length": 2.3,
+				"breadth": 4.2,
+				"height": 3.0
+			},
+			"capabilities": {},
+			"file3D": "",
+			"baseState": {
+				"fullness": 0.5
+			},
+			"weightInformation": {
+				"lightweight": 0,
+				"cg": [0, 0, 0]
+			}
+		},
+		{
+			"id": "Control_room.stl",
+			"affiliations": {
+				"group": "Compartment"
+			},
+			"boxDimensions": {
+				"length": 3.1,
+				"breadth": 3.2,
+				"height": 3.0
+			},
+			"capabilities": {},
+			"file3D": "",
+			"baseState": {
+				"fullness": 0.5
+			},
+			"weightInformation": {
+				"lightweight": 0,
+				"cg": [0, 0, 0]
+			}
+		},
+		{
+			"id": "Living.stl",
+			"affiliations": {
+				"group": "Compartment"
+			},
+			"boxDimensions": {
+				"length": 5.4,
+				"breadth": 5.9,
+				"height": 3.0
+			},
+			"capabilities": {},
+			"file3D": "",
+			"baseState": {
+				"fullness": 0.5
+			},
+			"weightInformation": {
+				"lightweight": 0,
+				"cg": [0, 0, 0]
+			}
+		},
+		{
+			"id": "SAS.stl",
+			"affiliations": {
+				"group": "Compartment"
+			},
+			"boxDimensions": {
+				"length": 4.0,
+				"breadth": 2.0,
+				"height": 3.0
+			},
+			"capabilities": {},
+			"file3D": "",
+			"baseState": {
+				"fullness": 0.5
+			},
+			"weightInformation": {
+				"lightweight": 0,
+				"cg": [0, 0, 0]
+			}
+		},
+		{
+			"id": "Bathroom.stl",
+			"affiliations": {
+				"group": "Compartment"
+			},
+			"boxDimensions": {
+				"length": 2.2,
+				"breadth": 2.4,
+				"height": 3.0
+			},
+			"capabilities": {},
+			"file3D": "",
+			"baseState": {
+				"fullness": 0.5
+			},
+			"weightInformation": {
+				"lightweight": 0,
+				"cg": [0, 0, 0]
+			}
+		},
+		{
+			"id": "Silos_left_deck.stl",
+			"affiliations": {
+				"group": "Compartment"
+			},
+			"boxDimensions": {
+				"length": 9.35,
+				"breadth": 7.8,
+				"height": 7.3
+			},
+			"capabilities": {},
+			"file3D": "",
+			"baseState": {
+				"fullness": 0.5
+			},
+			"weightInformation": {
+				"lightweight": 0,
+				"cg": [0, 0, 0]
+			}
+		},
+		{
+			"id": "Silos_right_deck.stl",
+			"affiliations": {
+				"group": "Compartment"
+			},
+			"boxDimensions": {
+				"length": 9.35,
+				"breadth": 7.8,
+				"height": 7.3
+			},
+			"capabilities": {},
+			"file3D": "",
+			"baseState": {
+				"fullness": 0.5
+			},
+			"weightInformation": {
+				"lightweight": 0,
+				"cg": [0, 0, 0]
+			}
+		},
+		{
+			"id": "Fish_food_1",
+			"affiliations": {
+				"group": "Tank"
+			},
+			"boxDimensions": {
+				"length": 4.6,
+				"breadth": 3.9,
+				"height": 7.3
+			},
+			"capabilities": {},
+			"file3D": "",
+			"baseState": {
+				"fullness": 0.5
+			},
+			"weightInformation": {
+				"contentDensity": 620,
+				"volumeCapacity": 131.5,
+				"lightweight": 81530,
+				"fullnessCGMapping": {
+					"fullnesses": [0.0, 1.0],
+					"cgs": [
+						[26.3, -0.95, 2.3],
+						[26.3, -0.95, 6.625]]
+				}
+			}
+		},
+		{
+			"id": "Fish_food_2",
+			"affiliations": {
+				"group": "Tank"
+			},
+			"boxDimensions": {
+				"length": 4.6,
+				"breadth": 3.9,
+				"height": 7.3
+			},
+			"capabilities": {},
+			"file3D": "",
+			"baseState": {
+				"fullness": 0.5
+			},
+			"weightInformation": {
+				"contentDensity": 620,
+				"volumeCapacity": 131.5,
+				"lightweight": 81530,
+				"fullnessCGMapping": {
+					"fullnesses": [0.0, 1.0],
+					"cgs": [
+						[26.3, 2.95, 2.3],
+						[26.3, 2.95, 6.625]]
+				}
+			}
+		},
+		{
+			"id": "Fish_food_3",
+			"affiliations": {
+				"group": "Tank"
+			},
+			"boxDimensions": {
+				"length": 4.6,
+				"breadth": 3.9,
+				"height": 7.3
+			},
+			"capabilities": {},
+			"file3D": "",
+			"baseState": {
+				"fullness": 0.5
+			},
+			"weightInformation": {
+				"contentDensity": 620,
+				"volumeCapacity": 131.5,
+				"lightweight": 81530,
+				"fullnessCGMapping": {
+					"fullnesses": [0.0, 1.0],
+					"cgs": [
+						[21.7, -0.95, 2.3],
+						[21.7, -0.95, 6.625]]
+				}
+			}
+		},
+		{
+			"id": "Fish_food_4",
+			"affiliations": {
+				"group": "Tank"
+			},
+			"boxDimensions": {
+				"length": 4.6,
+				"breadth": 3.9,
+				"height": 7.3
+			},
+			"capabilities": {},
+			"file3D": "",
+			"baseState": {
+				"fullness": 0.5
+			},
+			"weightInformation": {
+				"contentDensity": 620,
+				"volumeCapacity": 131.5,
+				"lightweight": 81530,
+				"fullnessCGMapping": {
+					"fullnesses": [0.0, 1.0],
+					"cgs": [
+						[21.7, 2.95, 2.3],
+						[21.7, 2.95, 6.625]]
+				}
+			}
+		},
+		{
+			"id": "Fish_food_5",
+			"affiliations": {
+				"group": "Tank"
+			},
+			"boxDimensions": {
+				"length": 4.6,
+				"breadth": 3.9,
+				"height": 7.3
+			},
+			"capabilities": {},
+			"file3D": "",
+			"baseState": {
+				"fullness": 0.5
+			},
+			"weightInformation": {
+				"contentDensity": 620,
+				"volumeCapacity": 131.5,
+				"lightweight": 81530,
+				"fullnessCGMapping": {
+					"fullnesses": [0.0, 1.0],
+					"cgs": [
+						[8.3, -0.95, 2.3],
+						[8.3, -0.95, 6.625]]
+				}
+			}
+		},
+		{
+			"id": "Fish_food_6",
+			"affiliations": {
+				"group": "Tank"
+			},
+			"boxDimensions": {
+				"length": 4.6,
+				"breadth": 3.9,
+				"height": 7.3
+			},
+			"capabilities": {},
+			"file3D": "",
+			"baseState": {
+				"fullness": 0.5
+			},
+			"weightInformation": {
+				"contentDensity": 620,
+				"volumeCapacity": 131.5,
+				"lightweight": 81530,
+				"fullnessCGMapping": {
+					"fullnesses": [0.0, 1.0],
+					"cgs": [
+						[8.3, 2.95, 2.3],	
+						[8.3, 2.95, 6.625]]
+				}
+			}
+		},
+		{
+			"id": "Fish_food_7",
+			"affiliations": {
+				"group": "Tank"
+			},
+			"boxDimensions": {
+				"length": 4.6,
+				"breadth": 3.9,
+				"height": 7.3
+			},
+			"capabilities": {},
+			"file3D": "",
+			"baseState": {
+				"fullness": 0.5
+			},
+			"weightInformation": {
+				"contentDensity": 620,
+				"volumeCapacity": 131.5,
+				"lightweight": 81530,
+				"fullnessCGMapping": {
+					"fullnesses": [0.0, 1.0],
+					"cgs": [
+						[3.7, -0.95, 2.3],
+						[3.7, -0.95, 6.625]]
+				}
+			}
+		},
+		{
+			"id": "Fish_food_8",
+			"affiliations": {
+				"group": "Tank"
+			},
+			"boxDimensions": {
+				"length": 4.6,
+				"breadth": 3.9,
+				"height": 7.3
+			},
+			"capabilities": {},
+			"file3D": "",
+			"baseState": {
+				"fullness": 0.5
+			},
+			"weightInformation": {
+				"contentDensity": 620,
+				"volumeCapacity": 131.5,
+				"lightweight": 81530,
+				"fullnessCGMapping": {
+					"fullnesses": [0.0, 1.0],
+					"cgs": [
+						[3.7, 2.95, 2.3],
+						[3.7, 2.95, 6.625]]
+				}
+			}
+		},
+		{
+			"id": "Silage",
+			"affiliations": {
+				"group": "Tank"
+			},
+			"boxDimensions": {
+				"length": 1.4,
+				"breadth": 19,
+				"height": 3.6
+			},
+			"capabilities": {},
+			"file3D": "",
+			"baseState": {
+				"fullness": 0.5
+			},
+			"weightInformation": {
+				"contentDensity": 800,
+				"volumeCapacity": 112.5,
+				"lightweight": 90000,
+				"fullnessCGMapping": {
+					"fullnesses": [0.0, 1.0],
+					"cgs": [
+						[29.3, 0, 0],
+						[29.3, 0, 1.8]]
+				}
+			}
+		},
+		{
+			"id": "Sewage",
+			"affiliations": {
+				"group": "Tank"
+			},
+			"boxDimensions": {
+				"length": 1.7,
+				"breadth": 4.5,
+				"height": 1.3
+			},
+			"capabilities": {},
+			"file3D": "",
+			"baseState": {
+				"fullness": 0.5
+			},
+			"weightInformation": {
+				"contentDensity": 1000,
+				"volumeCapacity": 10,
+				"lightweight": 10000,
+				"fullnessCGMapping": {
+					"fullnesses": [0.0, 1.0],
+					"cgs": [
+						[20.1, 0, 1.25],
+						[20.1, 0, 1.9]]
+				}
+			}
+		},
+		{
+			"id": "Fuel_oil",
+			"affiliations": {
+				"group": "Tank"
+			},
+			"boxDimensions": {
+				"length": 1.3,
+				"breadth": 12.9,
+				"height": 2.2
+			},
+			"capabilities": {},
+			"file3D": "",
+			"baseState": {
+				"fullness": 0.5
+			},
+			"weightInformation": {
+				"contentDensity": 830,
+				"volumeCapacity": 36.15,
+				"lightweight": 30000,
+				"fullnessCGMapping": {
+					"fullnesses": [0.0, 1.0],
+					"cgs": [
+						[0.65, 0, 1.4],
+						[0.65, 0, 2.5]]
+				}
+			}
+		},
+		{
+			"id": "Fresh_water_1",
+			"affiliations": {
+				"group": "Tank"
+			},
+			"boxDimensions": {
+				"length": 0.91,
+				"breadth": 0.91,
+				"height": 3
+			},
+			"capabilities": {},
+			"file3D": "",
+			"baseState": {
+				"fullness": 0.5
+			},
+			"weightInformation": {
+				"contentDensity": 1000,
+				"volumeCapacity": 2.5,
+				"lightweight": 2500,
+				"fullnessCGMapping": {
+					"fullnesses": [0.0, 1.0],
+					"cgs": [
+						[24.2, 8.265, 0.6],
+						[24.2, 8.265, 2.1]]
+				}
+			}
+		},
+		{
+			"id": "Fresh_water_2",
+			"affiliations": {
+				"group": "Tank"
+			},
+			"boxDimensions": {
+				"length": 0.91,
+				"breadth": 0.91,
+				"height": 3
+			},
+			"capabilities": {},
+			"file3D": "",
+			"baseState": {
+				"fullness": 0.5
+			},
+			"weightInformation": {
+				"contentDensity": 1000,
+				"volumeCapacity": 2.5,
+				"lightweight": 2500,
+				"fullnessCGMapping": {
+					"fullnesses": [0.0, 1.0],
+					"cgs": [
+						[23.03, 8.265, 0.6],
+						[23.03, 8.265, 2.1]]
+				}
+			}
+		},
+		{
+			"id": "Fresh_water_3",
+			"affiliations": {
+				"group": "Tank"
+			},
+			"boxDimensions": {
+				"length": 0.91,
+				"breadth": 0.91,
+				"height": 3
+			},
+			"capabilities": {},
+			"file3D": "",
+			"baseState": {
+				"fullness": 0.5
+			},
+			"weightInformation": {
+				"contentDensity": 1000,
+				"volumeCapacity": 2.5,
+				"lightweight": 2500,
+				"fullnessCGMapping": {
+					"fullnesses": [0.0, 1.0],
+					"cgs": [
+						[21.86, 8.265, 0.6],
+						[21.86, 8.265, 2.1]]
+				}
+			}
+		},
+		{
+			"id": "Fresh_water_4",
+			"affiliations": {
+				"group": "Tank"
+			},
+			"boxDimensions": {
+				"length": 0.91,
+				"breadth": 0.91,
+				"height": 3
+			},
+			"capabilities": {},
+			"file3D": "",
+			"baseState": {
+				"fullness": 0.5
+			},
+			"weightInformation": {
+				"contentDensity": 1000,
+				"volumeCapacity": 2.5,
+				"lightweight": 2500,
+				"fullnessCGMapping": {
+					"fullnesses": [0.0, 1.0],
+					"cgs": [
+						[20.69, 8.265, 0.6],
+						[20.69, 8.265, 2.1]]
+				}
+			}
+		},
+		{
+			"id": "Industrial_water",
+			"affiliations": {
+				"group": "Tank"
+			},
+			"boxDimensions": {
+				"length": 22.25,
+				"breadth": 1,
+				"height": 2
+			},
+			"capabilities": {},
+			"file3D": "",
+			"baseState": {
+				"fullness": 0.5
+			},
+			"weightInformation": {
+				"contentDensity": 1000,
+				"volumeCapacity": 19,
+				"lightweight": 19000,
+				"fullnessCGMapping": {
+					"fullnesses": [0.0, 1.0],
+					"cgs": [
+						[15.1, -9, 1.6],
+						[15.1, -9, 3.01]]
+				}
+			}
+		}
+],
+	"derivedObjects": [
+		{
+			"id": "Storage room",
+			"baseObject": "storage_room.stl",
+			"affiliations": {
+				"Deck": "Hull",
+				"SFI": ""
+			},
+			"referenceState": {
+				"xCentre": 16.15,
+				"yCentre": -4.95,
+				"zBase": 0
+			},
+			"style": {
+				"color": "#804209",
+				"opacity": 0.4
+			}
+		},
+		{
+			"id": "Machinery room",
+			"baseObject": "machinery_room.stl",
+			"affiliations": {
+				"Deck": "Hull",
+				"SFI": ""
+			},
+			"referenceState": {
+				"xCentre": 15,
+				"yCentre": 1.95,
+				"zBase": 0
+			},
+			"style": {
+				"color": "#804209",
+				"opacity": 0.4
+			}
+		},
+		{
+			"id": "Concrete bed in Storage room",
+			"baseObject": "storage_room_concrete_bed.stl",
+			"affiliations": {
+				"Deck": "Hull",
+				"SFI": ""
+			},
+			"referenceState": {
+				"xCentre": 15,
+				"yCentre": -6.15,
+				"zBase": 0
+			},
+			"style": {
+				"color": "#696460",
+				"opacity": 0.4
+			}
+		},
+		{
+			"id": "Concrete bed in Machinery room",
+			"baseObject": "machinery_room_concrete_bed.stl",
+			"affiliations": {
+				"Deck": "Hull",
+				"SFI": ""
+			},
+			"referenceState": {
+				"xCentre": 15,
+				"yCentre": 1.2,
+				"zBase": 0
+			},
+			"style": {
+				"color": "#696460",
+				"opacity": 0.4
+			}
+		},
+		{
+			"id": "Main deck compartment",
+			"baseObject": "Main_deck.stl",
+			"affiliations": {
+				"Deck": "Deck_Floor",
+				"SFI": ""
+			},
+			"referenceState": {
+				"xCentre": 15,
+				"yCentre": 2.15,
+				"zBase": 3.6
+			},
+			"style": {
+				"color": "#59544c",
+				"opacity": 0.4
+			}
+		},
+		{
+			"id": "Garage",
+			"baseObject": "garage.stl",
+			"affiliations": {
+				"Deck": "Deck_Floor",
+				"SFI": ""
+			},
+			"referenceState": {
+				"xCentre": 16.9,
+				"yCentre": 2.15,
+				"zBase": 3.6
+			},
+			"style": {
+				"color": "#59544c",
+				"opacity": 0.4
+			}
+		},
+		{
+			"id": "Entrance",
+			"baseObject": "entrance.stl",
+			"affiliations": {
+				"Deck": "Deck_Floor",
+				"SFI": ""
+			},
+			"referenceState": {
+				"xCentre": 13.725,
+				"yCentre": -2.1,
+				"zBase": 3.6
+			},
+			"style": {
+				"color": "#59544c",
+				"opacity": 0.4
+			}
+		},
+		{
+			"id": "WC",
+			"baseObject": "WC.stl",
+			"affiliations": {
+				"Deck": "Deck_Floor",
+				"SFI": ""
+			},
+			"referenceState": {
+				"xCentre": 13.725,
+				"yCentre": -0.1,
+				"zBase": 3.6
+			},
+			"style": {
+				"color": "#59544c",
+				"opacity": 0.4
+			}
+		},
+		{
+			"id": "Clean area",
+			"baseObject": "Clean_area.stl",
+			"affiliations": {
+				"Deck": "Deck_Floor",
+				"SFI": ""
+			},
+			"referenceState": {
+				"xCentre": 11.825,
+				"yCentre": -1.1,
+				"zBase": 3.6
+			},
+			"style": {
+				"color": "#59544c",
+				"opacity": 0.4
+			}
+		},
+		{
+			"id": "Stairs Down",
+			"baseObject": "Stairs_down.stl",
+			"affiliations": {
+				"Deck": "Deck_Floor",
+				"SFI": ""
+			},
+			"referenceState": {
+				"xCentre": 11.9,
+				"yCentre": 3,
+				"zBase": 3.6
+			},
+			"style": {
+				"color": "#59544c",
+				"opacity": 0.4
+			}
+		},
+		{
+			"id": "Dirty area",
+			"baseObject": "Dirty_area.stl",
+			"affiliations": {
+				"Deck": "Deck_Floor",
+				"SFI": ""
+			},
+			"referenceState": {
+				"xCentre": 12.65,
+				"yCentre": 6.25,
+				"zBase": 3.6
+			},
+			"style": {
+				"color": "#59544c",
+				"opacity": 0.4
+			}
+		},
+		{
+			"id": "Top living compartment",
+			"baseObject": "Top_deck.stl",
+			"affiliations": {
+				"Deck": "",
+				"SFI": ""
+			},
+			"referenceState": {
+				"xCentre": 15,
+				"yCentre": 1.7,
+				"zBase": 7.7
+			},
+			"style": {
+				"color": "#12208c",
+				"opacity": 0.4
+			}
+		},
+		{
+			"id": "Room 1",
+			"baseObject": "Room1.stl",
+			"affiliations": {
+				"Deck": "",
+				"SFI": ""
+			},
+			"referenceState": {
+				"xCentre": 18.05,
+				"yCentre": -3,
+				"zBase": 7.7
+			},
+			"style": {
+				"color": "#12208c",
+				"opacity": 0.4
+			}
+		},
+		{
+			"id": "Room 2",
+			"baseObject": "Room2.stl",
+			"affiliations": {
+				"Deck": "",
+				"SFI": ""
+			},
+			"referenceState": {
+				"xCentre": 16.05,
+				"yCentre": -3.0,
+				"zBase": 7.7
+			},
+			"style": {
+				"color": "#12208c",
+				"opacity": 0.4
+			}
+		},
+		{
+			"id": "Room 3",
+			"baseObject": "Room3.stl",
+			"affiliations": {
+				"Deck": "",
+				"SFI": ""
+			},
+			"referenceState": {
+				"xCentre": 14.15,
+				"yCentre": -2.45,
+				"zBase": 7.7
+			},
+			"style": {
+				"color": "#12208c",
+				"opacity": 0.4
+			}
+		},
+		{
+			"id": "Office",
+			"baseObject": "Office.stl",
+			"affiliations": {
+				"Deck": "",
+				"SFI": ""
+			},
+			"referenceState": {
+				"xCentre": 11.9,
+				"yCentre": -2,
+				"zBase": 7.7
+			},
+			"style": {
+				"color": "#12208c",
+				"opacity": 0.4
+			}
+		},
+		{
+			"id": "Stairs Up",
+			"baseObject": "Stairs_up.stl",
+			"affiliations": {
+				"Deck": "",
+				"SFI": ""
+			},
+			"referenceState": {
+				"xCentre": 11.9,
+				"yCentre": 2.1,
+				"zBase": 7.7
+			},
+			"style": {
+				"color": "#12208c",
+				"opacity": 0.4
+			}
+		},
+		{
+			"id": "Control room",
+			"baseObject": "Control_room.stl",
+			"affiliations": {
+				"Deck": "",
+				"SFI": ""
+			},
+			"referenceState": {
+				"xCentre": 12.3,
+				"yCentre": 5.8,
+				"zBase": 7.7
+			},
+			"style": {
+				"color": "#12208c",
+				"opacity": 0.4
+			}
+		},
+		{
+			"id": "Living",
+			"baseObject": "Living.stl",
+			"affiliations": {
+				"Deck": "",
+				"SFI": ""
+			},
+			"referenceState": {
+				"xCentre": 16.55,
+				"yCentre": 4.45,
+				"zBase": 7.7
+			},
+			"style": {
+				"color": "#12208c",
+				"opacity": 0.4
+			}
+		},
+		{
+			"id": "SAS",
+			"baseObject": "SAS.stl",
+			"affiliations": {
+				"Deck": "",
+				"SFI": ""
+			},
+			"referenceState": {
+				"xCentre": 17.25,
+				"yCentre": -1,
+				"zBase": 7.7
+			},
+			"style": {
+				"color": "#12208c",
+				"opacity": 0.4
+			}
+		},
+		{
+			"id": "Bathroom",
+			"baseObject": "Bathroom.stl",
+			"affiliations": {
+				"Deck": "",
+				"SFI": ""
+			},
+			"referenceState": {
+				"xCentre": 14.15,
+				"yCentre": 0.3,
+				"zBase": 7.7
+			},
+			"style": {
+				"color": "#12208c",
+				"opacity": 0.4
+			}
+		},
+		{
+			"id": "Silos Left compartment",
+			"baseObject": "Silos_left_deck.stl",
+			"affiliations": {
+				"Deck": "",
+				"SFI": ""
+			},
+			"referenceState": {
+				"xCentre": 23.925,
+				"yCentre": 1,
+				"zBase": 2.35
+			},
+			"style": {
+				"color": "#ebeb1a",
+				"opacity": 0.4
+			}
+		},
+		{
+			"id": "Silos Right compartment",
+			"baseObject": "Silos_right_deck.stl",
+			"affiliations": {
+				"Deck": "",
+				"SFI": ""
+			},
+			"referenceState": {
+				"xCentre": 6.075,
+				"yCentre": 1,
+				"zBase": 2.35
+			},
+			"style": {
+				"color": "#ebeb1a",
+				"opacity": 0.4
+			}
+		},
+		{
+			"id": "Silo 1",
+			"baseObject": "Fish_food_1",
+			"affiliations": {
+				"Deck": "",
+				"SFI": ""
+			},
+			"referenceState": {
+				"xCentre": 26.3,
+				"yCentre": -0.95,
+				"zBase": 2.35
+			},
+			"style": {
+				"color": "#ebeb1a",
+				"opacity": 0.5
+			}
+		},
+		{
+			"id": "Silo 2",
+			"baseObject": "Fish_food_2",
+			"affiliations": {
+				"Deck": "",
+				"SFI": ""
+			},
+			"referenceState": {
+				"xCentre": 26.3,
+				"yCentre": 2.95,
+				"zBase": 2.35
+			},
+			"style": {
+				"color": "#ebeb1a",
+				"opacity": 0.5
+			}
+		},
+		{
+			"id": "Silo 3",
+			"baseObject": "Fish_food_3",
+			"affiliations": {
+				"Deck": "",
+				"SFI": ""
+			},
+			"referenceState": {
+				"xCentre": 21.7,
+				"yCentre": -0.95,
+				"zBase": 2.35
+			},
+			"style": {
+				"color": "#ebeb1a",
+				"opacity": 0.5
+			}
+		},
+		{
+			"id": "Silo 4",
+			"baseObject": "Fish_food_4",
+			"affiliations": {
+				"Deck": "",
+				"SFI": ""
+			},
+			"referenceState": {
+				"xCentre": 21.7,
+				"yCentre": 2.95,
+				"zBase": 2.35
+			},
+			"style": {
+				"color": "#ebeb1a",
+				"opacity": 0.5
+			}
+		},
+		{
+			"id": "Silo 5",
+			"baseObject": "Fish_food_5",
+			"affiliations": {
+				"Deck": "",
+				"SFI": ""
+			},
+			"referenceState": {
+				"xCentre": 8.3,
+				"yCentre": -0.95,
+				"zBase": 2.35
+			},
+			"style": {
+				"color": "#ebeb1a",
+				"opacity": 0.5
+			}
+		},
+		{
+			"id": "Silo 6",
+			"baseObject": "Fish_food_6",
+			"affiliations": {
+				"Deck": "",
+				"SFI": ""
+			},
+			"referenceState": {
+				"xCentre": 8.3,
+				"yCentre": 2.95,
+				"zBase": 2.35
+			},
+			"style": {
+				"color": "#ebeb1a",
+				"opacity": 0.5
+			}
+		},
+		{
+			"id": "Silo 7",
+			"baseObject": "Fish_food_7",
+			"affiliations": {
+				"Deck": "",
+				"SFI": ""
+			},
+			"referenceState": {
+				"xCentre": 3.7,
+				"yCentre": -0.95,
+				"zBase": 2.35
+			},
+			"style": {
+				"color": "#ebeb1a",
+				"opacity": 0.5
+			}
+		},
+		{
+			"id": "Silo 8",
+			"baseObject": "Fish_food_8",
+			"affiliations": {
+				"Deck": "",
+				"SFI": ""
+			},
+			"referenceState": {
+				"xCentre": 3.7,
+				"yCentre": 2.95,
+				"zBase": 2.35
+			},
+			"style": {
+				"color": "#ebeb1a",
+				"opacity": 0.4
+			}
+		},
+		{
+			"id": "Silage",
+			"baseObject": "Silage",
+			"affiliations": {
+				"Deck": "",
+				"SFI": ""
+			},
+			"referenceState": {
+				"xCentre": 29.3,
+				"yCentre": 0,
+				"zBase": 0
+			}
+		},
+		{
+			"id": "Sewage",
+			"baseObject": "Sewage",
+			"affiliations": {
+				"Deck": "",
+				"SFI": ""
+			},
+			"referenceState": {
+				"xCentre": 20.1,
+				"yCentre": 0,
+				"zBase": 1.25
+			}
+		},
+		{
+			"id": "Fuel Oil",
+			"baseObject": "Fuel_oil",
+			"affiliations": {
+				"Deck": "",
+				"SFI": ""
+			},
+			"referenceState": {
+				"xCentre": 0.65,
+				"yCentre": 0,
+				"zBase": 1.4
+			}
+		},
+		{
+			"id": "Fresh Water 1",
+			"baseObject": "Fresh_water_1",
+			"affiliations": {
+				"Deck": "",
+				"SFI": ""
+			},
+			"referenceState": {
+				"xCentre": 24.2,
+				"yCentre": 8.265,
+				"zBase": 0.6
+			}
+		},
+		{
+			"id": "Fresh Water 2",
+			"baseObject": "Fresh_water_2",
+			"affiliations": {
+				"Deck": "",
+				"SFI": ""
+			},
+			"referenceState": {
+				"xCentre": 23.03,
+				"yCentre": 8.265,
+				"zBase": 0.6
+			}
+		},
+		{
+			"id": "Fresh Water 3",
+			"baseObject": "Fresh_water_3",
+			"affiliations": {
+				"Deck": "",
+				"SFI": ""
+			},
+			"referenceState": {
+				"xCentre": 21.86,
+				"yCentre": 8.265,
+				"zBase": 0.6
+			}
+		},
+		{
+			"id": "Fresh Water 4",
+			"baseObject": "Fresh_water_4",
+			"affiliations": {
+				"Deck": "",
+				"SFI": ""
+			},
+			"referenceState": {
+				"xCentre": 20.69,
+				"yCentre": 8.265,
+				"zBase": 0.6
+			}
+		},
+		{
+			"id": "Industrial water",
+			"baseObject": "Industrial_water",
+			"affiliations": {
+				"Deck": "",
+				"SFI": ""
+			},
+			"referenceState": {
+				"xCentre": 15.1,
+				"yCentre": -9,
+				"zBase": 1.6
+			}
+		}
+	]
+}

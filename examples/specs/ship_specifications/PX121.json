@@ -17,8 +17,9 @@
 			}
 		}
 	},
-    "data":{
-    },
+	"header":{
+		"author": ["Killian Ledain", "Jefferson Flor"]
+	},
 	"structure": {
 		"hull": {
 			"attributes": {
