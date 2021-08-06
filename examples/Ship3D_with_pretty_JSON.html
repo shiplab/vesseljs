@@ -85,6 +85,17 @@
 				<h2>Input</h2>
 				<p>Select among the available specifications:</p>
 				<p><select id="spec-list">
+						<option>barge.json</option>
+						<option>blockCase.json</option>
+						<option>bottom-up.json</option>
+						<option>Cruise.json</option>
+						<option>feedBarge.json</option>
+						<option>gunnerus.json</option>
+						<option>mississipiBarge.json</option>
+						<option>prismaticHull.json</option>
+						<option selected>PX121.json</option>
+						<option>top-down.json</option>
+						<option>trapezoidPrismHull.json</option>
 					</select>
 					<button onclick="loadNewSpec()">Reload</button>
 				</p>
@@ -157,23 +168,6 @@
 
 		// read available specifications
 		var dropList = document.getElementById("spec-list");
-		var specListReq = new XMLHttpRequest();
-		specListReq.open("GET", "specs/ship_specifications/README.txt", true);
-		specListReq.addEventListener("load", function (event) {
-			var response = event.target.response;
-			var specNames = response.split("\r\n").map(label => label.substring(2));;
-			for (let index = 1; index < specNames.length; index++) {
-				var node = document.createElement("option");
-				var textnode = document.createTextNode(specNames[index]);
-				node.appendChild(textnode);
-				dropList.appendChild(node);
-				// pre-select default spec
-				if (specNames[index] === "PX121.json") {
-					dropList.selectedIndex = index - 1;
-				}
-			}
-		});
-		specListReq.send(null);
 
 		// load a new specification from drop-down
 		function loadNewSpec() {
