@@ -2,7 +2,7 @@
 
 from datetime import datetime
 
-classes = ["JSONSpecObject.js", "Ship.js", "Structure.js", "Hull.js", "BaseObject.js", "DerivedObject.js", "ShipState.js", "StateModule.js", "WaveCreator.js", "WaveMotion.js", "Positioning.js", "FuelConsumption.js", "HullResistance.js", "PropellerInteraction.js"]
+classes = ["JSONSpecObject.js", "Ship.js", "Structure.js", "Hull.js", "BaseObject.js", "DerivedObject.js", "ShipState.js", "StateModule.js", "WaveCreator.js", "WaveMotion.js", "Positioning.js", "Manoeuvring.js", "FuelConsumption.js", "HullResistance.js", "PropellerInteraction.js"]
 fileIO = ["browseShip.js", "loadShip.js", "downloadShip.js"]
 math = ["Vectors.js", "interpolation.js", "areaCalculations.js", "volumeCalculations.js", "parametricWeightParsons.js", "combineWeights.js"]
 filepaths = list(map((lambda filename: "../source/math/"+filename), math)) \
@@ -49,6 +49,7 @@ Object.assign(vessel, {
 	Positioning: Positioning,
 	FuelConsumption: FuelConsumption,
 	HullResistance: HullResistance,
+	Manoeuvring: Manoeuvring,
 	PropellerInteraction: PropellerInteraction,
 	browseShip: browseShip,
 	loadShip: loadShip,
@@ -65,17 +66,18 @@ Object.assign(vessel, {
 
 timestamp = str(datetime.today())
 #from hashlib import md5
-#codehash = md5(code.encode()).hexdigest()
+# codehash = md5(code.encode()).hexdigest()
 
 header = "//vessel.js library, built " + timestamp# + ", Checksum: " + codehash
 
 output = header + code
 
-#stamp = timestamp[0:17] + "." + codehash[0:5]
+# stamp = timestamp[0:17] + "." + codehash[0:5]
+stamp = timestamp[0:17]
 
 oFile = open("../build/vessel.js", "w")
 oFile.write(output)
 oFile.close()
-#oFile = open("archive/vessel_"+stamp.replace("-","").replace(":","").replace(" ","")+".js", "w")
-#oFile.write(output)
-#oFile.close()
+# oFile = open("archive/vessel_"+stamp.replace("-","").replace(":","").replace(" ","")+".js", "w")
+# oFile.write(output)
+# oFile.close()

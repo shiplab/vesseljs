@@ -22,12 +22,15 @@ function PropellerInteraction(ship, states, propeller, rho = 1025) {
 PropellerInteraction.prototype = Object.create(StateModule.prototype);
 
 Object.assign(PropellerInteraction.prototype, {
-	constructor: PropellerInteraction
+	constructor: PropellerInteraction,
 });
 
 Object.defineProperties(PropellerInteraction.prototype, {
 	propulsion: StateModule.prototype.memoized(function() {
 		// convert vessel speed from knots to m/s
+		if (this.speedSI === 0) {
+			console.error("Speed equals to zero, try getPropResult() method to get boolard pull or use changeSpeed() method to set a non null value.")
+		}
 		var speedSI = 0.514444 * this.speedState.speed;
 		var lcb = 100 * (this.floatState.LCB - (this.floatState.minXs + this.floatState.LWL / 2)) / this.floatState.LWL; // %
 		var Va = speedSI / (1 - this.resistanceState.w); // m/s
@@ -54,6 +57,6 @@ Object.defineProperties(PropellerInteraction.prototype, {
 		var eta = eta0 * this.resistanceState.etah * etar;
 		var Ps = this.resistanceState.Pe / eta; // W, required brake power
 
-		return {eta, Ps, n};
+		return {eta, Ps, n, Va};
 	}, "propulsion")
 });
