@@ -126,7 +126,7 @@
 			playback.add(ocean);
 			zUpCont.add(ocean);
 
-			Vessel.loadShip("specs/ship_specifications/PX121.json", function(ship) {
+			Vessel.loadShip("ship_specs/PX121.json", function(ship) {
 				let shipSpec = ship.getSpecification();
 				initMov(ship);
 
@@ -140,7 +140,7 @@
 
 				ship3D = new Ship3D(ship, {
 					shipState: states,
-					stlPath: "specs/STL files",
+					stlPath: "3D_models/STL/various",
 					upperColor: 0x33aa33,
 					lowerColor: 0xaa3333,
 					hullOpacity: 1,

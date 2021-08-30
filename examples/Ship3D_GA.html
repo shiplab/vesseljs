@@ -128,9 +128,9 @@ To do:
 			/////////////    LOAD SHIP CONFIGURATION    //////////
 			//////////////////////////////////////////////////////
 
-			Vessel.loadShip("specs/ship_specifications/PX121.json", function(ship) {
+			Vessel.loadShip("ship_specs/PX121.json", function(ship) {
 				//Define ship object
-				ship3D = new Ship3D(ship, "specs/STL files");
+				ship3D = new Ship3D(ship, "3D_models/STL/various");
 				scene.add(ship3D);
 
 				let LOA = ship.structure.hull.attributes.LOA;

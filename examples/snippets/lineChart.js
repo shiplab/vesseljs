@@ -67,7 +67,6 @@ lineChart = function(id, data, yvalue, ylabel) {
 		.attr("r", 1.5)
 		.attr("cx", function(d) {return x(d.time);})
 		.attr("cy", function(d) {return y(d[yvalue]);})
-		.attr("cy", function(d) {debugger});
 
 	svg.selectAll(".dot")
 		.style("fill", "steelblue");

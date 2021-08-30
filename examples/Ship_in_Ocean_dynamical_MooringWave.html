@@ -248,7 +248,7 @@
 
 			//Load the ship specifications
 			Vessel.loadShip(
-				"specs/ship_specifications/mississipiBarge.json",
+				"ship_specs/mississipiBarge.json",
 				function (ship) {
 					states = ship.designState.clone();
 					states.objectOverrides.derivedByGroup["ballast tanks"].fullness = 0.5;
@@ -257,7 +257,6 @@
 					statMod.setDraft();
 					ship3D = new Ship3D(ship, {
 						shipState: states,
-						stlPath: "data/STL files",
 						upperColor: 0x33aa33,
 						lowerColor: 0xaa3333,
 						hullOpacity: 1,

@@ -37,7 +37,7 @@
 			<!-- This is for the right part of the navbar. Reserved for Shiplab logo-->
 			<div class="nav navbar-nav navbar-right">
 				<div class="navbar-header">
-					<a class="navbar-brand" href="http://www.shiplab.ntnu.co/"><img src="images/barquinho.png" alt="Shiplab logo" style="height:150%">
+					<a class="navbar-brand" href="http://www.shiplab.ntnu.co/"><img src="../images/barquinho.png" alt="Shiplab logo" style="height:150%">
 					</a>
 				</div>
 			</div>
@@ -78,7 +78,7 @@
 	"use strict";
 	// preload scatter diagram
 	var psvReq = new XMLHttpRequest();
-	psvReq.open("GET", "specs/ship_specifications/PX121.json", true);
+	psvReq.open("GET", "ship_specs/PX121.json", true);
 	psvReq.addEventListener("load", function(event) {
 		var contents = event.target.response;
 		convert(contents, "PX121.json");

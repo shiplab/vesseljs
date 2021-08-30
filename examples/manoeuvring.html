@@ -342,15 +342,15 @@
 		<canvas class="controller-button"></canvas>
 
 		<a id="question-button">
-			<img src="..\examples\images\help-black-24dp.svg" />
+			<img src="..\images\help-black-24dp.svg" />
 		</a>
 
 		<a id="math-button" target="_blank" href="https://observablehq.com/@ferrari212/simulation-model-a-brief-method" title="View mathematical model" style="">
-			<img src="..\examples\images\superscript-black-24dp.svg" />
+			<img src="..\images\superscript-black-24dp.svg" />
 		</a>
 
 		<a id="code-button" target="_blank" href="https://github.com/ferrari212/vesseljs/blob/master/examples/manoeuvring.html" title="View source code for animation / cloth on GitHub" style="">
-			<img src="..\examples\images\code-24px.svg" />
+			<img src="..\images\code-24px.svg" />
 		</a>
 
 		<div id="graphic1">
@@ -720,7 +720,7 @@
 				scene.rotation.x = - Math.PI / 2;
 
 					//Load sample file:
-					new THREE.FileLoader().load( "specs/ship_specifications/gunnerus.json", function ( content ) {
+					new THREE.FileLoader().load( "ship_specs/gunnerus.json", function ( content ) {
 					
 					ship = new Vessel.Ship( JSON.parse( content ) );
 					shipState = new Vessel.ShipState( ship.designState.getSpecification() );
@@ -731,7 +731,7 @@
 	
 					// It is recommended to pass the XMLHttpRequest from false to true but it is necessary to solve the async issue
 					var propReq = new XMLHttpRequest();
-					propReq.open( "GET", "specs/propeller_specifications/rolls_royce_500_azipod.json", true );
+					propReq.open( "GET", "others/propeller_specifications/rolls_royce_500_azipod.json", true );
 					propReq.addEventListener( "load", function ( event ) {
 	
 							var response = event.target.response;
@@ -757,7 +757,7 @@
 	
 								// load engine specification
 								var powReq = new XMLHttpRequest();
-								powReq.open("GET", "specs/power_plant_specifications/gunnerus_power_plant.json", true);
+								powReq.open("GET", "others/power_plant_specifications/gunnerus_power_plant.json", true);
 								powReq.addEventListener("load", function (event) {
 									var response = event.target.response;
 									var powerPlant = JSON.parse(response);
@@ -776,7 +776,7 @@
 
 									
 									var manSpec = new XMLHttpRequest();
-									manSpec.open("GET", "specs/maneuvering_specifications/man_sample.json", true)
+									manSpec.open("GET", "others/maneuvering_specifications/man_sample.json", true)
 									manSpec.addEventListener("load", function (event) {
 										var response = event.target.response;
 										var man = JSON.parse(response);
@@ -844,7 +844,7 @@
 					// End of the request chain
 
 				// import binary glTF file
-				var boatPath = "specs/GLTF_files/Gunnerus.glb";
+				var boatPath = "3D_models/GLTF/Gunnerus.glb";
 				var loaderGLTF = new THREE.GLTFLoader();
 				loaderGLTF.load( boatPath, gltf => {
 

@@ -304,7 +304,7 @@
 <body>
 
 	<a id="button" target="_blank" href="https://github.com/shiplab/vesseljs/blob/master/examples/epoch.html" title="View source code for animation / cloth on GitHub" style="">
-		<img src="..\examples\images\code-24px.svg">
+		<img src="..\images\code-24px.svg">
 	</a>
 
 	<div id="loader-wrapper">
@@ -392,11 +392,11 @@
 
 				<br>
 
-				<img class="center" src="images/ntnu_logo_white.png" alt="" width="90%">
+				<img class="center" src="../images/ntnu_logo_white.png" alt="" width="90%">
 
 				<br>
 
-				<img class="center" src="images/logo_usp_white.png" alt="" width="50%">
+				<img class="center" src="../images/logo_usp_white.png" alt="" width="50%">
 
 		</div>
 	</div>
@@ -657,7 +657,7 @@
 
 			// Adding STL
 			var loader = new THREE.STLLoader();
-			loader.load( './specs/STL files/xtree2.stl', function ( geometrySTL ) {
+			loader.load( './3D_models/STL/salt_cave/xtree2.stl', function ( geometrySTL ) {
 
 				if ( geometrySTL.hasColors ) {
 
@@ -694,7 +694,7 @@
 				zUpCont.add( epochEquipments.xmastree.mesh );
 			} );
 
-			loader.load( './specs/STL files/eletric.stl', function ( geometrySTL ) {
+			loader.load( './3D_models/STL/salt_cave/eletric.stl', function ( geometrySTL ) {
 				if ( geometrySTL.hasColors ) {
 					var material = new THREE.MeshPhongMaterial( {
 						opacity: geometry.alpha,
@@ -726,7 +726,7 @@
 
 			} );
 
-			loader.load( './specs/STL files/eletric.stl', function ( geometrySTL ) {
+			loader.load( './3D_models/STL/salt_cave/eletric.stl', function ( geometrySTL ) {
 				if ( geometrySTL.hasColors ) {
 					var material = new THREE.MeshPhongMaterial( {
 						opacity: geometry.alpha,
@@ -836,7 +836,7 @@
 
 			// Adding Ship STL
 			var loader = new THREE.STLLoader();
-			loader.load( './specs/STL files/ship.stl', function ( geometrySTL ) {
+			loader.load( './3D_models/STL/salt_cave/ship.stl', function ( geometrySTL ) {
 				if ( geometrySTL.hasColors ) {
 					var material = new THREE.MeshPhongMaterial( {
 						opacity: geometry.alpha,
@@ -869,7 +869,7 @@
 
 			// Adding Ship STL
 			var loader = new THREE.STLLoader();
-			loader.load( './specs/STL files/FPSO.stl', function ( geometrySTL ) {
+			loader.load( './3D_models/STL/salt_cave/FPSO.stl', function ( geometrySTL ) {
 				if ( geometrySTL.hasColors ) {
 					var material = new THREE.MeshPhongMaterial( {
 						opacity: geometry.alpha,
@@ -953,11 +953,11 @@
 			Vessel.loadShip( /*"specs/ship_specifications/PX121.json"*/
 				/*"specs/ship_specifications/blockCase.json"*/
 				/*"specs/ship_specifications/prismaticHull.json"*/
-				"specs/ship_specifications/top-down.json",
+				"ship_specs/top-down.json",
 				function ( ship ) {
 					states = ship.designState.clone();
 					ship3D = new Ship3D( ship, {
-						stlPath: "specs/STL files",
+						stlPath: "3D_models/STL/various",
 						upperColor: 0x33aa33,
 						lowerColor: 0xaa3333,
 						hullOpacity: 1,

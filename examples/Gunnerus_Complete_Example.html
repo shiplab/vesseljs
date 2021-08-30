@@ -209,7 +209,7 @@
 		</div>
 
 		<a id="button" target="_blank" href="https://github.com/shiplab/vesseljs/blob/master/examples/Gunnerus_Complete_Example.html" title="View source code on GitHub" style="">
-			<img src="..\examples\images\code-24px.svg" />
+			<img src="..\images\code-24px.svg" />
 		</a>
 
 		<script>
@@ -316,10 +316,10 @@
 				// scene.rotation.x = Math.PI;
 				// scene.add(new THREE.AxesHelper(500));
 
-				Vessel.loadShip("specs/ship_specifications/gunnerus.json", function (ship) {
+				Vessel.loadShip("ship_specs/gunnerus.json", function (ship) {
 					ship3D = new Ship3D(ship, {
 						// stlPath: "specs/STL files",
-						stlPath: "specs/STL files/Gunnerus",
+						stlPath: "3D_models/STL/Gunnerus",
 						upperColor: 0x33aa33,
 						lowerColor: 0xaa3333,
 						hullOpacity: 1,
@@ -344,7 +344,7 @@
 				})
 
 				// import binary glTF file
-				var boatPath = "specs/GLTF_files/Gunnerus.glb"
+				var boatPath = "3D_models/GLTF/Gunnerus.glb"
 				var loaderGLTF = new THREE.GLTFLoader()
 				loaderGLTF.load(boatPath, async gltf => {
 					shipGLTF = gltf.scene

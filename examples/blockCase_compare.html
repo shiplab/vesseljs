@@ -59,7 +59,7 @@
 			<!-- This is for the right part of the navbar. Reserved for Shiplab logo-->
 			<div class="nav navbar-nav navbar-right">
 				<div class="navbar-header">
-					<a class="navbar-brand" href="http://www.shiplab.hials.org/"><img src="images/barquinho.png" alt="Shiplab logo" style="height:150%">
+					<a class="navbar-brand" href="http://www.shiplab.hials.org/"><img src="../images/barquinho.png" alt="Shiplab logo" style="height:150%">
 					</a>
 				</div>
 			</div>
@@ -490,7 +490,7 @@
 					}
 
 					//Load sample file:
-					new THREE.FileLoader().load("specs/ship_specifications/blockCase.json", useFileData);
+					new THREE.FileLoader().load("ship_specs/blockCase.json", useFileData);
 
 					function useFileData(contents) {
 						var shipspec = JSON.parse(contents);
@@ -499,7 +499,7 @@
 						if (ship3D !== undefined) {
 							scene.remove(ship3D);
 						}
-						ship3D = new Ship3D(ship, "specs/STL files");
+						ship3D = new Ship3D(ship, "3D_models/STL/various");
 						scene.add(ship3D);
 
 						let LOA = ship.structure.hull.attributes.LOA;

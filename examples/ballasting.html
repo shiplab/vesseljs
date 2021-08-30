@@ -45,7 +45,7 @@
 			<!-- This is for the right part of the navbar. Reserved for Shiplab logo-->
 			<div class="nav navbar-nav navbar-right">
 				<div class="navbar-header">
-					<a class="navbar-brand" href="http://www.shiplab.ntnu.co/"><img src="images/barquinho.png"
+					<a class="navbar-brand" href="http://www.shiplab.ntnu.co/"><img src="../images/barquinho.png"
 							alt="Shiplab logo" style="height:150%">
 					</a>
 				</div>
@@ -164,7 +164,7 @@
 	})();
 
 	// load default spec
-	new THREE.FileLoader().load("specs/ship_specifications/barge.json", useShipSpec);
+	new THREE.FileLoader().load("ship_specs/barge.json", useShipSpec);
 
 	function useShipSpec(contents) {
 		shipspec = JSON.parse(contents);
