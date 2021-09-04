@@ -66,6 +66,7 @@ Object.assign(vessel, {
 
 timestamp = str(datetime.today())
 #from hashlib import md5
+
 # codehash = md5(code.encode()).hexdigest()
 
 header = "//vessel.js library, built " + timestamp# + ", Checksum: " + codehash
