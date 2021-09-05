@@ -1,22 +1,16 @@
 import JSONSpecObject from "./JSONSpecObject.js";
 
-export default class BaseObject {
+export default class BaseObject extends JSONSpecObject {
 
 	constructor( specification ) {
 
+		super( specification );
 		this.weightCache = {};
-		JSONSpecObject.call( this, specification );
-		this.setFromSpecification = new setFromSpecification( specification );
 
 	}
 
-}
+	setFromSpecification( spec ) {
 
-class setFromSpecification extends BaseObject {
-
-	constructor( spec ) {
-
-		super( spec );
 		this.id = spec.id;
 		this.affiliations = spec.affiliations || {};
 		this.boxDimensions = spec.boxDimensions || { length: undefined, width: undefined, height: undefined };
