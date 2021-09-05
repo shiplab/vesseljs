@@ -1,6 +1,6 @@
 //@EliasHasle
 
-/*Base class for objects that are constructed from 
+/*Base class for objects that are constructed from
 a literal object.
 
 Constructors can take more parameters than the specification, but the specification must be the first parameter.
@@ -12,13 +12,18 @@ getSpecification will also typically be overridden. The default implementation h
 Maybe this can be improved by implementing fromJSON and to toJSON methods.
 */
 
-export class JSONSpecObject {
-	constructor(specification) {
-		if (specification === null) {
-			console.warn("JSONSpecObject: null specification provided. Defaulting to empty specification.");
+export default class JSONSpecObject {
+
+	constructor( specification ) {
+
+		if ( specification === null ) {
+
+			console.warn( "JSONSpecObject: null specification provided. Defaulting to empty specification." );
 			specification = {};
-		} else if (typeof specification === "object") {
+
+		} else if ( typeof specification === "object" ) {
 		} else {
+
 			/*else if (typeof specification === "string") {
       try {
         specification = JSON.parse(specification);
@@ -27,35 +32,53 @@ export class JSONSpecObject {
         specification = {};
       }
     }*/
-			if (typeof specification !== "undefined") {
-				console.error("JSONSpecObject: Invalid constructor parameter. Defaulting to empty specification.");
+			if ( typeof specification !== "undefined" ) {
+
+				console.error( "JSONSpecObject: Invalid constructor parameter. Defaulting to empty specification." );
+
 			}
+
 			specification = {};
+
 		}
-		this.setFromSpecification(specification);
+
+		this.setFromSpecification( specification );
+
 	}
 
-	setFromSpecification(specification) {
+	setFromSpecification( specification ) {
+
 		//No sanity checking by default.
-		Object.assign(this, specification);
+		Object.assign( this, specification );
 		return this;
+
 	}
 
 	getSpecification() {
+
 		let spec = {};
-		for (k of Object.keys(this)) {
-			if (this.hasOwnProperty(k)) spec[k] = this[k];
+		for ( k of Object.keys( this ) ) {
+
+			if ( this.hasOwnProperty( k ) ) spec[ k ] = this[ k ];
+
 		}
+
 		return spec;
+
 	}
 
 	//toJSON is the standard way. Added here for testing.
 	toJSON() {
+
 		return this.getSpecification();
+
 	}
 
 	//fromJSON is added as an alternative and better name.
-	fromJSON(spec) {
-		return this.setFromSpecification(spec);
+	fromJSON( spec ) {
+
+		return this.setFromSpecification( spec );
+
 	}
+
 }

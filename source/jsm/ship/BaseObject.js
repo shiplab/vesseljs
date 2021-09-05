@@ -1,6 +1,6 @@
-import JSONSpecObject from "./JSONSpecObject";
+import JSONSpecObject from "./JSONSpecObject.js";
 
-export class BaseObject {
+export default class BaseObject {
 
 	constructor( specification ) {
 
