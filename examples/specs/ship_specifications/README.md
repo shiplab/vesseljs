@@ -3,3 +3,4 @@ When you add a new specification, create a new option on the app Ship3D_with_pre
 Physical units:
 * Linear dimensions are in meters.
 * Weights are in metric tonnes.
+* Material density in kilograms per cubic meters.
