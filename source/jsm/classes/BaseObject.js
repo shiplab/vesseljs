@@ -16,7 +16,6 @@ class setFromSpecification extends BaseObject {
 
 	constructor( spec ) {
 
-		super( spec );
 		this.id = spec.id;
 		this.affiliations = spec.affiliations || {};
 		this.boxDimensions = spec.boxDimensions || { length: undefined, width: undefined, height: undefined };
