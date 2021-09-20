@@ -1,20 +1,15 @@
-import JSONSpecObject from "./JSONSpecObject";
+import JSONSpecObject from "./JSONSpecObject.js";
 
-export class BaseObject {
+export default class BaseObject extends JSONSpecObject {
 
 	constructor( specification ) {
 
+		super( specification );
 		this.weightCache = {};
-		JSONSpecObject.call( this, specification );
-		this.setFromSpecification = new setFromSpecification( specification );
 
 	}
 
-}
-
-class setFromSpecification extends BaseObject {
-
-	constructor( spec ) {
+	setFromSpecification( spec ) {
 
 		this.id = spec.id;
 		this.affiliations = spec.affiliations || {};

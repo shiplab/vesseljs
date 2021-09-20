@@ -12,7 +12,7 @@ getSpecification will also typically be overridden. The default implementation h
 Maybe this can be improved by implementing fromJSON and to toJSON methods.
 */
 
-export class JSONSpecObject {
+export default class JSONSpecObject {
 
 	constructor( specification ) {
 
@@ -22,7 +22,6 @@ export class JSONSpecObject {
 			specification = {};
 
 		} else if ( typeof specification === "object" ) {
-
 		} else {
 
 			/*else if (typeof specification === "string") {
