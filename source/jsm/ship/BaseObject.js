@@ -1,6 +1,6 @@
 import JSONSpecObject from "./JSONSpecObject.js";
 
-export default class BaseObject extends JSONSpecObject {
+class BaseObject extends JSONSpecObject {
 
 	constructor( specification ) {
 
@@ -39,3 +39,6 @@ export default class BaseObject extends JSONSpecObject {
 	}
 
 }
+
+export default BaseObject
+;

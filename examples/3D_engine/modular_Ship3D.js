@@ -23,9 +23,14 @@ TODO: Use calculated draft for position.z, and place the ship model in a motion 
 
 //var hMat; //global for debugging
 
-function Ship3D( ship, { shipState, stlPath, deckOpacity = 0.2, objectOpacity = 0.5 } ) {
+import {	Vessel	} from "../../build/modular_vessel.js";
+import * as THREE from 'https://cdn.skypack.dev/three@0.133.0';
+// import * as THREE from "./three_r118.js";
 
-	THREE.Group.call( this );
+export function Ship3D( ship, { shipState, stlPath, deckOpacity = 0.2, objectOpacity = 0.5 } ) {
+
+	// let THREE = new THREE();
+	// debugger;
 
 	this.normalizer = new THREE.Group();
 	this.fluctCont = new THREE.Group();
@@ -33,6 +38,7 @@ function Ship3D( ship, { shipState, stlPath, deckOpacity = 0.2, objectOpacity = 
 	this.cmContainer = new THREE.Group();
 	this.fluctCont.add( this.cmContainer );
 	this.normalizer.add( this.fluctCont );
+	debugger;
 	this.add( this.normalizer );
 
 	Object.defineProperty( this, "draft", {

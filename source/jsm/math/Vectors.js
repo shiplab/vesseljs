@@ -3,7 +3,7 @@
 //Some small helpers for operations on 3D vectors
 //A vector is simply defined as an object with properties x,y,z.
 
-var Vectors = {
+export const Vectors = {
 	clone: function ( v ) {
 
 		return { x: v.x, y: v.y, z: v.z };

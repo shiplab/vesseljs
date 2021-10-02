@@ -1,24 +1,23 @@
-//@EliasHasle
+import JSONSpecObject from "./JSONSpecObject.js";
+import BaseObject from	"./BaseObject";
+import Vectors from "../math/Vectors";
 
-/*
-Depends on JSONSpecObject.js
-*/
+export default class DerivedObject extends JSONSpecObject {
 
-function DerivedObject( specification, baseObjects ) {
+	constructor( specification, baseObjects ) {
 
-	this.baseObjects = baseObjects;
-	JSONSpecObject.call( this, specification );
+		this.baseObjects = baseObjects;
 
-}
+		super( specification );
 
-DerivedObject.prototype = Object.create( JSONSpecObject.prototype );
-Object.assign( DerivedObject.prototype, {
-	constructor: DerivedObject,
-	setFromSpecification: function ( spec ) {
+	}
+
+	setFromSpecification( spec ) {
 
 		this.id = spec.id;
 		this.group = spec.group || null;
 		this.affiliations = spec.affiliations;
+
 		if ( typeof spec.baseObject === "string" ) {
 
 			this.baseObject = this.baseObjects[ spec.baseObject ];
@@ -34,8 +33,9 @@ Object.assign( DerivedObject.prototype, {
 		this.style = spec.style || {};
 		return this;
 
-	},
-	getSpecification: function () {
+	}
+
+	getSpecification() {
 
 		let spec = {
 			id: this.id,
@@ -56,8 +56,9 @@ Object.assign( DerivedObject.prototype, {
 
 		return spec;
 
-	},
-	getWeight: function ( state ) {
+	}
+
+	getWeight( state ) {
 
 		let oState = state.getObjectState( this );
 
@@ -87,4 +88,5 @@ Object.assign( DerivedObject.prototype, {
 		return { mass: m, cg: cg };
 
 	}
-} );
+
+}

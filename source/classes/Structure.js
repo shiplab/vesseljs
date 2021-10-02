@@ -1,13 +1,17 @@
 //@EliasHasle
 
-function Structure(spec/*, ship*/) {
+function Structure( spec/*, ship*/ ) {
+
 	//this.ship = ship;
-	JSONSpecObject.call(this, spec);
+	JSONSpecObject.call( this, spec );
+
 }
-Structure.prototype = Object.create(JSONSpecObject.prototype);
-Object.assign(Structure.prototype, {
-	setFromSpecification: function(spec) {
-		this.hull = new Hull(spec.hull/*, this.ship*/);
+
+Structure.prototype = Object.create( JSONSpecObject.prototype );
+Object.assign( Structure.prototype, {
+	setFromSpecification: function ( spec ) {
+
+		this.hull = new Hull( spec.hull/*, this.ship*/ );
 		this.decks = spec.decks;/*{};
 		let dspecs = spec.decks;
 		let decks = this.decks;
@@ -28,8 +32,10 @@ Object.assign(Structure.prototype, {
 		}*/
 
 		return this;
+
 	},
-	getSpecification: function() {
+	getSpecification: function () {
+
 		let spec = {
 			hull: this.hull.getSpecification(),
 			decks: this.decks,
@@ -51,22 +57,25 @@ Object.assign(Structure.prototype, {
 		}*/
 
 		return spec;
+
 	},
 	//This is all dummy calculations
-	getWeight: function(designState) {
+	getWeight: function ( designState ) {
+
 		let components = [];
 		//Hull
-		components.push(this.hull.getWeight(designState));
+		components.push( this.hull.getWeight( designState ) );
 
 		//structure:
-		let decks = Object.values(this.decks);
-		for (let i = 0; i < decks.length; i++) {
-			let d = decks[i];
+		let decks = Object.values( this.decks );
+		for ( let i = 0; i < decks.length; i ++ ) {
+
+			let d = decks[ i ];
 			let zc = d.zFloor + 0.5 * d.thickness;
 			let yc = d.yCentre;
 			let b = d.breadth;
-			let wlc = this.hull.waterlineCalculation(zc, {minX: d.xAft, maxX: d.xFwd, minY: yc - 0.5 * b, maxY: yc + 0.5 * b});
-			components.push({
+			let wlc = this.hull.waterlineCalculation( zc, { minX: d.xAft, maxX: d.xFwd, minY: yc - 0.5 * b, maxY: yc + 0.5 * b } );
+			components.push( {
 				//approximation
 				mass: wlc.Awp * d.thickness * d.density,
 				cg: {
@@ -74,15 +83,17 @@ Object.assign(Structure.prototype, {
 					y: wlc.yc,
 					z: zc
 				}
-			});
+			} );
+
 		}
 
-		let bulkheads = Object.values(this.bulkheads);
-		for (let i = 0; i < bulkheads.length; i++) {
-			let bh = bulkheads[i];
+		let bulkheads = Object.values( this.bulkheads );
+		for ( let i = 0; i < bulkheads.length; i ++ ) {
+
+			let bh = bulkheads[ i ];
 			let xc = bh.xAft + 0.5 * bh.thickness;
-			let sc = this.hull.stationCalculation(xc);
-			components.push({
+			let sc = this.hull.stationCalculation( xc );
+			components.push( {
 				//approximation
 				mass: sc.A * bh.thickness * bh.density,
 				cg: {
@@ -90,11 +101,13 @@ Object.assign(Structure.prototype, {
 					y: sc.yc,
 					z: sc.zc
 				}
-			});
+			} );
+
 		}
 
-		let output = combineWeights(components);
+		let output = combineWeights( components );
 		//console.info("Total structural weight: ", output);
 		return output;
+
 	}
-});
+} );

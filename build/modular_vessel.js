@@ -9,7 +9,7 @@ let ship = new vessel.Ship(someSpecification);
 "use strict";
 
 var vessel = {};
-var Vessel = vessel; //alias for backwards compatibility
+export var Vessel = vessel; //alias for backwards compatibility
 
 ( function () {
 
