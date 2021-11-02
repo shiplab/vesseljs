@@ -25,321 +25,318 @@ TODO: Use calculated draft for position.z, and place the ship model in a motion 
 
 import {	Vessel	} from "../../build/modular_vessel.js";
 import * as THREE from 'https://cdn.skypack.dev/three@0.133.0';
+import { STLLoader } from './STLLoaderJsm.js';
+
 // import * as THREE from "./three_r118.js";
 
-export function Ship3D( ship, { shipState, stlPath, deckOpacity = 0.2, objectOpacity = 0.5 } ) {
+class Ship3D extends THREE.Group {
 
-	// let THREE = new THREE();
-	// debugger;
+	constructor( ship, { shipState, stlPath, deckOpacity: deckOpacity = 0.2, objectOpacity: objectOpacity = 0.5 } ) {
 
-	this.normalizer = new THREE.Group();
-	this.fluctCont = new THREE.Group();
-	this.fluctCont.rotation.order = "ZYX"; //right?
-	this.cmContainer = new THREE.Group();
-	this.fluctCont.add( this.cmContainer );
-	this.normalizer.add( this.fluctCont );
-	debugger;
-	this.add( this.normalizer );
+		super();
+		this.normalizer = new THREE.Group();
+		this.fluctCont = new THREE.Group();
+		this.fluctCont.rotation.order = "ZYX"; //right?
+		this.cmContainer = new THREE.Group();
+		this.fluctCont.add( this.cmContainer );
+		this.normalizer.add( this.fluctCont );
+		this.add( this.normalizer );
 
-	Object.defineProperty( this, "draft", {
-		get: function () {
+		this.objectOpacity = objectOpacity;
 
-			return - this.position.z;
+		this.ship = ship;
+		this.shipState = shipState || ship.designState.clone();
 
-		}/*,
-		set: function(value) {
-			this.position.z = -value;
-		}*/
-	} );
-	Object.defineProperty( this, "surge", {
-		get: function () {
+		let hull = ship.structure.hull;
 
-			return this.fluctCont.position.x;
+		let LOA = hull.attributes.LOA;
+		let BOA = hull.attributes.BOA;
+		let Depth = hull.attributes.Depth;
 
-		},
-		set: function ( value ) {
+		Object.defineProperty( this, "draft", {
+			get() {
 
-			this.fluctCont.position.x = value;
-			//this.shipState.motion.surge = value;
+				return - this.position.z;
 
-		}
-	} );
-	Object.defineProperty( this, "sway", {
-		get: function () {
+			}/*,
+			set(value) {
+				this.position.z = -value;
+			}*/
+		} );
+		Object.defineProperty( this, "surge", {
+			get() {
 
-			return this.fluctCont.position.y;
+				return this.fluctCont.position.x;
 
-		},
-		set: function ( value ) {
+			},
+			set( value ) {
 
-			this.fluctCont.position.y = value;
-			//this.shipState.motion.sway = value;
+				this.fluctCont.position.x = value;
+				//this.shipState.motion.surge = value;
 
-		}
-	} );
-	Object.defineProperty( this, "heave", {
-		get: function () {
+			}
+		} );
+		Object.defineProperty( this, "sway", {
+			get() {
 
-			return this.fluctCont.position.z;
+				return this.fluctCont.position.y;
 
-		},
-		set: function ( value ) {
+			},
+			set( value ) {
 
-			this.fluctCont.position.z = value;
-			//this.shipState.motion.heave = value;
+				this.fluctCont.position.y = value;
+				//this.shipState.motion.sway = value;
 
-		}
-	} );
-	Object.defineProperty( this, "yaw", {
-		get: function () {
-
-			return this.fluctCont.rotation.z;
-
-		},
-		set: function ( value ) {
+			}
+		} );
+		Object.defineProperty( this, "heave", {
+			get() {
 
-			this.fluctCont.rotation.z = value;
-			//this.shipState.motion.yaw = value;
+				return this.fluctCont.position.z;
 
-		}
-	} );
-	Object.defineProperty( this, "pitch", {
-		get: function () {
+			},
+			set( value ) {
 
-			return this.fluctCont.rotation.y;
+				this.fluctCont.position.z = value;
+				//this.shipState.motion.heave = value;
 
-		},
-		set: function ( value ) {
+			}
+		} );
+		Object.defineProperty( this, "yaw", {
+			get() {
 
-			this.fluctCont.rotation.y = value;
-			//this.shipState.motion.pitch = value;
+				return this.fluctCont.rotation.z;
 
-		}
-	} );
-	Object.defineProperty( this, "roll", {
-		get: function () {
+			},
+			set( value ) {
 
-			return this.fluctCont.rotation.x;
+				this.fluctCont.rotation.z = value;
+				//this.shipState.motion.yaw = value;
 
-		},
-		set: function ( value ) {
+			}
+		} );
+		Object.defineProperty( this, "pitch", {
+			get() {
 
-			this.fluctCont.rotation.x = value;
-			//this.shipState.motion.roll = value;
+				return this.fluctCont.rotation.y;
 
-		}
-	} );
-
-	this.objectOpacity = objectOpacity;
-
-	this.ship = ship;
-	this.shipState = shipState || ship.designState.clone();
-
-	let hull = ship.structure.hull;
-
-	let LOA = hull.attributes.LOA;
-	let BOA = hull.attributes.BOA;
-	let Depth = hull.attributes.Depth;
-
-	//console.log("LOA:%.1f, BOA:%.1f, Depth:%.1f",LOA,BOA,Depth);
-	let { w: { cg, mass }, T, GMt, GMl } = ship.calculateStability( this.shipState );
-
-	this.cmContainer.position.set( - cg.x, - cg.y, - cg.z );
-	this.normalizer.position.z = cg.z;
-	this.position.z = - T;
-
-	let designDraft = ship.designState.calculationParameters.Draft_design;
-	this.hull3D = new Hull3D( hull, designDraft );
-	this.cmContainer.add( this.hull3D );
-
-	//DEBUG, to show only hull:
-	//return;
-
-	let stations = hull.halfBreadths.stations;
-	//Decks:
-	var decks = new THREE.Group();
-	let deckMat = new THREE.MeshPhongMaterial( { color: 0xcccccc/*this.randomColor()*/, transparent: true, opacity: deckOpacity, side: THREE.DoubleSide } );
-	//deckGeom.translate(0,0,-0.5);
-	let ds = ship.structure.decks;
-	//let dk = Object.keys(ds);
-	let stss = stations.map( st => LOA * st ); //use scaled stations for now
-	//console.log(dk);
-	//for (let i = 0; i < dk.length; i++) {
-	for ( let dk in ds ) {
+			},
+			set( value ) {
 
-		//let d = ds[dk[i]]; //deck in ship structure
-		let d = ds[ dk ];
+				this.fluctCont.rotation.y = value;
+				//this.shipState.motion.pitch = value;
 
-		//Will eventually use BoxBufferGeometry, but that is harder, because vertices are duplicated in the face planes.
-		let deckGeom = new THREE.PlaneBufferGeometry( 1, 1, stss.length, 1 );//new THREE.BoxBufferGeometry(1,1,1,sts.length,1,1);
-		//console.log("d.zFloor=%.1f", d.zFloor); //DEBUG
-		let zHigh = d.zFloor;
-		let zLow = d.zFloor - d.thickness;
-		let wlHigh = hull.getWaterline( zHigh );
-		let wlLow = hull.getWaterline( zLow );
-		let pos = deckGeom.getAttribute( "position" );
-		let pa = pos.array;
-		for ( let j = 0; j < stss.length + 1; j ++ ) {
-
-			//This was totally wrong, and still would benefit from
-			//not mapping directly to stations, as shorter decks will
-			//Get zero-width sections
-			let x = stss[ j ];//d.xAft+(j/stss.length)*(d.xFwd-d.xAft);
-			if ( isNaN( x ) ) x = stss[ j - 1 ];
-			x = Math.max( d.xAft, Math.min( d.xFwd, x ) );
-			let y1 = Vessel.f.linearFromArrays( stss, wlHigh, x );
-			let y2 = Vessel.f.linearFromArrays( stss, wlLow, x );
-			let y = Math.min( 0.5 * d.breadth, y1, y2 );
-			pa[ 3 * j ] = x;
-			pa[ 3 * j + 1 ] = y;
-			pa[ 3 * ( stss.length + 1 ) + 3 * j ] = x;
-			pa[ 3 * ( stss.length + 1 ) + 3 * j + 1 ] = - y; //test
-
-		}
-
-		pos.needsUpdate = true;
-
-		//DEBUG
-		//console.log("d.xFwd=%.1f, d.xAft=%.1f, 0.5*d.breadth=%.1f", d.xFwd, d.xAft, 0.5*d.breadth);
-		//console.log(pa);
-		let mat = deckMat;
-		if ( d.style ) {
-
-			mat = new THREE.MeshPhongMaterial( { color: typeof d.style.color !== "undefined" ? d.style.color : 0xcccccc, transparent: true, opacity: typeof d.style.opacity !== "undefined" ? d.style.opacity : deckOpacity, side: THREE.DoubleSide } );
-
-		}
-
-		let deck = new THREE.Mesh( deckGeom, mat );
-		deck.name = dk;//[i];
-
-		// The try verification is used to verify if the group affiliation was inserted in the JSON structure,
-		// the affiliation must be decided in the future if it will be incorporate into the main structure of the group
-		// or if there is a better approach to classify it.
-		// @ferrari212
-		try {
-
-			deck.group = d.affiliations.group;
-
-		} catch ( error ) {
-
-			console.warn( 'Group tag were introduced to deck object' );
-			console.warn( error );
-
-		}
-
-		deck.position.z = d.zFloor;
-		//deck.scale.set(d.xFwd-d.xAft, d.breadth, d.thickness);
-		//deck.position.set(0.5*(d.xFwd+d.xAft), 0, d.zFloor);
-		decks.add( deck );
-
-	}
-
-	this.decks = decks;
-	this.cmContainer.add( decks );
-
-	//Bulkheads:
-	var bulkheads = new THREE.Group();
-	// Individually trimmed geometries like the decks @ferrari212
-	let bhMat = new THREE.MeshPhongMaterial( { color: 0xcccccc/*this.randomColor()*/, transparent: true, opacity: deckOpacity, side: THREE.DoubleSide } );
-	let bhs = ship.structure.bulkheads;
-	let maxWl = Math.max( ...hull.halfBreadths.waterlines ) * Depth;
-	//let bhk = Object.keys(bhs);
-	//for (let i = 0; i < bhk.length; i++) {
-	for ( let bhk in bhs ) {
-
-		let bh = bhs[ bhk ];//bhs[bhk[i]];
-		let mat = bhMat;
-		let station = hull.getStation( bh.xAft );
-
-		if ( bh.style ) {
-
-			mat = new THREE.MeshPhongMaterial( { color: typeof bh.style.color !== "undefined" ? bh.style.color : 0xcccccc, transparent: true, opacity: typeof bh.style.opacity !== "undefined" ? bh.style.opacity : deckOpacity, side: THREE.DoubleSide } );
-
-		}
-
-		let bulkheadGeom = new THREE.PlaneBufferGeometry( maxWl, BOA, station.length - 1, 1 );
-
-		let pos = bulkheadGeom.getAttribute( "position" );
-		let pa = pos.array;
-
-
-		for ( let i = 0; i < station.length; i ++ ) {
-
-			// Check height in order to trim the bulkhead in the deck
-			if ( pa[ 3 * i ] < Depth - maxWl / 2 ) {
-
-				pa[ 3 * i + 1 ] = station[ i ];
-				pa[ 3 * station.length + 3 * i + 1 ] = - station[ i ];
-
-			} else {
-
-				pa[ 3 * i + 1 ] = pa[ 3 * station.length + 3 * i + 1 ] = 0;
+			}
+		} );
+		Object.defineProperty( this, "roll", {
+			get() {
+
+				return this.fluctCont.rotation.x;
+
+			},
+			set( value ) {
+
+				this.fluctCont.rotation.x = value;
+				//this.shipState.motion.roll = value;
+
+			}
+		} );
+
+		//console.log("LOA:%.1f, BOA:%.1f, Depth:%.1f",LOA,BOA,Depth);
+		let { w: { cg, mass }, T, GMt, GMl } = ship.calculateStability( this.shipState );
+
+		this.cmContainer.position.set( - cg.x, - cg.y, - cg.z );
+		this.normalizer.position.z = cg.z;
+		this.position.z = - T;
+
+		let designDraft = ship.designState.calculationParameters.Draft_design;
+		this.hull3D = new Hull3D( hull, designDraft );
+		this.cmContainer.add( this.hull3D );
+
+		//DEBUG, to show only hull:
+		//return;
+
+		let stations = hull.halfBreadths.stations;
+
+		//Decks:
+		var decks = new THREE.Group();
+		let deckMat = new THREE.MeshPhongMaterial( { color: 0xcccccc/*this.randomColor()*/, transparent: true, opacity: deckOpacity, side: THREE.DoubleSide } );
+		//deckGeom.translate(0,0,-0.5);
+		let ds = ship.structure.decks;
+		//let dk = Object.keys(ds);
+		let stss = stations.map( st => LOA * st ); //use scaled stations for now
+		//console.log(dk);
+		//for (let i = 0; i < dk.length; i++) {
+		for ( let dk in ds ) {
+
+			//let d = ds[dk[i]]; //deck in ship structure
+			let d = ds[ dk ];
+
+			//Will eventually use BoxBufferGeometry, but that is harder, because vertices are duplicated in the face planes.
+			let deckGeom = new THREE.PlaneBufferGeometry( 1, 1, stss.length, 1 );//new THREE.BoxBufferGeometry(1,1,1,sts.length,1,1);
+			//console.log("d.zFloor=%.1f", d.zFloor); //DEBUG
+			let zHigh = d.zFloor;
+			let zLow = d.zFloor - d.thickness;
+			let wlHigh = hull.getWaterline( zHigh );
+			let wlLow = hull.getWaterline( zLow );
+			let pos = deckGeom.getAttribute( "position" );
+			let pa = pos.array;
+			for ( let j = 0; j < stss.length + 1; j ++ ) {
+
+				//This was totally wrong, and still would benefit from
+				//not mapping directly to stations, as shorter decks will
+				//Get zero-width sections
+				let x = stss[ j ];//d.xAft+(j/stss.length)*(d.xFwd-d.xAft);
+				if ( isNaN( x ) ) x = stss[ j - 1 ];
+				x = Math.max( d.xAft, Math.min( d.xFwd, x ) );
+				let y1 = Vessel.f.linearFromArrays( stss, wlHigh, x );
+				let y2 = Vessel.f.linearFromArrays( stss, wlLow, x );
+				let y = Math.min( 0.5 * d.breadth, y1, y2 );
+				pa[ 3 * j ] = x;
+				pa[ 3 * j + 1 ] = y;
+				pa[ 3 * ( stss.length + 1 ) + 3 * j ] = x;
+				pa[ 3 * ( stss.length + 1 ) + 3 * j + 1 ] = - y; //test
 
 			}
 
+			pos.needsUpdate = true;
+
+			//DEBUG
+			//console.log("d.xFwd=%.1f, d.xAft=%.1f, 0.5*d.breadth=%.1f", d.xFwd, d.xAft, 0.5*d.breadth);
+			//console.log(pa);
+			let mat = deckMat;
+			if ( d.style ) {
+
+				mat = new THREE.MeshPhongMaterial( { color: typeof d.style.color !== "undefined" ? d.style.color : 0xcccccc, transparent: true, opacity: typeof d.style.opacity !== "undefined" ? d.style.opacity : deckOpacity, side: THREE.DoubleSide } );
+
+			}
+
+			let deck = new THREE.Mesh( deckGeom, mat );
+			deck.name = dk;//[i];
+
+			// The try verification is used to verify if the group affiliation was inserted in the JSON structure,
+			// the affiliation must be decided in the future if it will be incorporate into the main structure of the group
+			// or if there is a better approach to classify it.
+			// @ferrari212
+			try {
+
+				deck.group = d.affiliations.group;
+
+			} catch ( error ) {
+
+				console.warn( 'Group tag were introduced to deck object' );
+				console.warn( error );
+
+			}
+
+			deck.position.z = d.zFloor;
+			//deck.scale.set(d.xFwd-d.xAft, d.breadth, d.thickness);
+			//deck.position.set(0.5*(d.xFwd+d.xAft), 0, d.zFloor);
+			decks.add( deck );
+
 		}
 
-		pos.needsUpdate = true;
-		let bulkhead = new THREE.Mesh( bulkheadGeom, mat );
+		this.decks = decks;
+		this.cmContainer.add( decks );
 
-		bulkhead.name = bhk;//[i];
+		//Bulkheads:
+		var bulkheads = new THREE.Group();
+		// Individually trimmed geometries like the decks @ferrari212
+		let bhMat = new THREE.MeshPhongMaterial( { color: 0xcccccc/*this.randomColor()*/, transparent: true, opacity: deckOpacity, side: THREE.DoubleSide } );
+		let bhs = ship.structure.bulkheads;
+		let maxWl = Math.max( ...hull.halfBreadths.waterlines ) * Depth;
+		//let bhk = Object.keys(bhs);
+		//for (let i = 0; i < bhk.length; i++) {
+		for ( let bhk in bhs ) {
 
-		// The try verification is used to verify if the group affiliation was inserted in the JSON structure,
-		// the affiliation must be decided in the future if it will be incorporate into the main structure of the group
-		// or if there is a better approach to classify it.
-		// @ferrari212
-		try {
+			let bh = bhs[ bhk ];//bhs[bhk[i]];
+			let mat = bhMat;
+			let station = hull.getStation( bh.xAft );
 
-			bulkhead.group = bh.affiliations.group;
+			if ( bh.style ) {
 
-		} catch ( error ) {
+				mat = new THREE.MeshPhongMaterial( { color: typeof bh.style.color !== "undefined" ? bh.style.color : 0xcccccc, transparent: true, opacity: typeof bh.style.opacity !== "undefined" ? bh.style.opacity : deckOpacity, side: THREE.DoubleSide } );
 
-			console.warn( 'Group tag were introduced to bulkhead object' );
-			console.warn( error );
+			}
+
+			let bulkheadGeom = new THREE.PlaneBufferGeometry( maxWl, BOA, station.length - 1, 1 );
+
+			let pos = bulkheadGeom.getAttribute( "position" );
+			let pa = pos.array;
+
+
+			for ( let i = 0; i < station.length; i ++ ) {
+
+				// Check height in order to trim the bulkhead in the deck
+				if ( pa[ 3 * i ] < Depth - maxWl / 2 ) {
+
+					pa[ 3 * i + 1 ] = station[ i ];
+					pa[ 3 * station.length + 3 * i + 1 ] = - station[ i ];
+
+				} else {
+
+					pa[ 3 * i + 1 ] = pa[ 3 * station.length + 3 * i + 1 ] = 0;
+
+				}
+
+			}
+
+			pos.needsUpdate = true;
+			let bulkhead = new THREE.Mesh( bulkheadGeom, mat );
+
+			bulkhead.name = bhk;//[i];
+
+			// The try verification is used to verify if the group affiliation was inserted in the JSON structure,
+			// the affiliation must be decided in the future if it will be incorporate into the main structure of the group
+			// or if there is a better approach to classify it.
+			// @ferrari212
+			try {
+
+				bulkhead.group = bh.affiliations.group;
+
+			} catch ( error ) {
+
+				console.warn( 'Group tag were introduced to bulkhead object' );
+				console.warn( error );
+
+			}
+
+			bulkhead.rotation.y = - Math.PI / 2;
+			bulkhead.position.set( bh.xAft, 0, maxWl / 2 );
+			bulkheads.add( bulkhead );
 
 		}
 
-		bulkhead.rotation.y = - Math.PI / 2;
-		bulkhead.position.set( bh.xAft, 0, maxWl / 2 );
-		bulkheads.add( bulkhead );
+		this.bulkheads = bulkheads;
+		this.cmContainer.add( bulkheads );
 
-	}
+		//Objects
 
-	this.bulkheads = bulkheads;
-	this.cmContainer.add( bulkheads );
-
-	//Objects
-
-	this.materials = {};
-	this.stlPath = stlPath;
-	let stlManager = new THREE.LoadingManager();
-	this.stlLoader = new THREE.STLLoader( stlManager );
-	/*stlManager.onLoad = function() {
+		this.materials = {};
+		this.stlPath = stlPath;
+		let stlManager = new THREE.LoadingManager();
+		this.stlLoader = new STLLoader( stlManager );
+		/*stlManager.onLoad = function() {
 		createGUI(materials, deckMat);
 	}*/
 
-	this.blocks = new THREE.Group();
-	this.cmContainer.add( this.blocks );
+		this.blocks = new THREE.Group();
+		this.cmContainer.add( this.blocks );
 
-	//Default placeholder geometry
-	this.boxGeom = new THREE.BoxBufferGeometry( 1, 1, 1 );
-	this.boxGeom.translate( 0, 0, 0.5 );
+		//Default placeholder geometry
+		this.boxGeom = new THREE.BoxBufferGeometry( 1, 1, 1 );
+		this.boxGeom.translate( 0, 0, 0.5 );
 
-	let objects = Object.values( ship.derivedObjects );
-	for ( let i = 0; i < objects.length; i ++ ) {
+		let objects = Object.values( ship.derivedObjects );
+		for ( let i = 0; i < objects.length; i ++ ) {
 
-		this.addObject( objects[ i ] );
+			this.addObject( objects[ i ] );
+
+		}
 
 	}
 
-	//console.log("Reached end of Ship3D constructor.");
-
-}
-
-Ship3D.prototype = Object.create( THREE.Group.prototype );
-Object.assign( Ship3D.prototype, {
-	constructor: Ship3D,
-	addObject: function ( object ) {
+	addObject( object ) {
 
 		let mat;
 		if ( typeof object.style.color !== "undefined" || typeof object.style.opacity !== "undefined" ) {
@@ -431,16 +428,18 @@ Object.assign( Ship3D.prototype, {
 
 		}
 
-	},
+	}
+
 	//this function is used as a temporary hack to group similar objects by color
-	stripName: function ( s ) {
+	stripName( s ) {
 
 		s = s.replace( /[0-9]/g, "" );
 		s = s.trim();
 		return s;
 
-	},
-	randomColor: function () {
+	}
+
+	randomColor() {
 
 		let r = Math.round( Math.random() * 0xff );
 		let g = Math.round( Math.random() * 0xff );
@@ -448,31 +447,29 @@ Object.assign( Ship3D.prototype, {
 		return ( ( r << 16 ) | ( g << 8 ) | b );
 
 	}
-} );
-
-//Class to contain the geometry of a hull side.
-//(Should perhaps be replaced by a HullGeometry class, but then
-//it cannot be a simple subclass of PlaneBufferGeometry.)
-//After instantiation, stations, waterlines and table can be modified or replaced,
-//but the data dimensions NxM must remain the same.
-function HullSideGeometry( stations, waterlines, table ) {
-
-	this.stations = stations;
-	this.waterlines = waterlines;
-	this.table = table;
-	this.N = stations.length;
-	this.M = waterlines.length;
-	//Hull side, in principle Y offsets on an XZ plane:
-	//Even though a plane geometry is usually defined in terms of Z offsets on an XY plane, the order of the coordinates for each vertex is not so important. What is important is to get the topology right. This is ensured by working with the right order of the vertices.
-	THREE.PlaneBufferGeometry.call( this, undefined, undefined, this.N - 1, this.M - 1 );
-
-	this.update();
 
 }
 
-HullSideGeometry.prototype = Object.create( THREE.PlaneBufferGeometry.prototype );
-Object.assign( HullSideGeometry.prototype, {
-	update: function () {
+
+class HullSideGeometry extends THREE.PlaneBufferGeometry {
+
+	constructor( stations, waterlines, table, verticalsNumber, horizontalsNumber ) {
+
+		//Hull side, in principle Y offsets on an XZ plane:
+		//Even though a plane geometry is usually defined in terms of Z offsets on an XY plane, the order of the coordinates for each vertex is not so important. What is important is to get the topology right. This is ensured by working with the right order of the vertices.
+		super( undefined, undefined, verticalsNumber, horizontalsNumber );
+
+		this.stations = stations;
+		this.waterlines = waterlines;
+		this.table = table;
+		this.N = verticalsNumber + 1;
+		this.M = horizontalsNumber + 1;
+
+		this.update();
+
+	}
+
+	update() {
 
 		let pos = this.getAttribute( "position" );
 		let pa = pos.array;
@@ -596,29 +593,28 @@ Object.assign( HullSideGeometry.prototype, {
 		this.computeVertexNormals();
 
 	}
-} );
-
-function Hull3D( hull, design_draft ) {
-
-	THREE.Group.call( this );
-
-	this.hull = hull;
-	this.group = "Hull3D";
-	this.name = "Hull3D";
-	this.design_draft = design_draft !== undefined ? design_draft : 0.5 * hull.attributes.Depth;
-	this.upperColor = typeof hull.style.upperColor !== "undefined" ? hull.style.upperColor : 0x33aa33;
-	this.lowerColor = typeof hull.style.lowerColor !== "undefined" ? hull.style.lowerColor : 0xaa3333;
-	this.opacity = typeof hull.style.opacity !== "undefined" ? hull.style.opacity : 0.5;
-
-	this.update();
 
 }
 
-Hull3D.prototype = Object.create( THREE.Group.prototype );
+class Hull3D extends THREE.Group {
 
-Object.assign( Hull3D.prototype, {
-	//Experimental addition. Broken.
-	addStation: function ( p ) {
+	constructor( hull, design_draft ) {
+
+		super();
+
+		this.hull = hull;
+		this.group = "Hull3D";
+		this.name = "Hull3D";
+		this.design_draft = design_draft !== undefined ? design_draft : 0.5 * hull.attributes.Depth;
+		this.upperColor = typeof hull.style.upperColor !== "undefined" ? hull.style.upperColor : 0x33aa33;
+		this.lowerColor = typeof hull.style.lowerColor !== "undefined" ? hull.style.lowerColor : 0xaa3333;
+		this.opacity = typeof hull.style.opacity !== "undefined" ? hull.style.opacity : 0.5;
+
+		this.update();
+
+	}
+
+	addStation( p ) {
 
 		const hb = this.hull.halfBreadths;
 		const { index, mu } = Vessel.f.bisectionSearch( hb.stations, p );
@@ -631,9 +627,10 @@ Object.assign( Hull3D.prototype, {
 
 		this.update();
 
-	},
+	}
+
 	//Experimental addition
-	addWaterline: function ( p ) {
+	addWaterline( p ) {
 
 		const hb = this.hull.halfBreadths;
 		const { index, mu } = Vessel.f.bisectionSearch( hb.waterlines, p );
@@ -642,9 +639,10 @@ Object.assign( Hull3D.prototype, {
 
 		this.update();
 
-	},
+	}
+
 	//or updateGeometries?
-	update: function () {
+	update() {
 
 		const hull = this.hull;
 		const upperColor = this.upperColor;
@@ -662,7 +660,7 @@ Object.assign( Hull3D.prototype, {
 		let table = hull.halfBreadths.table;
 
 		if ( this.hGeom ) this.hGeom.dispose();
-		this.hGeom = new HullSideGeometry( stations, waterlines, table );
+		this.hGeom = new HullSideGeometry( stations, waterlines, table, stations.length - 1, waterlines.length - 1 );
 
 		let N = stations.length;
 		let M = waterlines.length;
@@ -773,4 +771,7 @@ Object.assign( Hull3D.prototype, {
 		this.scale.set( LOA, 0.5 * BOA, Depth );
 
 	}
-} );
+
+}
+
+export default Ship3D;

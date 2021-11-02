@@ -40,5 +40,4 @@ class BaseObject extends JSONSpecObject {
 
 }
 
-export default BaseObject
-;
+export default BaseObject;
