@@ -92,23 +92,17 @@
 				//camera.updateProjectionMatrix();
 				//renderer.setSize(window.innerWidth, window.innerHeight);
 			};
-			camera.up.set(0, 1, 0)
-			camera.lookAt(20, 10, 0)
-
+			camera.up.set(0, 1, 0);
 			window.addEventListener('resize', onResize, false);
 			onResize();
-			camera.position.set(oSize * 0.05, - oSize * 0.3, oSize * 0.05);
-			camera.lookAt(zUpCont.position);
-			//zUpCont.add(camera);
+			camera.position.set(oSize * 0.05, oSize * 0.05, oSize * 0.25);
 
 			controls = new THREE.OrbitControls(camera, renderer.domElement);
-			//controls.minDistance = 0;
 			controls.maxDistance = 0.5 * oSize;
 			controls.enablePan = false;
 			controls.maxPolarAngle = 0.5 * Math.PI - 0.1;
 			controls.minPolarAngle = 0.1;
 
-			//zUpCont.add(new THREE.AxisHelper(1000));
 			zUpCont.add(new THREE.HemisphereLight(0xccccff, 0x666688, 1));
 
 			ocean = new Ocean({
@@ -120,7 +114,7 @@
 			playback.add(ocean);
 			zUpCont.add(ocean);
 
-			Vessel.loadShip("specs/ship_specifications/PX121.json", function (ship) {
+			Vessel.loadShip("ship_specs/PX121.json", function (ship) {
 				let shipSpec = ship.getSpecification();
 				initMov(ship);
 
@@ -203,8 +197,6 @@
 			if (!playing) {
 				ocean.water.material.uniforms.time.value += 1 / 60;
 			}
-
-			//ocean.water.render();
 
 			renderer.render(scene, camera);
 			requestAnimationFrame(animate);
