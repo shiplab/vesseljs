@@ -684,7 +684,7 @@
 
 			ship3D = new Ship3D(ship, {
 				shipState: states,
-				stlPath: "specs/STL files",
+				stlPath: "3D_models/STL/various",
 				upperColor: 0x33aa33,
 				lowerColor: 0xaa3333,
 				hullOpacity: 1,
@@ -695,7 +695,7 @@
 
 			//Load the ship specifications
 			Vessel.loadShip(
-				"specs/ship_specifications/mississipiBarge.json",
+				"ship_specs/mississipiBarge.json",
 				// http://www.navioseportos.com.br/site/index.php/uteis/biblioteca-digital/navios/927-pedreiras-1993
 				function (ship) {
 					states = ship.designState.clone();
@@ -705,7 +705,7 @@
 					statMod.setDraft();
 					ship3D = new Ship3D(ship, {
 						shipState: states,
-						stlPath: "specs/STL files",
+						stlPath: "3D_models/STL/various",
 						upperColor: 0x33aa33,
 						lowerColor: 0xaa3333,
 						hullOpacity: 1,

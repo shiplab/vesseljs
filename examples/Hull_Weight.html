@@ -224,7 +224,7 @@
 		}
 
 		//Load sample file:
-		new THREE.FileLoader().load("specs/ship_specifications/PX121.json", useFileData);
+		new THREE.FileLoader().load("ship_specs/PX121.json", useFileData);
 
 		function useFileData(contents) {
 			var shipspec = JSON.parse(contents);
@@ -233,7 +233,7 @@
 			if (ship3D !== undefined) {
 				scene.remove(ship3D);
 			}
-			ship3D = new Ship3D(ship, "specs/STL files");
+			ship3D = new Ship3D(ship, "3D_models/STL/various");
 			scene.add(ship3D);
 
 			let LOA = ship.structure.hull.attributes.LOA;
@@ -289,14 +289,10 @@
 
         //compare values
 
-
 	</script>
 	<!-- /.container -->
 
-
-
 	<!-- Insert own scripts here -->
-
 
 </body>
 

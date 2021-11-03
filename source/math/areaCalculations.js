@@ -43,45 +43,58 @@ function trapezoidCalculation(xbase0, xbase1, xtop0, xtop1, ybase, ytop) {
 }
 
 function combineAreas(array) {
-	let A = 0;
-	let xc = 0;
-	let yc = 0;
-	let maxX = 0, minX = 0, maxY = 0, minY = 0;
-	let L = array.length;
+	let A = 0
+	let xc = 0
+	let yc = 0
+	let maxX = 0,
+		minX = 0,
+		maxY = 0,
+		minY = 0
+	let L = array.length
+	let foundMinY = false
+	let foundMaxY = false
 	for (let i = 0; i < L; i++) {
-		let e = array[i];
-		A += e.A;
-		xc += e.xc * e.A;
-		yc += e.yc * e.A;
-		if (!isNaN(e.maxX) && e.maxX > maxX)
-			maxX = e.maxX;
-		if (!isNaN(e.minX) && e.minX < minX)
-			minX = e.minX;
-		if (!isNaN(e.maxY) && e.maxY > maxY)
-			maxY = e.maxY;
-		if (!isNaN(e.minY) && e.minY < minY)
-			minY = e.minY;
+		let e = array[i]
+		A += e.A
+		xc += e.xc * e.A
+		yc += e.yc * e.A
+		if (!isNaN(e.maxX) && e.maxX > maxX) maxX = e.maxX
+		if (!isNaN(e.minX) && e.minX < minX) minX = e.minX
+		if (!isNaN(e.maxY) && e.maxY > maxY && !foundMaxY && foundMinY) {
+			maxY = e.maxY
+			if (e.A === 0) {
+				foundMaxY = true
+			}
+		}
+		if (!isNaN(e.minY) && !foundMinY) {
+			if (e.A !== 0) {
+				minY = e.minY
+				foundMinY = true
+			}
+		}
 	}
-	let Ix = 0;
-	let Iy = 0;
+	if (!foundMaxY) maxY = array[L-1].maxY //if foundMaxY is false then the ship is a barge and a different logic must apply @ferrari212
+
+	let Ix = 0
+	let Iy = 0
 
 	if (A !== 0) {
-		xc /= A;
-		yc /= A;
+		xc /= A
+		yc /= A
 	} else {
 		//console.warn("Zero area combination.");
 		//console.trace();
-		xc /= L;
-		yc /= L;
+		xc /= L
+		yc /= L
 	}
 
 	for (let i = 0; i < array.length; i++) {
-		let e = array[i];
-		Ix += steiner(e.Ix, e.A, e.yc, yc);
-		Iy += steiner(e.Iy, e.A, e.xc, xc);
+		let e = array[i]
+		Ix += steiner(e.Ix, e.A, e.yc, yc)
+		Iy += steiner(e.Iy, e.A, e.xc, xc)
 	}
 
-	return {A: A, xc: xc, yc: yc, Ix: Ix, Iy: Iy, maxX: maxX, minX: minX, maxY: maxY, minY: minY};
+	return { A: A, xc: xc, yc: yc, Ix: Ix, Iy: Iy, maxX: maxX, minX: minX, maxY: maxY, minY: minY }
 }
 
 //x and y here refers to coordinates in the plane that is being calculated on.

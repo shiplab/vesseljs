@@ -152,7 +152,7 @@
 		});
 
 		var raoReq = new XMLHttpRequest();
-		raoReq.open("GET", "motion_data/Simple_file_motion.4", true);
+		raoReq.open("GET", "others/motion_data/Simple_file_motion.4", true);
 		raoReq.addEventListener("load", function (event) {
 			output = event.target.response;
 			useRAO(output);
@@ -336,7 +336,7 @@
 			//console.log(states.shipCache.thisStateVer);
 			ship3D = new Ship3D(ship, {
 				shipState: states,
-				stlPath: "specs/STL files",
+				stlPath: "3D_models/STL/various",
 				upperColor: 0x33aa33,
 				lowerColor: 0xaa3333,
 				hullOpacity: 1,

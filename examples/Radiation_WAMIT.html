@@ -131,7 +131,7 @@
 			wavMo = [];
 			states = [];
 
-			Vessel.loadShip("specs/ship_specifications/mississipiBarge.json", function (ship) {
+			Vessel.loadShip("ship_specs/mississipiBarge.json", function (ship) {
 				states = ship.designState.clone();
 				states.objectOverrides.derivedByGroup["ballast tanks"].fullness = 0.5;
 				states.objectOverrides.derivedByGroup["cargo tanks"].fullness = 0.5;
@@ -141,7 +141,6 @@
 				//console.log(states.shipCache.thisStateVer);
 				ship3D = new Ship3D(ship, {
 					shipState: states,
-					stlPath: "../specs/STL files",
 					upperColor: 0x33aa33,
 					lowerColor: 0xaa3333,
 					hullOpacity: 1,

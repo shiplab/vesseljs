@@ -145,7 +145,7 @@ function Ocean(params) {
 		// According to
 		// https://github.com/mrdoob/three.js/blob/master/examples/webgl_shaders_ocean.html
 
-		var waterGeometry = new THREE.PlaneBufferGeometry(10000, 10000);
+		var waterGeometry = new THREE.PlaneBufferGeometry(this.size, this.size, this.segments, this.segments);
 
 		this.water = new THREE.Water(waterGeometry, {
 			textureWidth: 512,

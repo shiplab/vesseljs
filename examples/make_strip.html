@@ -78,7 +78,7 @@
 	"use strict";
 	// preload scatter diagram
 	var psvReq = new XMLHttpRequest();
-	psvReq.open("GET", "specs/ship_specifications/PX121.json", true);
+	psvReq.open("GET", "ship_specs/PX121.json", true);
 	psvReq.addEventListener("load", function(event) {
 		var contents = event.target.response;
 		convert(contents, "PX121.json");

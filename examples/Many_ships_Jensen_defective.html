@@ -128,10 +128,10 @@ See ShipState_new.js in classes for a start on that development.
 
 			function addShip() {
 				let design = designs[Math.floor(Math.random() * designs.length)];
-				Vessel.loadShip("specs/ship_specifications/" + design + ".json", function(ship) {
+				Vessel.loadShip("ship_specs/" + design + ".json", function(ship) {
 
 					let ship3D = new Ship3D(ship, {
-						stlPath: "specs/STL files",
+						stlPath: "3D_files/STL/various",
 						upperColor: 0x33aa33,
 						lowerColor: 0xaa3333,
 						hullOpacity: 1,
