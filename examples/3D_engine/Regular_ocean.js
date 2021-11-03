@@ -7,10 +7,10 @@
 
 var wavCre = new Vessel.WaveCreator();
 
-var Wave = function() {
+var Wave = function () {
 	var waveCount = 0;
 
-	return function(waveType) {
+	return function (waveType) {
 		this.waveId = waveCount;
 		waveCount++;
 
@@ -29,10 +29,10 @@ function DirectionalCosine(params) {
 	//period
 	let T;
 	Object.defineProperty(this, "T", {
-		get: function() {
+		get: function () {
 			return T;
 		},
-		set: function(newvalue) {
+		set: function (newvalue) {
 			T = newvalue;
 			this.omega = 2 * Math.PI / T;
 			this.updateWavelength();
@@ -42,13 +42,13 @@ function DirectionalCosine(params) {
 	//direction
 	let theta;
 	Object.defineProperty(this, "theta", {
-		get: function() {
+		get: function () {
 			return theta;
 		},
-		set: function(newvalue) {
+		set: function (newvalue) {
 			theta = newvalue;
-			this.costh = Math.cos(theta*Math.PI/180);
-			this.sinth = Math.sin(theta*Math.PI/180);
+			this.costh = Math.cos(theta * Math.PI / 180);
+			this.sinth = Math.sin(theta * Math.PI / 180);
 		}
 	});
 	this.theta = typeof params.theta !== "undefined" ? params.theta : 0;
@@ -66,14 +66,14 @@ Object.assign(DirectionalCosine.prototype, {
 	theta: 0.0,
 	phi: 0.0,
 	//Updates the wave length to the "natural" state (dispersion relation for deep waters)
-	updateWavelength: function() {
+	updateWavelength: function () {
 		let g = 9.81;
 		this.L = g * this.T * this.T / (2 * Math.PI);
 		if (this.conf) this.conf.updateDisplay(); //TEST
 	},
-	calculate: function(x, y, t) {
+	calculate: function (x, y, t) {
 		let xm = x * this.costh + y * this.sinth;
-		return this.A * Math.cos(this.phi*Math.PI/180 + 2 * Math.PI * (xm / this.L) - this.omega * t);
+		return this.A * Math.cos(this.phi * Math.PI / 180 + 2 * Math.PI * (xm / this.L) - this.omega * t);
 	}
 });
 
@@ -88,12 +88,14 @@ function Ocean(params) {
 	The mirror effect does not account for geometry, and there is no self-mirroring. But it mostly looks OK anyway. On tall waves, one can see that the rendered texture is stretched.
 	*/
 	try {
-		let waterNormals = new THREE.TextureLoader().load('3D_engine/textures/waternormals.jpg');
-		waterNormals.wrapS = waterNormals.wrapT = THREE.RepeatWrapping;
-		this.water = new THREE.Water(renderer, camera, scene, {
+		let waterGeometry = new THREE.PlaneBufferGeometry(this.size, this.size, this.segments, this.segments);
+
+		this.water = new THREE.Water(waterGeometry, {
 			textureWidth: 512,
 			textureHeight: 512,
-			waterNormals: waterNormals,
+			waterNormals: new THREE.TextureLoader().load('3D_engine/textures/waternormals.jpg', function (texture) {
+				texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+			}),
 			alpha: 1.0,
 			sunDirection: params.sunDirection,
 			sunColor: 0xffffff,
@@ -101,13 +103,11 @@ function Ocean(params) {
 			distortionScale: 50.0
 		});
 
-		THREE.Mesh.call(this,
-			new THREE.PlaneBufferGeometry(this.size, this.size, this.segments, this.segments),
-			/*new THREE.MeshPhongMaterial({
-				color: 0x041020,
-				side: THREE.DoubleSide,
-				wireframe: true
-			})*/this.water.material);
+		THREE.Mesh.call(this, waterGeometry, /*new THREE.MeshPhongMaterial({
+			color: 0x041020,
+			side: THREE.DoubleSide,
+			wireframe: true
+		}),*/ this.water.material); //clear it to show the ocean
 
 		this.add(this.water);
 	} catch (e) {
@@ -120,8 +120,8 @@ function Ocean(params) {
 			}));
 		//Dummy object to avoid bugss when water shader fails
 		this.water = {
-			render: function() {},
-			material: {uniforms: {time: {value: 0}}}
+			render: function () { },
+			material: { uniforms: { time: { value: 0 } } }
 		};
 		//Axes:
 		this.add(new THREE.AxisHelper(600));
@@ -137,16 +137,16 @@ function Ocean(params) {
 		//Cos menu
 		this.currentCos = new DirectionalCosine();//{A:NaN,T:NaN,theta:NaN,phi:NaN}); //dummy object
 		let pcos = new Proxy(/*ptarget*/{}, {
-			get: function(obj, prop) {
+			get: function (obj, prop) {
 				return scope.currentCos[prop];
 			},
-			set: function(obj, prop, value) {
+			set: function (obj, prop, value) {
 				scope.currentCos[prop] = value;
 				wavCre.setWaveDef(2 * Math.PI / scope.currentCos["T"], scope.currentCos["A"], scope.currentCos["theta"]);
 				updateMotion();
 				return true; //debug
 			},
-			ownKeys: function(obj) {
+			ownKeys: function (obj) {
 				return Object.getOwnPropertyNames(scope.currentCos);
 			}
 		});
@@ -164,7 +164,7 @@ function Ocean(params) {
 Ocean.prototype = Object.create(THREE.Mesh.prototype);
 Object.assign(Ocean.prototype, {
 	constructor: Ocean,
-	addCosineWave: function(params) {
+	addCosineWave: function (params) {
 		params = params || {};
 		let w = new DirectionalCosine(params);
 		this.waves.push(w);
@@ -179,7 +179,7 @@ Object.assign(Ocean.prototype, {
 
 		return w;
 	},
-	calculateZ: function(x, y, t) {
+	calculateZ: function (x, y, t) {
 		let z = 0;
 		for (let w of this.waves) {
 			z += w.calculate(x, y, t);
@@ -188,7 +188,7 @@ Object.assign(Ocean.prototype, {
 	},
 	//It appears the y axis was inverted here.
 	//I fixed it, but am not sure how it was wrong.
-	update: function(t) {
+	update: function (t) {
 		let pos = this.geometry.getAttribute("position");
 
 		let size = this.size;
