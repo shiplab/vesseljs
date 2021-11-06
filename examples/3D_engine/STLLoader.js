@@ -248,10 +248,11 @@ THREE.STLLoader.prototype = {
 			var strArray = [];
 			for ( var i = 0; i < buf.byteLength; i ++ ) {
 
-				strArray.push(String.fromCharCode( array_buffer[ i ] )); // implicitly assumes little-endian
+				strArray.push( String.fromCharCode( array_buffer[ i ] ) ); // implicitly assumes little-endian
 
 			}
-			return strArray.join('');
+
+			return strArray.join( '' );
 
 		} else {
 
@@ -271,6 +272,7 @@ THREE.STLLoader.prototype = {
 				array_buffer[ i ] = buf.charCodeAt( i ) & 0xff; // implicitly assumes little-endian
 
 			}
+
 			return array_buffer.buffer || array_buffer;
 
 		} else {

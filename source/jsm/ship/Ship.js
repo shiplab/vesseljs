@@ -8,6 +8,9 @@ Suggested calculations to do:
 - Inertia matrix (will need more detailed properties of parts).
 */
 import JSONSpecObject from "./JSONSpecObject.js";
+import BaseObject from "./BaseObject.js";
+import DerivedObject from "./DerivedObject.js";
+import Structure from "./Structure.js";
 
 export default class Ship extends JSONSpecObject {
 

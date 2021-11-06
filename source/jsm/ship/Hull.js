@@ -1,24 +1,14 @@
-//@EliasHasle
+import JSONSpecObject from "./JSONSpecObject.js";
 
-/*When having a class for this, the specification can possibly be in one of several formats, and the handling will be contained in this class.
+export default class DerivedObject extends JSONSpecObject {
 
-I have tried to remove the dependency on the ship object here. This is in order to be able to optimize updates.
+	constructor( spec ) {
 
-This class needs more comments, for shure.
+		super( spec );
 
-And the geometric calculations are faulty.
-*/
+	}
 
-function Hull( spec ) {
-
-	JSONSpecObject.call( this, spec );
-
-}
-
-Hull.prototype = Object.create( JSONSpecObject.prototype );
-Object.assign( Hull.prototype, {
-	constructor: Hull,
-	setFromSpecification: function ( spec ) {
+	setFromSpecification( spec ) {
 
 		this.halfBreadths = spec.halfBreadths;
 		//this.buttockHeights = spec.buttockHeights;
@@ -27,19 +17,9 @@ Object.assign( Hull.prototype, {
 		this.style = spec.style || {};
 		return this;
 
-	},
-	getSpecification: function () {
+	}
 
-		return {
-			halfBreadths: this.halfBreadths,
-			//buttockHeights: this.buttockHeights
-			attributes: this.attributes,
-			style: this.style
-		};
-
-	},
-	//to facilitate economical caching, it may be best to have a few numerical parameters to this function instead of letting it depend on the whole designState. Or maybe the designState is static enough.
-	getWeight: function ( designState ) {
+	getWeight( designState ) {
 
 		let ha = this.attributes;
 		let B = ha.BOA;
@@ -60,17 +40,55 @@ Object.assign( Hull.prototype, {
 		//console.info("Hull weight:", output);
 		return output;
 
-	},
-	/*
-	Testing new version without nanCorrectionMode parameter, that defaults to setting lower NaNs to 0 and extrapolating highest data entry for upper NaNs (if existant, else set to 0). Inner NaNs will also be set to zero.
+	}
 
-	Input:
-	z: level from bottom of ship (absolute value in meters)
+	getStation( x ) {
 
-	Output:
-	Array representing waterline offsets for a given height from the keel (typically a draft).
-	*/
-	getWaterline: function ( z ) {
+		let ha = this.attributes;
+		let xr = x / ha.LOA;
+		let sts = this.halfBreadths.stations;
+		let wls = this.halfBreadths.waterlines;
+		let tab = this.halfBreadths.table;
+
+		let { index: a, mu: mu } = bisectionSearch( sts, xr );
+
+		let st;
+		if ( a < 0 || a >= sts.length ) st = new Array( wls.length ).fill( null );
+		else if ( a + 1 === sts.length ) st = tab.map( row => row[ sts.length - 1 ] );
+		else {
+
+			st = [];
+			for ( let j = 0; j < wls.length; j ++ ) {
+
+				let after = tab[ j ][ a ];
+				let forward = tab[ j ][ a + 1 ];
+				if ( ( after === null || isNaN( after ) ) && ( forward === null || isNaN( forward ) ) ) {
+
+					st.push( null );
+
+				} else {
+
+					//Simply correcting by "|| 0" is not consistent with what is done in getWaterline. It may be better to correct upper nulls by nearest neighbor below.
+					st.push( lerp( after || 0, forward || 0, mu ) );
+
+				}
+
+			}
+
+		}
+
+		for ( let j = 0; j < this.halfBreadths.waterlines.length; j ++ ) {
+
+			st[ j ] *= 0.5 * ha.BOA;
+			if ( isNaN( st[ j ] ) || st[ j ] === null ) st[ j ] = null;
+
+		}
+
+		return st;
+
+	}
+
+	getWaterline( z ) {
 
 		let ha = this.attributes;
 		let zr = z / ha.Depth; //using zr requires fewer operations and less memory than a scaled copy of wls.
@@ -198,55 +216,10 @@ Object.assign( Hull.prototype, {
 
 		}
 
-	},
-	//This must be debugged more. getWaterline got an overhaul, but this did not.
-	getStation: function ( x ) {
+	}
 
-		let ha = this.attributes;
-		let xr = x / ha.LOA;
-		let sts = this.halfBreadths.stations;
-		let wls = this.halfBreadths.waterlines;
-		let tab = this.halfBreadths.table;
-
-		let { index: a, mu: mu } = bisectionSearch( sts, xr );
-
-		let st;
-		if ( a < 0 || a >= sts.length ) st = new Array( wls.length ).fill( null );
-		else if ( a + 1 === sts.length ) st = tab.map( row => row[ sts.length - 1 ] );
-		else {
-
-			st = [];
-			for ( let j = 0; j < wls.length; j ++ ) {
-
-				let after = tab[ j ][ a ];
-				let forward = tab[ j ][ a + 1 ];
-				if ( ( after === null || isNaN( after ) ) && ( forward === null || isNaN( forward ) ) ) {
-
-					st.push( null );
-
-				} else {
-
-					//Simply correcting by "|| 0" is not consistent with what is done in getWaterline. It may be better to correct upper nulls by nearest neighbor below.
-					st.push( lerp( after || 0, forward || 0, mu ) );
-
-				}
-
-			}
-
-		}
-
-		for ( let j = 0; j < this.halfBreadths.waterlines.length; j ++ ) {
-
-			st[ j ] *= 0.5 * ha.BOA;
-			if ( isNaN( st[ j ] ) || st[ j ] === null ) st[ j ] = null;
-
-		}
-
-		return st;
-
-	},
 	//typically deck bounds
-	waterlineCalculation: function ( z, bounds ) {
+	waterlineCalculation( z, bounds ) {
 
 		let { minX, maxX, minY, maxY } = bounds || {};
 
@@ -378,10 +351,9 @@ Object.assign( Hull.prototype, {
 		//console.groupEnd();
 		return output;
 
-	},
-	//Not done, and not tested
-	//The optional maxZ parameter is introduced for enabling below-water calculations. More bounds will add more complexity, although then some common logic may perhaps be moved from this method and waterlineCalculation to sectionCalculation.
-	stationCalculation: function ( x, maxZ ) {
+	}
+
+	stationCalculation( x, maxZ ) {
 
 		let wls = this.halfBreadths.waterlines.map( wl => this.attributes.Depth * wl );
 		let port = this.getStation( x );
@@ -415,14 +387,9 @@ Object.assign( Hull.prototype, {
 			minY: sc.minY
 		};
 
-	},
+	}
 
-	/*
-	Known issues:
-	nulls in the offset table will be corrected to numbers in this calculation, whereas the intended meaning of a null supposedly is that there is no hull at that position. This means the calculation can overestimate the wetted area (and possibly make other errors too).
-	*/
-	//Important: calculateAttributesAtDraft takes one mandatory parameter T. (The function defined here is immediately called during construction of the prototype, and returns the proper function.)
-	calculateAttributesAtDraft: function () {
+	calculateAttributesAtDraft() {
 
 		function levelCalculation( hull,
 			z,
@@ -609,9 +576,11 @@ Object.assign( Hull.prototype, {
 
 		};
 
-	}(),
+	}
+	// }()
+
 	//M is the mass (in kg) of the ship
-	calculateDraftAtMass: function ( M, epsilon = 0.001, rho = 1025 ) {
+	calculateDraftAtMass( M, epsilon = 0.001, rho = 1025 ) {
 
 		let VT = M / rho; //Target submerged volume (1025=rho_seawater)
 		//Interpolation:
@@ -667,5 +636,18 @@ Object.assign( Hull.prototype, {
 		return t;
 
 	}
-} );
-//@EliasHasle
+
+	getSpecification() {
+
+		return {
+			halfBreadths: this.halfBreadths,
+			//buttockHeights: this.buttockHeights
+			attributes: this.attributes,
+			style: this.style
+		};
+
+	}
+
+
+
+}

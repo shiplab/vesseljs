@@ -1,14 +1,13 @@
 import JSONSpecObject from "./JSONSpecObject.js";
-import BaseObject from	"./BaseObject";
-import Vectors from "../math/Vectors";
+import BaseObject from	"./BaseObject.js";
+import Vectors from "../math/Vectors.js";
 
 export default class DerivedObject extends JSONSpecObject {
 
 	constructor( specification, baseObjects ) {
 
-		this.baseObjects = baseObjects;
-
 		super( specification );
+		this.baseObjects = baseObjects;
 
 	}
 

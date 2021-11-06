@@ -205,7 +205,7 @@
 		}
 
 		//Load sample file:
-		new THREE.FileLoader().load("ship_specs/PX121.json", useFileData)
+		new THREE.FileLoader().load("ship_specs/barge.json", useFileData)
 
 		function useFileData(contents) {
 			var shipspec = JSON.parse(contents)
@@ -224,6 +224,7 @@
 				objectOpacity: 1
 			});
 			scene.add(ship3D)
+			debugger
 
 			let LOA = ship.structure.hull.attributes.LOA
 			camera.position.set(0.3 * LOA, 0.7 * LOA, 0.7 * LOA)
