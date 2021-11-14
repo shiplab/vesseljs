@@ -6,8 +6,7 @@ export default class DerivedObject extends JSONSpecObject {
 
 	constructor( specification, baseObjects ) {
 
-		super( specification );
-		this.baseObjects = baseObjects;
+		super( specification, baseObjects );
 
 	}
 

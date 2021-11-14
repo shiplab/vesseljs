@@ -1,40 +1,15 @@
-//@EliasHasle
+import JSONSpecObject from "./JSONSpecObject.js";
 
-/*
-The object state assignments could/should also have a baseByGroup. A group of baseObjects could for instance be a category including all tanks that carry a given compound, regardless of their size and shape. Maybe "group" is not a good name for something that can be set freely. Maybe "label" or "tag" or something else. The same goes for derivedByGroup.
+export default class ShipState extends JSONSpecObject {
 
-With this, there would be five types of assignments:
-common: All objects.
-baseByGroup: Applies to every object that has its base object's property "group" set to the given name.
-baseByID: Applies to all objects that have base object consistent with the given ID:
-derivedByGroup: Applies to every object that has its property "group" set to the given name.
-derivedByID: Applies only to the object with given ID.
+	constructor( specification ) {
 
-Assignments of subsequent types override assignments of previous types.
-*/
 
-/*
-The caching and version control is clumsy (and incomplete). I (Elias) have done some separate testing of ways to do it properly. This must be implemented later.
-*/
+		super( specification );
 
-/*
-ShipState now mainly accounts for load state, by which I mean the states of objects in the ship. We need to find out how to best handle other state properties, like global position, heading etc., not to mention properties that change fast, and that depend on time and current state (motion fluctuations etc.).
-*/
+	}
 
-function ShipState( specification ) {
-
-	this.version = 0;
-	this.objectCache = {};
-	this.continuous = {};
-	this.discrete = {};
-	JSONSpecObject.call( this, specification );
-
-}
-
-ShipState.prototype = Object.create( JSONSpecObject.prototype );
-Object.assign( ShipState.prototype, {
-	constructor: ShipState,
-	getSpecification: function () {
+	getSpecification() {
 
 		if ( this.cachedVersion !== this.version ) {
 
@@ -53,13 +28,15 @@ Object.assign( ShipState.prototype, {
 
 		return this.specCache;
 
-	},
-	clone: function () {
+	}
+
+	clone() {
 
 		return new ShipState( this.getSpecification() );
 
-	},
-	getObjectState: function ( o ) {
+	}
+
+	getObjectStaet() {
 
 		if ( this.objectCache[ o.id ] !== undefined ) {
 
@@ -109,9 +86,9 @@ Object.assign( ShipState.prototype, {
 
 		return state;
 
-	},
-	//o is an object, k is a key to a single state property
-	getObjectStateProperty: function ( o, k ) {
+	}
+
+	getObjectStateProperty( o, k ) {
 
 		return this.getObjectState( o )[ k ];
 		//I have commented out a compact, but not very efficient, implementation of Alejandro's pattern, that does not fit too well with my caching solution.
@@ -122,9 +99,11 @@ Object.assign( ShipState.prototype, {
 				}
 				return; //undefined*/
 
-	},
-	//Sets this state exclusively from parameter.
-	setFromSpecification: function ( spec ) {
+	}
+
+	setFromSpecification( spec ) {
+
+		this.setInitialState();
 
 		this.objectCache = {}; //reset cache
 		if ( ! spec ) {
@@ -157,9 +136,9 @@ Object.assign( ShipState.prototype, {
 
 		return this;
 
-	},
-	//Overrides existing directives and adds new ones.
-	extend: function ( spec ) {
+	}
+
+	extend( spec ) {
 
 		Object.assign( this.calculationParameters, spec.calculationParameters );
 		this.calculatedProperties = {};
@@ -190,9 +169,9 @@ Object.assign( ShipState.prototype, {
 
 		this.version ++;
 
-	},
-	//Applies only directives of spec that have a corresponding directive in this.
-	override: function ( spec ) {
+	}
+
+	override( spec ) {
 
 		let oo = this.objectOverrides;
 		let soo = spec.objectOverrides;
@@ -250,4 +229,14 @@ Object.assign( ShipState.prototype, {
 		this.version ++;
 
 	}
-} );
+
+	setInitialState() {
+
+		this.version = 0;
+		this.objectCache = {};
+		this.continuous = {};
+		this.discrete = {};
+
+	}
+
+}

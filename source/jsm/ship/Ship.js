@@ -11,6 +11,7 @@ import JSONSpecObject from "./JSONSpecObject.js";
 import BaseObject from "./BaseObject.js";
 import DerivedObject from "./DerivedObject.js";
 import Structure from "./Structure.js";
+import ShipState from "./ShipState.js";
 
 export default class Ship extends JSONSpecObject {
 

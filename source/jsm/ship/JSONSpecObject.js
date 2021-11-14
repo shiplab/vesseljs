@@ -14,7 +14,7 @@ Maybe this can be improved by implementing fromJSON and to toJSON methods.
 
 export default class JSONSpecObject {
 
-	constructor( specification ) {
+	constructor( specification, baseObjects ) {
 
 		if ( specification === null ) {
 
@@ -39,6 +39,12 @@ export default class JSONSpecObject {
 			}
 
 			specification = {};
+
+		}
+
+		if ( baseObjects ) {
+
+			this.baseObjects = baseObjects;
 
 		}
 
