@@ -7,17 +7,54 @@
 		<script src="../examples/3D_engine/legacy/three.js"></script>
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<script src="../build/vessel.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
 		<!-- <script src="../source/jsm/ship/BaseObject.js" type="module"></script>
 		<script src="../source/jsm/ship/JSONSpecObject.js" type="module"></script> -->
-	</head>
+		<style>
+			table, th, td {
+				border: 1px solid black;				
+			}
+			th {
+				background-color: #045faa;
+				color: white;
+			}
+			tr:nth-child(even) {
+				background-color: #f2f2f2;
+			}
+			#myTable {
+				width: 250px;
+			}
+		</style>
+	</head>	
 	<body>
+		<h3>The following table compares the es6 and es5 style status:</h3>
+		<table id="myTable">
+			<thead>
+				Table 1 - Foundation classes
+					<tr>
+							<th>ID</th>
+							<th>NAME</th>
+					</tr>    
+			 </thead>
+			<tbody id="foundationTable"></tbody>
+		</table>
+		<br>
+		<!-- <table id="myTable">
+			<thead>
+				Table 2 - Wave related classes and methods
+					<tr>
+							<th>ID</th>
+							<th>NAME</th>
+					</tr>    
+			 </thead>
+			<tbody id="waveTables"></tbody>
+		</table> -->
 		<script  type="module">
-			// import BaseObject from "../source/jsm/ship/BaseObject.js";
 			import Ship from "../source/jsm/ship/Ship.js";
-			// import {	Vessel as VesselEs5	} from "../build/modular_vessel.js"
 			import Ship3D	from "../examples/3D_engine/modular_Ship3D.js"
 			import * as THREE from 'https://cdn.skypack.dev/three@0.133.0';
-			
+			import { addRows } from "./supComparisonFunc.js"
+
 			var ship3D
 
 		new THREE.FileLoader().load("../examples/ship_specs/barge.json", useFileData)
@@ -25,29 +62,29 @@
 		function useFileData(contents) {
 			var shipspec = JSON.parse(contents)
 
-			var ship = new Vessel.Ship(shipspec)
-			var ship_es6 = new Ship(shipspec)
+			var ship_es5 = new Vessel.Ship(shipspec)
+			var ship = new Ship(shipspec)
 
 			if (ship3D !== undefined) {
 				scene.remove(ship3D)
 			}
-			ship3D = new Ship3D(ship, {
-				shipState: ship.designState.clone(),
+			ship3D = new Ship3D(ship_es5, {
+				shipState: ship_es5.designState.clone(),
 				stlPath: "3D_models/STL/various",
 				upperColor: 0x33aa33,
 				lowerColor: 0xaa3333,
 				hullOpacity: 1,
 				deckOpacity: 1,
 				objectOpacity: 1
-			});
-			// scene.add(ship3D)
-			debugger
+			});	
 
-			// let LOA = ship.structure.hull.attributes.LOA
-			// camera.position.set(0.3 * LOA, 0.7 * LOA, 0.7 * LOA)
-			// controls.target = new THREE.Vector3(0, 0, 0)
-			// controls.update()
-			// animate()
+			addRows(ship.constructor.name, ship_es5, ship, "foundationTable")
+			addRows("BaseObject", ship_es5.baseObjects, ship.baseObjects, "foundationTable")
+			addRows("DerivedObjects", ship_es5.derivedObjects, ship.derivedObjects, "foundationTable")
+			addRows(ship.structure.constructor.name, ship_es5.structure, ship.structure, "foundationTable")
+			addRows(ship.designState.constructor.name, ship_es5.designState, ship.designState, "foundationTable")
+
+			// debugger
 		}		
 
 		</script>
