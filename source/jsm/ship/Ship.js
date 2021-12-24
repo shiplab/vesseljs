@@ -1,4 +1,5 @@
 //@EliasHasle
+//@ferrari212
 
 /*
 Notes:
@@ -194,7 +195,8 @@ export default class Ship extends JSONSpecObject {
 
 		shipState = shipState || this.designState;
 
-		this.structure = new Structure( specification.structure/*,this*/ );
+		// Comment: This piece of code maybe must be deleted
+		// this.structure = new Structure( specification.structure/*,this*/ );
 
 		let components = [];
 

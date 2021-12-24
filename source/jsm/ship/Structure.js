@@ -1,6 +1,7 @@
 //@EliasHasle
 import JSONSpecObject from "./JSONSpecObject.js";
 import Hull from "./Hull.js";
+import { combineWeights } from "../math/combineWeights.js";
 
 export default class Structure extends JSONSpecObject {
 

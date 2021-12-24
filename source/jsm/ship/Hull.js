@@ -1,4 +1,7 @@
 import JSONSpecObject from "./JSONSpecObject.js";
+import { parametricWeightHull } from "../math/parametricWeightParsons.js";
+import { bisectionSearch, lerp } from "../math/interpolation.js";
+import { sectionCalculation } from "../math/areaCalculations.js";
 
 export default class DerivedObject extends JSONSpecObject {
 
