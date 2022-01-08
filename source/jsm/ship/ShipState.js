@@ -1,9 +1,31 @@
+//@EliasHasle
+
+/*
+The object state assignments could/should also have a baseByGroup. A group of baseObjects could for instance be a category including all tanks that carry a given compound, regardless of their size and shape. Maybe "group" is not a good name for something that can be set freely. Maybe "label" or "tag" or something else. The same goes for derivedByGroup.
+
+With this, there would be five types of assignments:
+common: All objects.
+baseByGroup: Applies to every object that has its base object's property "group" set to the given name.
+baseByID: Applies to all objects that have base object consistent with the given ID:
+derivedByGroup: Applies to every object that has its property "group" set to the given name.
+derivedByID: Applies only to the object with given ID.
+
+Assignments of subsequent types override assignments of previous types.
+*/
+
+/*
+The caching and version control is clumsy (and incomplete). I (Elias) have done some separate testing of ways to do it properly. This must be implemented later.
+*/
+
+/*
+ShipState now mainly accounts for load state, by which I mean the states of objects in the ship. We need to find out how to best handle other state properties, like global position, heading etc., not to mention properties that change fast, and that depend on time and current state (motion fluctuations etc.).
+*/
+
 import JSONSpecObject from "./JSONSpecObject.js";
 
 export default class ShipState extends JSONSpecObject {
 
 	constructor( specification ) {
-
 
 		super( specification );
 
@@ -36,7 +58,7 @@ export default class ShipState extends JSONSpecObject {
 
 	}
 
-	getObjectStaet() {
+	getObjectState( o ) {
 
 		if ( this.objectCache[ o.id ] !== undefined ) {
 
@@ -170,7 +192,7 @@ export default class ShipState extends JSONSpecObject {
 		this.version ++;
 
 	}
-
+	//Applies only directives of spec that have a corresponding directive in this.
 	override( spec ) {
 
 		let oo = this.objectOverrides;

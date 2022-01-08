@@ -13,6 +13,8 @@ import BaseObject from "./BaseObject.js";
 import DerivedObject from "./DerivedObject.js";
 import Structure from "./Structure.js";
 import ShipState from "./ShipState.js";
+import { combineWeights } from "../math/combineWeights.js";
+
 
 export default class Ship extends JSONSpecObject {
 

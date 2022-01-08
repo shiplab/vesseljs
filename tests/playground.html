@@ -84,7 +84,7 @@
 			rendererES5.setClearColor(0xa9cce3, 1)
 			const renderer = new THREE.WebGLRenderer({ antialias: true })
 			renderer.setPixelRatio(window.devicePixelRatio)
-			renderer.setClearColor(0xa9cce3, 1)
+			// renderer.setClearColor(0xa9cce3, 1)
 
 			var shipspec = JSON.parse(contents)
 
@@ -131,21 +131,21 @@
 			if (ship3D !== undefined) {
 				scene.remove(ship3D)
 			}
-			// ship3D = new Ship3D(ship, {
-			// 	shipState: ship.designState.clone(),
-			// 	stlPath: "3D_models/STL/various",
-			// 	upperColor: 0x33aa33,
-			// 	lowerColor: 0xaa3333,
-			// 	hullOpacity: 1,
-			// 	deckOpacity: 1,
-			// 	objectOpacity: 1
-			// });	
-			// scene.add(ship3D)
+			ship3D = new Ship3D(ship, {
+				shipState: ship.designState.clone(),
+				stlPath: "3D_models/STL/various",
+				upperColor: 0x33aa33,
+				lowerColor: 0xaa3333,
+				hullOpacity: 1,
+				deckOpacity: 1,
+				objectOpacity: 1
+			});	
+			scene.add(ship3D)
 			ship3D_ES5 = new Ship3D(ship_es5, {
 				shipState: ship_es5.designState.clone(),
 				stlPath: "3D_models/STL/various",
 				upperColor: 0x33aa33,
-				lowerColor: 0xaa3333,
+				lowerColor: 0xaa3333,	
 				hullOpacity: 1,
 				deckOpacity: 1,
 				objectOpacity: 1
@@ -154,7 +154,14 @@
 
 			function animate() {
 				requestAnimationFrame(animate)
+				rendererES5.autoClear = true;
 				rendererES5.render(sceneES5, cameraES5)
+
+				renderer.autoClear = false;
+				renderer.setScissorTest(false);
+				renderer.setClearColor(0xa9cce3, 1)
+				renderer.clear(true, true);
+  			renderer.setScissorTest(true);
 				renderer.render(scene, camera)
 			}
 
