@@ -1,7 +1,15 @@
-class vessel {
+import Ship from "./ship/Ship.js";
 
-	constructor() {
+// export default class Vessel {
 
-	}
+// 	constructor() {
 
-}
+// 		this.Ship = Ship;
+
+// 	}
+
+// }
+
+export default Vessel = {
+	Ship: Ship,
+};

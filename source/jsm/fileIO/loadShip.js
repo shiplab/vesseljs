@@ -14,6 +14,7 @@ Vessel.loadShip(filePath, function(ship) {
 });
 
 */
+import Ship from "../ship/Ship.js";
 
 export function loadShip( url, callback ) {
 

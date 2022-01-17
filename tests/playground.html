@@ -34,46 +34,43 @@
 		</style>
 	</head>	
 	<body>
-		<h3>The following table compares the es6 and es5 style status:</h3>
-		<table id="myTable">
-			<thead>
-				Table 1 - Foundation classes
-					<tr>
-							<th>ID</th>
-							<th>NAME</th>
-					</tr>    
-			 </thead>
-			<tbody id="foundationTable"></tbody>
-		</table>
-		<br>
-		<!-- <table id="myTable">
-			<thead>
-				Table 2 - Wave related classes and methods
-					<tr>
-							<th>ID</th>
-							<th>NAME</th>
-					</tr>    
-			 </thead>
-			<tbody id="waveTables"></tbody>
-		</table> -->
 		<div class="container">
-			<div class="row">
-				<div id="3d-one" class="col">
-					Test One
-				</div>
-				<div id="3d-two" class="col">
-					Test Two
-				</div>
-			</div>
+			<h3>The following table compares the es6 and es5 style status:</h3>
+			<table id="myTable">
+				<thead>
+					Table 1 - Foundation classes
+						<tr>
+								<th>ID</th>
+								<th>NAME</th>
+						</tr>    
+				</thead>
+				<tbody id="foundationTable"></tbody>
+			</table>
+			<br>
+			<table class="table">
+				<thead>
+					<tr>
+						<th scope="col">Vessel.js ES5 Version</th>
+						<th scope="col">Vessel.js ES6 Version</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td id="3d-one"></td>
+						<td id="3d-two"></td>
+					</tr>
+				</tbody>
+			</table>
 		</div>		
 		<script  type="module">
 		import Ship from "../source/jsm/ship/Ship.js";
+		// import VesselES6 from "../source/jsm/vessel.js";
 		import { OrbitControls } from "https://threejs.org/examples/jsm/controls/OrbitControls.js";
 		import { addRows } from "./supComparisonFunc.js"
 
 		var ship3D_ES5, ship3D
 
-		new THREE.FileLoader().load("../examples/ship_specs/barge.json", useFileData)
+		new THREE.FileLoader().load("../examples/ship_specs/PX121.json", useFileData)
 		
 		const w = 1920;
 		const h = 1080;
@@ -90,7 +87,8 @@
 
 			const ship_es5 = new Vessel.Ship(shipspec)
 			const ship = new Ship(shipspec)
-
+			// const ship = new VesselES6.Ship(shipspec)
+			
 			const containerES5 = document.getElementById("3d-one")
 			const container = document.getElementById("3d-two")
 			containerES5.appendChild(rendererES5.domElement)
@@ -133,7 +131,7 @@
 			}
 			ship3D = new Ship3D(ship, {
 				shipState: ship.designState.clone(),
-				stlPath: "3D_models/STL/various",
+				stlPath: "../examples/3D_models/STL/various",
 				upperColor: 0x33aa33,
 				lowerColor: 0xaa3333,
 				hullOpacity: 1,
@@ -143,7 +141,7 @@
 			scene.add(ship3D)
 			ship3D_ES5 = new Ship3D(ship_es5, {
 				shipState: ship_es5.designState.clone(),
-				stlPath: "3D_models/STL/various",
+				stlPath: "../examples/3D_models/STL/various",
 				upperColor: 0x33aa33,
 				lowerColor: 0xaa3333,	
 				hullOpacity: 1,
