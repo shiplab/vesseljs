@@ -4,14 +4,14 @@
 		<meta charset="utf-8" />
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 		<title>Vessel.js playground</title>
-		<script src="../examples/3D_engine/legacy/three.js"></script>
+		<!-- <script src="../examples/3D_engine/legacy/three.js"></script> -->
 		<!-- <script src="../examples/3D_engine/OrbitControls_v2.js"></script>		 -->
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<script src="../build/vessel.js"></script>
-		<script src="../examples/3D_engine/Ship3D_v2.js"></script>
-		<script src="../examples/3D_engine/STLLoader.js"></script>
+		<!-- <script src="../examples/3D_engine/Ship3D_v2.js"></script> -->
+		<!-- <script src="../examples/3D_engine/STLLoader.js"></script> -->
 		<script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/node-require-function@1.2.0/index.d.ts"></script>
+		<!-- <script src="https://cdn.jsdelivr.net/npm/node-require-function@1.2.0/index.d.ts"></script> -->
 		<!-- <script src="https://cdn.jsdelivr.net/npm/three-orbitcontrols@2.110.3/OrbitControls.js"></script> -->
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
 		<link href="../examples/libs/bootstrap.min.css" rel="stylesheet" />
@@ -62,126 +62,138 @@
 				</tbody>
 			</table>
 		</div>		
-		<script  type="module">
-		import Ship from "../source/jsm/ship/Ship.js";
-		// import VesselES6 from "../source/jsm/vessel.js";
-		import { OrbitControls } from "https://threejs.org/examples/jsm/controls/OrbitControls.js";
-		import { addRows } from "./supComparisonFunc.js"
-
-		var ship3D_ES5, ship3D
-
-		new THREE.FileLoader().load("../examples/ship_specs/PX121.json", useFileData)
-		
-		const w = 1920;
-		const h = 1080;
-
-		function useFileData(contents) {
-			const rendererES5 = new THREE.WebGLRenderer({ antialias: true })
-			rendererES5.setPixelRatio(window.devicePixelRatio)
-			rendererES5.setClearColor(0xa9cce3, 1)
-			const renderer = new THREE.WebGLRenderer({ antialias: true })
-			renderer.setPixelRatio(window.devicePixelRatio)
-			// renderer.setClearColor(0xa9cce3, 1)
-
-			var shipspec = JSON.parse(contents)
-
-			const ship_es5 = new Vessel.Ship(shipspec)
-			const ship = new Ship(shipspec)
-			// const ship = new VesselES6.Ship(shipspec)
+		<script type="module">
+			import * as THREE from 'https://unpkg.com/three@0.126.1/build/three.module.js';
 			
-			const containerES5 = document.getElementById("3d-one")
-			const container = document.getElementById("3d-two")
-			containerES5.appendChild(rendererES5.domElement)
-			container.appendChild(renderer.domElement)
+			import Ship from "../source/jsm/ship/Ship.js";
+			import { Ship3D } from "../source/jsm/3D_engine/Ship3D.js"
+			// import VesselES6 from "../source/jsm/vessel.js";
+			// import { OrbitControls } from "https://threejs.org/examples/jsm/controls/OrbitControls.js";
+			import { OrbitControls } from 'https://unpkg.com/three@0.126.1/examples/jsm/controls/OrbitControls.js';
+			import { addRows } from "./supComparisonFunc.js"
 
-			// Add scenes:
-			var sceneES5 = new THREE.Scene()
-			var scene = new THREE.Scene()
+			var ship3D_ES5, ship3D
 
-			// Add lights:
-			sceneES5.add(new THREE.AmbientLight(0xffffff, 0.3))
-			sceneES5.add(
-				(function () {
-					let sun = new THREE.DirectionalLight(0xffffff, 1)
-					sun.position.set(1, 1, 1)
-					return sun
-				})()
-			)
-			scene.add(new THREE.AmbientLight(0xffffff, 0.3))
-			scene.add(
-				(function () {
-					let sun = new THREE.DirectionalLight(0xffffff, 1)
-					sun.position.set(1, 1, 1)
-					return sun
-				})()
-			)
+			new THREE.FileLoader().load("../examples/ship_specs/PX121.json", useFileData)
+			
+			const w = 1920;
+			const h = 1080;
 
-			//Camera and controls:
-			var cameraES5 = new THREE.PerspectiveCamera(50, w/h)
-			cameraES5.up.set(0, 0, 1)
-			sceneES5.add(cameraES5)
-			var controlsES5 = new OrbitControls(cameraES5, rendererES5.domElement)
-			var camera = new THREE.PerspectiveCamera(50, w/h)
-			camera.up.set(0, 0, 1)
-			scene.add(camera)
-			var controls = new OrbitControls(camera, renderer.domElement)
+			function useFileData(contents) {
+				const rendererES5 = new THREE.WebGLRenderer({ antialias: true })
+				rendererES5.setPixelRatio(window.devicePixelRatio)
+				rendererES5.setClearColor(0xa9cce3, 1)
+				const renderer = new THREE.WebGLRenderer({ antialias: true })
+				renderer.setPixelRatio(window.devicePixelRatio)
+				// renderer.setClearColor(0xa9cce3, 1)
 
-			if (ship3D !== undefined) {
-				scene.remove(ship3D)
+				var shipspec = JSON.parse(contents)
+
+				const ship_es5 = new Vessel.Ship(shipspec)
+				const ship = new Ship(shipspec)
+				// const ship = new VesselES6.Ship(shipspec)
+				
+				const containerES5 = document.getElementById("3d-one")
+				const container = document.getElementById("3d-two")
+				containerES5.appendChild(rendererES5.domElement)
+				container.appendChild(renderer.domElement)
+
+				// Add scenes:
+				var sceneES5 = new THREE.Scene()
+				var scene = new THREE.Scene()
+
+				// Add lights:
+				sceneES5.add(new THREE.AmbientLight(0xffffff, 0.3))
+				sceneES5.add(
+					(function () {
+						let sun = new THREE.DirectionalLight(0xffffff, 1)
+						sun.position.set(1, 1, 1)
+						return sun
+					})()
+				)
+				scene.add(new THREE.AmbientLight(0xffffff, 0.3))
+				scene.add(
+					(function () {
+						let sun = new THREE.DirectionalLight(0xffffff, 1)
+						sun.position.set(1, 1, 1)
+						return sun
+					})()
+				)
+
+				//Camera and controls:
+				var cameraES5 = new THREE.PerspectiveCamera(50, w/h)
+				cameraES5.up.set(0, 0, 1)
+				sceneES5.add(cameraES5)
+				var controlsES5 = new OrbitControls(cameraES5, rendererES5.domElement)
+				var camera = new THREE.PerspectiveCamera(50, w/h)
+				camera.up.set(0, 0, 1)
+				scene.add(camera)
+				var controls = new OrbitControls(camera, renderer.domElement)
+
+				if (ship3D !== undefined) {
+					scene.remove(ship3D)
+				}
+				ship3D = new Ship3D(ship, {
+					shipState: ship.designState.clone(),
+					stlPath: "../examples/3D_models/STL/various",
+					upperColor: 0x33aa33,
+					lowerColor: 0xaa3333,
+					hullOpacity: 1,
+					deckOpacity: 1,
+					objectOpacity: 1
+				});	
+				scene.add(ship3D)
+				ship3D_ES5 = new Ship3D(ship_es5, {
+					shipState: ship_es5.designState.clone(),
+					stlPath: "../examples/3D_models/STL/various",
+					upperColor: 0x33aa33,
+					lowerColor: 0xaa3333,	
+					hullOpacity: 1,
+					deckOpacity: 1,
+					objectOpacity: 1
+				});	
+				sceneES5.add(ship3D_ES5)
+
+				function animate() {
+					requestAnimationFrame(animate)
+					rendererES5.autoClear = true;
+					rendererES5.render(sceneES5, cameraES5)
+
+					renderer.autoClear = false;
+					renderer.setScissorTest(false);
+					renderer.setClearColor(0xa9cce3, 1)
+					renderer.clear(true, true);
+					renderer.setScissorTest(true);
+					renderer.render(scene, camera)
+				}
+
+				let LOA = ship.structure.hull.attributes.LOA
+
+				// Set the values of cameras and controls
+				cameraES5.position.set(0.3 * LOA, 0.7 * LOA, 0.7 * LOA)
+				controlsES5.target = new THREE.Vector3(0, 0, 0)
+				controlsES5.update()
+				camera.position.set(0.3 * LOA, 0.7 * LOA, 0.7 * LOA)
+				controls.target = new THREE.Vector3(0, 0, 0)
+				controls.update()
+				animate()
+
+				addRows(ship.constructor.name, ship_es5, ship, "foundationTable")
+				addRows("BaseObject", ship_es5.baseObjects, ship.baseObjects, "foundationTable")
+				addRows("DerivedObjects", ship_es5.derivedObjects, ship.derivedObjects, "foundationTable")
+				addRows(ship.structure.constructor.name, ship_es5.structure, ship.structure, "foundationTable")
+				addRows(ship.designState.constructor.name, ship_es5.designState, ship.designState, "foundationTable")
+
+				// Wave values
+				var wavStat = new Vessel.WaveCreator();
+				wavStat.setWaveDef(2 * Math.PI / 10, 1, 180);
+				// waveHistory[i][j] = wavStat.waveDef;
+
+				var speed = 13;
+				var wavMo = new Vessel.WaveMotion(ship, states, wavStat, cgPosition);
+				wavMo.setSpeed(speed);
+
 			}
-			ship3D = new Ship3D(ship, {
-				shipState: ship.designState.clone(),
-				stlPath: "../examples/3D_models/STL/various",
-				upperColor: 0x33aa33,
-				lowerColor: 0xaa3333,
-				hullOpacity: 1,
-				deckOpacity: 1,
-				objectOpacity: 1
-			});	
-			scene.add(ship3D)
-			ship3D_ES5 = new Ship3D(ship_es5, {
-				shipState: ship_es5.designState.clone(),
-				stlPath: "../examples/3D_models/STL/various",
-				upperColor: 0x33aa33,
-				lowerColor: 0xaa3333,	
-				hullOpacity: 1,
-				deckOpacity: 1,
-				objectOpacity: 1
-			});	
-			sceneES5.add(ship3D_ES5)
-
-			function animate() {
-				requestAnimationFrame(animate)
-				rendererES5.autoClear = true;
-				rendererES5.render(sceneES5, cameraES5)
-
-				renderer.autoClear = false;
-				renderer.setScissorTest(false);
-				renderer.setClearColor(0xa9cce3, 1)
-				renderer.clear(true, true);
-  			renderer.setScissorTest(true);
-				renderer.render(scene, camera)
-			}
-
-			let LOA = ship.structure.hull.attributes.LOA
-
-			// Set the values of cameras and controls
-			cameraES5.position.set(0.3 * LOA, 0.7 * LOA, 0.7 * LOA)
-			controlsES5.target = new THREE.Vector3(0, 0, 0)
-			controlsES5.update()
-			camera.position.set(0.3 * LOA, 0.7 * LOA, 0.7 * LOA)
-			controls.target = new THREE.Vector3(0, 0, 0)
-			controls.update()
-			animate()
-
-			addRows(ship.constructor.name, ship_es5, ship, "foundationTable")
-			addRows("BaseObject", ship_es5.baseObjects, ship.baseObjects, "foundationTable")
-			addRows("DerivedObjects", ship_es5.derivedObjects, ship.derivedObjects, "foundationTable")
-			addRows(ship.structure.constructor.name, ship_es5.structure, ship.structure, "foundationTable")
-			addRows(ship.designState.constructor.name, ship_es5.designState, ship.designState, "foundationTable")
-
-		}		
-
 		</script>
 	</body>
 </html>
