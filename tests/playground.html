@@ -61,6 +61,18 @@
 					</tr>
 				</tbody>
 			</table>
+			<table id="myTable">
+				<thead>
+					Table 1 - Wave classes
+						<tr>
+								<th>Variable</th>
+								<th>Expect (ES5)</th>
+								<th>New Result</th>
+								<th>Status</th>
+						</tr>    
+				</thead>
+				<tbody id="calculationTable"></tbody>
+			</table>
 		</div>		
 		<script type="module">
 			import * as THREE from 'https://unpkg.com/three@0.126.1/build/three.module.js';
@@ -71,6 +83,8 @@
 			// import { OrbitControls } from "https://threejs.org/examples/jsm/controls/OrbitControls.js";
 			import { OrbitControls } from 'https://unpkg.com/three@0.126.1/examples/jsm/controls/OrbitControls.js';
 			import { addRows } from "./supComparisonFunc.js"
+			import WaveCreator from "../source/jsm/ship/WaveCreator.js";
+			import WaveMotion from "../source/jsm/ship/WaveMotion.js";
 
 			var ship3D_ES5, ship3D
 
@@ -185,13 +199,28 @@
 				addRows(ship.designState.constructor.name, ship_es5.designState, ship.designState, "foundationTable")
 
 				// Wave values
-				var wavStat = new Vessel.WaveCreator();
-				wavStat.setWaveDef(2 * Math.PI / 10, 1, 180);
-				// waveHistory[i][j] = wavStat.waveDef;
+				var wavStatES5 = new Vessel.WaveCreator();
+				wavStatES5.setWaveDef(2 * Math.PI / 10, 1, 180);
+				// waveHistory[i][j] = wavStatES5.waveDef;
 
 				var speed = 13;
-				var wavMo = new Vessel.WaveMotion(ship, states, wavStat, cgPosition);
+				var wavMoES5 = new Vessel.WaveMotion(ship_es5, ship_es5.designState, wavStatES5);
+				wavMoES5.setSpeed(speed);
+
+				var wavStat = new WaveCreator();
+				wavStat.setWaveDef(2 * Math.PI / 10, 1, 180);
+
+				var wavMo = new WaveMotion(ship, ship.designState, wavStatES5);
 				wavMo.setSpeed(speed);
+				console.log(wavMoES5)
+				console.log(wavMo)
+
+				// debugger;
+
+				addRows("BML", wavMoES5.floatState.BMl, wavMo.floatState.BMl, "calculationTable", true)
+				addRows("BMT", wavMoES5.floatState.BMt, wavMo.floatState.BMt, "calculationTable", true)
+				addRows("GML", wavMoES5.floatState.GMl, wavMo.floatState.GMl, "calculationTable", true)
+				addRows("GMT", wavMoES5.floatState.GMt, wavMo.floatState.GMt, "calculationTable", true)
 
 			}
 		</script>
