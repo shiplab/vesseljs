@@ -1,3 +1,5 @@
+import { bilinearCoeffs } from "./interpolation.js";
+
 //@EliasHasle
 
 //All inputs are numbers. The axes are given by a single coordinate.

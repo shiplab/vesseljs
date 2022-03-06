@@ -2,6 +2,9 @@ import JSONSpecObject from "./JSONSpecObject.js";
 import { parametricWeightHull } from "../math/parametricWeightParsons.js";
 import { bisectionSearch, lerp } from "../math/interpolation.js";
 import { sectionCalculation } from "../math/areaCalculations.js";
+import { trapezoidCalculation } from "../math/areaCalculations.js";
+import { patchColumnCalculation, combineVolumes } from "../math/volumeCalculations.js";
+import Vectors from "../math/Vectors.js";
 
 export default class DerivedObject extends JSONSpecObject {
 
@@ -392,7 +395,7 @@ export default class DerivedObject extends JSONSpecObject {
 
 	}
 
-	calculateAttributesAtDraft() {
+	calculateAttributesAtDraft( T ) {
 
 		function levelCalculation( hull,
 			z,
@@ -497,85 +500,83 @@ export default class DerivedObject extends JSONSpecObject {
 
 		}
 
-		//Here is the returned function calculateAttributesAtDraft(T):
-		return function ( T ) {
+		if ( T === null || isNaN( T ) ) {
 
-			if ( T === null || isNaN( T ) ) {
+			console.error( "Hull.prototype.calculateAttributesAtDraft(T): No draft specified. Returning undefined." );
+			return;
 
-				console.error( "Hull.prototype.calculateAttributesAtDraft(T): No draft specified. Returning undefined." );
-				return;
+		} else if ( T < 0 || T > this.attributes.Depth ) {
 
-			} else if ( T < 0 || T > this.attributes.Depth ) {
+			console.error( "Hull.prototype.calculateAttributesAtDraft(T): Draft parameter " + T + "outside valid range of [0,Depth]. Returning undefined." );
 
-				console.error( "Hull.prototype.calculateAttributesAtDraft(T): Draft parameter " + T + "outside valid range of [0,Depth]. Returning undefined." );
+		}
 
-			}
+		let wls = this.halfBreadths.waterlines.map( wl => this.attributes.Depth * wl );
 
-			let wls = this.halfBreadths.waterlines.map( wl => this.attributes.Depth * wl );
+		// new ES6
+		//This is the part that can be reused as long as the geometry remains unchanged:
+		if ( this.levelsNeedUpdate ) {
 
-			//This is the part that can be reused as long as the geometry remains unchanged:
-			if ( this.levelsNeedUpdate ) {
+			this.levels = [];
+			for ( let i = 0; i < wls.length; i ++ ) {
 
-				this.levels = [];
-				for ( let i = 0; i < wls.length; i ++ ) {
+				let z = wls[ i ];
+				let lev = levelCalculation( this, z, this.levels[ i - 1 ] );
+				//Bottom cap, only on the lowest level:
+				if ( i === 0 ) {
 
-					let z = wls[ i ];
-					let lev = levelCalculation( this, z, this.levels[ i - 1 ] );
-					//Bottom cap, only on the lowest level:
-					if ( i === 0 ) {
-
-						lev.As += lev.Awp;
-
-					}
-
-					this.levels.push( lev );
+					lev.As += lev.Awp;
 
 				}
 
-				this.levelsNeedUpdate = false;
+				this.levels.push( lev );
 
 			}
 
-			//Find highest data waterline below or at water level:
-			let { index, mu } = bisectionSearch( wls, T );
+			this.levelsNeedUpdate = false;
 
-			//console.info("Highest data waterline below or at water level: " + index);
-			//console.log(this.levels);
-			let lc;
-			if ( mu === 0 ) lc = this.levels[ index ];
-			else lc = levelCalculation( this, T, this.levels[ index ] );
+		}
 
-			//Filter and rename for output
-			return {
-				xcwp: lc.xc, //water plane values
-				LCF: lc.xc,
-				ycwp: lc.yc,
-				TCF: lc.yc,
-				Awp: lc.Awp,
-				Ixwp: lc.Ix,
-				BMt: lc.Ix / lc.Vs,
-				Iywp: lc.Iy,
-				BMl: lc.Iy / lc.Vs,
-				maxXs: lc.maxX, //boundaries of the submerged part of the hull
-				minXs: lc.minX,
-				maxYs: lc.maxY,
-				minYs: lc.minY,
-				Cwp: lc.Cwp,
-				LWL: lc.LWL,
-				LBP: lc.LBP,
-				BWL: lc.BWL,
-				Ap: lc.Ap, //projected area in length direction
-				Cp: lc.Cp, //prismatic coefficient
-				//Vbb: lc.Vbb,
-				Vs: lc.Vs, //volume of submerged part of the hull
-				Cb: lc.Cb,
-				Cm: lc.Cb / lc.Cp,
-				As: lc.As, //wetted area
-				Cv: lc.Cv, //center of buoyancy
-				LCB: lc.Cv.x,
-				TCB: lc.Cv.y,
-				KB: lc.Cv.z
-			};
+		//Find highest data waterline below or at water level:
+		let { index, mu } = bisectionSearch( wls, T );
+
+		//console.info("Highest data waterline below or at water level: " + index);
+		//console.log(this.levels);
+		let lc;
+		if ( mu === 0 ) lc = this.levels[ index ];
+		else lc = levelCalculation( this, T, this.levels[ index ] );
+
+		//Filter and rename for output
+		return {
+			xcwp: lc.xc, //water plane values
+			LCF: lc.xc,
+			ycwp: lc.yc,
+			TCF: lc.yc,
+			Awp: lc.Awp,
+			Ixwp: lc.Ix,
+			BMt: lc.Ix / lc.Vs,
+			Iywp: lc.Iy,
+			BMl: lc.Iy / lc.Vs,
+			maxXs: lc.maxX, //boundaries of the submerged part of the hull
+			minXs: lc.minX,
+			maxYs: lc.maxY,
+			minYs: lc.minY,
+			Cwp: lc.Cwp,
+			LWL: lc.LWL,
+			LBP: lc.LBP,
+			BWL: lc.BWL,
+			Ap: lc.Ap, //projected area in length direction
+			Cp: lc.Cp, //prismatic coefficient
+			//Vbb: lc.Vbb,
+			Vs: lc.Vs, //volume of submerged part of the hull
+			Cb: lc.Cb,
+			Cm: lc.Cb / lc.Cp,
+			As: lc.As, //wetted area
+			Cv: lc.Cv, //center of buoyancy
+			LCB: lc.Cv.x,
+			TCB: lc.Cv.y,
+			KB: lc.Cv.z
+
 
 		};
 

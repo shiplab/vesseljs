@@ -1,10 +1,13 @@
 //@EliasHasle
+import { bilinearUnitSquareCoeffs } from "./interpolation.js";
+import { bilinearArea } from "./areaCalculations.js";
+import Vectors from "./Vectors.js";
 
 //I have been doing some tests here of a simplified calculation.
 //The results so far indicate that, for the prism hull, the results are almost identical, except that with the simple calculation the center of volume is almost right (but wrong enough to disqualify such a simple calculation).
 /*Note that the coordinate system used here has xy as a grid, with z as heights on the grid, but in the intended application, which is calculations on transverse hull offsets, this z corresponds to the vessel y axis, and y corresponds to the vessel z axis. In any application of this function, the conversion between coordinate systems must be taken care of appropriately.*/
 // xy
-function patchColumnCalculation( x1, x2, y1, y2, z00, z01, z10, z11 ) {
+export function patchColumnCalculation( x1, x2, y1, y2, z00, z01, z10, z11 ) {
 
 	//VOLUME:
 	//Analysis based on a bilinear patch:
@@ -67,7 +70,7 @@ function patchColumnCalculation( x1, x2, y1, y2, z00, z01, z10, z11 ) {
 
 //Input: array of objects with calculation results for elements.
 //Output: the combined results.
-function combineVolumes( array ) {
+export function combineVolumes( array ) {
 
 	let V = 0;
 	let As = 0;

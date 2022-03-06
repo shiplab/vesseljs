@@ -11,6 +11,7 @@
 		<!-- <script src="../examples/3D_engine/Ship3D_v2.js"></script> -->
 		<!-- <script src="../examples/3D_engine/STLLoader.js"></script> -->
 		<script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/deep-diff@1/dist/deep-diff.min.js"></script>
 		<!-- <script src="https://cdn.jsdelivr.net/npm/node-require-function@1.2.0/index.d.ts"></script> -->
 		<!-- <script src="https://cdn.jsdelivr.net/npm/three-orbitcontrols@2.110.3/OrbitControls.js"></script> -->
 		<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
@@ -198,29 +199,29 @@
 				addRows(ship.structure.constructor.name, ship_es5.structure, ship.structure, "foundationTable")
 				addRows(ship.designState.constructor.name, ship_es5.designState, ship.designState, "foundationTable")
 
-				// Wave values
-				var wavStatES5 = new Vessel.WaveCreator();
-				wavStatES5.setWaveDef(2 * Math.PI / 10, 1, 180);
-				// waveHistory[i][j] = wavStatES5.waveDef;
+				// // Wave values
+				// var wavStatES5 = new Vessel.WaveCreator();
+				// wavStatES5.setWaveDef(2 * Math.PI / 10, 1, 180);
+				// // waveHistory[i][j] = wavStatES5.waveDef;
 
-				var speed = 13;
-				var wavMoES5 = new Vessel.WaveMotion(ship_es5, ship_es5.designState, wavStatES5);
-				wavMoES5.setSpeed(speed);
+				// var speed = 13;
+				// var wavMoES5 = new Vessel.WaveMotion(ship_es5, ship_es5.designState, wavStatES5);
+				// wavMoES5.setSpeed(speed);
 
-				var wavStat = new WaveCreator();
-				wavStat.setWaveDef(2 * Math.PI / 10, 1, 180);
+				// var wavStat = new WaveCreator();
+				// wavStat.setWaveDef(2 * Math.PI / 10, 1, 180);
 
-				var wavMo = new WaveMotion(ship, ship.designState, wavStatES5);
-				wavMo.setSpeed(speed);
-				console.log(wavMoES5)
-				console.log(wavMo)
+				// var wavMo = new WaveMotion(ship, ship.designState, wavStatES5);
+				// wavMo.setSpeed(speed);
+				// console.log(wavMoES5)
+				// console.log(wavMo)
 
-				// debugger;
+				// // debugger;
 
-				addRows("BML", wavMoES5.floatState.BMl, wavMo.floatState.BMl, "calculationTable", true)
-				addRows("BMT", wavMoES5.floatState.BMt, wavMo.floatState.BMt, "calculationTable", true)
-				addRows("GML", wavMoES5.floatState.GMl, wavMo.floatState.GMl, "calculationTable", true)
-				addRows("GMT", wavMoES5.floatState.GMt, wavMo.floatState.GMt, "calculationTable", true)
+				// addRows("BML", wavMoES5.floatState.BMl, wavMo.floatState.BMl, "calculationTable", true)
+				// addRows("BMT", wavMoES5.floatState.BMt, wavMo.floatState.BMt, "calculationTable", true)
+				// addRows("GML", wavMoES5.floatState.GMl, wavMo.floatState.GMl, "calculationTable", true)
+				// addRows("GMT", wavMoES5.floatState.GMt, wavMo.floatState.GMt, "calculationTable", true)
 
 			}
 		</script>

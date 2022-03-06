@@ -1839,7 +1839,6 @@ And the geometric calculations are faulty.
 				}
 
 				V2 = this.calculateAttributesAtDraft( t )[ "Vs" ] - VT;
-				// debugger
 				let dx = ( V2 - V1 ) / ( t - a );
 				if ( dx > 0.1 || dx < - 0.1 ) {
 
