@@ -39,7 +39,7 @@
 			<h3>The following table compares the es6 and es5 style status:</h3>
 			<table id="myTable">
 				<thead>
-					Table 1 - Foundation classes
+					Table 1 - Classes
 						<tr>
 								<th>ID</th>
 								<th>NAME</th>
@@ -102,7 +102,7 @@
 				renderer.setPixelRatio(window.devicePixelRatio)
 				// renderer.setClearColor(0xa9cce3, 1)
 
-				var shipspec = JSON.parse(contents)
+				let shipspec = JSON.parse(contents)
 
 				const ship_es5 = new Vessel.Ship(shipspec)
 				const ship = new Ship(shipspec)
@@ -114,8 +114,8 @@
 				container.appendChild(renderer.domElement)
 
 				// Add scenes:
-				var sceneES5 = new THREE.Scene()
-				var scene = new THREE.Scene()
+				let sceneES5 = new THREE.Scene()
+				let scene = new THREE.Scene()
 
 				// Add lights:
 				sceneES5.add(new THREE.AmbientLight(0xffffff, 0.3))
@@ -136,14 +136,14 @@
 				)
 
 				//Camera and controls:
-				var cameraES5 = new THREE.PerspectiveCamera(50, w/h)
+				let cameraES5 = new THREE.PerspectiveCamera(50, w/h)
 				cameraES5.up.set(0, 0, 1)
 				sceneES5.add(cameraES5)
-				var controlsES5 = new OrbitControls(cameraES5, rendererES5.domElement)
-				var camera = new THREE.PerspectiveCamera(50, w/h)
+				let controlsES5 = new OrbitControls(cameraES5, rendererES5.domElement)
+				let camera = new THREE.PerspectiveCamera(50, w/h)
 				camera.up.set(0, 0, 1)
 				scene.add(camera)
-				var controls = new OrbitControls(camera, renderer.domElement)
+				let controls = new OrbitControls(camera, renderer.domElement)
 
 				if (ship3D !== undefined) {
 					scene.remove(ship3D)
@@ -200,28 +200,39 @@
 				addRows(ship.designState.constructor.name, ship_es5.designState, ship.designState, "foundationTable")
 
 				// // Wave values
-				// var wavStatES5 = new Vessel.WaveCreator();
-				// wavStatES5.setWaveDef(2 * Math.PI / 10, 1, 180);
-				// // waveHistory[i][j] = wavStatES5.waveDef;
+				let wavStatES5 = new Vessel.WaveCreator();
+				wavStatES5.setWaveDef(2 * Math.PI / 10, 1, 180);
+				let wavStat = new WaveCreator();
+				wavStat.setWaveDef(2 * Math.PI / 10, 1, 180);
+				addRows("Waves", wavStatES5, wavStat, "foundationTable")
+				// waveHistory[i][j] = wavStatES5.waveDef;
 
-				// var speed = 13;
-				// var wavMoES5 = new Vessel.WaveMotion(ship_es5, ship_es5.designState, wavStatES5);
-				// wavMoES5.setSpeed(speed);
+				let speed = 13;
+				let wavMoES5 = new Vessel.WaveMotion(ship_es5, ship_es5.designState, wavStatES5);
+				wavMoES5.setSpeed(speed);
+				let wavMo = new WaveMotion(ship_es5, ship.designState, wavStat);
+				wavMo.setSpeed(speed);
+				addRows("Wave Motion", wavMoES5, wavMo, "foundationTable")
 
-				// var wavStat = new WaveCreator();
+				addRows("BML", wavMoES5.floatState.BMl, wavMo.floatState.BMl, "calculationTable", true)
+				addRows("BMT", wavMoES5.floatState.BMt, wavMo.floatState.BMt, "calculationTable", true)
+				addRows("GML", wavMoES5.floatState.GMl, wavMo.floatState.GMl, "calculationTable", true)
+				addRows("GMT", wavMoES5.floatState.GMt, wavMo.floatState.GMt, "calculationTable", true)
+
+				// let wavStat = new WaveCreator();
 				// wavStat.setWaveDef(2 * Math.PI / 10, 1, 180);
 
-				// var wavMo = new WaveMotion(ship, ship.designState, wavStatES5);
+				// let wavMo = new WaveMotion(ship, ship.designState, wavStatES5);
 				// wavMo.setSpeed(speed);
 				// console.log(wavMoES5)
 				// console.log(wavMo)
 
-				// // debugger;
+				// Define variab
+				// let states = new Vessel.ShipState(ship.designState.getSpecification());
+				// let hullRes = new Vessel.HullResistance(ship, states, wagProp, wavStat);
+				// hullRes.writeOutput();
 
-				// addRows("BML", wavMoES5.floatState.BMl, wavMo.floatState.BMl, "calculationTable", true)
-				// addRows("BMT", wavMoES5.floatState.BMt, wavMo.floatState.BMt, "calculationTable", true)
-				// addRows("GML", wavMoES5.floatState.GMl, wavMo.floatState.GMl, "calculationTable", true)
-				// addRows("GMT", wavMoES5.floatState.GMt, wavMo.floatState.GMt, "calculationTable", true)
+				// debugger
 
 			}
 		</script>

@@ -127,7 +127,7 @@ export default class StateModule {
 
 	}
 
-	// cache memoization pattern adapted from http://b-studios.de/blog/2013/11/18/lazy-attributes-in-ecmascript-5/
+	// cache memoization pattern adapted from https://b-studios.de/javascript/languages/2013/11/18/lazy-attributes-in-ecmascript-5
 	// in the future, expand version comparison also to parameters stored inside each constructor
 	memoized( init, cacheName ) {
 
