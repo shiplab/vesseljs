@@ -38,161 +38,160 @@ export default class WaveMotion extends StateModule {
 		this.cacheDependence = [ "FloatingCondition", "Speed", "Heading" ];
 		this.cache = {};
 
-	}
+		Object.defineProperties( this, {
+			coefficients: StateModule.prototype.memoized( function () {
 
-	coefficients() {
+				var bethaDeg = Math.abs( this.wavCre.waveDef.heading - this.headingState.heading );
+				var betha = bethaDeg * Math.PI / 180;
+				var speedSI = 0.514444 * this.speedState.speed;
+				var Froude_N = speedSI / Math.sqrt( this.g * this.floatState.LWL );
+				//var wave_period = 2*Math.PI/this.wavCre.waveDef.waveFreq;
+				var wave_number = Math.pow( this.wavCre.waveDef.waveFreq, 2 ) / this.g;
+				var eff_wave_number = Math.abs( wave_number * Math.cos( betha ) );
+				var smith_factor = Math.exp( - wave_number * this.floatState.T );
+				var alpha = 1 - Froude_N * Math.sqrt( wave_number * this.floatState.LWL ) * Math.cos( betha );
+				var encounter_frequency = this.wavCre.waveDef.waveFreq * alpha;
 
-		var bethaDeg = Math.abs( this.wavCre.waveDef.heading - this.headingState.heading );
-		var betha = bethaDeg * Math.PI / 180;
-		var speedSI = 0.514444 * this.speedState.speed;
-		var Froude_N = speedSI / Math.sqrt( this.g * this.floatState.LWL );
-		//var wave_period = 2*Math.PI/this.wavCre.waveDef.waveFreq;
-		var wave_number = Math.pow( this.wavCre.waveDef.waveFreq, 2 ) / this.g;
-		var eff_wave_number = Math.abs( wave_number * Math.cos( betha ) );
-		var smith_factor = Math.exp( - wave_number * this.floatState.T );
-		var alpha = 1 - Froude_N * Math.sqrt( wave_number * this.floatState.LWL ) * Math.cos( betha );
-		var encounter_frequency = this.wavCre.waveDef.waveFreq * alpha;
+				return { betha, Froude_N, wave_number, eff_wave_number, smith_factor, alpha, encounter_frequency };
 
-		return { betha, Froude_N, wave_number, eff_wave_number, smith_factor, alpha, encounter_frequency };
+			}, "coefficients" ),
+			verticalMotion: StateModule.prototype.memoized( function () {
 
-	}
+				var Breadth = this.floatState.BWL * this.floatState.Cb;
+				var cgDistance = this.position / 100 * this.ship.structure.hull.attributes.LOA - this.states.discrete.FloatingCondition.state.w.cg.x;
+				var sectional_hydro_damping = 2 * Math.sin( 0.5 * this.coefficients.wave_number * Breadth * Math.pow( this.coefficients.alpha, 2 ) ) * Math.exp( - this.coefficients.wave_number *
+				this.floatState.T * Math.pow( this.coefficients.alpha, 2 ) );
 
-	verticalMotion() {
+				var a, b;
+				a = Math.pow( 1 - this.coefficients.wave_number * this.floatState.T, 2 );
+				b = Math.pow( ( Math.pow( sectional_hydro_damping, 2 ) / ( this.coefficients.wave_number * Breadth * Math.pow( this.coefficients.alpha, 3 ) ) ), 2 );
+				var f = Math.sqrt( a + b );
+				var eta = 1 / ( Math.sqrt( Math.pow( ( 1 - 2 * this.coefficients.wave_number * this.floatState.T * Math.pow( this.coefficients.alpha, 2 ) ), 2 ) + Math.pow( Math.pow( sectional_hydro_damping, 2 ) /
+				( this.coefficients.wave_number * Breadth * Math.pow( this.coefficients.alpha, 2 ) ), 2 ) ) );
 
-		var Breadth = this.floatState.BWL * this.floatState.Cb;
-		var cgDistance = this.position / 100 * this.ship.structure.hull.attributes.LOA - this.states.discrete.FloatingCondition.state.w.cg.x;
-		var sectional_hydro_damping = 2 * Math.sin( 0.5 * this.coefficients.wave_number * Breadth * Math.pow( this.coefficients.alpha, 2 ) ) * Math.exp( - this.coefficients.wave_number *
-			this.floatState.T * Math.pow( this.coefficients.alpha, 2 ) );
+				var F = this.coefficients.smith_factor * f * ( 2 / ( this.coefficients.eff_wave_number * this.floatState.LWL ) ) * Math.sin( this.coefficients.eff_wave_number * this.floatState.LWL / 2 );
+				var FRF_Heave = this.wavCre.waveDef.waveAmplitude * eta * F;
 
-		var a, b;
-		a = Math.pow( 1 - this.coefficients.wave_number * this.floatState.T, 2 );
-		b = Math.pow( ( Math.pow( sectional_hydro_damping, 2 ) / ( this.coefficients.wave_number * Breadth * Math.pow( this.coefficients.alpha, 3 ) ) ), 2 );
-		var f = Math.sqrt( a + b );
-		var eta = 1 / ( Math.sqrt( Math.pow( ( 1 - 2 * this.coefficients.wave_number * this.floatState.T * Math.pow( this.coefficients.alpha, 2 ) ), 2 ) + Math.pow( Math.pow( sectional_hydro_damping, 2 ) /
-			( this.coefficients.wave_number * Breadth * Math.pow( this.coefficients.alpha, 2 ) ), 2 ) ) );
+				var G = this.coefficients.smith_factor * f * ( 24 / ( Math.pow( this.coefficients.eff_wave_number * this.floatState.LWL, 2 ) * this.floatState.LWL ) ) * ( Math.sin( this.coefficients.eff_wave_number *
+				this.floatState.LWL / 2 ) - ( this.coefficients.eff_wave_number * this.floatState.LWL / 2 ) * Math.cos( this.coefficients.eff_wave_number * this.floatState.LWL / 2 ) );
+				var FRF_Pitch = this.wavCre.waveDef.waveAmplitude * eta * G;
 
-		var F = this.coefficients.smith_factor * f * ( 2 / ( this.coefficients.eff_wave_number * this.floatState.LWL ) ) * Math.sin( this.coefficients.eff_wave_number * this.floatState.LWL / 2 );
-		var FRF_Heave = this.wavCre.waveDef.waveAmplitude * eta * F;
+				var Pitch_Movement = Math.abs( FRF_Pitch * cgDistance );
+				var Pitch_Acceleration = Math.pow( this.coefficients.encounter_frequency, 2 ) * Pitch_Movement;
 
-		var G = this.coefficients.smith_factor * f * ( 24 / ( Math.pow( this.coefficients.eff_wave_number * this.floatState.LWL, 2 ) * this.floatState.LWL ) ) * ( Math.sin( this.coefficients.eff_wave_number *
-			this.floatState.LWL / 2 ) - ( this.coefficients.eff_wave_number * this.floatState.LWL / 2 ) * Math.cos( this.coefficients.eff_wave_number * this.floatState.LWL / 2 ) );
-		var FRF_Pitch = this.wavCre.waveDef.waveAmplitude * eta * G;
+				var Heave_Amplitude = Math.abs( FRF_Heave );
+				var Heave_Acceleration = Math.pow( this.coefficients.encounter_frequency, 2 ) * Math.abs( FRF_Heave );
 
-		var Pitch_Movement = Math.abs( FRF_Pitch * cgDistance );
-		var Pitch_Acceleration = Math.pow( this.coefficients.encounter_frequency, 2 ) * Pitch_Movement;
+				var Vertical_Movement = Math.sqrt( Math.pow( Heave_Amplitude, 2 ) + Math.pow( Pitch_Movement, 2 ) );
+				var Vertical_Acceleration = Math.pow( this.coefficients.encounter_frequency, 2 ) * Vertical_Movement;
 
-		var Heave_Amplitude = Math.abs( FRF_Heave );
-		var Heave_Acceleration = Math.pow( this.coefficients.encounter_frequency, 2 ) * Math.abs( FRF_Heave );
+				return {
+					pitchAmp: FRF_Pitch, pitchMov: Pitch_Movement, pitchAcc: Pitch_Acceleration, heaveAmp: Heave_Amplitude, heaveAcc: Heave_Acceleration,
+					verticalMov: Vertical_Movement, verticalAcc: Vertical_Acceleration
+				};
 
-		var Vertical_Movement = Math.sqrt( Math.pow( Heave_Amplitude, 2 ) + Math.pow( Pitch_Movement, 2 ) );
-		var Vertical_Acceleration = Math.pow( this.coefficients.encounter_frequency, 2 ) * Vertical_Movement;
+			}, "verticalMotion" ),
+			bendingMoment: StateModule.prototype.memoized( function () {
 
-		return {
-			pitchAmp: FRF_Pitch, pitchMov: Pitch_Movement, pitchAcc: Pitch_Acceleration, heaveAmp: Heave_Amplitude, heaveAcc: Heave_Acceleration,
-			verticalMov: Vertical_Movement, verticalAcc: Vertical_Acceleration
-		};
+				var Cb_mom = Math.max( 0.6, this.floatState.Cb );
+				var phi = 2.5 * ( 1 - Cb_mom );
+				var F_Cb = Math.pow( 1 - phi, 2 ) + 0.6 * this.coefficients.alpha * ( 2 - phi );
+				var F_v = 1 + 3 * Math.pow( this.coefficients.Froude_N, 2 );
+				return this.wavCre.waveDef.waveAmplitude * ( this.coefficients.smith_factor * ( ( 1 - this.coefficients.wave_number * this.floatState.T ) / ( Math.pow( this.floatState.LWL * this.coefficients.eff_wave_number, 2 ) ) ) *
+					( 1 - Math.cos( this.coefficients.eff_wave_number * this.floatState.LWL / 2 ) - ( this.coefficients.eff_wave_number * this.floatState.LWL / 4 ) * Math.sin( this.coefficients.eff_wave_number * this.floatState.LWL / 2 ) ) *
+					F_v * F_Cb * Math.pow( Math.abs( Math.cos( this.coefficients.betha ) ), 1 / 3 ) ) * this.rho * this.g * this.floatState.BWL * Math.pow( this.floatState.LWL, 2 ) / 1000000;
 
-	}
+			}, "bendingMoment" ),
+			rollAmp: StateModule.prototype.memoized( function () {
 
-	bendingMoment() {
+				// estimate natural roll period
+				var naturalPeriod = ( 2 * this.floatState.BWL * Math.PI * ( 0.35 + 0.45 ) / 2 ) / Math.pow( this.g * this.floatState.GMt, 0.5 );
 
-		var Cb_mom = Math.max( 0.6, this.floatState.Cb );
-		var phi = 2.5 * ( 1 - Cb_mom );
-		var F_Cb = Math.pow( 1 - phi, 2 ) + 0.6 * this.coefficients.alpha * ( 2 - phi );
-		var F_v = 1 + 3 * Math.pow( this.coefficients.Froude_N, 2 );
-		return this.wavCre.waveDef.waveAmplitude * ( this.coefficients.smith_factor * ( ( 1 - this.coefficients.wave_number * this.floatState.T ) / ( Math.pow( this.floatState.LWL * this.coefficients.eff_wave_number, 2 ) ) ) *
-			( 1 - Math.cos( this.coefficients.eff_wave_number * this.floatState.LWL / 2 ) - ( this.coefficients.eff_wave_number * this.floatState.LWL / 4 ) * Math.sin( this.coefficients.eff_wave_number * this.floatState.LWL / 2 ) ) *
-			F_v * F_Cb * Math.pow( Math.abs( Math.cos( this.coefficients.betha ) ), 1 / 3 ) ) * this.rho * this.g * this.floatState.BWL * Math.pow( this.floatState.LWL, 2 ) / 1000000;
+				var breadth_ratio = ( this.floatState.Cwp - this.delta ) / ( 1 - this.delta );
+				var A_0 = this.floatState.Cb * this.floatState.BWL * this.floatState.T / ( this.delta + breadth_ratio * ( 1 - this.delta ) );
 
-	}
+				var Breadth_draft_ratio0 = this.floatState.BWL / this.floatState.T;
+				var a0, b0, d0;
+				if ( ( 3 <= Breadth_draft_ratio0 ) && ( Breadth_draft_ratio0 <= 6 ) ) {
 
-	rollAmp() {
+					a0 = 0.256 * Breadth_draft_ratio0 - 0.286;
+					b0 = - 0.11 * Breadth_draft_ratio0 - 2.55;
+					d0 = 0.033 * Breadth_draft_ratio0 - 1.419;
 
-		// estimate natural roll period
-		var naturalPeriod = ( 2 * this.floatState.BWL * Math.PI * ( 0.35 + 0.45 ) / 2 ) / Math.pow( this.g * this.floatState.GMt, 0.5 );
+				} else if ( ( 1 <= Breadth_draft_ratio0 ) && ( Breadth_draft_ratio0 < 3 ) ) {
 
-		var breadth_ratio = ( this.floatState.Cwp - this.delta ) / ( 1 - this.delta );
-		var A_0 = this.floatState.Cb * this.floatState.BWL * this.floatState.T / ( this.delta + breadth_ratio * ( 1 - this.delta ) );
+					a0 = - 3.94 * Breadth_draft_ratio0 + 13.69;
+					b0 = - 2.12 * Breadth_draft_ratio0 - 1.89;
+					d0 = 1.16 * Breadth_draft_ratio0 - 7.97;
 
-		var Breadth_draft_ratio0 = this.floatState.BWL / this.floatState.T;
-		var a0, b0, d0;
-		if ( ( 3 <= Breadth_draft_ratio0 ) && ( Breadth_draft_ratio0 <= 6 ) ) {
+				} else {
 
-			a0 = 0.256 * Breadth_draft_ratio0 - 0.286;
-			b0 = - 0.11 * Breadth_draft_ratio0 - 2.55;
-			d0 = 0.033 * Breadth_draft_ratio0 - 1.419;
+					console.error( "The B/T relation is not being respected for the roll formula. It should be 1 <= B/T < 6, not" + " " + ( this.floatState.BWL / this.floatState.T ).toFixed( 2 ) + "." );
 
-		} else if ( ( 1 <= Breadth_draft_ratio0 ) && ( Breadth_draft_ratio0 < 3 ) ) {
+				}
 
-			a0 = - 3.94 * Breadth_draft_ratio0 + 13.69;
-			b0 = - 2.12 * Breadth_draft_ratio0 - 1.89;
-			d0 = 1.16 * Breadth_draft_ratio0 - 7.97;
+				var b_44_0 = this.rho * A_0 * Math.pow( this.floatState.BWL, 2 ) * a0 * Math.exp( b0 * Math.pow( this.coefficients.encounter_frequency, - 1.3 ) ) * Math.pow( this.coefficients.encounter_frequency, d0 ) /
+				( Math.sqrt( this.floatState.BWL / ( 2 * this.g ) ) );
 
-		} else {
+				var A_1 = breadth_ratio * A_0;
+				var B_1 = breadth_ratio * this.floatState.BWL;
+				var Breadth_draft_ratio1 = B_1 / this.floatState.T;
+				var a1, b1, d1;
+				if ( ( 3 <= Breadth_draft_ratio1 ) && ( Breadth_draft_ratio1 <= 6 ) ) {
 
-			console.error( "The B/T relation is not being respected for the roll formula. It should be 1 <= B/T < 6, not" + " " + ( this.floatState.BWL / this.floatState.T ).toFixed( 2 ) + "." );
+					a1 = 0.256 * Breadth_draft_ratio1 - 0.286;
+					b1 = - 0.11 * Breadth_draft_ratio1 - 2.55;
+					d1 = 0.033 * Breadth_draft_ratio1 - 1.419;
 
-		}
+				} else if ( ( 1 <= Breadth_draft_ratio1 ) && ( Breadth_draft_ratio1 < 3 ) ) {
 
-		var b_44_0 = this.rho * A_0 * Math.pow( this.floatState.BWL, 2 ) * a0 * Math.exp( b0 * Math.pow( this.coefficients.encounter_frequency, - 1.3 ) ) * Math.pow( this.coefficients.encounter_frequency, d0 ) /
-			( Math.sqrt( this.floatState.BWL / ( 2 * this.g ) ) );
+					a1 = - 3.94 * Breadth_draft_ratio1 + 13.69;
+					b1 = - 2.12 * Breadth_draft_ratio1 - 1.89;
+					d1 = 1.16 * Breadth_draft_ratio1 - 7.97;
 
-		var A_1 = breadth_ratio * A_0;
-		var B_1 = breadth_ratio * this.floatState.BWL;
-		var Breadth_draft_ratio1 = B_1 / this.floatState.T;
-		var a1, b1, d1;
-		if ( ( 3 <= Breadth_draft_ratio1 ) && ( Breadth_draft_ratio1 <= 6 ) ) {
+				} else {
 
-			a1 = 0.256 * Breadth_draft_ratio1 - 0.286;
-			b1 = - 0.11 * Breadth_draft_ratio1 - 2.55;
-			d1 = 0.033 * Breadth_draft_ratio1 - 1.419;
+					console.error( "The vessel dimensions are out of range for the roll formula." );
 
-		} else if ( ( 1 <= Breadth_draft_ratio1 ) && ( Breadth_draft_ratio1 < 3 ) ) {
+				}
 
-			a1 = - 3.94 * Breadth_draft_ratio1 + 13.69;
-			b1 = - 2.12 * Breadth_draft_ratio1 - 1.89;
-			d1 = 1.16 * Breadth_draft_ratio1 - 7.97;
+				var b_44_1 = this.rho * A_1 * Math.pow( B_1, 2 ) * a1 * Math.exp( b1 * Math.pow( this.coefficients.encounter_frequency, - 1.3 ) ) * Math.pow( this.coefficients.encounter_frequency, d1 ) /
+				( Math.sqrt( B_1 / ( 2 * this.g ) ) );
 
-		} else {
+				var b_44 = this.floatState.LWL * b_44_0 * ( this.delta + b_44_1 * ( 1 - this.delta ) / b_44_0 );
+				var critical_damping_frac = this.critical_damping_percentage / 100;
+				var restoring_moment_coeff = this.g * this.rho * this.floatState.Cb * this.floatState.LWL * this.floatState.BWL * this.floatState.T * this.floatState.GMt;
+				var add_damping = restoring_moment_coeff * naturalPeriod / Math.PI;
 
-			console.error( "The vessel dimensions are out of range for the roll formula." );
+				var damping_ratio = Math.sqrt( b_44_1 / b_44_0 );
+				var roll_hydro_damping = b_44 + add_damping * critical_damping_frac;
 
-		}
+				var excitation_frequency, A, B, C, D;
 
-		var b_44_1 = this.rho * A_1 * Math.pow( B_1, 2 ) * a1 * Math.exp( b1 * Math.pow( this.coefficients.encounter_frequency, - 1.3 ) ) * Math.pow( this.coefficients.encounter_frequency, d1 ) /
-			( Math.sqrt( B_1 / ( 2 * this.g ) ) );
+				if ( this.wavCre.waveDef.heading == 90 || this.wavCre.waveDef.heading == 270 ) {
 
-		var b_44 = this.floatState.LWL * b_44_0 * ( this.delta + b_44_1 * ( 1 - this.delta ) / b_44_0 );
-		var critical_damping_frac = this.critical_damping_percentage / 100;
-		var restoring_moment_coeff = this.g * this.rho * this.floatState.Cb * this.floatState.LWL * this.floatState.BWL * this.floatState.T * this.floatState.GMt;
-		var add_damping = restoring_moment_coeff * naturalPeriod / Math.PI;
+					excitation_frequency = Math.sqrt( this.rho * Math.pow( this.g, 2 ) * b_44_0 / this.coefficients.encounter_frequency ) * ( this.delta + damping_ratio *
+					( 1 - this.delta ) ) * this.floatState.LWL;
 
-		var damping_ratio = Math.sqrt( b_44_1 / b_44_0 );
-		var roll_hydro_damping = b_44 + add_damping * critical_damping_frac;
+				} else {
 
-		var excitation_frequency, A, B, C, D;
+					A = Math.abs( Math.sin( this.coefficients.betha ) ) * Math.sqrt( this.rho * Math.pow( this.g, 2 ) / this.coefficients.encounter_frequency ) * Math.sqrt( b_44_0 ) * 2 / this.coefficients.eff_wave_number;
+					B = Math.pow( Math.sin( 0.5 * this.delta * this.floatState.LWL * this.coefficients.eff_wave_number ), 2 );
+					C = Math.pow( damping_ratio * Math.sin( 0.5 * ( 1 - this.delta ) * this.floatState.LWL * this.coefficients.eff_wave_number ), 2 );
+					D = 2 * damping_ratio * Math.sin( 0.5 * this.delta * this.floatState.LWL * this.coefficients.eff_wave_number ) * Math.sin( 0.5 * ( 1 - this.delta ) *
+					this.floatState.LWL * this.coefficients.eff_wave_number ) * Math.cos( 0.5 * this.floatState.LWL * this.coefficients.eff_wave_number );
+					excitation_frequency = A * Math.sqrt( B + C + D );
 
-		if ( this.wavCre.waveDef.heading == 90 || this.wavCre.waveDef.heading == 270 ) {
+				}
 
-			excitation_frequency = Math.sqrt( this.rho * Math.pow( this.g, 2 ) * b_44_0 / this.coefficients.encounter_frequency ) * ( this.delta + damping_ratio *
-				( 1 - this.delta ) ) * this.floatState.LWL;
+				A = Math.pow( - Math.pow( this.coefficients.encounter_frequency * naturalPeriod / ( 2 * Math.PI ), 2 ) + 1, 2 );
+				B = Math.pow( restoring_moment_coeff, 2 );
+				C = Math.pow( this.coefficients.encounter_frequency * roll_hydro_damping, 2 );
 
-		} else {
+				return this.wavCre.waveDef.waveAmplitude * excitation_frequency / ( Math.sqrt( A * B + C ) );
 
-			A = Math.abs( Math.sin( this.coefficients.betha ) ) * Math.sqrt( this.rho * Math.pow( this.g, 2 ) / this.coefficients.encounter_frequency ) * Math.sqrt( b_44_0 ) * 2 / this.coefficients.eff_wave_number;
-			B = Math.pow( Math.sin( 0.5 * this.delta * this.floatState.LWL * this.coefficients.eff_wave_number ), 2 );
-			C = Math.pow( damping_ratio * Math.sin( 0.5 * ( 1 - this.delta ) * this.floatState.LWL * this.coefficients.eff_wave_number ), 2 );
-			D = 2 * damping_ratio * Math.sin( 0.5 * this.delta * this.floatState.LWL * this.coefficients.eff_wave_number ) * Math.sin( 0.5 * ( 1 - this.delta ) *
-				this.floatState.LWL * this.coefficients.eff_wave_number ) * Math.cos( 0.5 * this.floatState.LWL * this.coefficients.eff_wave_number );
-			excitation_frequency = A * Math.sqrt( B + C + D );
-
-		}
-
-		A = Math.pow( - Math.pow( this.coefficients.encounter_frequency * naturalPeriod / ( 2 * Math.PI ), 2 ) + 1, 2 );
-		B = Math.pow( restoring_moment_coeff, 2 );
-		C = Math.pow( this.coefficients.encounter_frequency * roll_hydro_damping, 2 );
-
-		return this.wavCre.waveDef.waveAmplitude * excitation_frequency / ( Math.sqrt( A * B + C ) );
+			}, "rollAmp" )
+		} );
 
 	}
 
