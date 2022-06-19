@@ -29,15 +29,18 @@
 			tr:nth-child(even) {
 				background-color: #f2f2f2;
 			}
-			#myTable {
-				width: 250px;
+			#classTableStyle {
+				width: 300px;
+			}
+			#valuesTableStyle {
+				width: 300px;
 			}
 		</style>
 	</head>	
 	<body>
 		<div class="container">
 			<h3>The following table compares the es6 and es5 style status:</h3>
-			<table id="myTable">
+			<table id="classTableStyle">
 				<thead>
 					Table 1 - Classes
 						<tr>
@@ -62,7 +65,8 @@
 					</tr>
 				</tbody>
 			</table>
-			<table id="myTable">
+			<h3>The following tables the calculated results:</h3>
+			<table id="valuesTableStyle">
 				<thead>
 					Table 1 - Wave classes
 						<tr>
@@ -72,7 +76,20 @@
 								<th>Status</th>
 						</tr>    
 				</thead>
-				<tbody id="calculationTable"></tbody>
+				<tbody id="waveCalculationTable"></tbody>
+			</table>
+			<br>
+			<table id="valuesTableStyle">
+				<thead>
+					Table 2 - Free resistance results
+						<tr>
+								<th>Variable</th>
+								<th>Expect (ES5)</th>
+								<th>New Result</th>
+								<th>Status</th>
+						</tr>    
+				</thead>
+				<tbody id="propCalculationTable"></tbody>
 			</table>
 		</div>		
 		<script type="module">
@@ -86,6 +103,9 @@
 			import { addRows } from "./supComparisonFunc.js"
 			import WaveCreator from "../source/jsm/ship/WaveCreator.js";
 			import WaveMotion from "../source/jsm/ship/WaveMotion.js";
+			import ShipState from "../source/jsm/ship/ShipState.js"
+			import HullResistance from "../source/jsm/ship/HullResistance.js"
+			import PropellerInteraction from "../source/jsm/ship/PropellerInteraction.js"
 
 			var ship3D_ES5, ship3D
 
@@ -104,7 +124,7 @@
 
 				let shipspec = JSON.parse(contents)
 
-				const ship_es5 = new Vessel.Ship(shipspec)
+				const shipES5 = new Vessel.Ship(shipspec)
 				const ship = new Ship(shipspec)
 				// const ship = new VesselES6.Ship(shipspec)
 				
@@ -158,8 +178,8 @@
 					objectOpacity: 1
 				});	
 				scene.add(ship3D)
-				ship3D_ES5 = new Ship3D(ship_es5, {
-					shipState: ship_es5.designState.clone(),
+				ship3D_ES5 = new Ship3D(shipES5, {
+					shipState: shipES5.designState.clone(),
 					stlPath: "../examples/3D_models/STL/various",
 					upperColor: 0x33aa33,
 					lowerColor: 0xaa3333,	
@@ -193,11 +213,11 @@
 				controls.update()
 				animate()
 
-				addRows(ship.constructor.name, ship_es5, ship, "foundationTable")
-				addRows("BaseObject", ship_es5.baseObjects, ship.baseObjects, "foundationTable")
-				addRows("DerivedObjects", ship_es5.derivedObjects, ship.derivedObjects, "foundationTable")
-				addRows(ship.structure.constructor.name, ship_es5.structure, ship.structure, "foundationTable")
-				addRows(ship.designState.constructor.name, ship_es5.designState, ship.designState, "foundationTable")
+				addRows(ship.constructor.name, shipES5, ship, "foundationTable")
+				addRows("BaseObject", shipES5.baseObjects, ship.baseObjects, "foundationTable")
+				addRows("DerivedObjects", shipES5.derivedObjects, ship.derivedObjects, "foundationTable")
+				addRows(ship.structure.constructor.name, shipES5.structure, ship.structure, "foundationTable")
+				addRows(ship.designState.constructor.name, shipES5.designState, ship.designState, "foundationTable")
 
 				// // Wave values
 				let wavStatES5 = new Vessel.WaveCreator();
@@ -208,16 +228,16 @@
 				// waveHistory[i][j] = wavStatES5.waveDef;
 
 				let speed = 13;
-				let wavMoES5 = new Vessel.WaveMotion(ship_es5, ship_es5.designState, wavStatES5);
+				let wavMoES5 = new Vessel.WaveMotion(shipES5, shipES5.designState, wavStatES5);
 				wavMoES5.setSpeed(speed);
-				let wavMo = new WaveMotion(ship_es5, ship.designState, wavStat);
+				let wavMo = new WaveMotion(shipES5, ship.designState, wavStat);
 				wavMo.setSpeed(speed);
 				addRows("Wave Motion", wavMoES5, wavMo, "foundationTable")
 
-				addRows("BML", wavMoES5.floatState.BMl, wavMo.floatState.BMl, "calculationTable", true)
-				addRows("BMT", wavMoES5.floatState.BMt, wavMo.floatState.BMt, "calculationTable", true)
-				addRows("GML", wavMoES5.floatState.GMl, wavMo.floatState.GMl, "calculationTable", true)
-				addRows("GMT", wavMoES5.floatState.GMt, wavMo.floatState.GMt, "calculationTable", true)
+				addRows("BML", wavMoES5.floatState.BMl, wavMo.floatState.BMl, "waveCalculationTable", true)
+				addRows("BMT", wavMoES5.floatState.BMt, wavMo.floatState.BMt, "waveCalculationTable", true)
+				addRows("GML", wavMoES5.floatState.GMl, wavMo.floatState.GMl, "waveCalculationTable", true)
+				addRows("GMT", wavMoES5.floatState.GMt, wavMo.floatState.GMt, "waveCalculationTable", true)
 
 				// let wavStat = new WaveCreator();
 				// wavStat.setWaveDef(2 * Math.PI / 10, 1, 180);
@@ -226,11 +246,64 @@
 				// wavMo.setSpeed(speed);
 				// console.log(wavMoES5)
 				// console.log(wavMo)
+				
+				// Taking the propeller
+				let shipStateES5 = new Vessel.ShipState( shipES5.designState.getSpecification() );
+				let shipState = new ShipState( ship.designState.getSpecification() );
+				let propReq = new XMLHttpRequest();
+				let propellers = {};
+				let powerPlants = {};
 
-				// Define variab
+				propReq.open( "GET", "../examples/others/propeller_specifications/rolls_royce_500_azipod.json", true );
+				propReq.addEventListener( "load", function ( event ) {
+					
+					let response = event.target.response;
+					let propeller = JSON.parse( response );
+
+					var usePropSpec = function ( propeller, name ) {
+
+						propellers[ name.substring( 0, name.length - 5 ) ] = propeller;
+
+						let hullResES5 = new Vessel.HullResistance(shipES5, shipStateES5, propeller, wavStat);
+						hullResES5.writeOutput();
+
+						let hullRes = new HullResistance(ship, shipStateES5, propeller, wavStat);
+						hullRes.writeOutput();
+						
+						addRows("Resistance", hullResES5, hullRes, "foundationTable")
+						// debugger
+
+						addRows("Rt (calm water)", hullResES5.calmResistance, hullRes.calmResistance, "propCalculationTable", true)
+						addRows("Total power resistance", hullResES5.totalResistance.Pe, hullRes.totalResistance.Pe, "propCalculationTable", true)
+						addRows("Total resistance", hullResES5.totalResistance.Rtadd, hullRes.totalResistance.Rtadd, "propCalculationTable", true)
+						
+						let propellerInteractionES5
+						let propellerInteraction
+
+						for ( var propProp in propellers ) {
+
+							var wagProp = propellers[ propProp ];
+							propellerInteractionES5 = new Vessel.PropellerInteraction( shipES5, shipStateES5, wagProp );
+							propellerInteractionES5.writeOutput();
+
+							propellerInteraction = new PropellerInteraction( ship, shipStateES5, wagProp );
+							propellerInteraction.writeOutput();
+
+							// debugger
+
+						}
+
+					}
+
+					usePropSpec( propeller, "rolls_royce_500_azipod.json" );
+
+				} );
+				propReq.send( null );
+				// Define variable
 				// let states = new Vessel.ShipState(ship.designState.getSpecification());
-				// let hullRes = new Vessel.HullResistance(ship, states, wagProp, wavStat);
+				
 				// hullRes.writeOutput();
+
 
 			}
 		</script>
