@@ -89,6 +89,19 @@
 								<th>Status</th>
 						</tr>    
 				</thead>
+				<tbody id="resCalculationTable"></tbody>
+			</table>
+			<br>
+			<table id="valuesTableStyle">
+				<thead>
+					Table 3 - Propeller calculation results
+						<tr>
+								<th>Variable</th>
+								<th>Expect (ES5)</th>
+								<th>New Result</th>
+								<th>Status</th>
+						</tr>    
+				</thead>
 				<tbody id="propCalculationTable"></tbody>
 			</table>
 		</div>		
@@ -106,8 +119,10 @@
 			import ShipState from "../source/jsm/ship/ShipState.js"
 			import HullResistance from "../source/jsm/ship/HullResistance.js"
 			import PropellerInteraction from "../source/jsm/ship/PropellerInteraction.js"
+			import downloadShip from "../source/jsm/fileIO/dowloadShip.js"
+			import FuelConsumption from "../source/jsm/ship/FuelConsumption.js"
 
-			var ship3D_ES5, ship3D
+			let ship3D_ES5, ship3D
 
 			new THREE.FileLoader().load("../examples/ship_specs/PX121.json", useFileData)
 			
@@ -251,8 +266,10 @@
 				let shipStateES5 = new Vessel.ShipState( shipES5.designState.getSpecification() );
 				let shipState = new ShipState( ship.designState.getSpecification() );
 				let propReq = new XMLHttpRequest();
+				var powReq = new XMLHttpRequest();	
 				let propellers = {};
 				let powerPlants = {};
+				let fuelCons = {};
 
 				propReq.open( "GET", "../examples/others/propeller_specifications/rolls_royce_500_azipod.json", true );
 				propReq.addEventListener( "load", function ( event ) {
@@ -260,7 +277,7 @@
 					let response = event.target.response;
 					let propeller = JSON.parse( response );
 
-					var usePropSpec = function ( propeller, name ) {
+					let usePropSpec = function ( propeller, name ) {
 
 						propellers[ name.substring( 0, name.length - 5 ) ] = propeller;
 
@@ -273,26 +290,52 @@
 						addRows("Resistance", hullResES5, hullRes, "foundationTable")
 						// debugger
 
-						addRows("Rt (calm water)", hullResES5.calmResistance, hullRes.calmResistance, "propCalculationTable", true)
-						addRows("Total power resistance", hullResES5.totalResistance.Pe, hullRes.totalResistance.Pe, "propCalculationTable", true)
-						addRows("Total resistance", hullResES5.totalResistance.Rtadd, hullRes.totalResistance.Rtadd, "propCalculationTable", true)
+						addRows("Rt (calm water)", hullResES5.calmResistance, hullRes.calmResistance, "resCalculationTable", true)
+						addRows("Total power resistance", hullResES5.totalResistance.Pe, hullRes.totalResistance.Pe, "resCalculationTable", true)
+						addRows("Total resistance", hullResES5.totalResistance.Rtadd, hullRes.totalResistance.Rtadd, "resCalculationTable", true)
 						
 						let propellerInteractionES5
 						let propellerInteraction
 
-						for ( var propProp in propellers ) {
+						for ( let propProp in propellers ) {
 
-							var wagProp = propellers[ propProp ];
+							let wagProp = propellers[ propProp ];
 							propellerInteractionES5 = new Vessel.PropellerInteraction( shipES5, shipStateES5, wagProp );
 							propellerInteractionES5.writeOutput();
 
 							propellerInteraction = new PropellerInteraction( ship, shipStateES5, wagProp );
 							propellerInteraction.writeOutput();
 
-							// debugger
+							const kes_arr = Object.keys(propellerInteraction.propulsion)
 
+							kes_arr.map((s) => addRows(s, propellerInteractionES5.propulsion[s], propellerInteraction.propulsion[s], "propCalculationTable", true))
 						}
 
+						// Mounting the Power Plant											
+						powReq.open("GET", "../examples/others/power_plant_specifications/powerPlant1.json", true);
+						powReq.addEventListener("load", function (event) {
+
+							var response = event.target.response;
+							var powerPlant = JSON.parse( response );
+
+							var usePowSpec = function ( powerPlant, name ) {
+
+								powerPlants[ name.substring( 0, name.length - 5 ) ] = powerPlant;
+								for ( var powProp in powerPlants ) {
+									
+									var plant = powerPlants[ powProp ];
+									fuelCons = new Vessel.FuelConsumption( shipES5, shipStateES5, plant );
+									fuelCons.writeOutput();
+
+								}
+
+							};
+
+							usePowSpec( powerPlant, "powerPlant1.json" );
+
+						});
+						powReq.send( null );
+						
 					}
 
 					usePropSpec( propeller, "rolls_royce_500_azipod.json" );

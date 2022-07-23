@@ -7,7 +7,7 @@ export function addRows( className, mode1, mode2, id, showModes = false ) {
 
 	// const check = _.differenceWith( [ mode1 ], [ mode2 ], _.isEqual );
 	const check = diff( mode1, mode2 );
-	const result = check === undefined ? `<td style="background-color: #9fe5ab">Equal</td>` : `<td style="background-color: #fd7d7d">Not Equal</td>`;
+	const result = check === undefined ? "<td style=\"background-color: #9fe5ab\">Equal</td>" : "<td style=\"background-color: #fd7d7d\">Not Equal</td>";
 	// debugger;
 	document.getElementById( id ).innerHTML += `<tr>
     ${addClassName( className )}

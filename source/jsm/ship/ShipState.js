@@ -110,6 +110,7 @@ export default class ShipState extends JSONSpecObject {
 
 	}
 
+	//o is an object, k is a key to a single state property
 	getObjectStateProperty( o, k ) {
 
 		return this.getObjectState( o )[ k ];
