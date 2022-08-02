@@ -104,6 +104,20 @@
 				</thead>
 				<tbody id="propCalculationTable"></tbody>
 			</table>
+			<br>
+			<table id="valuesTableStyle">
+				<thead>
+					Table 4 - Positioning values
+						<tr>
+								<th>Variable</th>
+								<th>Expect (ES5)</th>
+								<th>New Result</th>
+								<th>Status</th>
+						</tr>    
+				</thead>
+				<tbody id="posCalculationTable"></tbody>
+			</table>
+			<br>
 		</div>		
 		<script type="module">
 			import * as THREE from 'https://unpkg.com/three@0.126.1/build/three.module.js';
@@ -121,6 +135,8 @@
 			import PropellerInteraction from "../source/jsm/ship/PropellerInteraction.js"
 			import downloadShip from "../source/jsm/fileIO/dowloadShip.js"
 			import FuelConsumption from "../source/jsm/ship/FuelConsumption.js"
+			import Positioning from "../source/jsm/ship/Positioning.js"
+			import Manoeuver from "../source/jsm/ship/Manoeuver.js"
 
 			let ship3D_ES5, ship3D
 
@@ -269,7 +285,11 @@
 				var powReq = new XMLHttpRequest();	
 				let propellers = {};
 				let powerPlants = {};
-				let fuelCons = {};
+				
+				// Attributes to be used in the maneuvering model
+				let hullResES5
+				let propellerInteraction
+				let fuelCons
 
 				propReq.open( "GET", "../examples/others/propeller_specifications/rolls_royce_500_azipod.json", true );
 				propReq.addEventListener( "load", function ( event ) {
@@ -281,7 +301,7 @@
 
 						propellers[ name.substring( 0, name.length - 5 ) ] = propeller;
 
-						let hullResES5 = new Vessel.HullResistance(shipES5, shipStateES5, propeller, wavStat);
+						hullResES5 = new Vessel.HullResistance(shipES5, shipStateES5, propeller, wavStat);
 						hullResES5.writeOutput();
 
 						let hullRes = new HullResistance(ship, shipStateES5, propeller, wavStat);
@@ -295,7 +315,6 @@
 						addRows("Total resistance", hullResES5.totalResistance.Rtadd, hullRes.totalResistance.Rtadd, "resCalculationTable", true)
 						
 						let propellerInteractionES5
-						let propellerInteraction
 
 						for ( let propProp in propellers ) {
 
@@ -344,10 +363,29 @@
 				propReq.send( null );
 				// Define variable
 				// let states = new Vessel.ShipState(ship.designState.getSpecification());
-				
+
 				// hullRes.writeOutput();
+				let path = [[0, 0], [10, 10], [0, 0]];
+				let posES5 = new Vessel.Positioning(shipES5, shipStateES5, path)
+				let pos = new Positioning(ship, shipState, path)
+				posES5.advanceShip(100)
+				pos.advanceShip(100)
 
-
+				addRows("Traveled Distance", posES5.positionState.travelDist, pos.positionState.travelDist, "posCalculationTable", true)
+				addRows("Traveled Leg. Distance", posES5.positionState.travelLegDist, pos.positionState.travelLegDist, "posCalculationTable", true)
+				addRows("Position", posES5, pos, "foundationTable")
+			
+				
+				let manSpec = new XMLHttpRequest();
+				let manResp
+				manSpec.open("GET", "others/maneuvering_specifications/man_sample.json", true)
+				manSpec.addEventListener("load", function (event) {
+					const response = event.target.response;
+					manSpec = JSON.parse(response);
+				})
+				
+				let man = new Manoeuver(ship, shipState, hullResES5, propellerInteraction, fuelCons, manResp)
+			
 			}
 		</script>
 	</body>
