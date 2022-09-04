@@ -94,12 +94,13 @@ export default class ShipState extends JSONSpecObject {
 		//only existing properties will be updated.
 		let oo = this.objectOverrides;
 		//3., 4., 5., 6.
-		let sources = [oo.common, oo.baseByGroup[o.baseObject.group], oo.baseByID[o.baseObject.id], oo.derivedByGroup[o.affiliations.group], oo.derivedByID[o.id]];
+		let sources = [oo.common, oo.baseByGroup[o.baseObject.group], oo.baseByID[o.baseObject.id], oo.derivedByGroup[o.affiliations.group], oo.derivedByID[o.id]];		
 		for (let i = 0; i < sources.length; i++) {
 			let s = sources[i];
 			if (!s) continue;
-			//let sk = Object.keys(s);
-			for (let k in/*of*/ s) {//(sk) {
+			//let sk = Object.keys(s);			
+			for (let k in s) {//(sk) {
+			// for (const k of s) {//(sk) {
 				//Override existing properties only:
 				if (state[k] !== undefined) {
 					state[k] = s[k];
@@ -179,9 +180,7 @@ export default class ShipState extends JSONSpecObject {
 
 		return this;
 	}
-
-    //Sets this state exclusively from parameter.
-	
+		
 	//Overrides existing directives and adds new ones.
 	extend(spec) {
 		Object.assign(this.calculationParameters, spec.calculationParameters);
