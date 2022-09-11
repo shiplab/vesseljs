@@ -8,17 +8,85 @@ I: Inertia Matrix (3x3) (kg * m²)
 D: Damping Matrix (3x3) (kg  * s)
 yaw: Yaw angle (rad)
 */
+import { StateModule } from "./StateModule.js";
 
-class FreeBody {
+class FreeBody extends StateModule {
 
-	constructor( m = 0, I = [[ 0, 0, 0 ], [ 0, 0, 0 ], [ 0, 0, 0 ]] ) {
+	constructor( ship, states, hullResistance, propellerInteraction, fuelConsumption, bodyObj, rho = 1025 ) {
 
-		this.M = [[ m, 0, 0 ],
-			[ 0, m, 0 ],
-			[ 0, 0, 0 ]
-		];
+		// body variable in the format {m}
+
+		// constructor( m = 0, I = [[ 0, 0, 0 ], [ 0, 0, 0 ], [ 0, 0, 0 ]] ) {
+		super( ship, states );
+
+		if ( typeof this.states.discrete.FloatingCondition === "undefined" ) {
+
+			this.setDraft();
+
+		}
+
+		if ( typeof this.states.discrete.Speed === "undefined" ) { // if vessel does not have a speed state
+
+			this.setSpeed(); // use its design speed
+
+		}
+
+		this.hullRes = hullResistance;
+		this.propellerInteraction = propellerInteraction;
+		this.fuelConsumption = fuelConsumption;
+		this.powerPlant = fuelConsumption.powerPlant;
+		this.manoeuvring = manoeuvring;
+		this.state = {};
+		this.rho = propellerInteraction.rho;
+		this.propeller = this.propellerInteraction.propeller;
+		this.speedState = this.states.discrete.Speed.state;
+		this.floatState = this.states.discrete.FloatingCondition.state;
+		this.resistanceState = this.states.discrete.HullResistance.state;
+
+		try {
+			if (!bodyObj.hasOwnProperty( "M" )) {
+				throw "Object have no Property M"
+			}
+			const dimensions = [
+				arr.length,
+				arr.reduce((x, y) => Math.max(x, y.length), 0),
+				arr.reduce((x, y) => Math.min(x, y.length), 0)
+			];
+
+			if (dimensions !== [3, 3, 3]) {
+				throw "M Dimension not set as a matrix 3X3"
+			}
+
+			this.M = bodyObj["M"]
+		} catch (error) {
+			console.log(e, ", null matrix is set up instead");
+			this.M = [[ 0, 0, 0 ],
+				[ 0, 0, 0 ],
+				[ 0, 0, 0 ]
+			];		
+		}
+
+		
+
+		if (!bodyObj.hasOwnProperty( "M" )) {
+			throw "Object have no Property M"
+		}
+
+		let m = ? ( bodyObj || 0 ) : bodyObj
+
+			this.M = [[ 0, 0, 0 ],
+				[ 0, 0, 0 ],
+				[ 0, 0, 0 ]
+			];
 		this.I = I;
 
+	}
+
+	setDiagonalMassMatrix(m) {
+		this.M = [[ 0, 0, 0 ],
+				[ 0, 0, 0 ],
+				[ 0, 0, 0 ]
+			];
 	}
 
 }

@@ -1,8 +1,8 @@
-import JSONSpecObject from "./JSONSpecObject.js";
-import BaseObject from	"./BaseObject.js";
-import Vectors from "../math/Vectors.js";
+import { JSONSpecObject } from "./JSONSpecObject.js";
+import { BaseObject } from	"./BaseObject.js";
+import { Vectors } from "../math/Vectors.js";
 
-export default class DerivedObject extends JSONSpecObject {
+export class DerivedObject extends JSONSpecObject {
 
 	constructor( specification, baseObjects ) {
 

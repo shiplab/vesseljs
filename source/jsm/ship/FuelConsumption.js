@@ -1,6 +1,6 @@
-import StateModule from "./StateModule.js";
+import { StateModule } from "./StateModule.js";
 
-export default class FuelConsumption extends StateModule {
+export class FuelConsumption extends StateModule {
 
 	constructor( ship, states, powerPlant ) {
 

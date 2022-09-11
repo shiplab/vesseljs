@@ -29,10 +29,10 @@ The caching and version control is clumsy (and incomplete). I (Elias) have done 
 ShipState now mainly accounts for load state, by which I mean the states of objects in the ship. We need to find out how to best handle other state properties, like global position, heading etc., not to mention properties that change fast, and that depend on time and current state (motion fluctuations etc.).
 */
 
-import JSONSpecObject from "./JSONSpecObject.js";
+import {JSONSpecObject} from "./JSONSpecObject.js;"
 
 
-export default class ShipState extends JSONSpecObject {
+export class ShipState extends JSONSpecObject {
 
     constructor( specification ) {
 

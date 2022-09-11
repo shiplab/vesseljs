@@ -2,7 +2,7 @@
 
 //Very simple download of the specification of a given ship design. Depends on a working getSpecification method.
 
-export default function downloadShip( ship ) {
+export function downloadShip( ship ) {
 
 	let specification = ship.getSpecification();
 	let output = JSON.stringify( specification );

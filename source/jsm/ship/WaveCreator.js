@@ -1,4 +1,4 @@
-export default class WaveCreator {
+export class WaveCreator {
 
 	constructor( defList, waveDuration = 3600 ) {
 

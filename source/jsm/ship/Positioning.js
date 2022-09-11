@@ -1,6 +1,6 @@
-import StateModule from "./StateModule.js";
+import { StateModule } from "./StateModule.js";
 
-export default class Positioning {
+export class Positioning {
 
 	constructor( ship, states, path ) {
 

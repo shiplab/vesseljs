@@ -1,4 +1,4 @@
-import JSONSpecObject from "./JSONSpecObject.js";
+import { JSONSpecObject } from "./JSONSpecObject.js";
 import { bisectionSearch, lerp } from "../math/interpolation.js";
 
 class BaseObject extends JSONSpecObject {
@@ -93,4 +93,4 @@ class BaseObject extends JSONSpecObject {
 
 }
 
-export default BaseObject;
+export { BaseObject };

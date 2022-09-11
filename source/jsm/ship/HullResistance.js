@@ -1,11 +1,19 @@
-import StateModule from "./StateModule.js";
+// partially adapted from http://www.shiplab.ntnu.co/app/holtrop/
 
-export default class HullResistance extends StateModule {
+import { StateModule } from "./StateModule.js";
+
+export class HullResistance extends StateModule {
 
 	constructor( ship, states, propeller, wavCre, g = 9.81, rho = 1025, mi = 0.00122 ) {
 
 		super( ship, states );
 		this.propeller = propeller;
+
+		if ( typeof this.states.discrete.FloatingCondition === "undefined" ) {
+
+			this.setDraft();
+
+		}
 
 		if ( typeof this.states.discrete.Speed === "undefined" ) { // if vessel does not have a speed state
 

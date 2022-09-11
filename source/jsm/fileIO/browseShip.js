@@ -47,4 +47,4 @@ let browseShip = function () {
 	};
 
 }();
-export default browseShip;
+export browseShip;

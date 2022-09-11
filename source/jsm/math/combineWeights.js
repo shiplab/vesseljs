@@ -1,6 +1,6 @@
 //@EliasHasle
 
-import Vectors from "./Vectors.js";
+import { Vectors } from "./Vectors.js";
 
 //Very unoptimized for now.
 export function combineWeights( array ) {

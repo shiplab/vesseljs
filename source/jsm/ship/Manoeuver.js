@@ -1,7 +1,7 @@
 // @ferrari212
-import StateModule from "./StateModule.js";
+import { StateModule } from "./StateModule.js";
 
-export default class Manoeuver extends StateModule {
+export class Manoeuver extends StateModule {
 
 	constructor( ship, states, hullResistance, propellerInteraction, fuelConsumption, manoeuvring, rho = 1025 ) {
 

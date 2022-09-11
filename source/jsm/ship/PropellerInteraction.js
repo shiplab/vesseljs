@@ -1,6 +1,6 @@
-import StateModule from "./StateModule.js";
+import { StateModule } from "./StateModule.js";
 
-export default class PropellerInteraction extends StateModule {
+export class PropellerInteraction extends StateModule {
 
 	constructor( ship, states, propeller, rho = 1025 ) {
 

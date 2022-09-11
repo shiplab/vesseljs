@@ -135,4 +135,4 @@ const Vectors = {
 	}
 };
 
-export default Vectors;
+export { Vectors };

@@ -8,15 +8,15 @@ For calculated values, I envision a lazy calculation pattern, where all properti
 Suggested calculations to do:
 - Inertia matrix (will need more detailed properties of parts).
 */
-import JSONSpecObject from "./JSONSpecObject.js";
-import BaseObject from "./BaseObject.js";
-import DerivedObject from "./DerivedObject.js";
-import Structure from "./Structure.js";
-import ShipState from "./ShipState.js";
+import { JSONSpecObject } from "./JSONSpecObject.js";
+import { BaseObject } from "./BaseObject.js";
+import { DerivedObject } from "./DerivedObject.js";
+import { Structure } from "./Structure.js";
+import { ShipState } from "./ShipState.js";
 import { combineWeights } from "../math/combineWeights.js";
 
 
-export default class Ship extends JSONSpecObject {
+export class Ship extends JSONSpecObject {
 
 	constructor( specification ) {
 

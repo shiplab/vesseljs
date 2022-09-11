@@ -107,7 +107,20 @@
 			<br>
 			<table id="valuesTableStyle">
 				<thead>
-					Table 4 - Positioning values
+					Table 4 - Fuel consumption
+						<tr>
+								<th>Variable</th>
+								<th>Expect (ES5)</th>
+								<th>New Result</th>
+								<th>Status</th>
+						</tr>    
+				</thead>
+				<tbody id="fuelConsumptionTable"></tbody>
+			</table>
+			<br>
+			<table id="valuesTableStyle">
+				<thead>
+					Table 5 - Positioning values
 						<tr>
 								<th>Variable</th>
 								<th>Expect (ES5)</th>
@@ -122,22 +135,17 @@
 		<script type="module">
 			import * as THREE from 'https://unpkg.com/three@0.126.1/build/three.module.js';
 			
-			import Ship from "../source/jsm/ship/Ship.js";
+			import { Ship } from "../source/jsm/ship/Ship.js";
 			import { Ship3D } from "../source/jsm/3D_engine/Ship3D.js"
-			// import VesselES6 from "../source/jsm/vessel.js";
 			// import { OrbitControls } from "https://threejs.org/examples/jsm/controls/OrbitControls.js";
 			import { OrbitControls } from 'https://unpkg.com/three@0.126.1/examples/jsm/controls/OrbitControls.js';
+			import { downloadShip } from "../source/jsm/fileIO/dowloadShip.js"
+			import { FuelConsumption } from "../source/jsm/ship/FuelConsumption.js"
+			import { Manoeuver } from "../source/jsm/ship/Manoeuver.js"
+			import * as VesselES6 from "../source/jsm/vessel.js"
+			
 			import { addRows } from "./supComparisonFunc.js"
-			import WaveCreator from "../source/jsm/ship/WaveCreator.js";
-			import WaveMotion from "../source/jsm/ship/WaveMotion.js";
-			import ShipState from "../source/jsm/ship/ShipState.js"
-			import HullResistance from "../source/jsm/ship/HullResistance.js"
-			import PropellerInteraction from "../source/jsm/ship/PropellerInteraction.js"
-			import downloadShip from "../source/jsm/fileIO/dowloadShip.js"
-			import FuelConsumption from "../source/jsm/ship/FuelConsumption.js"
-			import Positioning from "../source/jsm/ship/Positioning.js"
-			import Manoeuver from "../source/jsm/ship/Manoeuver.js"
-
+			
 			let ship3D_ES5, ship3D
 
 			new THREE.FileLoader().load("../examples/ship_specs/PX121.json", useFileData)
@@ -156,8 +164,7 @@
 				let shipspec = JSON.parse(contents)
 
 				const shipES5 = new Vessel.Ship(shipspec)
-				const ship = new Ship(shipspec)
-				// const ship = new VesselES6.Ship(shipspec)
+				const ship = new VesselES6.Ship(shipspec)
 				
 				const containerES5 = document.getElementById("3d-one")
 				const container = document.getElementById("3d-two")
@@ -253,7 +260,7 @@
 				// // Wave values
 				let wavStatES5 = new Vessel.WaveCreator();
 				wavStatES5.setWaveDef(2 * Math.PI / 10, 1, 180);
-				let wavStat = new WaveCreator();
+				let wavStat = new VesselES6.WaveCreator();
 				wavStat.setWaveDef(2 * Math.PI / 10, 1, 180);
 				addRows("Waves", wavStatES5, wavStat, "foundationTable")
 				// waveHistory[i][j] = wavStatES5.waveDef;
@@ -261,7 +268,7 @@
 				let speed = 13;
 				let wavMoES5 = new Vessel.WaveMotion(shipES5, shipES5.designState, wavStatES5);
 				wavMoES5.setSpeed(speed);
-				let wavMo = new WaveMotion(shipES5, ship.designState, wavStat);
+				let wavMo = new Vessel.WaveMotion(shipES5, ship.designState, wavStat);
 				wavMo.setSpeed(speed);
 				addRows("Wave Motion", wavMoES5, wavMo, "foundationTable")
 
@@ -280,41 +287,40 @@
 				
 				// Taking the propeller
 				let shipStateES5 = new Vessel.ShipState( shipES5.designState.getSpecification() );
-				let shipState = new ShipState( ship.designState.getSpecification() );
+				let shipState = new VesselES6.ShipState( ship.designState.getSpecification() );
+
 				let propReq = new XMLHttpRequest();
 				var powReq = new XMLHttpRequest();	
 				let propellers = {};
 				let powerPlants = {};
 				
 				// Attributes to be used in the maneuvering model
-				let hullResES5
-				let propellerInteraction
-				let fuelCons
-
+				
 				propReq.open( "GET", "../examples/others/propeller_specifications/rolls_royce_500_azipod.json", true );
 				propReq.addEventListener( "load", function ( event ) {
 					
 					let response = event.target.response;
 					let propeller = JSON.parse( response );
-
+					
 					let usePropSpec = function ( propeller, name ) {
 
 						propellers[ name.substring( 0, name.length - 5 ) ] = propeller;
-
-						hullResES5 = new Vessel.HullResistance(shipES5, shipStateES5, propeller, wavStat);
+						
+						let hullResES5 = new Vessel.HullResistance(shipES5, shipStateES5, propeller, wavStat);
 						hullResES5.writeOutput();
-
-						let hullRes = new HullResistance(ship, shipStateES5, propeller, wavStat);
+						
+						let hullRes = new VesselES6.HullResistance(ship, shipState, propeller, wavStat);
 						hullRes.writeOutput();
 						
 						addRows("Resistance", hullResES5, hullRes, "foundationTable")
 						// debugger
-
+						
 						addRows("Rt (calm water)", hullResES5.calmResistance, hullRes.calmResistance, "resCalculationTable", true)
 						addRows("Total power resistance", hullResES5.totalResistance.Pe, hullRes.totalResistance.Pe, "resCalculationTable", true)
 						addRows("Total resistance", hullResES5.totalResistance.Rtadd, hullRes.totalResistance.Rtadd, "resCalculationTable", true)
 						
 						let propellerInteractionES5
+						let propellerInteraction
 
 						for ( let propProp in propellers ) {
 
@@ -322,7 +328,7 @@
 							propellerInteractionES5 = new Vessel.PropellerInteraction( shipES5, shipStateES5, wagProp );
 							propellerInteractionES5.writeOutput();
 
-							propellerInteraction = new PropellerInteraction( ship, shipStateES5, wagProp );
+							propellerInteraction = new VesselES6.PropellerInteraction( ship, shipState, wagProp );
 							propellerInteraction.writeOutput();
 
 							const kes_arr = Object.keys(propellerInteraction.propulsion)
@@ -334,17 +340,25 @@
 						powReq.open("GET", "../examples/others/power_plant_specifications/powerPlant1.json", true);
 						powReq.addEventListener("load", function (event) {
 
-							var response = event.target.response;
-							var powerPlant = JSON.parse( response );
+							let response = event.target.response;
+							let powerPlant = JSON.parse( response );
 
-							var usePowSpec = function ( powerPlant, name ) {
+							let usePowSpec = function ( powerPlant, name ) {
 
 								powerPlants[ name.substring( 0, name.length - 5 ) ] = powerPlant;
-								for ( var powProp in powerPlants ) {
+								for ( let powProp in powerPlants ) {
 									
-									var plant = powerPlants[ powProp ];
-									fuelCons = new Vessel.FuelConsumption( shipES5, shipStateES5, plant );
+									let plant = powerPlants[ powProp ];
+									let fuelConsES5 = new Vessel.FuelConsumption( shipES5, shipStateES5, plant );
+									fuelConsES5.writeOutput();
+
+									let fuelCons = new VesselES6.FuelConsumption( ship, shipState, plant );
 									fuelCons.writeOutput();
+
+									debugger
+									// const kes_arr = Object.keys(fuelConsES5.consumptionRate)
+
+									addRows("Fuel Consumption", fuelConsES5.consumptionRate, fuelCons.consumptionRate, "fuelConsumptionTable", true)
 
 								}
 
@@ -367,7 +381,7 @@
 				// hullRes.writeOutput();
 				let path = [[0, 0], [10, 10], [0, 0]];
 				let posES5 = new Vessel.Positioning(shipES5, shipStateES5, path)
-				let pos = new Positioning(ship, shipState, path)
+				let pos = new VesselES6.Positioning(ship, shipState, path)
 				posES5.advanceShip(100)
 				pos.advanceShip(100)
 
@@ -384,7 +398,12 @@
 					manSpec = JSON.parse(response);
 				})
 				
-				let man = new Manoeuver(ship, shipState, hullResES5, propellerInteraction, fuelCons, manResp)
+				// ---------------------------- //
+				// The Manoeuver class must be  //
+				// set in the new ES6 style     //
+				// ---------------------------- //
+
+				// let man = new Manoeuver(ship, shipState, hullResES5, propellerInteraction, fuelCons, manResp)
 			
 			}
 		</script>

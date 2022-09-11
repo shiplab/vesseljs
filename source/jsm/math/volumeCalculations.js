@@ -1,7 +1,7 @@
 //@EliasHasle
 import { bilinearUnitSquareCoeffs } from "./interpolation.js";
 import { bilinearArea } from "./areaCalculations.js";
-import Vectors from "./Vectors.js";
+import { Vectors } from "./Vectors.js";
 
 //I have been doing some tests here of a simplified calculation.
 //The results so far indicate that, for the prism hull, the results are almost identical, except that with the simple calculation the center of volume is almost right (but wrong enough to disqualify such a simple calculation).

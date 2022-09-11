@@ -1,12 +1,12 @@
-import JSONSpecObject from "./JSONSpecObject.js";
+import { JSONSpecObject } from "./JSONSpecObject.js";
 import { parametricWeightHull } from "../math/parametricWeightParsons.js";
 import { bisectionSearch, lerp } from "../math/interpolation.js";
 import { sectionCalculation } from "../math/areaCalculations.js";
 import { trapezoidCalculation } from "../math/areaCalculations.js";
 import { patchColumnCalculation, combineVolumes } from "../math/volumeCalculations.js";
-import Vectors from "../math/Vectors.js";
+import { Vectors } from "../math/Vectors.js";
 
-export default class DerivedObject extends JSONSpecObject {
+export class Hull extends JSONSpecObject {
 
 	constructor( spec ) {
 

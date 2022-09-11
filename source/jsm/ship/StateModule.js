@@ -1,4 +1,4 @@
-export default class StateModule {
+export class StateModule {
 
 	constructor( ship, states ) {
 

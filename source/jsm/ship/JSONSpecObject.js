@@ -12,7 +12,7 @@ getSpecification will also typically be overridden. The default implementation h
 Maybe this can be improved by implementing fromJSON and to toJSON methods.
 */
 
-export default class JSONSpecObject {
+class JSONSpecObject {
 
 	constructor( specification, baseObjects ) {
 
@@ -88,3 +88,5 @@ export default class JSONSpecObject {
 	}
 
 }
+
+export { JSONSpecObject };
