@@ -12,6 +12,14 @@ export { FuelConsumption } from "./ship/FuelConsumption.js";
 export { Positioning } from "./ship/Positioning.js";
 export { Manoeuver } from "./ship/Manoeuver.js";
 
+import { linearFromArrays, bilinear, bisectionSearch } from "./math/interpolation.js";
+
+export const f = {
+	linearFromArrays,
+	bilinear,
+	bisectionSearch
+};
+
 if ( typeof window !== "undefined" ) {
 
 	if ( window.__VESSEL__ ) {

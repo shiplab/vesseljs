@@ -21,18 +21,18 @@
 	<script src="libs/bootstrap.min.js"></script>
 
 	<!-- Three script -->
-	<script src="3D_engine/legacy/three.js"></script>
-	<script src="3D_engine/STLLoader.js"></script>
-	<script src="3D_engine/legacy/OrbitControls.js"></script>
+	<!-- <script src="3D_engine/legacy/three.js"></script> -->
+	<!-- <script src="3D_engine/STLLoader.js"></script> -->
+	<!-- <script src="3D_engine/legacy/OrbitControls.js"></script> -->
 
 	<!--Import library-->
-	<script src="../build/vessel.js"></script>
+	<!-- <script src="../build/vessel.js"></script> -->
 
 	<!-- Prettyprinting of JSON data -->
 	<script type="text/javascript" src="libs/renderjson.js"></script>
 
 	<!--Ship3D class for three.js-->
-	<script src="3D_engine/Ship3D_v2.js"></script>
+	<!-- <script src="3D_engine/Ship3D_v2.js"></script> -->
 
 	<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
 	<!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -105,8 +105,14 @@
 		</div>
 	</div>
 
-	<script>
+	<script type="module">
 		"use strict"
+
+		import * as THREE from 'https://unpkg.com/three@0.126.1/build/three.module.js';
+		import { OrbitControls } from 'https://unpkg.com/three@0.126.1/examples/jsm/controls/OrbitControls.js';
+		import { STLLoader } from "./3D_engine/STLLoaderJsm.js"
+		import * as Vessel from "../source/jsm/vessel.js"
+		import { Ship3D } from "../source/jsm/3D_engine/Ship3D.js"
 
 		// Create scene+
 		var renderer,
@@ -133,7 +139,7 @@
 			camera = new THREE.PerspectiveCamera(50)
 			camera.up.set(0, 0, 1)
 			scene.add(camera)
-			controls = new THREE.OrbitControls(camera, renderer.domElement)
+			controls = new OrbitControls(camera, renderer.domElement)
 
 			//Respond to window resize:
 			function onResize() {
@@ -176,7 +182,7 @@
 		specListReq.send(null);
 
 		// load a new specification from drop-down
-		function loadNewSpec() {
+		window.loadNewSpec = function loadNewSpec() {
 			var specReq = new XMLHttpRequest();
 			var fileName = dropList.options[dropList.selectedIndex].text;
 			console.log(fileName);
@@ -234,6 +240,7 @@
 
 		function animate() {
 			requestAnimationFrame(animate)
+			// debugger
 			renderer.render(scene, camera)
 		}
 

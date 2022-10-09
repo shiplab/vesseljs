@@ -23,8 +23,9 @@ TODO: Use calculated draft for position.z, and place the ship model in a motion 
 
 //var hMat; //global for debugging
 
-import * as THREE from 'https://unpkg.com/three@0.126.1/build/three.module.js';
+import * as THREE from "https://unpkg.com/three@0.126.1/build/three.module.js";
 import { STLLoader } from "../../../examples/3D_engine/STLLoaderJsm.js";
+import * as Vessel from "../vessel.js";
 
 class Ship3D extends THREE.Group {
 
@@ -132,7 +133,7 @@ class Ship3D extends THREE.Group {
 
 			} catch ( error ) {
 
-				console.warn( 'Group tag were introduced to deck object' );
+				console.warn( "Group tag were introduced to deck object" );
 				console.warn( error );
 
 			}
@@ -204,7 +205,7 @@ class Ship3D extends THREE.Group {
 
 			} catch ( error ) {
 
-				console.warn( 'Group tag were introduced to bulkhead object' );
+				console.warn( "Group tag were introduced to bulkhead object" );
 				console.warn( error );
 
 			}

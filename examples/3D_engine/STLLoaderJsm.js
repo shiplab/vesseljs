@@ -6,7 +6,7 @@ import {
 	Loader,
 	LoaderUtils,
 	Vector3
-} from 'https://cdn.skypack.dev/three@0.133.0';
+} from "https://cdn.skypack.dev/three@0.133.0";
 
 /**
  * Description: A THREE loader for STL ASCII files, as created by Solidworks and other CAD programs.
@@ -74,7 +74,7 @@ class STLLoader extends Loader {
 
 		const loader = new FileLoader( this.manager );
 		loader.setPath( this.path );
-		loader.setResponseType( 'arraybuffer' );
+		loader.setResponseType( "arraybuffer" );
 		loader.setRequestHeader( this.requestHeader );
 		loader.setWithCredentials( this.withCredentials );
 
@@ -250,12 +250,12 @@ class STLLoader extends Loader {
 
 			}
 
-			geometry.setAttribute( 'position', new BufferAttribute( vertices, 3 ) );
-			geometry.setAttribute( 'normal', new BufferAttribute( normals, 3 ) );
+			geometry.setAttribute( "position", new BufferAttribute( vertices, 3 ) );
+			geometry.setAttribute( "normal", new BufferAttribute( normals, 3 ) );
 
 			if ( hasColors ) {
 
-				geometry.setAttribute( 'color', new BufferAttribute( colors, 3 ) );
+				geometry.setAttribute( "color", new BufferAttribute( colors, 3 ) );
 				geometry.hasColors = true;
 				geometry.alpha = alpha;
 
@@ -273,8 +273,8 @@ class STLLoader extends Loader {
 			let faceCounter = 0;
 
 			const patternFloat = /[\s]+([+-]?(?:\d*)(?:\.\d*)?(?:[eE][+-]?\d+)?)/.source;
-			const patternVertex = new RegExp( 'vertex' + patternFloat + patternFloat + patternFloat, 'g' );
-			const patternNormal = new RegExp( 'normal' + patternFloat + patternFloat + patternFloat, 'g' );
+			const patternVertex = new RegExp( "vertex" + patternFloat + patternFloat + patternFloat, "g" );
+			const patternNormal = new RegExp( "normal" + patternFloat + patternFloat + patternFloat, "g" );
 
 			const vertices = [];
 			const normals = [];
@@ -322,7 +322,7 @@ class STLLoader extends Loader {
 
 					if ( normalCountPerFace !== 1 ) {
 
-						console.error( 'THREE.STLLoader: Something isn\'t right with the normal of face number ' + faceCounter );
+						console.error( "THREE.STLLoader: Something isn't right with the normal of face number " + faceCounter );
 
 					}
 
@@ -330,7 +330,7 @@ class STLLoader extends Loader {
 
 					if ( vertexCountPerFace !== 3 ) {
 
-						console.error( 'THREE.STLLoader: Something isn\'t right with the vertices of face number ' + faceCounter );
+						console.error( "THREE.STLLoader: Something isn't right with the vertices of face number " + faceCounter );
 
 					}
 
@@ -346,8 +346,8 @@ class STLLoader extends Loader {
 
 			}
 
-			geometry.setAttribute( 'position', new Float32BufferAttribute( vertices, 3 ) );
-			geometry.setAttribute( 'normal', new Float32BufferAttribute( normals, 3 ) );
+			geometry.setAttribute( "position", new Float32BufferAttribute( vertices, 3 ) );
+			geometry.setAttribute( "normal", new Float32BufferAttribute( normals, 3 ) );
 
 			return geometry;
 
@@ -355,7 +355,7 @@ class STLLoader extends Loader {
 
 		function ensureString( buffer ) {
 
-			if ( typeof buffer !== 'string' ) {
+			if ( typeof buffer !== "string" ) {
 
 				return LoaderUtils.decodeText( new Uint8Array( buffer ) );
 
@@ -367,7 +367,7 @@ class STLLoader extends Loader {
 
 		function ensureBinary( buffer ) {
 
-			if ( typeof buffer === 'string' ) {
+			if ( typeof buffer === "string" ) {
 
 				const array_buffer = new Uint8Array( buffer.length );
 				for ( let i = 0; i < buffer.length; i ++ ) {
