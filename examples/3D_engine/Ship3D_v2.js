@@ -216,7 +216,7 @@ function Ship3D( ship, { shipState, stlPath, deckOpacity = 0.2, objectOpacity = 
 
 		} catch ( error ) {
 
-			console.warn( 'Group tag were introduced to deck object' );
+			console.warn( "Group tag were introduced to deck object" );
 			console.warn( error );
 
 		}
@@ -288,7 +288,7 @@ function Ship3D( ship, { shipState, stlPath, deckOpacity = 0.2, objectOpacity = 
 
 		} catch ( error ) {
 
-			console.warn( 'Group tag were introduced to bulkhead object' );
+			console.warn( "Group tag were introduced to bulkhead object" );
 			console.warn( error );
 
 		}
