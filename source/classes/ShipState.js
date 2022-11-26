@@ -21,64 +21,86 @@ The caching and version control is clumsy (and incomplete). I (Elias) have done 
 ShipState now mainly accounts for load state, by which I mean the states of objects in the ship. We need to find out how to best handle other state properties, like global position, heading etc., not to mention properties that change fast, and that depend on time and current state (motion fluctuations etc.).
 */
 
-function ShipState(specification) {
+function ShipState( specification ) {
+
 	this.version = 0;
 	this.objectCache = {};
 	this.continuous = {};
 	this.discrete = {};
-	JSONSpecObject.call(this, specification);
+	JSONSpecObject.call( this, specification );
+
 }
-ShipState.prototype = Object.create(JSONSpecObject.prototype);
-Object.assign(ShipState.prototype, {
+
+ShipState.prototype = Object.create( JSONSpecObject.prototype );
+Object.assign( ShipState.prototype, {
 	constructor: ShipState,
-	getSpecification: function() {
-		if (this.cachedVersion !== this.version) {
+	getSpecification: function () {
+
+		if ( this.cachedVersion !== this.version ) {
+
 			var spec = {
 				calculationParameters: this.calculationParameters,
 				objectOverrides: this.objectOverrides//{}
 			};
 
 			//Sketchy, but versatile:
-			spec = JSON.parse(JSON.stringify(spec));
+			spec = JSON.parse( JSON.stringify( spec ) );
 
 			this.specCache = spec;
 			this.cachedVersion = this.version;
+
 		}
+
 		return this.specCache;
+
 	},
-	clone: function() {
-		return new ShipState(this.getSpecification());
+	clone: function () {
+
+		return new ShipState( this.getSpecification() );
+
 	},
-	getObjectState: function(o) {
-		if (this.objectCache[o.id] !== undefined) {
-			let c = this.objectCache[o.id];
-			if (c.thisStateVer === this.version
-				/*&& c.baseStateVer === o.baseObject.baseStateVersion
-				&& c.refStateVer === o.referenceStateVersion*/) {
-				console.log("ShipState.getObjectState: Using cache.");
+	getObjectState: function ( o ) {
+
+		if ( this.objectCache[ o.id ] !== undefined ) {
+
+			let c = this.objectCache[ o.id ];
+			if ( c.thisStateVer === this.version
+			/*&& c.baseStateVer === o.baseObject.baseStateVersion
+				&& c.refStateVer === o.referenceStateVersion*/ ) {
+
+				console.log( "ShipState.getObjectState: Using cache." );
 				return c.state;
+
 			}
+
 		}
-		console.log("ShipState.getObjectState: Not using cache.");
+
+		console.log( "ShipState.getObjectState: Not using cache." );
 
 		let state = {};
-		Object.assign(state, o.baseObject.baseState);
-		Object.assign(state, o.referenceState);
+		Object.assign( state, o.baseObject.baseState );
+		Object.assign( state, o.referenceState );
 		let oo = this.objectOverrides;
-		let sources = [oo.common, oo.baseByID[o.baseObject.id], oo.derivedByGroup[o.affiliations.group], oo.derivedByID[o.id]];
-		for (let i = 0; i < sources.length; i++) {
-			let s = sources[i];
-			if (!s) continue;
-			let sk = Object.keys(s);
-			for (let k of sk) {
+		let sources = [ oo.common, oo.baseByID[ o.baseObject.id ], oo.derivedByGroup[ o.affiliations.group ], oo.derivedByID[ o.id ] ];
+		for ( let i = 0; i < sources.length; i ++ ) {
+
+			let s = sources[ i ];
+			if ( ! s ) continue;
+			let sk = Object.keys( s );
+			for ( let k of sk ) {
+
 				//Override existing properties only:
-				if (state[k] !== undefined) {
-					state[k] = s[k];
+				if ( state[ k ] !== undefined ) {
+
+					state[ k ] = s[ k ];
+
 				}
+
 			}
+
 		}
 
-		this.objectCache[o.id] = {
+		this.objectCache[ o.id ] = {
 			thisStateVer: this.version,
 			/*baseStateVer: o.baseObject.baseStateVersion,
 			refStateVer: o.referenceStateVersion,*/
@@ -86,10 +108,12 @@ Object.assign(ShipState.prototype, {
 		};
 
 		return state;
+
 	},
 	//o is an object, k is a key to a single state property
-	getObjectStateProperty: function(o, k) {
-		return this.getObjectState(o)[k];
+	getObjectStateProperty: function ( o, k ) {
+
+		return this.getObjectState( o )[ k ];
 		//I have commented out a compact, but not very efficient, implementation of Alejandro's pattern, that does not fit too well with my caching solution.
 		/*		let oo = this.objectOverrides;
 				let sources = [oo.derivedByID[o.id], oo.derivedByGroup[o.affiliations.group], oo.baseByID[o.baseObject.id], oo.common, o.getReferenceState(), o.baseObject.getBaseState()].filter(e=>!!e);
@@ -97,12 +121,15 @@ Object.assign(ShipState.prototype, {
 					if (sources[i][k] !== undefined) return sources[i][k];
 				}
 				return; //undefined*/
+
 	},
 	//Sets this state exclusively from parameter.
-	setFromSpecification: function(spec) {
+	setFromSpecification: function ( spec ) {
+
 		this.objectCache = {}; //reset cache
-		if (!spec) {
-			Object.assign(this, {
+		if ( ! spec ) {
+
+			Object.assign( this, {
 				calculationParameters: {},
 				//Named overrides because only existing corresponding properties will be set
 				objectOverrides: {
@@ -112,8 +139,9 @@ Object.assign(ShipState.prototype, {
 					derivedByGroup: {},
 					derivedByID: {}
 				}
-			});
+			} );
 			return;
+
 		}
 
 		this.calculationParameters = spec.calculationParameters || {};
@@ -125,72 +153,101 @@ Object.assign(ShipState.prototype, {
 		oo.derivedByGroup = soo.derivedByGroup || {};
 		oo.derivedByID = soo.derivedByID || {};
 
-		this.version++;
+		this.version ++;
 
 		return this;
+
 	},
 	//Overrides existing directives and adds new ones.
-	extend: function(spec) {
-		Object.assign(this.calculationParameters, spec.calculationParameters);
+	extend: function ( spec ) {
+
+		Object.assign( this.calculationParameters, spec.calculationParameters );
 		this.calculatedProperties = {};
 		let oo = this.objectOverrides;
 		let soo = spec.objectOverrides || {};
-		Object.assign(oo.common, soo.common);
-		let sources = [soo.baseByID, soo.derivedByGroup, soo.derivedByID];
-		let targets = [oo.baseByID, oo.derivedByGroup, oo.derivedByID];
-		for (let i = 0; i < sources.length; i++) {
-			if (!sources[i]) continue;
-			let sk = Object.keys(sources[i]);
-			for (let k of sk) {
-				if (targets[i][k] !== undefined) {
-					Object.assign(targets[i][k], sources[i][k]);
+		Object.assign( oo.common, soo.common );
+		let sources = [ soo.baseByID, soo.derivedByGroup, soo.derivedByID ];
+		let targets = [ oo.baseByID, oo.derivedByGroup, oo.derivedByID ];
+		for ( let i = 0; i < sources.length; i ++ ) {
+
+			if ( ! sources[ i ] ) continue;
+			let sk = Object.keys( sources[ i ] );
+			for ( let k of sk ) {
+
+				if ( targets[ i ][ k ] !== undefined ) {
+
+					Object.assign( targets[ i ][ k ], sources[ i ][ k ] );
+
 				} else {
-					targets[i][k] = sources[i][k];
+
+					targets[ i ][ k ] = sources[ i ][ k ];
+
 				}
+
 			}
+
 		}
 
-		this.version++;
+		this.version ++;
+
 	},
 	//Applies only directives of spec that have a corresponding directive in this.
-	override: function(spec) {
+	override: function ( spec ) {
+
 		let oo = this.objectOverrides;
 		let soo = spec.objectOverrides;
 
-		let sources = [spec.calculationParameters, soo.common];
-		let targets = [this.calculationParameters, oo.common];
-		for (let i = 0; i < sources.length; i++) {
-			if (!sources[i]) continue;
-			let sk = Object.keys(sources[i]);
-			for (let k of sk) {
-				if (targets[i][k] !== undefined) {
-					targets[i][k] = sources[i][k];
+		let sources = [ spec.calculationParameters, soo.common ];
+		let targets = [ this.calculationParameters, oo.common ];
+		for ( let i = 0; i < sources.length; i ++ ) {
+
+			if ( ! sources[ i ] ) continue;
+			let sk = Object.keys( sources[ i ] );
+			for ( let k of sk ) {
+
+				if ( targets[ i ][ k ] !== undefined ) {
+
+					targets[ i ][ k ] = sources[ i ][ k ];
+
 				}
+
 			}
+
 		}
 
-		sources = [soo.common, soo.baseByID, soo.derivedByGroup, soo.derivedByID];
-		targets = [oo.common, oo.baseByID, oo.derivedByGroup, oo.derivedByID];
+		sources = [ soo.common, soo.baseByID, soo.derivedByGroup, soo.derivedByID ];
+		targets = [ oo.common, oo.baseByID, oo.derivedByGroup, oo.derivedByID ];
 
-		for (let i = 0; i < sources.length; i++) {
-			if (!sources[i]) continue;
-			let specKeys = Object.keys(sources[i]);
-			for (let key of specKeys) {
-				if (targets[i][key] !== undefined) {
-					let t = targets[i][key];
-					let s = sources[i][key];
-					if (!s) continue;
-					let sk = Object.keys(s);
+		for ( let i = 0; i < sources.length; i ++ ) {
+
+			if ( ! sources[ i ] ) continue;
+			let specKeys = Object.keys( sources[ i ] );
+			for ( let key of specKeys ) {
+
+				if ( targets[ i ][ key ] !== undefined ) {
+
+					let t = targets[ i ][ key ];
+					let s = sources[ i ][ key ];
+					if ( ! s ) continue;
+					let sk = Object.keys( s );
 					//Loop over individual properties in assignments, and override only:
-					for (let k of sk) {
-						if (t[k] !== undefined) {
-							t[k] = s[k];
+					for ( let k of sk ) {
+
+						if ( t[ k ] !== undefined ) {
+
+							t[ k ] = s[ k ];
+
 						}
+
 					}
+
 				}
+
 			}
+
 		}
 
-		this.version++;
+		this.version ++;
+
 	}
-});
+} );

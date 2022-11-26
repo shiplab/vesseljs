@@ -653,8 +653,8 @@
 
 
 								var manSpec = new XMLHttpRequest();
-									manSpec.open("GET", "others/maneuvering_specifications/man_sample.json", true)
-									manSpec.addEventListener("load", function (event) {
+								manSpec.open("GET", "others/maneuvering_specifications/man_sample.json", true)
+								manSpec.addEventListener("load", function (event) {
 										var response = event.target.response;
 										var man = JSON.parse(response);
 								
