@@ -4,25 +4,25 @@
 	<title>Ship in Ocean</title>
 	<script src="../build/vessel.js"></script>
 
-	<script src="3D_engine/legacy/three.js"></script>
+	<script src="3D_engine/three_r118.js"></script>
 	<script src="3D_engine/STLLoader.js"></script>
-
+	<script src="3D_engine/GLTFLoader.js"></script>
 	<script src="3D_engine/Ship3D_v2.js"></script>
 
 	<!-- Upgrading to WaterShader2.js will remove the dependency
 	on Mirror.js as well as open up possibilities for visualizing approximate water flows around vessels. -->
-	<script src="3D_engine/legacy/Mirror.js"></script>
-	<script src="3D_engine/legacy/WaterShader.js"></script>
+	<!-- <script src="3D_engine/Mirror.js"></script> -->
+	<script src="3D_engine/Water.js"></script>
 
-	<script src="3D_engine/legacy/OrbitControls.js"></script>
+	<script src="3D_engine/OrbitControls_v2.js"></script>
 	<script src="3D_engine/dat.gui.min.js"></script>
-	<script src="3D_engine/legacy/skybox_from_examples.js"></script>
-
+	<script src="3D_engine/skybox_from_examples_r118.js"></script>
 	<script src="libs/browse_files_Elias_Hasle.js"></script>
+
 	<script src="3D_engine/Patch_interpolation.js"></script>
+	<script src="3D_engine/renderRayCaster.js"></script>
 	<!--<script src="Moving_bodies_Elias_Hasle.js"></script>-->
 	<script src="3D_engine/Playback.js"></script>
-
 	<script src="3D_engine/Regular_ocean.js"></script>
 	<script src="snippets/scaleShipSpec.js"></script>
 	<!--<script src="keyboard_arrow_input_Elias_Hasle.js"></script>-->
@@ -51,7 +51,7 @@
 				height: "100vh"
 			});
 			document.body.appendChild(container);
-			renderer = new THREE.WebGLRenderer({antialias: true});
+			renderer = new THREE.WebGLRenderer({ antialias: true });
 			//renderer.setSize(window.innerWidth, window.innerHeight);
 			renderer.setClearColor(0x99aadd);
 			container.appendChild(renderer.domElement);
@@ -61,7 +61,7 @@
 			//GUI setup (comment out to remove gui)
 			gui = new dat.GUI();
 
-			playback = new Playback({parentGUI: gui});
+			playback = new Playback({ parentGUI: gui });
 
 			//Scene setup:
 			scene = new THREE.Scene();
@@ -81,8 +81,8 @@
 			scene.add(zUpCont);
 
 			//Camera setup
-			camera = new THREE.PerspectiveCamera(26, window.innerWidth / window.innerHeight, 1, 1.75*oSize);
-			let onResize = function() {
+			camera = new THREE.PerspectiveCamera(26, window.innerWidth / window.innerHeight, 1, 1.75 * oSize);
+			let onResize = function () {
 				let w = container.clientWidth;
 				let h = container.clientHeight;
 				renderer.setSize(w, h);
@@ -92,31 +92,29 @@
 				//camera.updateProjectionMatrix();
 				//renderer.setSize(window.innerWidth, window.innerHeight);
 			};
+			camera.up.set(0, 1, 0);
 			window.addEventListener('resize', onResize, false);
 			onResize();
-			camera.position.set(oSize * 0.05, -oSize * 0.3, oSize * 0.05);
-			camera.lookAt(zUpCont.position);
-			zUpCont.add(camera);
+			camera.position.set(oSize * 0.05, oSize * 0.05, oSize * 0.25);
 
 			controls = new THREE.OrbitControls(camera, renderer.domElement);
-			//controls.minDistance = 0;
 			controls.maxDistance = 0.5 * oSize;
 			controls.enablePan = false;
 			controls.maxPolarAngle = 0.5 * Math.PI - 0.1;
 			controls.minPolarAngle = 0.1;
 
-			//zUpCont.add(new THREE.AxisHelper(1000));
 			zUpCont.add(new THREE.HemisphereLight(0xccccff, 0x666688, 1));
 
 			ocean = new Ocean({
 				parentGUI: gui,
 				sunDir: sun.position.clone().normalize(),
-				size: oSize, segments: 127
+				size: oSize,
+				segments: 127
 			});
 			playback.add(ocean);
 			zUpCont.add(ocean);
 
-			Vessel.loadShip("ship_specs/PX121.json", function(ship) {
+			Vessel.loadShip("ship_specs/PX121.json", function (ship) {
 				let shipSpec = ship.getSpecification();
 				initMov(ship);
 
@@ -141,7 +139,7 @@
 				});
 				zUpCont.add(ship3D);
 
-				playback.add(function(t) {
+				playback.add(function (t) {
 					//motion formula
 					let omega = wavCre.waveDef.waveFreq;
 					ship3D.heave = states.discrete.WaveMotion.state.heaveAmp * Math.cos(omega * t - ocean.waves["0"].phi * Math.PI / 180);
@@ -184,7 +182,7 @@
 			});
 
 			//Initial configuration:
-			let w = ocean.addCosineWave({A: 5, T: 11, theta: 1});
+			let w = ocean.addCosineWave({ A: 5, T: 11, theta: 1 });
 			if (w.conf) w.conf.close();
 
 			playback.play();
@@ -199,8 +197,6 @@
 			if (!playing) {
 				ocean.water.material.uniforms.time.value += 1 / 60;
 			}
-
-			ocean.water.render();
 
 			renderer.render(scene, camera);
 			requestAnimationFrame(animate);
