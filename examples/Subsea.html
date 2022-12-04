@@ -8,15 +8,14 @@
 
 	<title>Side by side</title>
 	<script src="../build/vessel.js"></script>
-	<script src="3D_engine/legacy/three_r86.js"></script>
+	<script src="3D_engine/three_r118.js"></script>
 	<script src="3D_engine/STLLoader.js"></script>
 	<script src="3D_engine/Ship3D_v2.js"></script>
 	<script src="libs/plotly-1.48.3.min.js"></script>
-	<script src="3D_engine/legacy/Mirror.js"></script>
-	<script src="3D_engine/legacy/WaterShader.js"></script>
-	<script src="3D_engine/legacy/OrbitControls.js"></script>
+	<script src="3D_engine/Water.js"></script>
+	<script src="3D_engine/OrbitControls_v2.js"></script>
 	<script src="3D_engine/dat.gui.min.js"></script>
-	<script src="3D_engine/legacy/skybox_from_examples.js"></script>
+	<script src="3D_engine/skybox_from_examples_r118.js"></script>
 	<script src="libs/browse_files_Elias_Hasle.js"></script>
 	<script src="3D_engine/Patch_interpolation.js"></script>
 	<script src="3D_engine/Playback.js"></script>
@@ -640,14 +639,12 @@
 				camera.aspect = w / h;
 				camera.updateProjectionMatrix();
 			};
+			camera.up.set(0, 1, 0);
 			window.addEventListener("resize", onResize, false);
 			onResize();
-			camera.position.set(494, 350, -78);
-			camera.lookAt(zUpCont.position);
-			zUpCont.add(camera);
+			camera.position.set(- 547, 154, - 222);
 
 			controls = new THREE.OrbitControls(camera, renderer.domElement);
-			//controls.minDistance = 0;
 			controls.maxDistance = 0.5 * oSize;
 			controls.enablePan = false;
 			controls.maxPolarAngle = 3 * (Math.PI / 4);
@@ -1191,7 +1188,6 @@
 		})();
 
 		function animate(millitime) {
-			ocean.water.render();
 			renderer.render(scene, camera);
 			let playing = playback.update();
 

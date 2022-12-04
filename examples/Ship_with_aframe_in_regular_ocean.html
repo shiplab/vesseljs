@@ -4,19 +4,18 @@
 	<title>Ship with A-Frame in Ocean</title>
 	<script src="../build/vessel.js"></script>
 
-	<script src="3D_engine/legacy/three_r86.js"></script>
+	<script src="3D_engine/three_r118.js"></script>
 	<script src="3D_engine/STLLoader.js"></script>
 
 	<script src="3D_engine/Ship3D_v2.js"></script>
 
 	<!-- Upgrading to WaterShader2.js will remove the dependency
 	on Mirror.js as well as open up possibilities for visualizing approximate water flows around vessels. -->
-	<script src="3D_engine/legacy/Mirror.js"></script>
-	<script src="3D_engine/legacy/WaterShader.js"></script>
+	<script src="3D_engine/Water.js"></script>
 
-	<script src="3D_engine/legacy/OrbitControls.js"></script>
+	<script src="3D_engine/OrbitControls_v2.js"></script>
 	<script src="3D_engine/dat.gui.min.js"></script>
-	<script src="3D_engine/legacy/skybox_from_examples.js"></script>
+	<script src="3D_engine/skybox_from_examples_r118.js"></script>
 
 	<script src="libs/browse_files_Elias_Hasle.js"></script>
 	<script src="3D_engine/Patch_interpolation.js"></script>
@@ -102,11 +101,13 @@
 				//camera.updateProjectionMatrix();
 				//renderer.setSize(window.innerWidth, window.innerHeight);
 			};
+			camera.up.set(0, 1, 0)
+
 			window.addEventListener('resize', onResize, false);
 			onResize();
-			camera.position.set(oSize * 0.02, -oSize * 0.12, oSize * 0.02);
+			camera.position.set(oSize * 0.05, oSize * 0.05, oSize * 0.25);
 			camera.lookAt(zUpCont.position);
-			zUpCont.add(camera);
+			//zUpCont.add(camera);
 
 			controls = new THREE.OrbitControls(camera, renderer.domElement);
 			//controls.minDistance = 0;
@@ -265,8 +266,6 @@
 			if (!playing) {
 				ocean.water.material.uniforms.time.value += 1 / 60;
 			}
-
-			ocean.water.render();
 
 			renderer.render(scene, camera);
 			requestAnimationFrame(animate);
