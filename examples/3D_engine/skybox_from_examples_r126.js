@@ -4,16 +4,6 @@ export class Skybox extends THREE.Mesh {
 
 	constructor( size ) {
 
-		super(
-			new THREE.BoxBufferGeometry( size, size, size ),
-			new THREE.ShaderMaterial( {
-				fragmentShader: THREE.ShaderLib.cube.fragmentShader,
-				vertexShader: THREE.ShaderLib.cube.vertexShader,
-				uniforms: THREE.ShaderLib.cube.uniforms,
-				depthWrite: false,
-				side: THREE.BackSide,
-		  } ) );
-
 		// load skybox (reusing example code to test the water shading fast)
 		var cubeMap = new THREE.CubeTexture( [] );
 		cubeMap.format = THREE.RGBFormat;
@@ -45,13 +35,35 @@ export class Skybox extends THREE.Mesh {
 		var cubeShader = THREE.ShaderLib[ "cube" ];
 		cubeShader.uniforms.envMap.value = cubeMap;
 
+		var skyBoxMaterial = new THREE.ShaderMaterial( {
+			fragmentShader: cubeShader.fragmentShader,
+			vertexShader: cubeShader.vertexShader,
+			uniforms: cubeShader.uniforms,
+			depthWrite: false,
+			side: THREE.BackSide,
+		} );
+
+		super(
+			new THREE.BoxBufferGeometry( size, size, size ),
+			skyBoxMaterial
+		);
+
+		// Property for compatibility with Three review 118
+		Object.defineProperty( skyBoxMaterial, "envMap", {
+			get: function () {
+
+				return this.uniforms.envMap.value;
+
+			},
+		} );
+
 	}
 
-	get envMap() {
+	// get envMap() {
 
-		return this.material.uniforms.envMap.value;
+	// 	return this.material.uniforms.envMap.value;
 
-	}
+	// }
 
 }
 
