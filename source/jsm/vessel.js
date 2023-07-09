@@ -8,6 +8,7 @@ export { ShipState } from "./ship/ShipState.js";
 export { HullResistance } from "./ship/HullResistance.js";
 export { PropellerInteraction } from "./ship/PropellerInteraction.js";
 export { downloadShip } from "./fileIO/dowloadShip.js";
+export { loadShip } from "./fileIO/loadShip.js";
 export { FuelConsumption } from "./ship/FuelConsumption.js";
 export { Positioning } from "./ship/Positioning.js";
 export { Manoeuver } from "./ship/Manoeuver.js";

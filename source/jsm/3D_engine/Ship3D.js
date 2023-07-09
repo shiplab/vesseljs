@@ -23,8 +23,8 @@ TODO: Use calculated draft for position.z, and place the ship model in a motion 
 
 //var hMat; //global for debugging
 
-import * as THREE from "https://unpkg.com/three@0.126.1/build/three.module.js";
-import { STLLoader } from "../../../examples/3D_engine/STLLoaderJsm.js";
+import * as THREE from "../../../examples/3D_engine/three_r126.js";
+import { STLLoader } from "../../../examples/3D_engine/STLLoader.js";
 import * as Vessel from "../vessel.js";
 
 class Ship3D extends THREE.Group {
