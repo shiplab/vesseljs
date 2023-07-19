@@ -2,29 +2,27 @@
 
 <head>
 	<title>Ship in Ocean</title>
+	<script src="3D_engine/dat.gui.min.js"></script>
+	<script src="libs/numeric-1.2.6.min.js"></script>
+	<script src="libs/zingchart.min.js"></script>
+
 	<script src="../build/vessel.js"></script>
 
-	<script src="3D_engine/three_r118.js"></script>
-	<script src="3D_engine/STLLoader.js"></script>
+	<script src="./3D_engine/legacy/three_r118.js"></script>
+	<script src="./3D_engine/legacy/STLLoader.js"></script>
 	<script src="3D_engine/Ship3D_v2.js"></script>
 
 	<!-- Upgrading to WaterShader2.js will remove the dependency
 	on Mirror.js as well as open up possibilities for visualizing approximate water flows around vessels. -->
-	<script src="3D_engine/Water.js"></script>
+	<script src="3D_engine/legacy/Water.js"></script>
 	<script src="3D_engine/OrbitControls_v2.js"></script>
-	<script src="3D_engine/skybox_from_examples_r118.js"></script>
+	<script src="./3D_engine/legacy/skybox_from_examples_r118.js"></script>
 	<script src="libs/browse_files_Elias_Hasle.js"></script>
 
 	<script src="3D_engine/Patch_interpolation.js"></script>
 	<script src="3D_engine/Playback.js"></script>
-	<script src="3D_engine/Regular_ocean.js"></script>
+	<script src="./3D_engine/legacy/Regular_ocean.js"></script>
 	<script src="snippets/DynamicalMovementMooringWave.js"></script>
-	<!--<script src="Moving_bodies_Elias_Hasle.js"></script>-->
-	<!--<script src="keyboard_arrow_input_Elias_Hasle.js"></script>-->
-
-	<script src="3D_engine/dat.gui.min.js"></script>
-	<script src="libs/numeric-1.2.6.min.js"></script>
-	<script src="libs/zingchart.min.js"></script>
 </head>
 
 <style>
@@ -313,7 +311,8 @@
 					} // Check if the mooring failed or not
 
 					// Anchoring point in seabed
-					for (var i = 0; i < pos.length; i++) {
+					let position_length = mooring.mooringPointOnShip.length
+					for (var i = 0; i < position_length; i++) {
 						var baseangle, bwl, lwl;
 						if (i==0 || i==1) {
 							baseangle = 0;

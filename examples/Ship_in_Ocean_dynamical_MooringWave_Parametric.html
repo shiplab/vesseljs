@@ -2,29 +2,27 @@
 
 <head>
 	<title>Ship in Ocean</title>
+	<script src="3D_engine/dat.gui.min.js"></script>
+	<script src="libs/numeric-1.2.6.min.js"></script>
+	<script src="libs/zingchart.min.js"></script>
+
 	<script src="../build/vessel.js"></script>
 
-	<script src="3D_engine/three_r118.js"></script>
-	<script src="3D_engine/STLLoader.js"></script>
+	<script src="./3D_engine/legacy/three_r118.js"></script>
+	<script src="./3D_engine/legacy/STLLoader.js"></script>
 	<script src="3D_engine/Ship3D_v2.js"></script>
 
 	<!-- Upgrading to WaterShader2.js will remove the dependency
 	on Mirror.js as well as open up possibilities for visualizing approximate water flows around vessels. -->
-	<script src="3D_engine/Water.js"></script>
+	<script src="3D_engine/legacy/Water.js"></script>
 	<script src="3D_engine/OrbitControls_v2.js"></script>
-	<script src="3D_engine/skybox_from_examples_r118.js"></script>
+	<script src="./3D_engine/legacy/skybox_from_examples_r118.js"></script>
 	<script src="libs/browse_files_Elias_Hasle.js"></script>
 
 	<script src="3D_engine/Patch_interpolation.js"></script>
 	<script src="3D_engine/Playback.js"></script>
-	<script src="3D_engine/Regular_ocean.js"></script>
+	<script src="./3D_engine/legacy/Regular_ocean.js"></script>
 	<script src="snippets/DynamicalMovementMooringWaveParametric.js"></script>
-	<!--<script src="Moving_bodies_Elias_Hasle.js"></script>-->
-	<!--<script src="keyboard_arrow_input_Elias_Hasle.js"></script>-->
-
-	<script src="3D_engine/dat.gui.min.js"></script>
-	<script src="libs/numeric-1.2.6.min.js"></script>
-	<script src="libs/zingchart.min.js"></script>
 </head>
 
 <style>
@@ -738,12 +736,15 @@
 
 					// Rope Material
 					var colorMooring = [0xffffff, 0xff0000, 0x33cc33, 0x0066ff, 0x762a83, 0x762a83, 0xfdb863, 0xfdb863, 0x80cdc1, 0x80cdc1];
-					for (var i = 0; i < pos.length; i++) {
-						materialLine[i] = new THREE.LineBasicMaterial({color: colorMooring[i], linewidth: 2})
-					};
-
+					
 					function createMooringLine() {
-						for (var i = 0; i < pos.length; i++) {
+
+						let position_length = mooring.mooringPointOnShip.length
+						for (var i = 0; i < position_length; i++) {
+							materialLine[i] = new THREE.LineBasicMaterial({color: colorMooring[i], linewidth: 2})
+						};
+
+						for (var i = 0; i < position_length; i++) {
 							geometryMooring[i] = new THREE.Geometry()
 						};
 
@@ -760,6 +761,7 @@
 							mooring.anchorLineGeometry[i].geometry.verticesNeedUpdate = true;
 							scene.add(mooring.anchorLineGeometry[i]);
 						};
+
 					};
 
 					function insertMooringPointOnShip() {
@@ -791,32 +793,32 @@
 						if (mooring.numberOfMooringPerpendicular > 0) {
 							for (var i = 4; i < (4+2*mooring.numberOfMooringPerpendicular); i+=2) {
 								mooringPointOnShip[i] =
-									[
+								[
 										(floatingStates.LWL / 2 + floatingStates.trim) * mooring.percentageLwlB[(i-4)/2]/100,
 										(-floatingStates.BWL / 2),
 										designDimension.Depth - floatingStates.T
 									],
-								mooringPointOnShip[i+1] =
+									mooringPointOnShip[i+1] =
 									[
 										(floatingStates.LWL / 2 + floatingStates.trim) * mooring.percentageLwlB[(i-4)/2]/100,
 										(floatingStates.BWL / 2),
 										designDimension.Depth - floatingStates.T
 									]
-							}
-						};
-						// Add stern and bow mooring lines
-						if (mooring.numberOfMooringLongitudinal > 0) {
-							for (var i = (4+2*mooring.numberOfMooringPerpendicular); i < (4+2*(mooring.numberOfMooringPerpendicular+mooring.numberOfMooringLongitudinal)); i+=2) {
+								}
+							};
+							// Add stern and bow mooring lines
+							if (mooring.numberOfMooringLongitudinal > 0) {
+								for (var i = (4+2*mooring.numberOfMooringPerpendicular); i < (4+2*(mooring.numberOfMooringPerpendicular+mooring.numberOfMooringLongitudinal)); i+=2) {
 								var getPos = 0;
 								if (mooring.numberOfMooringLongitudinal == 2) {
 									getPos = 1
 								};
 								mooringPointOnShip[i] =
-									[
-										(floatingStates.LWL / 2 + floatingStates.trim),
-										(floatingStates.BWL / 2) * mooring.percentageBwlB[getPos]/100,
-										designDimension.Depth - floatingStates.T
-									],
+								[
+									(floatingStates.LWL / 2 + floatingStates.trim),
+									(floatingStates.BWL / 2) * mooring.percentageBwlB[getPos]/100,
+									designDimension.Depth - floatingStates.T
+								],
 								mooringPointOnShip[i+1] =
 									[
 										(-floatingStates.LWL / 2 + floatingStates.trim),
@@ -835,6 +837,10 @@
 					};
 					// Insert moooring lines in the beginning
 					insertMooringPointOnShip();
+
+					// Insert the color of the lines
+					let position_length = mooring.mooringPointOnShip.length
+					// setLineMaterial(mooring);
 
 					// Add properties to the mooring
 					mooring.anchorPoint = []; // Point of mooring line on seabed (m, m, m)
@@ -863,7 +869,7 @@
 					} // Check if the mooring failed or not
 
 					// Anchoring point in seabed
-					for (var i = 0; i < pos.length; i++) {
+					for (var i = 0; i < position_length; i++) {
 						var baseangle, bwl, lwl;
 						lwl = 0;
 						bwl = 0;

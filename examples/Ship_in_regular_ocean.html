@@ -1,211 +1,244 @@
 <html>
+  <head>
+    <title>Ship in Ocean</title>
 
-<head>
-	<title>Ship in Ocean</title>
-	<script src="../build/vessel.js"></script>
+    <script src="3D_engine/dat.gui.min.js"></script>
+    <script src="libs/browse_files_Elias_Hasle.js"></script>
+    <script src="3D_engine/Playback.js"></script>
+    <script src="snippets/scaleShipSpec.js"></script>
+  </head>
 
-	<script src="3D_engine/three_r118.js"></script>
-	<script src="3D_engine/STLLoader.js"></script>
-	<script src="3D_engine/GLTFLoader.js"></script>
-	<script src="3D_engine/Ship3D_v2.js"></script>
+  <body>
+    <script type="module">
+      "use strict";
 
-	<!-- Upgrading to WaterShader2.js will remove the dependency
-	on Mirror.js as well as open up possibilities for visualizing approximate water flows around vessels. -->
-	<!-- <script src="3D_engine/Mirror.js"></script> -->
-	<script src="3D_engine/Water.js"></script>
+      // Import three.js and OrbitControls modules
+      import * as THREE from "./3D_engine/three_r126.js";
+      import { OrbitControls } from "./3D_engine/OrbitControls.js";
 
-	<script src="3D_engine/OrbitControls_v2.js"></script>
-	<script src="3D_engine/dat.gui.min.js"></script>
-	<script src="3D_engine/skybox_from_examples_r118.js"></script>
-	<script src="libs/browse_files_Elias_Hasle.js"></script>
+      // Import Vessel.js module
+      import * as Vessel from "../source/jsm/vessel.js";
 
-	<script src="3D_engine/Patch_interpolation.js"></script>
-	<script src="3D_engine/renderRayCaster.js"></script>
-	<!--<script src="Moving_bodies_Elias_Hasle.js"></script>-->
-	<script src="3D_engine/Playback.js"></script>
-	<script src="3D_engine/Regular_ocean.js"></script>
-	<script src="snippets/scaleShipSpec.js"></script>
-	<!--<script src="keyboard_arrow_input_Elias_Hasle.js"></script>-->
-</head>
+      // Import Ship3D module
+      import { Ship3D } from "../source/jsm/3D_engine/Ship3D.js";
 
-<body>
-	<script>
-		"use strict";
+      // Import Skybox module
+      import { Skybox } from "../examples/3D_engine/skybox_from_examples_r126.js";
 
-		//Globals
-		var renderer, camera, controls, gui, stats;
-		var scene, zUpCont, playback, bodies, ocean;
-		var ship3D, states, wavMo, scale, updateMotion;
+      // Import Ocean module
+      import { Ocean } from "../examples/3D_engine/Regular_ocean.js";
 
-		(function main() {
-			//Renderer setup
-			//document.body.style = "overflow: hidden;";
-			document.body.style.overflow = "hidden";
-			var container = document.createElement("div");
-			//container.style = "position: absolute; top: 0; left: 0;"
-			Object.assign(container.style, {
-				position: "absolute",
-				top: 0,
-				left: 0,
-				width: "100vw",
-				height: "100vh"
-			});
-			document.body.appendChild(container);
-			renderer = new THREE.WebGLRenderer({ antialias: true });
-			//renderer.setSize(window.innerWidth, window.innerHeight);
-			renderer.setClearColor(0x99aadd);
-			container.appendChild(renderer.domElement);
-			//stats = new Stats();
-			//document.body.appendChild(stats.domElement);
+      //Globals
+      var renderer, camera, controls, gui, stats;
+      var scene, zUpCont, playback, bodies, ocean;
+      var ship3D, states, wavMo, scale;
 
-			//GUI setup (comment out to remove gui)
-			gui = new dat.GUI();
+      (function main() {
+        //Renderer setup
+        //document.body.style = "overflow: hidden;";
+        document.body.style.overflow = "hidden";
+        var container = document.createElement("div");
+        //container.style = "position: absolute; top: 0; left: 0;"
+        Object.assign(container.style, {
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100vw",
+          height: "100vh",
+        });
+        document.body.appendChild(container);
+        renderer = new THREE.WebGLRenderer({ antialias: true });
+        //renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0x99aadd);
+        container.appendChild(renderer.domElement);
+        //stats = new Stats();
+        //document.body.appendChild(stats.domElement);
 
-			playback = new Playback({ parentGUI: gui });
+        //GUI setup (comment out to remove gui)
+        gui = new dat.GUI();
 
-			//Scene setup:
-			scene = new THREE.Scene();
-			let sun = new THREE.DirectionalLight(0xffffff, 2);
-			sun.position.set(-512, 246, 128);
-			scene.add(sun);
+        playback = new Playback({ parentGUI: gui });
 
-			//Ocean size
-			let oSize = 2048;
+        //Scene setup:
+        scene = new THREE.Scene();
+        let sun = new THREE.DirectionalLight(0xffffff, 2);
+        sun.position.set(-512, 246, 128);
+        scene.add(sun);
 
-			scene.add(new Skybox(oSize));
+        //Ocean size
+        let oSize = 2048;
 
-			//Use Z up from now on:
-			THREE.Object3D.DefaultUp.set(0, 0, 1);
-			zUpCont = new THREE.Group();
-			zUpCont.rotation.x = -0.5 * Math.PI;
-			scene.add(zUpCont);
+        scene.add(new Skybox(oSize));
 
-			//Camera setup
-			camera = new THREE.PerspectiveCamera(26, window.innerWidth / window.innerHeight, 1, 1.75 * oSize);
-			let onResize = function () {
-				let w = container.clientWidth;
-				let h = container.clientHeight;
-				renderer.setSize(w, h);
-				camera.aspect = w / h;
-				camera.updateProjectionMatrix();
-				//camera.aspect = window.innerWidth / window.innerHeight;
-				//camera.updateProjectionMatrix();
-				//renderer.setSize(window.innerWidth, window.innerHeight);
-			};
-			camera.up.set(0, 1, 0);
-			window.addEventListener('resize', onResize, false);
-			onResize();
-			camera.position.set(oSize * 0.05, oSize * 0.05, oSize * 0.25);
+        //Use Z up from now on:
+        THREE.Object3D.DefaultUp.set(0, 0, 1);
+        zUpCont = new THREE.Group();
+        zUpCont.rotation.x = -0.5 * Math.PI;
+        scene.add(zUpCont);
 
-			controls = new THREE.OrbitControls(camera, renderer.domElement);
-			controls.maxDistance = 0.5 * oSize;
-			controls.enablePan = false;
-			controls.maxPolarAngle = 0.5 * Math.PI - 0.1;
-			controls.minPolarAngle = 0.1;
+        //Camera setup
+        camera = new THREE.PerspectiveCamera(
+          26,
+          window.innerWidth / window.innerHeight,
+          1,
+          1.75 * oSize
+        );
+        let onResize = function () {
+          let w = container.clientWidth;
+          let h = container.clientHeight;
+          renderer.setSize(w, h);
+          camera.aspect = w / h;
+          camera.updateProjectionMatrix();
+          //camera.aspect = window.innerWidth / window.innerHeight;
+          //camera.updateProjectionMatrix();
+          //renderer.setSize(window.innerWidth, window.innerHeight);
+        };
+        camera.up.set(0, 1, 0);
+        window.addEventListener("resize", onResize, false);
+        onResize();
+        camera.position.set(oSize * 0.05, oSize * 0.05, oSize * 0.25);
 
-			zUpCont.add(new THREE.HemisphereLight(0xccccff, 0x666688, 1));
+        controls = new OrbitControls(camera, renderer.domElement);
+        controls.maxDistance = 0.5 * oSize;
+        controls.enablePan = false;
+        controls.maxPolarAngle = 0.5 * Math.PI - 0.1;
+        controls.minPolarAngle = 0.1;
 
-			ocean = new Ocean({
-				parentGUI: gui,
-				sunDir: sun.position.clone().normalize(),
-				size: oSize,
-				segments: 127
-			});
-			playback.add(ocean);
-			zUpCont.add(ocean);
+        zUpCont.add(new THREE.HemisphereLight(0xccccff, 0x666688, 1));
 
-			Vessel.loadShip("ship_specs/PX121.json", function (ship) {
-				let shipSpec = ship.getSpecification();
-				initMov(ship);
+        ocean = new Ocean({
+          parentGUI: gui,
+          sunDir: sun.position.clone().normalize(),
+          size: oSize,
+          segments: 127,
+        });
+        playback.add(ocean);
+        zUpCont.add(ocean);
 
-				function initMov(movShip) {
-					states = ship.designState.clone();
-					//console.log(states.shipCache.thisStateVer);
+        // Creation of wave creation
+        // On the new version. The waveCreator is contained in the ocean mesh
+        // var wavCre = new Vessel.WaveCreator();
+        Vessel.loadShip("ship_specs/PX121.json", function (ship) {
+          let shipSpec = ship.getSpecification();
+          initMov(ship);
 
-					wavMo = new Vessel.WaveMotion(movShip, states, wavCre);
-					wavMo.output.push("rollAmp");
-					//debugger;
-					wavMo.writeOutput();
-				}
+          function initMov(movShip) {
+            states = ship.designState.clone();
+            //console.log(states.shipCache.thisStateVer);
 
-				ship3D = new Ship3D(ship, {
-					shipState: states,
-					stlPath: "3D_models/STL/various",
-					upperColor: 0x33aa33,
-					lowerColor: 0xaa3333,
-					hullOpacity: 1,
-					deckOpacity: 1,
-					objectOpacity: 1
-				});
-				zUpCont.add(ship3D);
+            wavMo = new Vessel.WaveMotion(movShip, states, ocean.wavCre);
+            wavMo.output.push("rollAmp");
+            //debugger;
+            wavMo.writeOutput();
+          }
 
-				playback.add(function (t) {
-					//motion formula
-					let omega = wavCre.waveDef.waveFreq;
-					ship3D.heave = states.discrete.WaveMotion.state.heaveAmp * Math.cos(omega * t - ocean.waves["0"].phi * Math.PI / 180);
+          ocean.addWaveMotion(wavMo)
 
-					// a 90 degrees phase difference of pitch in relation to the wave makes the motion appear more natural
-					ship3D.pitch = states.discrete.WaveMotion.state.pitchAmp * Math.cos(omega * t + (- ocean.waves["0"].phi + 90) * Math.PI / 180);
-					// pitch and roll may be negative depending on the direction of the waves in relation to the ship
-					if ((wavCre.waveDef.heading > 90) && (wavCre.waveDef.heading < 270)) {
-						ship3D.pitch = -ship3D.pitch;
-					}
+          ship3D = new Ship3D(ship, {
+            shipState: states,
+            stlPath: "./3D_models/STL/various",
+            upperColor: 0x33aa33,
+            lowerColor: 0xaa3333,
+            hullOpacity: 1,
+            deckOpacity: 1,
+            objectOpacity: 1,
+          });
+          zUpCont.add(ship3D);
 
-					ship3D.roll = states.discrete.WaveMotion.state.rollAmp * Math.cos(omega * t - ocean.waves["0"].phi * Math.PI / 180);
-					if (wavCre.waveDef.heading < 180) {
-						ship3D.roll = -ship3D.roll;
-					}
-				});
+          playback.add(function (t) {
+            //motion formula
+            let wavCre = ocean.wavCre;
+            let omega = wavCre.waveDef.waveFreq;
+            ship3D.heave =
+              states.discrete.WaveMotion.state.heaveAmp *
+              Math.cos(omega * t - (ocean.waves["0"].phi * Math.PI) / 180);
+            
+              // a 90 degrees phase difference of pitch in relation to the wave makes the motion appear more natural
+            ship3D.pitch =
+              states.discrete.WaveMotion.state.pitchAmp *
+              Math.cos(
+                omega * t + ((-ocean.waves["0"].phi + 90) * Math.PI) / 180
+              );
+            
+              // pitch and roll may be negative depending on the direction of the waves in relation to the ship
+            if (wavCre.waveDef.heading > 90 && wavCre.waveDef.heading < 270) {
+              ship3D.pitch = -ship3D.pitch;
+            }
+            ship3D.roll =
+              states.discrete.WaveMotion.state.rollAmp *
+              Math.cos(omega * t - (ocean.waves["0"].phi * Math.PI) / 180);
+            if (wavCre.waveDef.heading < 180) {
+              ship3D.roll = -ship3D.roll;
+            }
+          });
 
-				scale = gui.addFolder("Ship");
-				scale.add(ship3D.scale, "x", 0.9, 1.1, 0.01).onFinishChange(scaleShip); // use .onChange(scaleShip) for real time change
-				scale.add(ship3D.scale, "y", 0.95, 1.05, 0.01).onFinishChange(scaleShip);
-				scale.add(ship3D.scale, "z", 0.9, 1.1, 0.01).onFinishChange(scaleShip);
-				scale.open();
+          scale = gui.addFolder("Ship");
+          scale
+            .add(ship3D.scale, "x", 0.9, 1.1, 0.01)
+            .onFinishChange(scaleShip); // use .onChange(scaleShip) for real time change
+          scale
+            .add(ship3D.scale, "y", 0.95, 1.05, 0.01)
+            .onFinishChange(scaleShip);
+          scale
+            .add(ship3D.scale, "z", 0.9, 1.1, 0.01)
+            .onFinishChange(scaleShip);
+          scale.open();
 
-				function scaleShip() {
-					let scaledSpec = scaleShipSpec(shipSpec, ship3D.scale.x, ship3D.scale.y, ship3D.scale.z);
-					let scaledShip = new Vessel.Ship(scaledSpec);
+          function scaleShip() {
+            let scaledSpec = scaleShipSpec(
+              shipSpec,
+              ship3D.scale.x,
+              ship3D.scale.y,
+              ship3D.scale.z
+            );
+            let scaledShip = new Vessel.Ship(scaledSpec);
 
-					// update visualization with motion of scaled ship
-					initMov(scaledShip);
+            // update visualization with motion of scaled ship
+            initMov(scaledShip);
 
-					// fix CG and draft for scaled 3D model
-					ship3D.cmContainer.position.set(-states.discrete.FloatingCondition.state.w.cg.x, -states.discrete.FloatingCondition.state.w.cg.y, -states.discrete.FloatingCondition.state.w.cg.z);
-					ship3D.normalizer.position.z = states.discrete.FloatingCondition.state.w.cg.z;
-					ship3D.position.z = -states.discrete.FloatingCondition.state.T;
+            // fix CG and draft for scaled 3D model
+            ship3D.cmContainer.position.set(
+              -states.discrete.FloatingCondition.state.w.cg.x,
+              -states.discrete.FloatingCondition.state.w.cg.y,
+              -states.discrete.FloatingCondition.state.w.cg.z
+            );
+            ship3D.normalizer.position.z =
+              states.discrete.FloatingCondition.state.w.cg.z;
+            ship3D.position.z = -states.discrete.FloatingCondition.state.T;
 
-					if (states.discrete.FloatingCondition.state.GMt < 0) {
-						console.error("For this combination of ship dimensions, the GMt is negative.")
-					}
-				}
-			});
+            if (states.discrete.FloatingCondition.state.GMt < 0) {
+              console.error(
+                "For this combination of ship dimensions, the GMt is negative."
+              );
+            }
+          }
+        });
 
-			//Initial configuration:
-			let w = ocean.addCosineWave({ A: 5, T: 11, theta: 1 });
-			if (w.conf) w.conf.close();
+        //Initial configuration:
+        let w = ocean.addCosineWave({ A: 5, T: 11, theta: 1 });
+        if (w.conf) w.conf.close();
 
-			playback.play();
+        playback.play();
 
-			requestAnimationFrame(animate);
-		})();
+        requestAnimationFrame(animate);
+      })();
 
-		function animate(millitime) {
-			let playing = playback.update();
+      function animate(millitime) {
+        let playing = playback.update();
 
-			//Disable this to freeze water when not playing
-			if (!playing) {
-				ocean.water.material.uniforms.time.value += 1 / 60;
-			}
+        //Disable this to freeze water when not playing
+        if (!playing) {
+          ocean.water.material.uniforms.time.value += 1 / 60;
+        }
+        // debugger;
 
-			renderer.render(scene, camera);
-			requestAnimationFrame(animate);
-		}
+        renderer.render(scene, camera);
+        requestAnimationFrame(animate);
+      }
 
-		function updateMotion() {
-			wavMo.writeOutput();
-		}
-	</script>
-</body>
-
+      function updateMotion() {
+        wavMo.writeOutput();
+      }
+    </script>
+  </body>
 </html>

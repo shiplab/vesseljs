@@ -21,8 +21,8 @@
 	<script src="libs/bootstrap.min.js"></script>
 
 	<!-- Three script -->
-	<!-- <script src="3D_engine/legacy/three.js"></script> -->
-	<!-- <script src="3D_engine/STLLoader.js"></script> -->
+	<!-- <script src="3D_engine/legacy/three_r86.js"></script> -->
+	<!-- <script src="./3D_engine/legacy/STLLoader.js"></script> -->
 	<!-- <script src="3D_engine/legacy/OrbitControls.js"></script> -->
 
 	<!--Import library-->
@@ -119,9 +119,9 @@
 	<script type="module">
 		"use strict"
 
-		import * as THREE from 'https://unpkg.com/three@0.126.1/build/three.module.js';
-		import { OrbitControls } from 'https://unpkg.com/three@0.126.1/examples/jsm/controls/OrbitControls.js';
-		import { STLLoader } from "./3D_engine/STLLoaderJsm.js"
+		import * as THREE from './3D_engine/three_r126.js';
+		import { OrbitControls } from './3D_engine/OrbitControls.js';
+		import { STLLoader } from "./3D_engine/STLLoader.js"
 		import * as Vessel from "../source/jsm/vessel.js"
 		import { Ship3D } from "../source/jsm/3D_engine/Ship3D.js"
 

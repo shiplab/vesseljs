@@ -14,12 +14,12 @@ Vessel.loadShip(filePath, function(ship) {
 });
 
 */
-import Ship from "../ship/Ship.js";
+import { Ship } from "../ship/Ship.js";
 
 export function loadShip( url, callback ) {
 
 	var request = new XMLHttpRequest();
-	request.open( 'GET', url, true );
+	request.open( "GET", url, true );
 	request.addEventListener( "load", function ( event ) {
 
 		var response = event.target.response;
