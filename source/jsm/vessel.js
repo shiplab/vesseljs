@@ -5,6 +5,7 @@ export { Ship3D } from "./3D_engine/Ship3D.js";
 export { WaveCreator } from "./ship/WaveCreator.js";
 export { WaveMotion } from "./ship/WaveMotion.js";
 export { ShipState } from "./ship/ShipState.js";
+export { StateModule } from "./ship/StateModule.js";
 export { HullResistance } from "./ship/HullResistance.js";
 export { PropellerInteraction } from "./ship/PropellerInteraction.js";
 export { downloadShip } from "./fileIO/dowloadShip.js";

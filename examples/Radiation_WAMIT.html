@@ -2,21 +2,21 @@
 
 <head>
 	<title>Ship in Ocean</title>
-	<script src="../build/vessel.js"></script>
-	<script src="3D_engine/three_r118.js"></script>
-	<script src="3D_engine/STLLoader.js"></script>
-	<script src="3D_engine/Ship3D_v2.js"></script>
+	<!-- <script src="../build/vessel.js"></script> -->
+	<!-- <script src="./3D_engine/legacy/three_r118.js"></script> -->
+	<!-- <script src="./3D_engine/legacy/STLLoader.js"></script> -->
+	<!-- <script src="3D_engine/Ship3D_v2.js"></script> -->
 	<script src="libs/plotly-1.48.3.min.js"></script>
 	<!-- Upgrading to WaterShader2.js will remove the dependency
 	on Mirror.js as well as open up possibilities for visualizing approximate water flows around vessels. -->
-	<script src="3D_engine/Water.js"></script>
-	<script src="3D_engine/OrbitControls_v2.js"></script>
+	<!-- <script src="3D_engine/legacy/Water.js"></script> -->
+	<!-- <script src="3D_engine/OrbitControls_v2.js"></script> -->
 	<script src="3D_engine/dat.gui.min.js"></script>
-	<script src="3D_engine/skybox_from_examples_r118.js"></script>
+	<!-- <script src="3D_engine/skybox_from_examples_r118.js"></script> -->
 	<script src="libs/browse_files_Elias_Hasle.js"></script>
-	<script src="3D_engine/Patch_interpolation.js"></script>
+	<!-- <script src="3D_engine/Patch_interpolation.js"></script> -->
 	<script src="3D_engine/Playback.js"></script>
-	<script src="3D_engine/Regular_ocean.js"></script>
+	<!-- <script src="./3D_engine/legacy/Regular_ocean.js"></script> -->
 	<script src="snippets/Radiation_WAMIT.js"></script>
 	<script src="libs/numeric-1.2.6.min.js"></script>
 	<script src="libs/zingchart.min.js"></script>
@@ -28,8 +28,24 @@
 	<div id="heave_graph" style="position: absolute; bottom: 66%; height: 40%; left: 0px; width: 50%"></div>
 	<div id="roll_graph" style="position: absolute; bottom: 33%; height: 40%; left: 0px; width: 50%"></div>
 	<div id="pitch_graph" style="position: absolute; bottom: 0%; height: 40%; left: 0px; width: 50%"></div>
-	<script>
+	<script type="module">
 		"use strict";
+		
+		import * as THREE from "./3D_engine/three_r126.js";
+		import { OrbitControls } from "./3D_engine/OrbitControls.js";
+
+		// Import Vessel.js module
+		import * as Vessel from "../source/jsm/vessel.js";
+
+		// Import Ship3D module
+		import { Ship3D } from "../source/jsm/3D_engine/Ship3D.js";
+
+		// Import Skybox module
+		import { Skybox } from "../examples/3D_engine/skybox_from_examples_r126.js";
+
+		// Import Ocean module
+		import { Ocean } from "../examples/3D_engine/Regular_ocean.js";
+
 
 		//Globals
 		var renderer, camera, controls, gui, stats;
@@ -108,7 +124,7 @@
 			onResize();
 			camera.position.set(oSize * 0.05, oSize * 0.02, oSize * 0.05);
 
-			controls = new THREE.OrbitControls(camera, renderer.domElement);
+			controls = new OrbitControls(camera, renderer.domElement);
 			//controls.minDistance = 0;
 			controls.maxDistance = 0.5 * oSize;
 			controls.enablePan = false;

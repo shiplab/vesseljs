@@ -13,7 +13,7 @@
 	<meta name="description" content="">
 	<meta name="author" content="">
 
-	<title>Ship visualization with specification</title>
+	<title>Ship visualization with specification</title>|
 
 	<!-- Bootstrap Core CSS -->
 	<link href="libs/bootstrap.min.css" rel="stylesheet">
@@ -24,15 +24,15 @@
 	<!-- D3JavaScript -->
 	<script src="libs/d3_v4.9.1.js"></script>
 	<!-- Three script -->
-	<script src="3D_engine/legacy/three_r86.js"></script>
-	<script src="3D_engine/STLLoader.js"></script>
-	<script src="3D_engine/legacy/OrbitControls.js"></script>
+	<!-- <script src="3D_engine/legacy/three_r86.js"></script> -->
+	<!-- <script src="./3D_engine/legacy/STLLoader.js"></script> -->
+	<!-- <script src="3D_engine/legacy/OrbitControls.js"></script> -->
 	<!--Import library-->
-	<script src="../build/vessel.js"></script>
+	<!-- <script src="../build/vessel.js"></script> -->
 	<!-- Prettyprinting of JSON data -->
 	<script type="text/javascript" src="libs/renderjson.js"></script>
 	<!--Ship3D class for three.js-->
-	<script src="3D_engine/legacy/Ship3D.js"></script>
+	<!-- <script src="3D_engine/legacy/Ship3D.js"></script> -->
 	<!-- Plotly.js -->
 	<script src="libs/plotly-1.48.3.min.js"></script>
 	<!-- alegebra.js -->
@@ -428,8 +428,24 @@
 					</ul>
 				</ol>
 
-				<script>
+				<script type="module">
 					"use strict";
+
+					// Import three.js and OrbitControls modules
+					import * as THREE from "./3D_engine/three_r126.js";
+					import { OrbitControls } from "./3D_engine/OrbitControls.js";
+
+					// Import Vessel.js module
+					import * as Vessel from "../source/jsm/vessel.js";
+
+					// Import Ship3D module
+					import { Ship3D } from "../source/jsm/3D_engine/Ship3D.js";
+
+					// Import Skybox module
+					import { Skybox } from "../examples/3D_engine/skybox_from_examples_r126.js";
+
+					// Import Ocean module
+					import { Ocean } from "../examples/3D_engine/Regular_ocean.js";
 
 					// Create scene+
 					var renderer, scene, camera, controls, ship3D;
@@ -452,7 +468,7 @@
 						camera = new THREE.PerspectiveCamera(50);
 						camera.up.set(0, 0, 1);
 						scene.add(camera);
-						controls = new THREE.OrbitControls(camera, renderer.domElement);
+						controls = new OrbitControls(camera, renderer.domElement);
 
 						//Respond to window resize:
 						function onResize() {
@@ -499,17 +515,17 @@
 						if (ship3D !== undefined) {
 							scene.remove(ship3D);
 						}
-						ship3D = new Ship3D(ship, "3D_models/STL/various");
+						ship3D = new Ship3D(ship, {
+							stlPath: "3D_models/STL/various"
+						});
 						scene.add(ship3D);
 
 						let LOA = ship.structure.hull.attributes.LOA;
 						camera.position.set(0.7 * LOA, 0.7 * LOA, 0.7 * LOA);
-						controls.target = new THREE.Vector3(LOA / 2, 0, 0);
 						controls.update();
 						animate();
 
 						//Ship specification
-
 						let BOA = ship.structure.hull.attributes.BOA
 						let depth = ship.structure.hull.attributes.Depth
 						let draftdesign = ship.designState.calculationParameters.Draft_design
