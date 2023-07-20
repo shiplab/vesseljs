@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Vessel.js playground</title>
+    <!-- <script src="../examples/3D_engine/legacy/three.js"></script> -->
+    <!-- <script src="../examples/3D_engine/OrbitControls_v2.js"></script>		 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="../build/vessel.js"></script>
+    <!-- <script src="../examples/3D_engine/Ship3D_v2.js"></script> -->
+    <!-- <script src="../examples/3D_engine/STLLoader.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/deep-diff@1/dist/deep-diff.min.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/node-require-function@1.2.0/index.d.ts"></script> -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/three-orbitcontrols@2.110.3/OrbitControls.js"></script> -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"
+      integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p"
+      crossorigin="anonymous"
+    ></script>
+    <link href="../examples/libs/bootstrap.min.css" rel="stylesheet" />
+    <!-- <script src="../source/jsm/ship/BaseObject.js" type="module"></script>
+		<script src="../source/jsm/ship/JSONSpecObject.js" type="module"></script> -->
+    <style>
+      table,
+      th,
+      td {
+        border: 1px solid black;
+      }
+      th {
+        background-color: #045faa;
+        color: white;
+      }
+      tr:nth-child(even) {
+        background-color: #f2f2f2;
+      }
+      #classTableStyle {
+        width: 300px;
+      }
+      #valuesTableStyle {
+        width: 300px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h3>The following table compares the es6 and es5 style status:</h3>
+      <table id="classTableStyle">
+        <thead>
+          Table 1 - Classes
+          <tr>
+            <th>ID</th>
+            <th>NAME</th>
+          </tr>
+        </thead>
+        <tbody id="foundationTable"></tbody>
+      </table>
+      <br />
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Vessel.js ES5 Version</th>
+            <th scope="col">Vessel.js ES6 Version</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td id="3d-one"></td>
+            <td id="3d-two"></td>
+          </tr>
+        </tbody>
+      </table>
+      <h3>The following tables the calculated results:</h3>
+      <table id="valuesTableStyle">
+        <thead>
+          Table 1 - Wave classes
+          <tr>
+            <th>Variable</th>
+            <th>Expect (ES5)</th>
+            <th>New Result</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="waveCalculationTable"></tbody>
+      </table>
+      <br />
+      <table id="valuesTableStyle">
+        <thead>
+          Table 2 - Free resistance results
+          <tr>
+            <th>Variable</th>
+            <th>Expect (ES5)</th>
+            <th>New Result</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="resCalculationTable"></tbody>
+      </table>
+      <br />
+      <table id="valuesTableStyle">
+        <thead>
+          Table 3 - Propeller calculation results
+          <tr>
+            <th>Variable</th>
+            <th>Expect (ES5)</th>
+            <th>New Result</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="propCalculationTable"></tbody>
+      </table>
+      <br />
+      <table id="valuesTableStyle">
+        <thead>
+          Table 4 - Fuel consumption
+          <tr>
+            <th>Variable</th>
+            <th>Expect (ES5)</th>
+            <th>New Result</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="fuelConsumptionTable"></tbody>
+      </table>
+      <br />
+      <table id="valuesTableStyle">
+        <thead>
+          Table 5 - Positioning values
+          <tr>
+            <th>Variable</th>
+            <th>Expect (ES5)</th>
+            <th>New Result</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody id="posCalculationTable"></tbody>
+      </table>
+      <br />
+    </div>
+    <script type="module">
+      import * as THREE from "../examples/3D_engine/three_r126.js";
+
+      import { Ship } from "../source/jsm/ship/Ship.js";
+      import { Ship3D } from "../source/jsm/3D_engine/Ship3D.js";
+      import { OrbitControls } from "../examples/3D_engine/OrbitControls.js";
+      import { downloadShip } from "../source/jsm/fileIO/dowloadShip.js";
+      import { FuelConsumption } from "../source/jsm/ship/FuelConsumption.js";
+      import { Manoeuver } from "../source/jsm/ship/Manoeuver.js";
+      import * as VesselES6 from "../source/jsm/vessel.js";
+
+      import { addRows } from "./supComparisonFunc.js";
+
+      let ship3D_ES5, ship3D;
+
+      new THREE.FileLoader().load(
+        "../examples/ship_specs/PX121.json",
+        useFileData
+      );
+
+      const w = 1920;
+      const h = 1080;
+
+      function useFileData(contents) {
+        const rendererES5 = new THREE.WebGLRenderer({ antialias: true });
+        rendererES5.setPixelRatio(window.devicePixelRatio);
+        rendererES5.setClearColor(0xa9cce3, 1);
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setPixelRatio(window.devicePixelRatio);
+        // renderer.setClearColor(0xa9cce3, 1)
+
+        let shipspec = JSON.parse(contents);
+
+        const shipES5 = new Vessel.Ship(shipspec);
+        const ship = new VesselES6.Ship(shipspec);
+
+        const containerES5 = document.getElementById("3d-one");
+        const container = document.getElementById("3d-two");
+        containerES5.appendChild(rendererES5.domElement);
+        container.appendChild(renderer.domElement);
+
+        // Add scenes:
+        let sceneES5 = new THREE.Scene();
+        let scene = new THREE.Scene();
+
+        // Add lights:
+        sceneES5.add(new THREE.AmbientLight(0xffffff, 0.3));
+        sceneES5.add(
+          (function () {
+            let sun = new THREE.DirectionalLight(0xffffff, 1);
+            sun.position.set(1, 1, 1);
+            return sun;
+          })()
+        );
+        scene.add(new THREE.AmbientLight(0xffffff, 0.3));
+        scene.add(
+          (function () {
+            let sun = new THREE.DirectionalLight(0xffffff, 1);
+            sun.position.set(1, 1, 1);
+            return sun;
+          })()
+        );
+
+        //Camera and controls:
+        let cameraES5 = new THREE.PerspectiveCamera(50, w / h);
+        cameraES5.up.set(0, 0, 1);
+        sceneES5.add(cameraES5);
+        let controlsES5 = new OrbitControls(cameraES5, rendererES5.domElement);
+        let camera = new THREE.PerspectiveCamera(50, w / h);
+        camera.up.set(0, 0, 1);
+        scene.add(camera);
+        let controls = new OrbitControls(camera, renderer.domElement);
+
+        if (ship3D !== undefined) {
+          scene.remove(ship3D);
+        }
+        ship3D = new Ship3D(ship, {
+          shipState: ship.designState.clone(),
+          stlPath: "../examples/3D_models/STL/various",
+          upperColor: 0x33aa33,
+          lowerColor: 0xaa3333,
+          hullOpacity: 1,
+          deckOpacity: 1,
+          objectOpacity: 1,
+        });
+        scene.add(ship3D);
+        ship3D_ES5 = new Ship3D(shipES5, {
+          shipState: shipES5.designState.clone(),
+          stlPath: "../examples/3D_models/STL/various",
+          upperColor: 0x33aa33,
+          lowerColor: 0xaa3333,
+          hullOpacity: 1,
+          deckOpacity: 1,
+          objectOpacity: 1,
+        });
+        sceneES5.add(ship3D_ES5);
+
+        function animate() {
+          requestAnimationFrame(animate);
+          rendererES5.autoClear = true;
+          rendererES5.render(sceneES5, cameraES5);
+
+          renderer.autoClear = false;
+          renderer.setScissorTest(false);
+          renderer.setClearColor(0xa9cce3, 1);
+          renderer.clear(true, true);
+          renderer.setScissorTest(true);
+          renderer.render(scene, camera);
+        }
+
+        let LOA = ship.structure.hull.attributes.LOA;
+
+        // Set the values of cameras and controls
+        cameraES5.position.set(0.3 * LOA, 0.7 * LOA, 0.7 * LOA);
+        controlsES5.target = new THREE.Vector3(0, 0, 0);
+        controlsES5.update();
+        camera.position.set(0.3 * LOA, 0.7 * LOA, 0.7 * LOA);
+        controls.target = new THREE.Vector3(0, 0, 0);
+        controls.update();
+        animate();
+
+        addRows(ship.constructor.name, shipES5, ship, "foundationTable");
+        addRows(
+          "BaseObject",
+          shipES5.baseObjects,
+          ship.baseObjects,
+          "foundationTable"
+        );
+        addRows(
+          "DerivedObjects",
+          shipES5.derivedObjects,
+          ship.derivedObjects,
+          "foundationTable"
+        );
+        addRows(
+          ship.structure.constructor.name,
+          shipES5.structure,
+          ship.structure,
+          "foundationTable"
+        );
+        addRows(
+          ship.designState.constructor.name,
+          shipES5.designState,
+          ship.designState,
+          "foundationTable"
+        );
+
+        // // Wave values
+        let wavStatES5 = new Vessel.WaveCreator();
+        wavStatES5.setWaveDef((2 * Math.PI) / 10, 1, 180);
+        let wavStat = new VesselES6.WaveCreator();
+        wavStat.setWaveDef((2 * Math.PI) / 10, 1, 180);
+        addRows("Waves", wavStatES5, wavStat, "foundationTable");
+        // waveHistory[i][j] = wavStatES5.waveDef;
+
+        let speed = 13;
+        let wavMoES5 = new Vessel.WaveMotion(
+          shipES5,
+          shipES5.designState,
+          wavStatES5
+        );
+        wavMoES5.setSpeed(speed);
+        let wavMo = new Vessel.WaveMotion(shipES5, ship.designState, wavStat);
+        wavMo.setSpeed(speed);
+        addRows("Wave Motion", wavMoES5, wavMo, "foundationTable");
+
+        addRows(
+          "BML",
+          wavMoES5.floatState.BMl,
+          wavMo.floatState.BMl,
+          "waveCalculationTable",
+          true
+        );
+        addRows(
+          "BMT",
+          wavMoES5.floatState.BMt,
+          wavMo.floatState.BMt,
+          "waveCalculationTable",
+          true
+        );
+        addRows(
+          "GML",
+          wavMoES5.floatState.GMl,
+          wavMo.floatState.GMl,
+          "waveCalculationTable",
+          true
+        );
+        addRows(
+          "GMT",
+          wavMoES5.floatState.GMt,
+          wavMo.floatState.GMt,
+          "waveCalculationTable",
+          true
+        );
+
+        // let wavStat = new WaveCreator();
+        // wavStat.setWaveDef(2 * Math.PI / 10, 1, 180);
+
+        // let wavMo = new WaveMotion(ship, ship.designState, wavStatES5);
+        // wavMo.setSpeed(speed);
+        // console.log(wavMoES5)
+        // console.log(wavMo)
+
+        // Taking the propeller
+        let shipStateES5 = new Vessel.ShipState(
+          shipES5.designState.getSpecification()
+        );
+        let shipState = new VesselES6.ShipState(
+          ship.designState.getSpecification()
+        );
+
+        let propReq = new XMLHttpRequest();
+        var powReq = new XMLHttpRequest();
+        let propellers = {};
+        let powerPlants = {};
+
+        // Attributes to be used in the maneuvering model
+
+        propReq.open(
+          "GET",
+          "../examples/others/propeller_specifications/rolls_royce_500_azipod.json",
+          true
+        );
+        propReq.addEventListener("load", function (event) {
+          let response = event.target.response;
+          let propeller = JSON.parse(response);
+
+          let usePropSpec = function (propeller, name) {
+            propellers[name.substring(0, name.length - 5)] = propeller;
+
+            let hullResES5 = new Vessel.HullResistance(
+              shipES5,
+              shipStateES5,
+              propeller,
+              wavStat
+            );
+            hullResES5.writeOutput();
+
+            let hullRes = new VesselES6.HullResistance(
+              ship,
+              shipState,
+              propeller,
+              wavStat
+            );
+            hullRes.writeOutput();
+
+            addRows("Resistance", hullResES5, hullRes, "foundationTable");
+            // debugger
+
+            addRows(
+              "Rt (calm water)",
+              hullResES5.calmResistance,
+              hullRes.calmResistance,
+              "resCalculationTable",
+              true
+            );
+            addRows(
+              "Total power resistance",
+              hullResES5.totalResistance.Pe,
+              hullRes.totalResistance.Pe,
+              "resCalculationTable",
+              true
+            );
+            addRows(
+              "Total resistance",
+              hullResES5.totalResistance.Rtadd,
+              hullRes.totalResistance.Rtadd,
+              "resCalculationTable",
+              true
+            );
+
+            let propellerInteractionES5;
+            let propellerInteraction;
+
+            for (let propProp in propellers) {
+              let wagProp = propellers[propProp];
+              propellerInteractionES5 = new Vessel.PropellerInteraction(
+                shipES5,
+                shipStateES5,
+                wagProp
+              );
+              propellerInteractionES5.writeOutput();
+
+              propellerInteraction = new VesselES6.PropellerInteraction(
+                ship,
+                shipState,
+                wagProp
+              );
+              propellerInteraction.writeOutput();
+
+              const kes_arr = Object.keys(propellerInteraction.propulsion);
+
+              kes_arr.map((s) =>
+                addRows(
+                  s,
+                  propellerInteractionES5.propulsion[s],
+                  propellerInteraction.propulsion[s],
+                  "propCalculationTable",
+                  true
+                )
+              );
+            }
+
+            // Mounting the Power Plant
+            powReq.open(
+              "GET",
+              "../examples/others/power_plant_specifications/powerPlant1.json",
+              true
+            );
+            powReq.addEventListener("load", function (event) {
+              let response = event.target.response;
+              let powerPlant = JSON.parse(response);
+
+              let usePowSpec = function (powerPlant, name) {
+                powerPlants[name.substring(0, name.length - 5)] = powerPlant;
+                for (let powProp in powerPlants) {
+                  let plant = powerPlants[powProp];
+                  let fuelConsES5 = new Vessel.FuelConsumption(
+                    shipES5,
+                    shipStateES5,
+                    plant
+                  );
+                  fuelConsES5.writeOutput();
+
+                  let fuelCons = new VesselES6.FuelConsumption(
+                    ship,
+                    shipState,
+                    plant
+                  );
+                  fuelCons.writeOutput();
+
+                  // const kes_arr = Object.keys(fuelConsES5.consumptionRate)
+
+                  addRows(
+                    "Fuel Consumption",
+                    fuelConsES5.consumptionRate,
+                    fuelCons.consumptionRate,
+                    "fuelConsumptionTable",
+                    true
+                  );
+                }
+              };
+
+              usePowSpec(powerPlant, "powerPlant1.json");
+            });
+            powReq.send(null);
+          };
+
+          usePropSpec(propeller, "rolls_royce_500_azipod.json");
+        });
+        propReq.send(null);
+        // Define variable
+        // let states = new Vessel.ShipState(ship.designState.getSpecification());
+
+        // hullRes.writeOutput();
+        let path = [
+          [0, 0],
+          [10, 10],
+          [0, 0],
+        ];
+        let posES5 = new Vessel.Positioning(shipES5, shipStateES5, path);
+        let pos = new VesselES6.Positioning(ship, shipState, path);
+        posES5.advanceShip(100);
+        pos.advanceShip(100);
+
+        addRows(
+          "Traveled Distance",
+          posES5.positionState.travelDist,
+          pos.positionState.travelDist,
+          "posCalculationTable",
+          true
+        );
+        addRows(
+          "Traveled Leg. Distance",
+          posES5.positionState.travelLegDist,
+          pos.positionState.travelLegDist,
+          "posCalculationTable",
+          true
+        );
+        addRows("Position", posES5, pos, "foundationTable");
+
+        let manSpec = new XMLHttpRequest();
+        let manResp;
+        manSpec.open(
+          "GET",
+          "others/maneuvering_specifications/man_sample.json",
+          true
+        );
+        manSpec.addEventListener("load", function (event) {
+          const response = event.target.response;
+          manSpec = JSON.parse(response);
+        });
+
+        // ---------------------------- //
+        // The Manoeuver class must be  //
+        // set in the new ES6 style     //
+        // ---------------------------- //
+
+        // let man = new Manoeuver(ship, shipState, hullResES5, propellerInteraction, fuelCons, manResp)
+      }
+    </script>
+  </body>
+</html>

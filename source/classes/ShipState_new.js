@@ -18,7 +18,7 @@ derivedByID: Applies only to the object with given ID.
 
 Assignments of subsequent types override assignments of previous types.
 
-Note that the foundation for object state is laid in baseObject.baseState and derivedObject.referenceState. The abovementioned assignments apply only as overrides. They do not introduce new properties.
+Note that the foundation for object state is laid in baseObject.baseState and derivedObject.referenceState. The above mentioned assignments apply only as overrides. They do not introduce new properties.
 */
 
 /*

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Modules</title>
+</head>
+
+<body>
+
+	<h1>Test Vessel.js modules</h1>
+
+	<p>Check the console.</p>
+
+	<script type="module">
+		import BaseObject from './ship/BaseObject.js'
+
+		console.log(BaseObject);
+
+		var spec = {};
+
+		window.baseObj = new BaseObject(spec);
+		// test a derived object
+		// test ...
+		// test a ship 
+
+	</script>
+
+</body>
+
+</html>

@@ -4,28 +4,39 @@
 Depends on JSONSpecObject.js
 */
 
-function DerivedObject(specification, baseObjects) {
+function DerivedObject( specification, baseObjects ) {
+
 	this.baseObjects = baseObjects;
-	JSONSpecObject.call(this, specification);
+	JSONSpecObject.call( this, specification );
+
 }
-DerivedObject.prototype = Object.create(JSONSpecObject.prototype);
-Object.assign(DerivedObject.prototype, {
+
+DerivedObject.prototype = Object.create( JSONSpecObject.prototype );
+Object.assign( DerivedObject.prototype, {
 	constructor: DerivedObject,
-	setFromSpecification: function(spec) {
+	setFromSpecification: function ( spec ) {
+
 		this.id = spec.id;
 		this.group = spec.group || null;
 		this.affiliations = spec.affiliations;
-		if (typeof spec.baseObject === "string") {
-			this.baseObject = this.baseObjects[spec.baseObject];
+		if ( typeof spec.baseObject === "string" ) {
+
+			this.baseObject = this.baseObjects[ spec.baseObject ];
+
 		} else {
-			this.baseObject = new BaseObject(spec.baseObject);
+
+			this.baseObject = new BaseObject( spec.baseObject );
+
 		}
+
 		this.referenceState = spec.referenceState;
 		//this.referenceStateVersion = 0;
 		this.style = spec.style || {};
 		return this;
+
 	},
-	getSpecification: function() {
+	getSpecification: function () {
+
 		let spec = {
 			id: this.id,
 			group: this.group,
@@ -33,20 +44,28 @@ Object.assign(DerivedObject.prototype, {
 			referenceState: this.referenceState,
 			style: this.style
 		};
-		if (this.baseObjects[this.baseObject.id] !== undefined) {
+		if ( this.baseObjects[ this.baseObject.id ] !== undefined ) {
+
 			spec.baseObject = this.baseObject.id;
+
 		} else {
+
 			spec.baseObject = this.baseObject.getSpecification();
+
 		}
 
 		return spec;
+
 	},
-	getWeight: function(state) {
-		let oState = state.getObjectState(this);
+	getWeight: function ( state ) {
+
+		let oState = state.getObjectState( this );
 
 		//Support disabled objects:
-		if (oState.exists === false) {
-			return {mass: 0, cg: {x: 0, y: 0, z: 0}};
+		if ( oState.exists === false ) {
+
+			return { mass: 0, cg: { x: 0, y: 0, z: 0 } };
+
 		}
 
 		let p = {
@@ -55,14 +74,17 @@ Object.assign(DerivedObject.prototype, {
 			z: oState.zBase
 		};
 
-		let w = this.baseObject.getWeight(oState.fullness);
+		let w = this.baseObject.getWeight( oState.fullness );
 		let m = w.mass;
-		let cg = Vectors.add(p, w.cg);
+		let cg = Vectors.add( p, w.cg );
 
-		if (isNaN(cg.x + cg.y + cg.z)) {
-			console.error("DerivedObject.getWeight: returning NaN values.");
+		if ( isNaN( cg.x + cg.y + cg.z ) ) {
+
+			console.error( "DerivedObject.getWeight: returning NaN values." );
+
 		}
 
-		return {mass: m, cg: cg};
+		return { mass: m, cg: cg };
+
 	}
-});
+} );
