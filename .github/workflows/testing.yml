@@ -1,0 +1,34 @@
+name: Vessel.js CI Workflow
+on:
+  push:
+    branches:
+      - master
+      - dev
+  pull_request:
+    branches:
+      - master
+      - dev
+
+jobs:
+  test:
+    name: Test Vessel.js Code
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Install Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 18 # Adjust the Node.js version based on your project requirements
+
+      - name: Install dependencies
+        run: npm install # or yarn install if you use yarn
+
+      - name: Run Babel validation
+        run: npm run build # Replace 'build' with your Babel build script
+
+      - name: Run tests
+        run: npm test
