@@ -33,10 +33,10 @@ jobs:
           node-version: 18 # Adjust the Node.js version based on your project requirements
 
       - name: Install dependencies
-        run: npm install # or yarn install if you use yarn
-
-      # - name: Run Babel validation
-      #   run: npm run build # Replace 'build' with your Babel build script
+        run: npm install
 
       - name: Run tests
         run: npm test
+
+      - name: Run Babel validation
+        run: npm run build
