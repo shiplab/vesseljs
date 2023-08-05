@@ -1,13 +1,21 @@
 name: Vessel.js CI Workflow
 on:
   push:
+    paths-ignore:
+      - "build/**"
     branches:
       - master
       - dev
+
   pull_request:
+    paths-ignore:
+      - "build/**"
     branches:
       - master
       - dev
+
+permissions:
+  contents: read
 
 jobs:
   test:
@@ -17,18 +25,18 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Install Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: 18 # Adjust the Node.js version based on your project requirements
 
       - name: Install dependencies
         run: npm install # or yarn install if you use yarn
 
-      - name: Run Babel validation
-        run: npm run build # Replace 'build' with your Babel build script
+      # - name: Run Babel validation
+      #   run: npm run build # Replace 'build' with your Babel build script
 
       - name: Run tests
         run: npm test

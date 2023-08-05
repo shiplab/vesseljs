@@ -1,6 +1,7 @@
 {
   "name": "vessels.js",
   "scripts": {
+    "build": "babel source/jsm -d lib",
     "test": "jest"
   },
   "devDependencies": {
@@ -10,6 +11,7 @@
   },
   "dependencies": {
     "@babel/preset-env": "^7.22.9",
+    "babel-cli": "^6.26.0",
     "babel-jest": "^29.6.1",
     "jest": "^29.6.1",
     "ts-jest": "^29.1.1"
