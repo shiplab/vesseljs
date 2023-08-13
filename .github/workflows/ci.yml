@@ -14,8 +14,7 @@ on:
       - master
       - dev
 
-permissions:
-  contents: read-all|write-all
+permissions: write-all
 
 jobs:
   test:
