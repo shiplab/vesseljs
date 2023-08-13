@@ -44,9 +44,7 @@ jobs:
       - name: GIT commit and push
         env:
           CI_COMMIT_MESSAGE: Continuous Integration Build Artifacts
-          CI_COMMIT_AUTHOR: Vessel.js Continuous Integration Pipeline
         run: |
-          git config --global user.name "${{ env.CI_COMMIT_AUTHOR }}"
           git add build
-          git commit -m "${{ env.CI_COMMIT_MESSAGE }}"
+          git commit -a -m "${{ env.CI_COMMIT_MESSAGE }}"
           git push
