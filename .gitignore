@@ -2,6 +2,4 @@ package-lock.json
 node_modules
 .eslintrc.js
 
-build/vessel.js
-build/vessel.module.js
-build/vessel.module.min.js
+build/archive/
