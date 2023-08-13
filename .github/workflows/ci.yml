@@ -47,6 +47,6 @@ jobs:
           CI_COMMIT_AUTHOR: Vessel.js Continuous Integration Pipeline
         run: |
           git config --global user.name "${{ env.CI_COMMIT_AUTHOR }}"
-          git add docs
+          git add build
           git commit -m "${{ env.CI_COMMIT_MESSAGE }}"
           git push
