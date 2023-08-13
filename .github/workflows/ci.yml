@@ -45,6 +45,8 @@ jobs:
         env:
           CI_COMMIT_MESSAGE: Continuous Integration Build Artifacts
         run: |
+          git config user.name "$(git log -n 1 --pretty=format:%an)"
+          git config user.email "$(git log -n 1 --pretty=format:%ae)"
           git add build
           git commit -a -m "${{ env.CI_COMMIT_MESSAGE }}"
           git push
