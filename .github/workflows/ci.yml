@@ -42,6 +42,7 @@ jobs:
         run: npm test
 
       - name: GIT commit and push
+        uses: actions/checkout@v3
         env:
           CI_COMMIT_MESSAGE: Continuous Integration Build Artifacts
         run: |
