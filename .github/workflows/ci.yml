@@ -1,0 +1,52 @@
+name: Vessel.js CI Workflow
+on:
+  push:
+    paths-ignore:
+      - "build/**"
+    branches:
+      - master
+      - dev
+
+  pull_request:
+    paths-ignore:
+      - "build/**"
+    branches:
+      - master
+      - dev
+
+permissions: write-all
+
+jobs:
+  test:
+    name: Test Vessel.js Code
+
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18 # Adjust the Node.js version based on your project requirements
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run build
+
+      - name: Run tests
+        run: npm test
+
+      # - run: |
+      #     git config user.name github-actions[bot]
+      #     git config user.email github-actions[bot]@users.noreply.github.com
+      #     git add build
+      #     git commit -a -m "Continuous Integration Build Artifacts"
+      # - name: Push changes
+      #   uses: ad-m/github-push-action@master
+      #   with:
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
+      #     branch: ${{ github.ref }}
