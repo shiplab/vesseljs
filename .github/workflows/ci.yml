@@ -44,7 +44,7 @@ jobs:
           git config user.name github-actions[bot]
           git config user.email github-actions[bot]@users.noreply.github.com
           git init
-          git checkout ${{ github.ref }}
+          git checkout ${{ github.ref_name }}
           git add build
           git commit -a -m "Continuous Integration Build Artifacts"
       - name: Push changes
