@@ -1,7 +1,6 @@
 import { REVISION } from "./constants.js";
 
 export { Ship } from "./ship/Ship.js";
-export { Ship3D } from "./3D_engine/Ship3D.js";
 export { WaveCreator } from "./ship/WaveCreator.js";
 export { WaveMotion } from "./ship/WaveMotion.js";
 export { ShipState } from "./ship/ShipState.js";
