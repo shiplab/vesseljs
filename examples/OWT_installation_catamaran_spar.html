@@ -28,6 +28,7 @@
 	<script src="3D_engine/Playback.js"></script>
 	<!-- <script src="snippets/Configurable_ocean.js"></script> -->
 	<script src="3D_engine/Configurable_ocean_v2.js"></script>
+	<script src="libs/zingchart.min.js"></script>
 	<!--<script src="keyboard_arrow_input_Elias_Hasle.js"></script>-->
 </head>
 
@@ -70,6 +71,33 @@
 
 		box-shadow: 0 0 4px rgba(0, 0, 0, 0.15);
 	}
+
+	/* ******* Signature template ******* */
+
+	#info {
+		position: absolute;
+		color: #011C40;
+		bottom: 20px;
+		right: 5px;
+		font-size: 12px;
+		width: 100%;
+		padding: 10px;
+		box-sizing: border-box;
+		text-align: right;
+		-moz-user-select: none;
+		-webkit-user-select: none;
+		-ms-user-select: none;
+		user-select: none;
+		pointer-events: none;
+		z-index: 1;
+	}
+
+	#info a {
+		color: #A60D0D;
+		pointer-events: auto;
+	}
+
+	/* ******* ******* ******* */
 
 	#tooltip {
 		/* visibility: hidden; */
@@ -178,7 +206,28 @@
 </style>
 
 <body>
-	<div id="tooltip"></div>
+	<!-- <div id="tooltip"></div> -->
+
+	<div id="info">
+		<b>Hydrodynamic Analysis for FOWT Installation</b>
+		<br><b>(Head Sea, Hs = 2m, Tp = 11s)</b>
+		<br>
+		Visualization: <a href="https://shiptodata.com/" target="_blank" rel="noopener">Felipe Ferrari</a>
+		<br>
+		Simulation: Sunghun Hong
+		<br>
+		CAD Models: Thiago Gabriel Monteiro
+		<br>
+		Supervision: <a href=" https://www.ntnu.edu/employees/karl.h.halse" target="_blank" rel="noopener">Karl Henning Halse</a><br> and <a href="https://www.ntnu.edu/employees/henrique.gaspar" target="_blank" rel="noopener">Henrique M. Gaspar</a>
+		<br>
+		<a class="navbar-brand" href="http://www.shiplab.hials.org/"><img src="../images/barquinho.png"
+			alt="Shiplab logo" style="height:25px">
+		</a>
+		&nbsp; &nbsp;
+		<a class="navbar-brand" href="https://www.ntnu.no/"><img src="../images/ntnu_logo_black.png"
+			alt="NTNU logo" style="height:20px">
+		</a>
+	</div>
 
 	<div id="loader-wrapper">
 		<div class="loader loader-white loader-1"></div>
@@ -187,10 +236,11 @@
 		</div>
 	</div>
 
-	<a id="button" target="_blank" href="https://github.com/shiplab/vesseljs/blob/master/examples/OWT_installation.html"
+	<!-- <a id="button" target="_blank" href="https://github.com/shiplab/vesseljs/blob/master/examples/OWT_installation.html"
 		title="View source code on GitHub" style="">
 		<img src="..\images\code-24px.svg" />
-	</a>
+	</a> -->
+	<div id="plotBottom" style="position:fixed; bottom:0%; float:left; width:100%; height:100%"></div>
 
 	<script>
 		"use strict";
@@ -213,20 +263,21 @@
 
 		//Globals
 		var renderer, camera, controls, gui, stats;
-		var scene, zUpCont, playback, bodies, ocean, shipGLTF;
+		var scene, zUpCont, playback, bodies, ocean, shipGLTF, pivot_ship, pivot_buoy;
 		var scale, modelStyle;
 
 		// Import global variables for the csv interaction
-		var calculated_data, initial_time, max_time, data_step_index, delta_time;
-		data_step_index = 0;
+		var calculated_data, initial_time, max_time, initial_time, data_step_index, delta_time;
+		initial_time = 100; // seconds
+		data_step_index = 0; // Initial value
 		delta_time = 0.5; // seconds
 
-		// Global variables for raycaster control
-		var intersected;
-		var tooltipElement = document.getElementById("tooltip");
+		// // Global variables for raycaster control
+		// var intersected;
+		// var tooltipElement = document.getElementById("tooltip");
 
-		// Marker which ensure the table is being displayed
-		tooltipElement.displayingPropTable = false;
+		// // Marker which ensure the table is being displayed
+		// tooltipElement.displayingPropTable = false;
 
 		(function main() {
 			//Renderer setup
@@ -234,13 +285,14 @@
 			document.body.style.overflow = "hidden";
 			var container = document.createElement("div");
 			container.id = "SimulationWindow";
-			//container.style = "position: absolute; top: 0; left: 0;"
+			// container.style = "position: absolute; top: 0px; height: 75%; right: 320px; width: 50%"
 			Object.assign(container.style, {
 				position: "absolute",
 				top: 0,
-				left: 0,
-				width: "100vw",
-				height: "100vh"
+				height: "70%",
+				width: "75%",
+				// right: "320px",
+				left: "25%",
 			});
 			document.body.appendChild(container);
 			renderer = new THREE.WebGLRenderer({ antialias: true });
@@ -290,7 +342,7 @@
 
 			window.addEventListener("resize", onResize, false);
 			onResize();
-			camera.position.set(630, 250, 820);
+			camera.position.set(450, 400, -500);
 			camera.lookAt(zUpCont.position);
 			// zUpCont.add(camera)
 			// scene.add(camera)
@@ -302,7 +354,7 @@
 			// controls.maxPolarAngle = 0.5 * Math.PI - 0.1;
 			// controls.minPolarAngle = 0.1;
 
-			zUpCont.add(new THREE.AxesHelper(1000))
+			// zUpCont.add(new THREE.AxesHelper(1000))
 			zUpCont.add(new THREE.HemisphereLight(0xccccff, 0x666688, 1));
 
 			ocean = new Ocean({
@@ -322,40 +374,70 @@
 
 			// import binary glTF file
 			var boatPath_arr = [
-				"3D_models/GLTF/catamaran_spar_owt.glb",
+				"3D_models/GLTF/Catamaran_lifiting_structure__stern_concept.glb",
 				// "3D_models/GLTF/catamaran_deeper_cutout.glb",
 				// "3D_models/GLTF/catamaran_side_concept_04_2023.glb"
 			];
+
+			let loaderGLTF = new THREE.GLTFLoader();
 
 			boatPath_arr.map((path, index) => {
 				let path_arr = path.split("/");
 
 				let name = path_arr[path_arr.length - 1].split(".")[0];
-				// let xpos = 100 * (index - 1);
-				let xpos = 0;
-				let loaderGLTF = new THREE.GLTFLoader();
+				const xpos = 63;
 				loaderGLTF.load(path, async gltf => {
 					shipGLTF = gltf.scene;
 					shipGLTF.rotation.x = Math.PI / 2;
 					shipGLTF.rotation.y = - Math.PI / 2;
-					shipGLTF.position.x = xpos;
+					shipGLTF.position.set(0, xpos, 0);
 					shipGLTF.name = name;
 
 					if (shipGLTF.material) {
 						shipGLTF.material.side = THREE.DoubleSide;
 					}
-					await zUpCont.add(shipGLTF);
+
+					// Adding the pivot_ship
+					pivot_ship = new THREE.Object3D();
+					pivot_ship.position.set(0, 0, 0);
+					pivot_ship.add(shipGLTF);
+
+					await zUpCont.add(pivot_ship);
 
 					// Adding the Gui interaction
-					let index_scale = scale.push(gui.addFolder("Ship: " + name)) - 1;
-					scale[index_scale].add(zUpCont.getObjectByName(name).position, "x", -400 + xpos, 400 + xpos, 1);
-					scale[index_scale].add(zUpCont.getObjectByName(name).position, "y", -400 + xpos, 400 + xpos, 1);
-					scale[index_scale].add(zUpCont.getObjectByName(name).rotation, "y", -Math.PI, Math.PI, Math.PI/180).name("Rotation Z");
-					scale[index_scale].add(zUpCont.getObjectByName(name).scale, "x", 0.1, 10, 0.1).name("Scale X");
-					scale[index_scale].add(zUpCont.getObjectByName(name).scale, "y", 0.1, 10, 0.1).name("Scale Y");
-					scale[index_scale].add(zUpCont.getObjectByName(name).scale, "z", 0.1, 10, 0.1).name("Scale Z");
-					scale[index_scale].open();
+					// let index_scale = scale.push(gui.addFolder("Ship: " + name)) - 1;
+					// scale[index_scale].add(zUpCont.getObjectByName(name).position, "x", -400 + xpos, 400 + xpos, 1);
+					// scale[index_scale].add(zUpCont.getObjectByName(name).position, "y", -400 + xpos, 400 + xpos, 1);
+					// scale[index_scale].add(zUpCont.getObjectByName(name).rotation, "y", -Math.PI, Math.PI, Math.PI/180).name("Rotation Z");
+					// scale[index_scale].add(zUpCont.getObjectByName(name).scale, "x", 0.1, 10, 0.1).name("Scale X");
+					// scale[index_scale].add(zUpCont.getObjectByName(name).scale, "y", 0.1, 10, 0.1).name("Scale Y");
+					// scale[index_scale].add(zUpCont.getObjectByName(name).scale, "z", 0.1, 10, 0.1).name("Scale Z");
+					// scale[index_scale].open();
+					// window.dispatchEvent(new Event('resize'));
+					document.dispatchEvent(new Event('resize'));
+					document.getElementById("plotBottom").style.width = '99%'
+					// document.getElementById("plotBottom").style.visibility = 'visible'
 				});
+			});
+
+			// Adding the spar buoy
+			const buoyPath = "3D_models/GLTF/Spar_OWT_Collar.glb";
+			loaderGLTF.load(buoyPath, async gltf => {
+				let buoyGLTF = gltf.scene;
+				buoyGLTF.rotation.x = Math.PI / 2;
+				buoyGLTF.rotation.y = - Math.PI / 2;
+				buoyGLTF.position.set(-57, 69, 0);
+
+				if (buoyGLTF.material) {
+					buoyGLTF.material.side = THREE.DoubleSide;
+				}
+				
+				// Adding the pivot_buoy
+				pivot_buoy = new THREE.Object3D();
+				pivot_buoy.position.set(0, 0, 0);
+				pivot_buoy.add(buoyGLTF);
+
+				await zUpCont.add(pivot_buoy);
 			});
 
 			// Recursive function to find element and delete
@@ -379,10 +461,6 @@
 			};
 
 			scale.push(gui.addFolder("Visualization parameters"));
-			scale.push(gui.addFolder("Check Box List"));
-			scale[1].domElement.hidden = true;
-			scale.push(gui.addFolder("Hydrostatic Information"));
-			scale[2].domElement.hidden = true;
 
 			scale[0]
 				.add(modelStyle, "scene", {
@@ -404,19 +482,10 @@
 					}
 				})
 				.name("Scenario");
-			// scene.getObjectByName("Ocean").visible = false
 			scale[0].open();
-			["Machinery", "Tank", "Compartment", "Deck", "Bulkheads", "Hull"].forEach(e => {
-				scale[1]
-					.add(modelStyle, "displayOutline")
-					.onChange(newValue => {
-						e === "Hull" ? (zUpCont.children[1].hull3D.visible = !zUpCont.children[1].hull3D.visible) : toggleElement(zUpCont, e);
-					})
-					.name(e);
-			});
 
-			scale[1].open();
-			scale[2].open();
+			// scale.push(gui.addFolder("Time parameters"));
+
 
 			// playback.play()
 
@@ -426,7 +495,7 @@
 			
 			// Takes the relevant data in owt_raw_data.csv
 			async function readCSV() {
-				let data = await d3.csv('./others/ocean_wave_samples/owt_raw_data.csv', function(error, data) {
+				await d3.csv('./others/ocean_wave_samples/owt_raw_data.csv', function(error, data) {
 					if (error) {
 						console.error('Error loading CSV file:', error);
 					} else {
@@ -449,15 +518,457 @@
 						return calculated_data
 					}
 				});
-				return data
 			}	
 			
 			// Read the csv results file
 			readCSV().then(() => {
 				requestAnimationFrame(animate);
 			}).catch((error) => {
+				console.log("Error reading the csv file");
 				console.log(error);
-			});		
+			}).finally();	
+
+			// Set up the graphic animation
+			window.feedMotionHeave = function(callback) {
+				var tick = {};
+				tick.plot0 = pivot_ship.position.z;
+				tick.plot1 = pivot_buoy.position.z;				
+				callback(JSON.stringify(tick));
+			};
+			window.feedMotionRoll = function(callback) {
+				var tick = {};
+				tick.plot0 = pivot_ship.rotation.y * 180 / Math.PI;
+				tick.plot1 = pivot_buoy.rotation.y * 180 / Math.PI;
+				callback(JSON.stringify(tick));
+			};
+			window.feedMotionSurge = function(callback) {
+				var tick = {};
+				tick.plot0 = pivot_ship.position.y;
+				tick.plot1 = pivot_buoy.position.y;
+				callback(JSON.stringify(tick));
+			};
+			window.feedMotionSway = function(callback) {
+				var tick = {};
+				tick.plot0 = pivot_ship.position.x;
+				tick.plot1 = pivot_buoy.position.x;
+				callback(JSON.stringify(tick));
+			};
+			window.feedMotionPitch = function(callback) {
+				var tick = {};
+				tick.plot0 = pivot_ship.rotation.x * 180 / Math.PI;
+				tick.plot1 = pivot_buoy.rotation.x * 180 / Math.PI;
+				callback(JSON.stringify(tick));
+			};
+			window.feedMotionYaw = function(callback) {
+				var tick = {};
+				tick.plot0 = pivot_ship.rotation.z * 180 / Math.PI;
+				tick.plot1 = pivot_buoy.rotation.z * 180 / Math.PI;
+				callback(JSON.stringify(tick));
+			};
+			
+			// Plot of dashboards
+			var dashboard = {
+				"graphset": [
+					{//---------- ROLL MOTION-----------//
+						"type": "line",
+						"plotarea": {
+							"adjust-layout": true
+						},
+						"height": "25%",
+						"width": "25%",
+						"x": "0%",
+						"y": "72%",
+						"plot": {
+							"aspect": "spline",
+							"marker": {"visible": false},
+						},
+						"series": [{
+							"values": [0],
+							"text": "Cat.[m]"
+						}, {
+							"values": [0],
+							"text": "Buoy[m]"
+						}],
+						"refresh": {
+							"type": "feed",
+							"transport": "js",
+							"url": "feedMotionRoll()",
+							"method": "pull",
+							"interval": 500,
+							"adjust-scale": true
+						},
+						scaleY: {
+							label: {
+								text: 'Roll angle [deg]',
+								fontStyle: 'normal',
+								fontWeight: 'normal',
+							},
+						},
+						title: {
+							text: "Roll motion",
+							marginBottom: "0",
+							fontFamily: "Helvetica",
+							fontWeight: "none",
+							fontSize: 12,
+							"offset-y": 25,
+							"offset-x": 120,
+							"width": 100,
+							"heigh": 30,
+							"background-color": "#333",
+							"color": "#FFF",
+							"border-radius": "4px"
+						},
+						plotarea: {
+							"margin": "20% 10% 15% dynamic",
+						},
+						legend: {
+							"layout": "float",
+							"background-color": "none",
+							"border-width": 0,
+							"shadow": 0,
+							"text-align": "middle",
+							"offsetY": 25,
+							"align": "center",
+							visible: false,
+							"item": {
+								"font-color": "#black",
+								"font-size": "10px"
+							}
+						},
+					},
+					{//---------- PITCH MOTION -----------//
+						"type": "line",
+						"height": "25%",
+						"width": "25%",
+						"x": "25%",
+						"y": "72%",
+						"plot": {
+							"aspect": "spline",
+							"marker": {"visible": false},
+						},
+						"series": [{
+							"values": [0],
+							"text": "Cat.[deg]"
+						}, {
+							"values": [0],
+							"text": "Buoy[deg]"
+						}],
+						"refresh": {
+							"type": "feed",
+							"transport": "js",
+							"url": "feedMotionPitch()",
+							"method": "pull",
+							"interval": 500,
+							"adjust-scale": true
+						},
+						scaleY: {
+							label: {
+								text: 'Pitch angle [deg]',
+								fontStyle: 'normal',
+								fontWeight: 'normal',
+							},
+						},
+						title: {
+							text: "Pitch Motion",
+							marginBottom: "0",
+							fontFamily: "Helvetica",
+							fontWeight: "none",
+							fontSize: 12,
+							"offset-y": 25,
+							"offset-x": 120,
+							"width": 100,
+							"heigh": 30,
+							"background-color": "#333",
+							"color": "#FFF",
+							"border-radius": "4px"
+						},
+						plotarea: {
+							"margin": "20% 5% 15% dynamic",
+						},
+						legend: {
+							"layout": "float",
+							"background-color": "none",
+							"border-width": 0,
+							"shadow": 0,
+							"text-align": "middle",
+							"offsetY": 25,
+							"align": "center",
+							visible: false,
+							"item": {
+								"font-color": "#black",
+								"font-size": "10px"
+							}
+						},
+					},
+					{//---------- YAW MATION -----------//
+						"type": "line",
+						"height": "25%",
+						"width": "25%",
+						"x": "50%",
+						"y": "72%",
+						"plot": {
+							"aspect": "spline",
+							"marker": {"visible": false},
+						},
+						"series": [{
+							"values": [0],
+							"text": "Cat.[deg]"
+						}, {
+							"values": [0],
+							"text": "Buoy[deg]"
+						}],
+						"refresh": {
+							"type": "feed",
+							"transport": "js",
+							"url": "feedMotionYaw()",
+							"method": "pull",
+							"interval": 500,
+							"adjust-scale": true
+						},
+						scaleY: {
+							label: {
+								text: 'Yaw angle [deg]',
+								fontStyle: 'normal',
+								fontWeight: 'normal',
+							},
+						},
+						title: {
+							text: "Yaw Motion",
+							marginBottom: "0",
+							fontFamily: "Helvetica",
+							fontWeight: "none",
+							fontSize: 12,
+							"offset-y": 25,
+							"offset-x": 120,
+							"width": 100,
+							"heigh": 30,
+							"background-color": "#333",
+							"color": "#FFF",
+							"border-radius": "4px"
+						},
+						plotarea: {
+							"margin": "20% 0% 15% dynamic",
+						},
+						legend: {
+							"layout": "float",
+							"background-color": "none",
+							"border-width": 0,
+							"shadow": 0,
+							"text-align": "middle",
+							"offsetY": 25,
+							"align": "center",
+							visible: false,
+							"item": {
+								"font-color": "#black",
+								"font-size": "10px"
+							}
+						},
+					},
+					{//---------- SURGE MOTION -----------//
+						"type": "line",
+						"height": "25%",
+						"width": "25%",
+						"x": "0%",
+						"y": "0%",
+						"plot": {
+							"aspect": "spline",
+							"marker": {"visible": false},
+						},
+						"series": [{
+							"values": [0],
+							"text": "Cat."
+						}, {
+							"values": [0],
+							"text": "Buoy"
+						}],
+						"refresh": {
+							"type": "feed",
+							"transport": "js",
+							"url": "feedMotionSurge()",
+							"method": "pull",
+							"interval": 500,
+							"adjust-scale": true
+						},
+						scaleY: {
+							label: {
+								text: 'Surge translation [m]',
+								fontStyle: 'normal',
+								fontWeight: 'normal',
+							},
+						},
+						title: {
+							text: "Surge Motion",
+							marginBottom: "0",
+							fontFamily: "Helvetica",
+							fontWeight: "none",
+							fontSize: 12,
+							"offset-y": 10,
+							"offset-x": 120,
+							"width": 100,
+							"heigh": 30,
+							"background-color": "#333",
+							"color": "#FFF",
+							"border-radius": "4px"
+						},
+						plotarea: {
+							"margin": "20% 10% 15% dynamic",
+						},
+						legend: {
+							"layout": "float",
+							"background-color": "none",
+							"border-width": 0,
+							"shadow": 0,
+							"text-align": "middle",
+							"offsetY": 25,
+							"align": "center",
+							visible: true,
+							"item": {
+								"font-color": "#black",
+								"font-size": "10px"
+							}
+						},
+					},
+					{//---------- SWAY MOTION -----------//
+						"type": "line",
+						"height": "25%",
+						"width": "25%",
+						"x": "0%",
+						"y": "25%",
+						"plot": {
+							"aspect": "spline",
+							"marker": {"visible": false},
+						},
+						"series": [{
+							"values": [0],
+							"text": "Cat.[Sway]"
+						}, {
+							"values": [0],
+							"text": "Buoy[Sway]"
+						}],
+						"refresh": {
+							"type": "feed",
+							"transport": "js",
+							"url": "feedMotionSway()",
+							"method": "pull",
+							"interval": 500,
+							"adjust-scale": true
+						},
+						scaleY: {
+							label: {
+								text: 'Sway translation[m]',
+								fontStyle: 'normal',
+								fontWeight: 'normal',
+							},
+						},
+						title: {
+							text: "Sway Motion",
+							marginBottom: "0",
+							fontFamily: "Helvetica",
+							fontWeight: "none",
+							fontSize: 12,
+							"offset-y": 25,
+							"offset-x": 120,
+							"width": 100,
+							"heigh": 30,
+							"background-color": "#333",
+							"color": "#FFF",
+							"border-radius": "4px"
+						},
+						plotarea: {
+							"margin": "20% 10% 15% dynamic",
+						},
+						legend: {
+							"layout": "float",
+							"background-color": "none",
+							"border-width": 0,
+							"shadow": 0,
+							"text-align": "middle",
+							"offsetY": 25,
+							"align": "center",
+							visible: false,
+							"item": {
+								"font-color": "#black",
+								"font-size": "10px"
+							}
+						},
+					},
+					{//---------- HEAVE MOTION -----------//
+						"type": "line",
+						"height": "25%",
+						"width": "25%",
+						"x": "0%",
+						"y": "50%",
+						"plot": {
+							"aspect": "spline",
+
+							"marker": {"visible": false},
+						},
+						"series": [{
+							"values": [0],
+							"text": "Cat.[m]"
+						}, {
+							"values": [0],
+							"text": "Buoy[Sway]"
+						}],
+						"refresh": {
+							"type": "feed",
+							"transport": "js",
+							"url": "feedMotionHeave()",
+							"method": "pull",
+							"interval": 500,
+							"adjust-scale": true
+						},
+						scaleY: {
+							label: {
+								text: 'Heave translation [m]',
+								fontStyle: 'normal',
+								fontWeight: 'normal',
+							},
+						},
+						title: {
+							text: "Heave Motion",
+							marginBottom: "0",
+							fontFamily: "Helvetica",
+							fontWeight: "none",
+							fontSize: 12,
+							"offset-y": 25,
+							"offset-x": 120,
+							"width": 100,
+							"heigh": 30,
+							"background-color": "#333",
+							"color": "#FFF",
+							"border-radius": "4px"
+						},
+						plotarea: {
+							"margin": "20% 10% 15% dynamic",
+						},
+						legend: {
+							"layout": "float",
+							"background-color": "none",
+							"border-width": 0,
+							"shadow": 0,
+							"text-align": "middle",
+							"offsetY": 25,
+							"align": "center",
+							visible: false,
+							"item": {
+								"font-color": "#black",
+								"font-size": "10px"
+							}
+						},
+					}
+				]
+			}
+
+			window.onload = function () {
+				zingchart.render({
+					id: 'plotBottom',
+					height: "100%",
+					width: "100%",
+					// visibility: "hidden",
+					data: dashboard,
+				});
+			};
 			
 		})();
 
@@ -548,11 +1059,23 @@
 			document.getElementById("SimulationWindow").onclick = () => addTable(tooltipElement, element);
 		}
 
-		function interpolate_csv(data_before, data_after, delta_time) {
+		function interpolate_csv(data_after, data_before, delta) {
 			// Interpolate the data from the csv file
-			// @ferrari212
-			// @param {array} data - the data from the csv file
-
+			let data = {
+				"Catamaran": {},
+				"Spar": {},
+			}
+			
+			// Loop through each key
+			for (const key in data_after){
+				let new_key = key.split(".")[0]
+				if (key.includes(".1")) {
+					data["Spar"][new_key] = lerp(data_after[key], data_before[key], delta)
+				} else {
+					data["Catamaran"][new_key] = lerp(data_after[key], data_before[key], delta)
+				}
+			}
+			return data
 		}
 
 		function animate(milliseconds) {
@@ -562,36 +1085,58 @@
 			let time = seconds % max_time;
 			// If the timer starts as bigger than the max time then set it to 0
 			
-			console.log(calculated_data);
-			// if(time < calculated_data[data_step_index].Time) {
-			// 	data_step_index = 0;
-			// }
-			// while(time > calculated_data[data_step_index].Time) {
-			// 	data_step_index += 1;
-			// }
-			// data_step_index
+			// debugger
+			if (calculated_data.length != 0 && pivot_ship != undefined) {
+				if(time < calculated_data[data_step_index].Time) {
+					data_step_index = 0;
+				}
+				while(time > calculated_data[data_step_index].Time) {
+					data_step_index += 1;
+				}
+				let delta = (calculated_data[data_step_index].Time - time)/delta_time;
+				let interpolated_data = interpolate_csv(calculated_data[data_step_index], calculated_data[data_step_index - 1], delta);
+				// pivot_ship.rotation.x += 0.01;
 
+				// Pivot ship and spar buoy
+				const data_cat = interpolated_data["Catamaran"];
+				const data_spar = interpolated_data["Spar"];
+				const deg_to_rad = Math.PI/180;
+				pivot_ship.position.set(data_cat["YGtranslationTotalmotion"],
+									-data_cat["XGtranslationTotalmotion"], 
+									data_cat["ZGtranslationTotalmotion"]);
+				pivot_buoy.position.set(data_spar["YGtranslationTotalmotion"], 
+									data_spar["XGtranslationTotalmotion"], 
+									data_spar["ZGtranslationTotalmotion"]);
+				pivot_ship.rotation.set(data_cat["YLrotationTotalmotion"] * deg_to_rad, 
+									data_cat["XLrotationTotalmotion"] * deg_to_rad, 
+									data_cat["ZGrotationTotalmotion"] * deg_to_rad);
+				pivot_buoy.rotation.set(data_spar["YLrotationTotalmotion"] * deg_to_rad, 
+									data_spar["XLrotationTotalmotion"] * deg_to_rad, 
+									data_spar["ZGrotationTotalmotion"] * deg_to_rad);
+			}
+			
 			ocean.water.material.uniforms.time.value += 1 / 60;
 			// ocean.water.render();
+			// debugger
 
 			renderer.render(scene, camera);
 			requestAnimationFrame(animate);
 
 			// Apply the function RayCaster
-			intersected = renderRayCaster(mouse, camera, zUpCont, intersected);
+			// intersected = renderRayCaster(mouse, camera, zUpCont, intersected);
 
 			// Apply the click information function
-			if (intersected.name === undefined) {
-				document.body.style.cursor = "default";
-				document.getElementById("SimulationWindow").onclick = false;
-			} else {
-				clickedInformation(tooltipElement, intersected);
-			}
+			// if (intersected.name === undefined) {
+			// 	document.body.style.cursor = "default";
+			// 	document.getElementById("SimulationWindow").onclick = false;
+			// } else {
+			// 	clickedInformation(tooltipElement, intersected);
+			// }
 
 			// In case the element was not clicked the toolTip Function will be triggered
-			if (!tooltipElement.displayingPropTable) {
-				toolTip(tooltipElement, intersected);
-			}
+			// if (!tooltipElement.displayingPropTable) {
+			// 	toolTip(tooltipElement, intersected);
+			// }
 		}
 
 	</script>
