@@ -1,5 +1,7 @@
 # vesseljs
 
+![Vessel.js CI](https://github.com/shiplab/vesseljs/actions/workflows/ci.yml/badge.svg)
+
 **Vessel.js** is a JavaScript library for conceptual ship design with an object-oriented paradigm. Vessel.js represents the vessel as an object, which is used to simulate different functionalities and behaviors. Currently, the library includes methods for hydrostatic and stability calculations.
 
 The library is developed by **Ship Design and Operation Lab** at Norwegian University of Science and Technology (**NTNU**) in Ålesund. For documentation and other resources, visit our [wiki](https://github.com/shiplab/vesseljs/wiki).
