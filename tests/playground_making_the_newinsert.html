@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Vessel.js playground</title>
+    <!-- <script src="../examples/3D_engine/legacy/three.js"></script> -->
+    <!-- <script src="../examples/3D_engine/OrbitControls_v2.js"></script>		 -->
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <script src="../build/vessel.js"></script>
+    <!-- <script src="../examples/3D_engine/Ship3D_v2.js"></script> -->
+    <!-- <script src="../examples/3D_engine/STLLoader.js"></script> -->
+    <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/deep-diff@1/dist/deep-diff.min.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/node-require-function@1.2.0/index.d.ts"></script> -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/three-orbitcontrols@2.110.3/OrbitControls.js"></script> -->
+    <link href="../examples/libs/bootstrap.min.css" rel="stylesheet" />
+    <!-- <script src="../source/jsm/ship/BaseObject.js" type="module"></script>
+		<script src="../source/jsm/ship/JSONSpecObject.js" type="module"></script> -->
+    <style>
+      table,
+      th,
+      td {
+        border: 1px solid black;
+      }
+      th {
+        background-color: #045faa;
+        color: white;
+      }
+      tr:nth-child(even) {
+        background-color: #f2f2f2;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h3>The following table compares the es6 and es5 style status:</h3>
+      <table class="table">
+        <thead>
+          <tr>
+            <th scope="col">Vessel.js Test with abstraction</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td id="3d"></td>
+          </tr>
+        </tbody>
+      </table>      
+    </div>
+    <script type="module">
+      import * as THREE from "../examples/3D_engine/three_r126.js";
+
+      import { Ship } from "../source/jsm/ship/Ship.js";
+      import { Ship3D } from "../source/jsm/3D_engine/Ship3D.js";
+      import { OrbitControls } from "../examples/3D_engine/OrbitControls.js";
+      import { downloadShip } from "../source/jsm/fileIO/dowloadShip.js";
+      import { FuelConsumption } from "../source/jsm/ship/FuelConsumption.js";
+      import { Manoeuver } from "../source/jsm/ship/Manoeuver.js";
+      import * as VesselES6 from "../source/jsm/vessel.js";
+
+      import { addRows } from "./supComparisonFunc.js";
+      
+      // let Ship3D
+
+      // new THREE.FileLoader().load(
+      //   "../examples/ship_specs/PX121.json",
+      //   useFileData
+      // );
+
+      const w = 1920;
+      const h = 1080;
+
+      const renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setSize(w/2, h/2);
+      renderer.setPixelRatio(window.devicePixelRatio);
+      // renderer.setClearColor(0xa9cce3, 1)
+
+      // let shipspec = JSON.parse(contents);
+
+      // const ship = new VesselES6.Ship(shipspec);
+      const ship = new VesselES6.Ship("../examples/ship_specs/PX121.json");
+      ship.createShip3D({
+        stlPath: "../examples/3D_models/STL/various",
+        upperColor: 0x33aa33,
+        lowerColor: 0xaa3333,
+        hullOpacity: 1,
+        deckOpacity: 1,
+        objectOpacity: 1,
+      })
+
+      const container = document.getElementById("3d");
+      container.appendChild(renderer.domElement);
+
+      // Add scenes:
+      let scene = new THREE.Scene();
+
+      // Add lights:
+      scene.add(new THREE.AmbientLight(0xffffff, 0.3));
+      scene.add(
+        (function () {
+          let sun = new THREE.DirectionalLight(0xffffff, 1);
+          sun.position.set(1, 1, 1);
+          return sun;
+        })()
+      );
+
+      //Camera and controls:
+      let camera = new THREE.PerspectiveCamera(50, w / h);
+      camera.up.set(0, 0, 1);
+      scene.add(camera);
+      let controls = new OrbitControls(camera, renderer.domElement);
+
+      
+      // ship3D = new Ship3D(ship, {
+      //   shipState: ship.designState.clone(),
+      //   stlPath: "../examples/3D_models/STL/various",
+      //   upperColor: 0x33aa33,
+      //   lowerColor: 0xaa3333,
+      //   hullOpacity: 1,
+      //   deckOpacity: 1,
+      //   objectOpacity: 1,
+      // });
+      scene.add(ship.ship3D);
+
+      function animate() {
+        requestAnimationFrame(animate)
+
+        renderer.autoClear = false;
+        renderer.setScissorTest(false);
+        renderer.setClearColor(0xa9cce3, 1);
+        renderer.clear(true, true);
+        renderer.render(scene, camera);
+      }
+
+      let LOA = ship.structure.hull.attributes.LOA;
+
+      // Set the values of cameras and controls
+      camera.position.set(0.3 * LOA, 0.7 * LOA, 0.7 * LOA);
+      controls.target = new THREE.Vector3(0, 0, 0);
+      controls.update();
+      animate();
+
+
+      console.log(shipState);
+
+
+    </script>
+  </body>
+</html>
