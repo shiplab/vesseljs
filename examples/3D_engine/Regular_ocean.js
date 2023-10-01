@@ -7,8 +7,7 @@
 
 import * as Vessel from "../../source/jsm/vessel.js";
 import { Water } from "./Water.js";
-import * as THREE from "../../../examples/3D_engine/three_r126.js";
-
+import * as THREE from "./three_r126.js";
 
 var Wave = function () {
 
