@@ -1,3 +1,4 @@
 examples/3D_engine/legacy/three_r*.js
 examples/3D_engine/three_r*.js
 examples/3D_engine/OrbitControls.js
+*.min.js
