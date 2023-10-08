@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Tutorial One - Simple visualization from the barge.</title>
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
+    />
+    <link rel="stylesheet" href="./resources/lesson.css" />
+    <link rel="stylesheet" href="./resources/lang.css" />
+    <script
+      async
+      src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"
+    ></script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="lesson-title">
+        <h1>Tutorial One - Simple Visualization</h1>
+      </div>
+      <div class="lesson">
+        <div class="lesson-main">
+          <p>
+            Welcome to the first tutorial in our series on using <a href="https://shiplab.github.io/vesseljs/">vessel.js</a>
+            – a powerful JavaScript library that combines the principles of data-driven 
+            design with a web-based, object-oriented approach for conceptual ship design.
+          </p>
+          <p>
+            This first tutorial will show you how to create a simple 3D ship
+            using the vessels.js library. After the tutorial you you'll 
+            be equipped with the knowledge to::
+          </p>
+          <ul>
+            <li>
+              Understand the fundamentals of vessels.js` and its JSON database format.
+            </li>
+            <li>Import a ship's design from a JSON file.</li>
+            <li>Integrate your ship into a Three.js scene for 3D visualization.</li>
+          </ul>
+          <div class="lower_bar">
+            <h1><b>Getting Started:</b></h1>
+          </div>
+          <p>
+            A creation can be divided into three steps, the import of the library, 
+            the load of the vessels.js JSON format and the insertion on the ship:
+          </p>
+
+          <pre class="prettyprint showlinemods lang-js">
+// Importing the Library
+import * as Vessel from "../build/vessel.module.js"
+
+// Loading the Ship's Design JSON file
+const ship = new Vessel.Ship("./blockCase.json")
+
+// Creating the Ship3D module and adding it to a Scene
+ship.createShip3D({
+  stlPath: "../examples/3D_models/STL/various",
+})
+scene.add(ship.ship3D);
+          </pre>
+          <p>
+            The Ship method points toward a JSON file that contains the vessel 
+            information in the Vessel.js format on <a href="#anchor-json-format-section">JSON Format section</a> we will discuss more
+            about the Vessel.js format. For this example the <code>blockCase.json</code> file was initialized with the <code>Vessel.Ship</code>
+            method.
+          </p>
+          <p>
+            The scene object is part of the Three.js library and it is used for displaying the
+            3D visualization. For a detailed explanation of how scenes work, please refer to the main
+            documentation at <a href="https://threejs.org/docs/#manual/en/introduction/Creating-a-scene">https://threejs.org/docs/#manual/en/introduction/Creating-a-scene</a>. 
+          </p>
+
+          <p>The following visualization shows how should be the visualization for the scene:</p>
+          
+          <p></p>
+          <div translate="no" class="threejs_example_container">
+            <div>
+              <iframe
+                class="threejs_example"
+                translate="no"
+                style=""
+                src="./examples/tutorial-one.html"
+              ></iframe>
+            </div>
+            <a
+              class="threejs_center"
+              href="./examples/tutorial-one.html"
+              target="_blank"
+              >click here to open in a separate window</a
+            >
+          </div>
+
+          <div id="anchor-json-format-section" class="lower_bar">
+            <h1><b>JSON Format</b></h1>
+          </div>
+
+          
+    <script defer src="./resources/prettify.js"></script>
+    <script defer src="./resources/lesson.js"></script>
+  </body>
+</html>
