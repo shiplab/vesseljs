@@ -22,18 +22,18 @@
       <div class="lesson">
         <div class="lesson-main">
           <p>
-            Welcome to the first tutorial in our series on using <a href="https://shiplab.github.io/vesseljs/">vessel.js</a>
+            Welcome to the first tutorial in our series on using <a href="https://shiplab.github.io/vesseljs/" target="_blank">vessel.js</a>
             – a powerful JavaScript library that combines the principles of data-driven 
-            design with a web-based, object-oriented approach for conceptual ship design.
+            design with a web-based, object-oriented approach for conceptual ship design and simulation.
           </p>
           <p>
             This first tutorial will show you how to create a simple 3D ship
             using the vessels.js library. After the tutorial you you'll 
-            be equipped with the knowledge to::
+            be equipped with the knowledge to:
           </p>
           <ul>
             <li>
-              Understand the fundamentals of vessels.js` and its JSON database format.
+              Understand the fundamentals of vessels.js and its JSON database format.
             </li>
             <li>Import a ship's design from a JSON file.</li>
             <li>Integrate your ship into a Three.js scene for 3D visualization.</li>
@@ -57,24 +57,27 @@ const ship = new Vessel.Ship("./blockCase.json")
 ship.createShip3D({
   stlPath: "../examples/3D_models/STL/various",
 })
+
+// scene object derived from the Three.js library
 scene.add(ship.ship3D);
           </pre>
           <p>
             The Ship method points toward a JSON file that contains the vessel 
-            information in the Vessel.js format on <a href="#anchor-json-format-section">JSON Format section</a> we will discuss more
-            about the Vessel.js format. For this example the <code>blockCase.json</code> file was initialized with the <code>Vessel.Ship</code>
+            information in the Vessel.js format. On <a href="#anchor-json-format-section">JSON Format section</a>
+            we will discuss more about the Vessel.js format. For this example the 
+            <code>blockCase.json</code> file was initialized with the <code>Vessel.Ship</code>
             method.
           </p>
           <p>
             The scene object is part of the Three.js library and it is used for displaying the
             3D visualization. For a detailed explanation of how scenes work, please refer to the main
-            documentation at <a href="https://threejs.org/docs/#manual/en/introduction/Creating-a-scene">https://threejs.org/docs/#manual/en/introduction/Creating-a-scene</a>. 
+            documentation at <a href="https://threejs.org/docs/#manual/en/introduction/Creating-a-scene" target="_blank">https://threejs.org/docs/#manual/en/introduction/Creating-a-scene</a>. 
           </p>
 
           <p>The following visualization shows how should be the visualization for the scene:</p>
           
           <p></p>
-          <div translate="no" class="threejs_example_container">
+          <div class="threejs_example_container">
             <div>
               <iframe
                 class="threejs_example"
@@ -92,10 +95,218 @@ scene.add(ship.ship3D);
           </div>
 
           <div id="anchor-json-format-section" class="lower_bar">
-            <h1><b>JSON Format</b></h1>
+            <h1><b>JSON Format</b></h1>            
           </div>
+          Vessel.js employs a JSON format to store the design of the ship. 
+          The JSON file is segmented into four sections, namely:
+          <code>designState</code>, <code>structure</code>, <code>baseObjects</code> and <code>derivedObjects</code>.
+          Presented here is a sample of a JSON file along with its data functions:          
 
-          
+          <pre class="prettyprint showlinemods lang-js">
+{
+  "designState": {
+    // Holds several parameters that affect calculations
+  },
+  "structure": {
+    // Definition of the hull, decks and bulkheads
+  },
+  "baseObjects": [
+    // Array of base objects as it is fetched from the provided specification.
+    // It groups several compartments elements,
+    // for example (cargo holds, tanks, ballast tanks, etc.)
+  ],
+  "derivedObjects": [
+    // Array of derived objects. A derived object is a base object
+    // with information added on top of it. Derived objects are classified
+    // as parts of baseObjects.
+  ]
+}         
+          </pre>
+
+    <h2><b>designState</b></h2>
+
+    The <code>designState</code> section contains several parameters that affect the calculations
+    such as tank fillings. The object can be subdivided in two sections: 
+    <code>calculationParameters</code> and <code>objectOverrides</code>.
+    Here is as simple example of a designState object format:
+
+    <pre class="prettyprint showlinemods lang-js">
+"designState": {
+  "calculationParameters": {
+    "LWL_design": 22.5,
+    "BWL": 10,
+    "Draft_design": 2,
+    "Cb_design": 1,
+    "speed": 12,
+  },
+  "objectOverrides": {
+    "derivedByGroup": {
+      "cargo tanks": {
+        "fullness": 0
+      },
+      "ballast tanks": {
+        "fullness": 1
+      }
+    }
+  }
+},       
+    </pre>
+    
+    <p>
+    The <code>calculationParameters</code> comprise a collection of 
+    specified ship parameters used for calculations. 
+    Certain parameters, such as LWL and Cb, can be calculated from
+    load and hull geometry, while others are uncertain or not covered by existing calculations.
+    For a full list of parameters information that can be stored
+    in this list please refer to the
+    <a href="https://github.com/shiplab/vesseljs/wiki/API-Reference#calculationparameters" target="_blank">Wiki (calculationParameters)</a>
+    .
+    </p>
+    <p>
+    The <code>objectOverrides</code> assign state information to a specific set of base object groups.
+    This example shows a set of objects overrides for the "cargo tanks" and "ballast tanks".
+    For a full overview of the object overrides types please refer to the
+    <a href="https://github.com/shiplab/vesseljs/wiki/API-Reference#objectoverrides" target="_blank">Wiki (objectOverrides)</a>
+    .
+    </p>
+
+    <h2><b>structure</b></h2>
+    A ship structure consists of a hull, decks and bulkheads.
+    The specification below defines a barge ship with a simple prismatic hull,
+    one deck and one bulkhead. The hull is defined with a table of offsets,
+    and the library creates a tessellated surface to cover the points on the table.
+    The properties waterlines and stations define the position of the sections as 
+    fractions of the LOA and Depth, respectively. 
+    The points on the table are defined for one symmetry 
+    side of the hull. The arrays on the table define the 
+    waterlines, from lowest to highest. Each point in an array 
+    is associated to one station, from last to foremost.
+
+    <pre class="prettyprint showlinemods lang-js">
+"structure": {
+  "hull": {
+    "attributes": {
+      "LOA": 22.5,
+      "BOA": 10,
+      "Depth": 2.5,
+      "APP": 0
+    },
+    "halfBreadths": {
+      "waterlines": [0, 0, 1],
+      "stations": [0, 1],
+      "table": [[0, 0], [1, 1], [1, 1]]
+    },
+    "buttockHeights": {},
+    "affiliations": {
+      "SBSD": "Hull",
+      "group": "structure"
+    }
+  },
+  "decks": {
+    "BallastTop": {
+      "zFloor": 0.4,
+      "thickness": 0.01,
+      "xAft": 0,
+      "xFwd": 22.5,
+      "yCentre": 0,
+      "breadth": 10,
+      "density": 7850,
+      "affiliations": {
+        "SBSD": "Hull",
+        "group": "structure"
+      }
+    }
+  },
+  "bulkheads": {
+    "AB": {
+      "xAft": 11.25,
+      "thickness": 0.01,
+      "density": 7850,
+      "affiliations": {
+        "SBSD": "Hull",
+        "group": "structure"
+      }
+    }
+  }
+}     
+    </pre>
+
+    For a full explanation about the <code>structure</code> section
+    please refer to the tutorial in <a href="https://observablehq.com/@icarofonseca/hull-definition-and-hydrostatics" target="_blank">
+    https://observablehq.com/@icarofonseca/hull-definition-and-hydrostatics</a> and 
+    <a href="https://github.com/shiplab/vesseljs/wiki/API-Reference#structure" target="_blank">Wiki (Structure)</a>
+
+    <h2><b>baseObjects and derivedObjects</b></h2>
+
+    The <code>baseObjects</code> and <code>derivedObjects</code> define the equipment, tanks and compartments of the ship.
+    On the base object it is possible to group several object states into a single supergroup.
+    For instance, a cargo hold can be divided into several compartments, each one with a different state.
+    Here is an example for the <code>baseObjects</code> for a specific cargo hold type:
+
+    <pre class="prettyprint showlinemods lang-js">
+"baseObjects": [
+{
+  "id": "cargo",
+  "affiliations": {},
+  "boxDimensions": {
+    "length": 10.25,
+    "breadth": 9,
+    "height": 1.6
+  },
+  "capabilities": {},
+  "baseState": {
+    "fullness": 0
+  },
+  "weightInformation": {
+    "contentDensity": 850,
+    "volumeCapacity": 145,
+    "lightweight": 10000,
+    "fullnessCGMapping": {
+      "fullnesses": [0, 0.25, 0.5, 0.75, 1],
+      "cgs": [
+        [0, 0, 0.8],
+        [0, 0, 0.347013783],
+        [0, 0, 0.455846422],
+        [0, 0, 0.6195241],
+        [0, 0, 0.8]
+      ]
+    }
+  }
+}]
+    </pre>
+
+    This object can be connect to a specific <code>derivedObjects</code>
+    allowing the compartment to inherit the specifications from the 
+    <code>baseObjects</code> group. Here is an example for a 
+    so called a cargo "Tank1" derived tank:
+    
+    <pre class="prettyprint showlinemods lang-js">
+"derivedObjects": [
+  {
+    "id": "Tank1",
+    "baseObject": "cargo",
+    "affiliations": {
+      "SBSD": "Liquid and dry bulk cargo",
+      "group": "cargo tanks",
+      "Deck": "CargoDeck",
+      "SFI": "102"
+    },
+    "referenceState": {
+      "xCentre": 16.875,
+      "yCentre": 0,
+      "zBase": 0.4
+    }
+  ]      
+    </pre>
+
+    For further references on <code>baseObjects</code> and <code>derivedObjects</code> please refer to the
+    <a href="https://github.com/shiplab/vesseljs/wiki/API-Reference#baseobject" target="_blank">
+      Wiki (calculationParameters)
+    </a> and
+    <a href="https://github.com/shiplab/vesseljs/wiki/API-Reference#derivedobject" target="_blank">
+      Wiki (calculationParameters)
+    </a>.
+    
     <script defer src="./resources/prettify.js"></script>
     <script defer src="./resources/lesson.js"></script>
   </body>

@@ -123,6 +123,7 @@ class Ship3D extends THREE.Group {
 			let deck = new THREE.Mesh( deckGeom, mat );
 			deck.name = dk;//[i];
 
+			// TODO:
 			// The try verification is used to verify if the group affiliation was inserted in the JSON structure,
 			// the affiliation must be decided in the future if it will be incorporate into the main structure of the group
 			// or if there is a better approach to classify it.
@@ -195,6 +196,7 @@ class Ship3D extends THREE.Group {
 
 			bulkhead.name = bhk;//[i];
 
+			// TODO:
 			// The try verification is used to verify if the group affiliation was inserted in the JSON structure,
 			// the affiliation must be decided in the future if it will be incorporate into the main structure of the group
 			// or if there is a better approach to classify it.
