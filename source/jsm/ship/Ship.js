@@ -14,13 +14,46 @@ import { DerivedObject } from "./DerivedObject.js";
 import { Structure } from "./Structure.js";
 import { ShipState } from "./ShipState.js";
 import { combineWeights } from "../math/combineWeights.js";
-
+import { loadXMLHttpRequest } from "../fileIO/loadShip.js";
+import { Ship3D } from "../3D_engine/Ship3D.js";
 
 export class Ship extends JSONSpecObject {
 
 	constructor( specification ) {
 
+		// Check if the Specification is a string pointing
+		// to a JSON file. In case of positive answer, load
+		// the file and parse it to JSON
+
+		// Warning: this uses an async function for XMLHttpRequest
+		// this function is deprecated and it is not recommended for
+		// slow connections. Its purpose is to ease the usability
+		// of the library without having to import the loader in the main script.
+		// For further information on synchronous request, please read:
+		// https://developer.mozilla.org/en-US/docs/Web/API/XMLHttpRequest/Synchronous_and_Asynchronous_Requests#synchronous_request
+		// @ferrari212
+		if ( typeof specification === "string" ) {
+
+			loadXMLHttpRequest( specification, function ( parsedJSON ) {
+
+				specification = parsedJSON;
+
+			}, false );
+
+		}
+
+
 		super( specification );
+
+	}
+
+	createShip3D( specs ) {
+
+		const state = this.designState;
+		this.ship3D = new Ship3D( this, Object.assign( {
+			shipState: state,
+		}, specs )
+		);
 
 	}
 

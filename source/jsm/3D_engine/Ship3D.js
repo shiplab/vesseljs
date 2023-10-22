@@ -25,7 +25,7 @@ TODO: Use calculated draft for position.z, and place the ship model in a motion 
 
 import * as THREE from "../../../examples/3D_engine/three_r126.js";
 import { STLLoader } from "../../../examples/3D_engine/STLLoader.js";
-import * as Vessel from "../vessel.js";
+import { linearFromArrays, bisectionSearch } from "../math/interpolation.js";
 
 class Ship3D extends THREE.Group {
 
@@ -98,8 +98,8 @@ class Ship3D extends THREE.Group {
 				let x = stss[ j ];//d.xAft+(j/stss.length)*(d.xFwd-d.xAft);
 				if ( isNaN( x ) ) x = stss[ j - 1 ];
 				x = Math.max( d.xAft, Math.min( d.xFwd, x ) );
-				let y1 = Vessel.f.linearFromArrays( stss, wlHigh, x );
-				let y2 = Vessel.f.linearFromArrays( stss, wlLow, x );
+				let y1 = linearFromArrays( stss, wlHigh, x );
+				let y2 = linearFromArrays( stss, wlLow, x );
 				let y = Math.min( 0.5 * d.breadth, y1, y2 );
 				pa[ 3 * j ] = x;
 				pa[ 3 * j + 1 ] = y;
@@ -123,6 +123,7 @@ class Ship3D extends THREE.Group {
 			let deck = new THREE.Mesh( deckGeom, mat );
 			deck.name = dk;//[i];
 
+			// TODO:
 			// The try verification is used to verify if the group affiliation was inserted in the JSON structure,
 			// the affiliation must be decided in the future if it will be incorporate into the main structure of the group
 			// or if there is a better approach to classify it.
@@ -195,6 +196,7 @@ class Ship3D extends THREE.Group {
 
 			bulkhead.name = bhk;//[i];
 
+			// TODO:
 			// The try verification is used to verify if the group affiliation was inserted in the JSON structure,
 			// the affiliation must be decided in the future if it will be incorporate into the main structure of the group
 			// or if there is a better approach to classify it.
@@ -457,7 +459,7 @@ class Hull3D extends THREE.Group {
 	addStation( p ) {
 
 		const hb = this.hull.halfBreadths;
-		const { index, mu } = Vessel.f.bisectionSearch( hb.stations, p );
+		const { index, mu } = bisectionSearch( hb.stations, p );
 		hb.stations.splice( index, 0, p );
 		for ( let i = 0; i < hb.waterlines.length; i ++ ) {
 
@@ -472,7 +474,7 @@ class Hull3D extends THREE.Group {
 	addWaterline( p ) {
 
 		const hb = this.hull.halfBreadths;
-		const { index, mu } = Vessel.f.bisectionSearch( hb.waterlines, p );
+		const { index, mu } = bisectionSearch( hb.waterlines, p );
 		hb.waterlines.splice( index, 0, p );
 		hb.table.splice( index, 0, new Array( hb.stations.length ).fill( 0 ) );
 
