@@ -23,7 +23,7 @@
       import { Ship3D } from "../source/jsm/3D_engine/Ship3D.js";
 
       // Import Skybox module
-      import { Skybox } from "../examples/3D_engine/skybox_from_examples_r126.js";
+      import { Skybox } from "../examples/3D_engine/skybox.js";
 
       // Import Ocean module
       import { Ocean } from "../examples/3D_engine/Regular_ocean.js";
@@ -132,7 +132,7 @@
             wavMo.writeOutput();
           }
 
-          ocean.addWaveMotion(wavMo)
+          ocean.addWaveMotion(wavMo);
 
           ship3D = new Ship3D(ship, {
             shipState: states,
@@ -152,15 +152,15 @@
             ship3D.heave =
               states.discrete.WaveMotion.state.heaveAmp *
               Math.cos(omega * t - (ocean.waves["0"].phi * Math.PI) / 180);
-            
-              // a 90 degrees phase difference of pitch in relation to the wave makes the motion appear more natural
+
+            // a 90 degrees phase difference of pitch in relation to the wave makes the motion appear more natural
             ship3D.pitch =
               states.discrete.WaveMotion.state.pitchAmp *
               Math.cos(
                 omega * t + ((-ocean.waves["0"].phi + 90) * Math.PI) / 180
               );
-            
-              // pitch and roll may be negative depending on the direction of the waves in relation to the ship
+
+            // pitch and roll may be negative depending on the direction of the waves in relation to the ship
             if (wavCre.waveDef.heading > 90 && wavCre.waveDef.heading < 270) {
               ship3D.pitch = -ship3D.pitch;
             }
