@@ -39,11 +39,13 @@
             <li>Integrate your ship into a Three.js scene for 3D visualization.</li>
           </ul>
           <div class="lower_bar">
-            <h1><b>Getting Started:</b></h1>
+            <h1><b>Getting Started</b></h1>
           </div>
           <p>
-            A creation can be divided into three steps, the import of the library, 
-            the load of the vessels.js JSON format and the insertion on the ship:
+            The process of inserting a typical ship into a digital scene can be 
+            divided into four steps: the import of the library, 
+            the load of the vessels.js JSON format, creating the 3D module,
+            and the insertion on the ship.
           </p>
 
           <pre class="prettyprint showlinemods lang-js">
@@ -97,7 +99,8 @@ scene.add(ship.ship3D);
           <div id="anchor-json-format-section" class="lower_bar">
             <h1><b>JSON Format</b></h1>            
           </div>
-          Vessel.js employs a JSON format to store the design of the ship. 
+          Vessel.js employs a JSON format to store the design of the ship. On the previous example 
+          the <code>blockCase.json</code> was imported using <code>Vessel.Ship</code>
           The JSON file is segmented into four sections, namely:
           <code>designState</code>, <code>structure</code>, <code>baseObjects</code> and <code>derivedObjects</code>.
           Presented here is a sample of a JSON file along with its data functions:          
@@ -112,7 +115,7 @@ scene.add(ship.ship3D);
   },
   "baseObjects": [
     // Array of base objects as it is fetched from the provided specification.
-    // It groups several compartments elements,
+    // It groups several elements,
     // for example (cargo holds, tanks, ballast tanks, etc.)
   ],
   "derivedObjects": [
@@ -125,7 +128,7 @@ scene.add(ship.ship3D);
 
     <h2><b>designState</b></h2>
 
-    The <code>designState</code> section contains several parameters that affect the calculations
+    The <code>designState</code> contains several parameters that affect the calculations
     such as tank fillings. The object can be subdivided in two sections: 
     <code>calculationParameters</code> and <code>objectOverrides</code>.
     Here is as simple example of a designState object format:
@@ -238,7 +241,8 @@ scene.add(ship.ship3D);
 
     <h2><b>baseObjects and derivedObjects</b></h2>
 
-    The <code>baseObjects</code> and <code>derivedObjects</code> define the equipment, tanks and compartments of the ship.
+    The <code>baseObjects</code> and <code>derivedObjects</code> define different elements
+    of a ship such as equipment, tanks and compartments of the ship.
     On the base object it is possible to group several object states into a single supergroup.
     For instance, a cargo hold can be divided into several compartments, each one with a different state.
     Here is an example for the <code>baseObjects</code> for a specific cargo hold type:
@@ -298,13 +302,16 @@ scene.add(ship.ship3D);
     }
   ]      
     </pre>
-
+    
+    Note that the <code>Tank1</code> will inherit the specifications from the <code>cargo</code> base object, containing
+    for example the same dimensions and weight information 
+    (it will be a tank with 10.25 x 9 x 1.6  located at 16.875 x 0 x 0.4 m from the origin).
     For further references on <code>baseObjects</code> and <code>derivedObjects</code> please refer to the
     <a href="https://github.com/shiplab/vesseljs/wiki/API-Reference#baseobject" target="_blank">
-      Wiki (calculationParameters)
+      Wiki (BaseObject)
     </a> and
     <a href="https://github.com/shiplab/vesseljs/wiki/API-Reference#derivedobject" target="_blank">
-      Wiki (calculationParameters)
+      Wiki (DerivedObject)
     </a>.
     
     <script defer src="./resources/prettify.js"></script>
