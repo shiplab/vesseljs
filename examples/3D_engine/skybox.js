@@ -1,6 +1,6 @@
 import * as THREE from "./three_r126.js";
 
-export class Skybox extends THREE.Mesh {
+class Box extends THREE.Mesh {
 
 	constructor( size ) {
 
@@ -59,10 +59,48 @@ export class Skybox extends THREE.Mesh {
 
 	}
 
-	// get envMap() {
+}
 
-	// 	return this.material.uniforms.envMap.value;
+class Sun extends THREE.DirectionalLight {
 
-	// }
+	constructor( size ) {
+
+		super( 0xffffff, 2 );
+		this.position.copy( this.getDefaultSunPosition( size ) );
+
+	}
+
+	getDefaultSunPosition( size ) {
+
+		const factor = size / 2048;
+		return new THREE.Vector3( - 512 / factor, 246 / factor, 128 / factor );
+
+	}
+
+}
+
+export class Skybox extends THREE.Group {
+
+	constructor( size ) {
+
+		super();
+		this.box = new Box( size );
+		this.sun = new Sun( size );
+		this.add( this.box );
+		this.add( this.sun );
+
+	}
+
+	getMesh() {
+
+		return this.box;
+
+	}
+
+	getSun() {
+
+		return this.sun;
+
+	}
 
 }
