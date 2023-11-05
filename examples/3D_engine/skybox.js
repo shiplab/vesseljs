@@ -2,7 +2,7 @@ import * as THREE from "./three_r126.js";
 
 class Box extends THREE.Mesh {
 
-	constructor( size, path = "3D_engine/textures/skyboxsun25degtest1.png" ) {
+	constructor( size = 2048, path = "3D_engine/textures/skyboxsun25degtest1.png" ) {
 
 		// load skybox (reusing example code to test the water shading fast)
 		var cubeMap = new THREE.CubeTexture( [] );
