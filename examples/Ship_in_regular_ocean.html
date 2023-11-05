@@ -61,13 +61,12 @@
 
         //Scene setup:
         scene = new THREE.Scene();
-        let sun = new THREE.DirectionalLight(0xffffff, 2);
-        sun.position.set(-512, 246, 128);
-        scene.add(sun);
 
         //Ocean size
         let oSize = 2048;
 
+        // Adding skybox and sun
+        const skybox = new Skybox(oSize);
         scene.add(new Skybox(oSize));
 
         //Use Z up from now on:
@@ -108,7 +107,7 @@
 
         ocean = new Ocean({
           parentGUI: gui,
-          sunDir: sun.position.clone().normalize(),
+          sunDir: skybox.getSun().position.clone().normalize(),
           size: oSize,
           segments: 127,
         });
