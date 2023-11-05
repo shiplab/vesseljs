@@ -15,7 +15,6 @@ import { Structure } from "./Structure.js";
 import { ShipState } from "./ShipState.js";
 import { combineWeights } from "../math/combineWeights.js";
 import { loadXMLHttpRequest } from "../fileIO/loadShip.js";
-import { Ship3D } from "../3D_engine/Ship3D.js";
 
 export class Ship extends JSONSpecObject {
 
@@ -47,13 +46,34 @@ export class Ship extends JSONSpecObject {
 
 	}
 
-	createShip3D( specs ) {
+	createShip3D( specs, Ship3D ) {
+
 
 		const state = this.designState;
-		this.ship3D = new Ship3D( this, Object.assign( {
-			shipState: state,
-		}, specs )
-		);
+		try {
+
+			// Initialize the
+			this.ship3D = new Ship3D( this, Object.assign( {
+				shipState: state,
+			}, specs )
+			);
+
+		} catch ( error ) {
+
+			const error_string = "Ship3D is not a constructor";
+
+			if ( error.message.includes( error_string ) ) {
+
+				console.error( "The Ship3D function passed as argument is in a wrong format:", error.message );
+
+			} else {
+
+				console.error( error );
+
+			}
+
+		}
+
 
 	}
 

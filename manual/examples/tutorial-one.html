@@ -45,6 +45,7 @@
     import { OrbitControls } from "../../examples/3D_engine/OrbitControls.js";
     import { GUI } from "../libs/lil-gui.module.min.js";
     import * as Vessel from "../../build/vessel.module.js";
+    import * as Ship3D from "../../examples/3D_engine/ship3D.js";
 
     function main() {
       const canvas = document.querySelector("#c");
@@ -67,14 +68,17 @@
         const ship = new Vessel.Ship(
           "../../examples/ship_specs/blockCase.json"
         );
-        ship.createShip3D({
-          stlPath: "../../examples/3D_models/STL/various",
-          // upperColor: 0x33aa33,
-          // lowerColor: 0xaa3333,
-          // hullOpacity: 1,
-          // deckOpacity: 1,
-          // objectOpacity: 1,
-        });
+        ship.createShip3D(
+          {
+            stlPath: "../../examples/3D_models/STL/various",
+            // upperColor: 0x33aa33,
+            // lowerColor: 0xaa3333,
+            // hullOpacity: 1,
+            // deckOpacity: 1,
+            // objectOpacity: 1,
+          },
+          Ship3D
+        );
 
         scene.add(ship.ship3D);
       }
