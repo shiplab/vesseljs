@@ -108,15 +108,16 @@ animate();
             <h1><b>Inserting the orbit control</b></h1>
           </div>
 
-        <p>The orbit control is a predefined Three.js functionality that allows the
-        camera orbit around the object. An initial guide for the OrbitControls can be found
-        under 
-        <a href="https://threejs.org/docs/index.html?q=Orbit#examples/en/controls/OrbitControls" target="_blank">Three.js - OrbitControls (tutorial)</a>.
-       </p>
+          <p>
+            In Three.js, the OrbitControls functionality provides a convenient way to enable camera orbit around a 3D object. 
+            An initial guide for the OrbitControls can be found
+            under 
+            <a href="https://threejs.org/docs/index.html?q=Orbit#examples/en/controls/OrbitControls" target="_blank">Three.js - OrbitControls (tutorial)</a>.
+          </p>
 
-       <p>
-        It is written bellow the code snippet for the same skybox creating added up the orbit control:
-       </p>
+          <p>
+          Below is a code snippet demonstrating the integration of OrbitControls into a Three.js project alongside a skybox creation::
+          </p>
 
 <pre class="prettyprint showlinemods lang-js">
 import * as THREE from 'three';
@@ -138,7 +139,7 @@ const skybox = new Skybox(
 );
 scene.add(skybox);
 
-// create the controls and add them 
+// Create the controls
 const controls = new OrbitControls(camera, canvas);
 
 const renderer = new THREE.WebGLRenderer();
@@ -173,20 +174,19 @@ animate();
   </div>
       
     <div class="lower_bar">
-      <h1><b>Inserting the ship the scene</b></h1>
+      <h1><b>Integrating 3D Ship Models</b></h1>
     </div>
 
     <p>
-      Before dive up into the inserting the ship itself it is essential to understand about the coordinate system difference between Three.js and Vessels.js libraries.
-      The Three.js libraries uses a Y-Up reference of system, while the Vessels.js as ship design support library, uses the Z-Up reference of system. The following image
-      shows the differences between those two systems.  
+      Before diving up into the inserting the ship itself, it is essential to understand the disparity in coordinate systems between the Three.js and Vessels.js libraries. 
+      The Three.js library employs a Y-Up reference of system, while the Vessels.js, as ship design support library, adheres to the traditional Z-Up reference of system. 
+      The following image shows the differences between those two systems.  
     </p>
 
     <div class="threejs_center"><object type="image/jpg" data="./resources/images/reference_system.jpg" class="noinvertdark" data-diagram="lookup" style="width: 600px"></object></div>
 
     <p>
-      On the practical terms, that means we have to create a new group of elements where the new system Z-Up reference would apply that would be inserted into the. Here is 
-      the snippet for this purpose: 
+      On the practical terms, this necessitates the creation of a new group of elements where the Z-Up reference system applies. The code snippet below accomplishes this:
     </p>
 
 <pre class="prettyprint showlinemods lang-js">
@@ -196,14 +196,15 @@ zUpCont.rotation.x = -0.5 * Math.PI; // This line rotates the new group of eleme
 scene.add(zUpCont);
 </pre>
 
-    <p>From this point, it is necessary to add up all the models under this new group instead of the previous <code>scene</code>. Here is the example adding up a new environment.</p>
+    <p>
+      From this point forward, it is necessary to add up all the models under the newly created <code>zUpCont</code> instead of the previous <code>scene</code>. 
+      Here is our example adding the zUp group with a 3D ship model into the visualization.
+    </p>
 
 
 <pre class="prettyprint showlinemods lang-js">
 import * as THREE from 'three';
 import { Skybox } from "../../examples/3D_engine/skybox.js";
-
-// Import a added on OribtControls from the Three.js package
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
 // Import the ship3D from the Vessel.js package
@@ -222,23 +223,25 @@ const skybox = new Skybox(
 );
 scene.add(skybox);
 
-// Setting the Z-Up reference system
+
+
+// Setting the Z-Up reference system.
+// ------ (previous code governed by the Z-Up reference system) ------ //  
 THREE.Object3D.DefaultUp.set(0, 0, 1);
 const zUpCont = new THREE.Group();
 zUpCont.rotation.x = -0.5 * Math.PI;
 scene.add(zUpCont);
+// ------ (following code governed by the Y-Up reference system) ------ //
 
-// Create the ship and add it to the new group
 const ship = new Vessel.Ship(
-          "../../examples/ship_specs/blockCase.json"
-        );
-        ship.createShip3D({
-          stlPath: "../../examples/3D_models/STL/various",
-          Ship3D
+  "../../examples/ship_specs/blockCase.json"
+);
+ship.createShip3D({
+  stlPath: "../../examples/3D_models/STL/various",
+  Ship3D
 });
 zUpCont.add(ship.ship3D);
 
-// create the controls and add them 
 const controls = new OrbitControls(camera, canvas);
 
 const renderer = new THREE.WebGLRenderer();
@@ -265,6 +268,17 @@ animate();
       target="_blank"
       >click here to open in a separate window</a
     >
+
+    <p>
+      Apart from the Ship3D element(s), 
+      the new scene group <code>zUpCount</code> will contain the <code>Ocean</code> interface for a comprehensive ship visualization workflow. The table
+      bellow outlines the categorization of elements associated to the specific group scenarios:
+    </p>
+    <div class="threejs_center"><object type="image/jpg" data="./resources/images/Elements.png" class="noinvertdark" data-diagram="lookup" style="width: 300px"></object></div>
+
+    <div class="lower_bar">
+      <h1><b>Inserting the Ocean scenario</b></h1>
+    </div>
     
     <script defer src="./resources/prettify.js"></script>
     <script defer src="./resources/lesson.js"></script>
