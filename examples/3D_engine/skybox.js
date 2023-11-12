@@ -84,6 +84,7 @@ export class Skybox extends THREE.Group {
 	constructor( size, path ) {
 
 		super();
+		this.size = size;
 		this.box = new Box( size, path );
 		this.sun = new Sun( size );
 		this.add( this.box );
