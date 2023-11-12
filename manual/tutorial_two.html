@@ -116,7 +116,7 @@ animate();
           </p>
 
           <p>
-          Below is a code snippet demonstrating the integration of OrbitControls into a Three.js project alongside a skybox creation::
+          Below is a code snippet demonstrating the integration of OrbitControls into a Three.js project alongside a skybox creation:
           </p>
 
 <pre class="prettyprint showlinemods lang-js">
@@ -207,6 +207,9 @@ import * as THREE from 'three';
 import { Skybox } from "../../examples/3D_engine/skybox.js";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 
+// Import Vessel.js module
+import * as Vessel from "../../build/vessel.module.js";
+
 // Import the ship3D from the Vessel.js package
 import { Ship3D } from "../../examples/3D_engine/ship3D.js";
 
@@ -239,7 +242,10 @@ const ship = new Vessel.Ship(
 ship.createShip3D({
   stlPath: "../../examples/3D_models/STL/various",
   Ship3D
-});
+  hullOpacity: 1,
+  deckOpacity: 1,
+  objectOpacity: 1,
+}, Ship3D);
 zUpCont.add(ship.ship3D);
 
 const controls = new OrbitControls(camera, canvas);
@@ -280,6 +286,102 @@ animate();
       <h1><b>Inserting the Ocean scenario</b></h1>
     </div>
     
+    <p>
+      The ocean serves as the final element, contributing to the creation of a realistic maritime simulation environment.
+      The snippet bellow shows our last example with the ocean scenario added to the scene.
+    </p>
+
+<pre class="prettyprint showlinemods lang-js">
+  import * as THREE from 'three';
+  import { Skybox } from "../../examples/3D_engine/skybox.js";
+  import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+  import { Ship3D } from "../../examples/3D_engine/ship3D.js";
+  import * as Vessel from "../../build/vessel.module.js";
+  
+  // Import Ocean module
+  import { Ocean } from "../examples/3D_engine/Regular_ocean.js";
+  
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera( 
+                    75, window.innerWidth / window.innerHeight, 
+                    0.1, 
+                    1000 
+                  );
+  
+  const skybox = new Skybox(
+    2048, 
+    "../../examples/3D_engine/textures/skyboxsun25degtest1.png"
+  );
+  scene.add(skybox);
+
+  THREE.Object3D.DefaultUp.set(0, 0, 1);
+  const zUpCont = new THREE.Group();
+  zUpCont.rotation.x = -0.5 * Math.PI;
+  scene.add(zUpCont);
+  
+  const ship = new Vessel.Ship(
+    "../../examples/ship_specs/blockCase.json"
+  );
+  ship.createShip3D({
+    stlPath: "../../examples/3D_models/STL/various",
+    hullOpacity: 1,
+    deckOpacity: 1,
+    objectOpacity: 1,    
+  }, Ship3D);
+  zUpCont.add(ship.ship3D);
+
+  // Here is the insertion on the ocean scenario
+  const ocean = new Ocean({
+    sunDir: skybox.getSun().position.clone().normalize(),
+    path: "../../examples/3D_engine/textures/waternormals.jpg",
+    size: skybox.size,
+    segments: 127,
+  });
+  zUpCont.add(ocean);
+  
+  const controls = new OrbitControls(camera, canvas);
+  
+  const renderer = new THREE.WebGLRenderer();
+  renderer.setSize( window.innerWidth, window.innerHeight );
+  
+  function animate() {
+
+    // This line is used for the ocean animation. For a satisfactory
+    // visualization result, a 60 Hz refresh rate is recommended.
+    ocean.water.material.uniforms.time.value += 1 / 60;
+
+    renderer.render(scene, camera);
+    requestAnimationFrame(animate);
+  }
+  animate();
+</pre>
+      
+    <p>
+      Note that the <code>Ocean</code> module accepts specific parameters. 
+      The <code>sunDir</code> represents the sun's direction, extracted from the skybox parameters.
+      The <code>path</code> denotes the path to the water normal image; if not specified, 
+      the default pattern from the Vessels.js folder is used. 
+      Additionally, size and segments define the size of the ocean and the number of divisions
+      in the ocean mesh, respectively.
+    </p>
+        
+    <p>A visualization of the final result can be depicted bellow:</p>
+
+    <div>
+      <iframe
+        class="threejs_example"
+        translate="no"
+        style=""
+        src="./examples/tutorial-two_forth_step.html"
+      ></iframe>
+    </div>
+    <a
+      class="threejs_center"
+      href="./examples/tutorial-two_forth_step.html"
+      target="_blank"
+      >click here to open in a separate window</a
+    >
+
     <script defer src="./resources/prettify.js"></script>
     <script defer src="./resources/lesson.js"></script>
   </body>

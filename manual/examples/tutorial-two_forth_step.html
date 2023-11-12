@@ -38,6 +38,7 @@
     import * as Vessel from "../../build/vessel.module.js";
     import { Skybox } from "../../examples/3D_engine/skybox.js";
     import { Ship3D } from "../../source/jsm/3D_engine/Ship3D.js";
+    import { Ocean } from "../../examples/3D_engine/Regular_ocean.js";
 
     function main() {
       const canvas = document.querySelector("#c");
@@ -55,6 +56,13 @@
       controls.update();
 
       const scene = new THREE.Scene();
+
+      // Adding skybox and sun
+      const skybox = new Skybox(
+        2048,
+        "../../examples/3D_engine/textures/skyboxsun25degtest1.png"
+      );
+      scene.add(skybox);
 
       THREE.Object3D.DefaultUp.set(0, 0, 1);
       const zUpCont = new THREE.Group();
@@ -80,12 +88,14 @@
         zUpCont.add(ship.ship3D);
       }
 
-      // Adding skybox and sun
-      const skybox = new Skybox(
-        2048,
-        "../../examples/3D_engine/textures/skyboxsun25degtest1.png"
-      );
-      scene.add(skybox);
+      const ocean = new Ocean({
+        // parentGUI: gui,
+        sunDir: skybox.getSun().position.clone().normalize(),
+        path: "../../examples/3D_engine/textures/waternormals.jpg",
+        size: skybox.size,
+        segments: 127,
+      });
+      zUpCont.add(ocean);
 
       function resizeRendererToDisplaySize(renderer) {
         const canvas = renderer.domElement;
@@ -100,6 +110,8 @@
       }
 
       function render() {
+        ocean.water.material.uniforms.time.value += 1 / 60;
+
         if (resizeRendererToDisplaySize(renderer)) {
           const canvas = renderer.domElement;
           camera.aspect = canvas.clientWidth / canvas.clientHeight;
