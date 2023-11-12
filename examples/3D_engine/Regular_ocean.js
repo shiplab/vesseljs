@@ -113,10 +113,10 @@ export class DirectionalCosine extends Wave {
 
 export class Ocean extends THREE.Mesh {
 
-	constructor( params ) {
+	constructor( params = {} ) {
 
-		params = params || {};
 		const size = params.size || 2048;
+		const path = params.path || "3D_engine/textures/waternormals.jpg";
 		const segments = params.segments || 127;
 		let waterGeometry = new THREE.PlaneBufferGeometry( size, size, segments, segments );
 		let waterNormals, water;
@@ -127,7 +127,7 @@ export class Ocean extends THREE.Mesh {
 		*/
 		try {
 
-			waterNormals = new THREE.TextureLoader().load( "3D_engine/textures/waternormals.jpg", function ( texture ) {
+			waterNormals = new THREE.TextureLoader().load( path, function ( texture ) {
 
 				texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
 
@@ -138,7 +138,7 @@ export class Ocean extends THREE.Mesh {
 				textureHeight: 512,
 				waterNormals: waterNormals,
 				alpha: 1.0,
-				sunDirection: params.sunDirection,
+				sunDirection: params.sunDir,
 				sunColor: 0xffffff,
 				waterColor: 0x001e0f,
 				distortionScale: 50.0
