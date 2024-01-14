@@ -2,7 +2,7 @@
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>Tutorial One - Simple visualization from the barge.</title>
+    <title>Tutorial One - Simple visualization from the barge</title>
     <meta
       name="viewport"
       content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
@@ -58,7 +58,7 @@ const ship = new Vessel.Ship("./blockCase.json")
 // Creating the Ship3D module and adding it to a Scene
 ship.createShip3D({
   stlPath: "../examples/3D_models/STL/various",
-})
+}, Ship3D)
 
 // scene object derived from the Three.js library
 scene.add(ship.ship3D);
@@ -76,7 +76,8 @@ scene.add(ship.ship3D);
             documentation at <a href="https://threejs.org/docs/#manual/en/introduction/Creating-a-scene" target="_blank">https://threejs.org/docs/#manual/en/introduction/Creating-a-scene</a>. 
           </p>
 
-          <p>The following visualization shows how should be the visualization for the scene:</p>
+          <p>The following visualization shows how should be the visualization for the scene (click and drag under the scene to 
+          control the orbit view):</p>
           
           <p></p>
           <div class="threejs_example_container">

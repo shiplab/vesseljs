@@ -8,6 +8,7 @@
 	--line-height: 26px;
 
 	--border-style: 1px solid #E8E8E8;
+	/* --panel-width: 300px; TODO: Insert the padding size when there is a panel */
 	--panel-width: 0px;
 	--page-padding: 24px;
 	--max-width: 760px;
@@ -418,7 +419,8 @@ div.lower_bar {
 @media all and ( min-width: 1700px ) {
 
 	:root {
-		--panel-width: 360px;
+		/* --panel-width: 360px; TODO: Insert the padding size when there is a panel */
+		--panel-width: 0px;
 		--font-size: 18px;
 		--line-height: 28px;
 		--max-width: 880px;

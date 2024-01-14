@@ -46,7 +46,7 @@
             <td id="3d"></td>
           </tr>
         </tbody>
-      </table>      
+      </table>
     </div>
     <script type="module">
       import * as THREE from "../examples/3D_engine/three_r126.js";
@@ -60,7 +60,7 @@
       import * as VesselES6 from "../source/jsm/vessel.js";
 
       import { addRows } from "./supComparisonFunc.js";
-      
+
       // let Ship3D
 
       // new THREE.FileLoader().load(
@@ -72,7 +72,7 @@
       const h = 1080;
 
       const renderer = new THREE.WebGLRenderer({ antialias: true });
-      renderer.setSize(w/2, h/2);
+      renderer.setSize(w / 2, h / 2);
       renderer.setPixelRatio(window.devicePixelRatio);
       // renderer.setClearColor(0xa9cce3, 1)
 
@@ -80,14 +80,17 @@
 
       // const ship = new VesselES6.Ship(shipspec);
       const ship = new VesselES6.Ship("../examples/ship_specs/PX121.json");
-      ship.createShip3D({
-        stlPath: "../examples/3D_models/STL/various",
-        upperColor: 0x33aa33,
-        lowerColor: 0xaa3333,
-        hullOpacity: 1,
-        deckOpacity: 1,
-        objectOpacity: 1,
-      })
+      ship.createShip3D(
+        {
+          stlPath: "../examples/3D_models/STL/various",
+          upperColor: 0x33aa33,
+          lowerColor: 0xaa3333,
+          hullOpacity: 1,
+          deckOpacity: 1,
+          objectOpacity: 1,
+        },
+        Ship3D
+      );
 
       const container = document.getElementById("3d");
       container.appendChild(renderer.domElement);
@@ -111,20 +114,10 @@
       scene.add(camera);
       let controls = new OrbitControls(camera, renderer.domElement);
 
-      
-      // ship3D = new Ship3D(ship, {
-      //   shipState: ship.designState.clone(),
-      //   stlPath: "../examples/3D_models/STL/various",
-      //   upperColor: 0x33aa33,
-      //   lowerColor: 0xaa3333,
-      //   hullOpacity: 1,
-      //   deckOpacity: 1,
-      //   objectOpacity: 1,
-      // });
       scene.add(ship.ship3D);
 
       function animate() {
-        requestAnimationFrame(animate)
+        requestAnimationFrame(animate);
 
         renderer.autoClear = false;
         renderer.setScissorTest(false);
@@ -140,11 +133,6 @@
       controls.target = new THREE.Vector3(0, 0, 0);
       controls.update();
       animate();
-
-
-      console.log(shipState);
-
-
     </script>
   </body>
 </html>

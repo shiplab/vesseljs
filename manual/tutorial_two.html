@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Tutorial Two - Ocean View and Orbit controls</title>
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0"
+    />
+    <link rel="stylesheet" href="./resources/lesson.css" />
+    <link rel="stylesheet" href="./resources/lang.css" />
+    <script
+      async
+      src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"
+    ></script>
+  </head>
+  <body>
+    <div class="container">
+      <div class="lesson-title">
+        <h1>Tutorial Two - Ocean View and Orbit controls</h1>
+      </div>
+      <div class="lesson">
+        <div class="lesson-main">
+          <p>
+            The second tutorial in our series on using <a href="https://shiplab.github.io/vesseljs/" target="_blank">vessel.js</a>
+            will focus on the integration of vessels.js with the Three.js library.
+            This tutorial will show how to create a 3D sea environment using the vessels.js library, how to add elements such as
+            the sky, the sea, and the sun, and how to add the orbit controls to the scene. 
+            After the tutorial you you'll 
+            be equipped with the knowledge to:
+          </p>
+          <ul>
+            <li>
+              Creating an ocean and sky for the scene
+            </li>
+            <li>
+              Use the orbit controls from the Three.js library
+            </li>
+            <li>
+              Insert the ship into the scene
+            </li>
+          </ul>
+          This tutorial is heavily based on the Three.js foundations so it is recommended to have a basic understanding of the Three.js library.
+          A recommendation could be to start with:
+           <a href="https://threejs.org/docs/index.html#manual/en/introduction/Creating-a-scene" target="_blank">Three.js - Creating a scene (tutorial)</a> which
+           shows how to create a simple scenes from scratch. 
+          
+          <div class="lower_bar">
+            <h1><b>Creating an ocean and sky</b></h1>
+          </div>
+          <p>
+            We can start our tutorial by following the simple snippet from the Three.js tutorial on how to create a scene
+            <a href="https://threejs.org/docs/index.html#manual/en/introduction/Creating-a-scene" target="_blank">Three.js - Creating a scene (tutorial)</a>.
+            For the Vessels.js perspective, we are going to use
+            a predefined skybox and sun defined under the engine examples. Here is the same piece of code modified to accommodate the Vessel.js engine script:
+          </p>
+          
+          <pre class="prettyprint showlinemods lang-js">
+import * as THREE from 'three';
+import { Skybox } from "../../examples/3D_engine/skybox.js";
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera( 
+                  75, window.innerWidth / window.innerHeight, 
+                  0.1, 
+                  1000 
+                );
+
+// Adding skybox and sun from the vessel.js engine
+const skybox = new Skybox(
+  2048, // Here we set the size of the map 
+  "../../examples/3D_engine/textures/skyboxsun25degtest1.png" // Here is the location where the skybox texture image is contained
+);
+scene.add(skybox);
+
+const renderer = new THREE.WebGLRenderer();
+
+function animate() {
+  renderer.render(scene, camera);
+  requestAnimationFrame(animate);
+}
+animate();
+          </pre>
+
+          <p>
+            The scene bellow can give a overview of the result. Notice that no orbit controls is allowed yet and no ship
+            is inserted on the scene. Those elements will be inserted in the next steps.
+          </p>
+
+          <div class="threejs_example_container">
+            <div>
+              <iframe
+                class="threejs_example"
+                translate="no"
+                style=""
+                src="./examples/tutorial-two_first_step.html"
+              ></iframe>
+            </div>
+            <a
+              class="threejs_center"
+              href="./examples/tutorial-two_first_step.html"
+              target="_blank"
+              >click here to open in a separate window</a
+            >
+          </div>
+
+          <div class="lower_bar">
+            <h1><b>Inserting the orbit control</b></h1>
+          </div>
+
+          <p>
+            In Three.js, the OrbitControls functionality provides a convenient way to enable camera orbit around a 3D object. 
+            An initial guide for the OrbitControls can be found
+            under 
+            <a href="https://threejs.org/docs/index.html?q=Orbit#examples/en/controls/OrbitControls" target="_blank">Three.js - OrbitControls (tutorial)</a>.
+          </p>
+
+          <p>
+          Below is a code snippet demonstrating the integration of OrbitControls into a Three.js project alongside a skybox creation:
+          </p>
+
+<pre class="prettyprint showlinemods lang-js">
+import * as THREE from 'three';
+import { Skybox } from "../../examples/3D_engine/skybox.js";
+
+// Import a added on OribtControls from the Three.js package
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera( 
+                  75, window.innerWidth / window.innerHeight, 
+                  0.1, 
+                  1000 
+                );
+
+const skybox = new Skybox(
+  2048, 
+  "../../examples/3D_engine/textures/skyboxsun25degtest1.png"
+);
+scene.add(skybox);
+
+// Create the controls
+const controls = new OrbitControls(camera, canvas);
+
+const renderer = new THREE.WebGLRenderer();
+renderer.setSize( window.innerWidth, window.innerHeight );
+
+function animate() {
+  renderer.render(scene, camera);
+  requestAnimationFrame(animate);
+}
+animate();
+</pre>
+
+    <p>
+      The same example can be shown under the code bellow. Click and drag under the scene bellow to
+      interact with the windows:
+    </p>
+
+    <div>
+      <iframe
+        class="threejs_example"
+        translate="no"
+        style=""
+        src="./examples/tutorial-two_seccond_step.html"
+      ></iframe>
+    </div>
+    <a
+      class="threejs_center"
+      href="./examples/tutorial-two_seccond_step.html"
+      target="_blank"
+      >click here to open in a separate window</a
+    >
+  </div>
+      
+    <div class="lower_bar">
+      <h1><b>Integrating 3D Ship Models</b></h1>
+    </div>
+
+    <p>
+      Before diving up into the inserting the ship itself, it is essential to understand the disparity in coordinate systems between the Three.js and Vessels.js libraries. 
+      The Three.js library employs a Y-Up reference of system, while the Vessels.js, as ship design support library, adheres to the traditional Z-Up reference of system. 
+      The following image shows the differences between those two systems.  
+    </p>
+
+    <div class="threejs_center"><object type="image/jpg" data="./resources/images/reference_system.jpg" class="noinvertdark" data-diagram="lookup" style="width: 600px"></object></div>
+
+    <p>
+      On the practical terms, this necessitates the creation of a new group of elements where the Z-Up reference system applies. The code snippet below accomplishes this:
+    </p>
+
+<pre class="prettyprint showlinemods lang-js">
+THREE.Object3D.DefaultUp.set(0, 0, 1); // This line sets the Z-Up reference system
+const zUpCont = new THREE.Group(); // This line creates a new group of elements
+zUpCont.rotation.x = -0.5 * Math.PI; // This line rotates the new group of elements to the Z-Up reference system
+scene.add(zUpCont);
+</pre>
+
+    <p>
+      From this point forward, it is necessary to add up all the models under the newly created <code>zUpCont</code> instead of the previous <code>scene</code>. 
+      Here is our example adding the zUp group with a 3D ship model into the visualization.
+    </p>
+
+
+<pre class="prettyprint showlinemods lang-js">
+import * as THREE from 'three';
+import { Skybox } from "../../examples/3D_engine/skybox.js";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+
+// Import Vessel.js module
+import * as Vessel from "../../build/vessel.module.js";
+
+// Import the ship3D from the Vessel.js package
+import { Ship3D } from "../../examples/3D_engine/ship3D.js";
+
+const scene = new THREE.Scene();
+const camera = new THREE.PerspectiveCamera( 
+                  75, window.innerWidth / window.innerHeight, 
+                  0.1, 
+                  1000 
+                );
+
+const skybox = new Skybox(
+  2048, 
+  "../../examples/3D_engine/textures/skyboxsun25degtest1.png"
+);
+scene.add(skybox);
+
+
+
+// Setting the Z-Up reference system.
+// ------ (previous code governed by the Z-Up reference system) ------ //  
+THREE.Object3D.DefaultUp.set(0, 0, 1);
+const zUpCont = new THREE.Group();
+zUpCont.rotation.x = -0.5 * Math.PI;
+scene.add(zUpCont);
+// ------ (following code governed by the Y-Up reference system) ------ //
+
+const ship = new Vessel.Ship(
+  "../../examples/ship_specs/blockCase.json"
+);
+ship.createShip3D({
+  stlPath: "../../examples/3D_models/STL/various",
+  Ship3D
+  hullOpacity: 1,
+  deckOpacity: 1,
+  objectOpacity: 1,
+}, Ship3D);
+zUpCont.add(ship.ship3D);
+
+const controls = new OrbitControls(camera, canvas);
+
+const renderer = new THREE.WebGLRenderer();
+renderer.setSize( window.innerWidth, window.innerHeight );
+
+function animate() {
+  renderer.render(scene, camera);
+  requestAnimationFrame(animate);
+}
+animate();
+</pre>
+
+    <div>
+      <iframe
+        class="threejs_example"
+        translate="no"
+        style=""
+        src="./examples/tutorial-two_third_step.html"
+      ></iframe>
+    </div>
+    <a
+      class="threejs_center"
+      href="./examples/tutorial-two_third_step.html"
+      target="_blank"
+      >click here to open in a separate window</a
+    >
+
+    <p>
+      Apart from the Ship3D element(s), 
+      the new scene group <code>zUpCount</code> will contain the <code>Ocean</code> interface for a comprehensive ship visualization workflow. The table
+      bellow outlines the categorization of elements associated to the specific group scenarios:
+    </p>
+    <div class="threejs_center"><object type="image/jpg" data="./resources/images/Elements.png" class="noinvertdark" data-diagram="lookup" style="width: 300px"></object></div>
+
+    <div class="lower_bar">
+      <h1><b>Inserting the Ocean scenario</b></h1>
+    </div>
+    
+    <p>
+      The ocean serves as the final element, contributing to the creation of a realistic maritime simulation environment.
+      The snippet bellow shows our last example with the ocean scenario added to the scene.
+    </p>
+
+<pre class="prettyprint showlinemods lang-js">
+  import * as THREE from 'three';
+  import { Skybox } from "../../examples/3D_engine/skybox.js";
+  import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+  import { Ship3D } from "../../examples/3D_engine/ship3D.js";
+  import * as Vessel from "../../build/vessel.module.js";
+  
+  // Import Ocean module
+  import { Ocean } from "../examples/3D_engine/Regular_ocean.js";
+  
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera( 
+                    75, window.innerWidth / window.innerHeight, 
+                    0.1, 
+                    1000 
+                  );
+  
+  const skybox = new Skybox(
+    2048, 
+    "../../examples/3D_engine/textures/skyboxsun25degtest1.png"
+  );
+  scene.add(skybox);
+
+  THREE.Object3D.DefaultUp.set(0, 0, 1);
+  const zUpCont = new THREE.Group();
+  zUpCont.rotation.x = -0.5 * Math.PI;
+  scene.add(zUpCont);
+  
+  const ship = new Vessel.Ship(
+    "../../examples/ship_specs/blockCase.json"
+  );
+  ship.createShip3D({
+    stlPath: "../../examples/3D_models/STL/various",
+    hullOpacity: 1,
+    deckOpacity: 1,
+    objectOpacity: 1,    
+  }, Ship3D);
+  zUpCont.add(ship.ship3D);
+
+  // Here is the insertion on the ocean scenario
+  const ocean = new Ocean({
+    sunDir: skybox.getSun().position.clone().normalize(),
+    path: "../../examples/3D_engine/textures/waternormals.jpg",
+    size: skybox.size,
+    segments: 127,
+  });
+  zUpCont.add(ocean);
+  
+  const controls = new OrbitControls(camera, canvas);
+  
+  const renderer = new THREE.WebGLRenderer();
+  renderer.setSize( window.innerWidth, window.innerHeight );
+  
+  function animate() {
+
+    // This line is used for the ocean animation. For a satisfactory
+    // visualization result, a 60 Hz refresh rate is recommended.
+    ocean.water.material.uniforms.time.value += 1 / 60;
+
+    renderer.render(scene, camera);
+    requestAnimationFrame(animate);
+  }
+  animate();
+</pre>
+      
+    <p>
+      Note that the <code>Ocean</code> module accepts specific parameters. 
+      The <code>sunDir</code> represents the sun's direction, extracted from the skybox parameters.
+      The <code>path</code> denotes the path to the water normal image; if not specified, 
+      the default pattern from the Vessels.js folder is used. 
+      Additionally, size and segments define the size of the ocean and the number of divisions
+      in the ocean mesh, respectively.
+    </p>
+        
+    <p>A visualization of the final result can be depicted bellow:</p>
+
+    <div>
+      <iframe
+        class="threejs_example"
+        translate="no"
+        style=""
+        src="./examples/tutorial-two_forth_step.html"
+      ></iframe>
+    </div>
+    <a
+      class="threejs_center"
+      href="./examples/tutorial-two_forth_step.html"
+      target="_blank"
+      >click here to open in a separate window</a
+    >
+
+    <script defer src="./resources/prettify.js"></script>
+    <script defer src="./resources/lesson.js"></script>
+  </body>
+</html>

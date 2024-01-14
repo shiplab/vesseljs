@@ -15,7 +15,6 @@ import { Structure } from "./Structure.js";
 import { ShipState } from "./ShipState.js";
 import { combineWeights } from "../math/combineWeights.js";
 import { loadXMLHttpRequest } from "../fileIO/loadShip.js";
-import { Ship3D } from "../3D_engine/Ship3D.js";
 
 export class Ship extends JSONSpecObject {
 
@@ -47,13 +46,37 @@ export class Ship extends JSONSpecObject {
 
 	}
 
-	createShip3D( specs ) {
+	createShip3D( specs, Ship3D ) {
+
 
 		const state = this.designState;
-		this.ship3D = new Ship3D( this, Object.assign( {
-			shipState: state,
-		}, specs )
-		);
+		try {
+
+			// Initialize the
+			this.ship3D = new Ship3D( this, Object.assign( {
+				shipState: state,
+			}, specs )
+			);
+
+		} catch ( error ) {
+
+			const error_string = "Ship3D is not a constructor";
+
+			if ( error.message.includes( error_string ) ) {
+
+				const error_reason = "The Ship3D function passed as argument is in a wrong format";
+				const error_solution = "Please, verify if the argument was imported correctly on the parent function: import { Ship3D } from 'path/to/file'";
+
+				console.error( `${error_reason}: ${error.message}. ${error_solution}` );
+
+			} else {
+
+				console.error( error );
+
+			}
+
+		}
+
 
 	}
 
@@ -239,9 +262,6 @@ export class Ship extends JSONSpecObject {
 			this.structure.getWeight( this.designState )
 		);
 
-		//DEBUG
-		//console.log(components);
-
 		for ( let o of Object.values( this.derivedObjects ) ) {
 
 			components.push( o.getWeight( shipState ) );
@@ -254,6 +274,163 @@ export class Ship extends JSONSpecObject {
 
 	}
 
+	// This function is for sanity checking if objects states and id are compatible
+	validateObjectBond( objects, id ) {
+
+		if ( typeof id !== "string" || objects[ id ] === undefined ) {
+
+		  console.error( "Undefined bond with ID '" + id + "' in the object" );
+		  throw new Error( "validateObjectBond: object bond modification not valid" );
+
+		}
+
+	}
+
+	changeObject( object, spec ) {
+
+		if ( typeof object !== "object" ) {
+
+			console.error( "changeObject: object must be an object." );
+			return;
+
+		}
+
+		if ( typeof spec !== "object" ) {
+
+			console.error( "changeObject: spec must be an object." );
+			return;
+
+		}
+
+		for ( const key in spec ) {
+
+			// this ensures all the keys are reassigned to the object
+			const previous_spec = object.getSpecification()[ key ];
+
+			const new_spec = {};
+			new_spec[ key ] = Object.assign( previous_spec, spec[ key ] );
+
+			Object.assign( object, new_spec );
+
+		}
+
+	}
+
+	getBaseObjectById( id = undefined ) {
+
+		if ( id === undefined ) {
+
+			return this.baseObjects;
+
+		}
+
+		const ids_array = Array.isArray( id ) ? id : [ id ];
+
+		let obj = {};
+
+		for ( let id of ids_array ) {
+
+			const baseObject = this.baseObjects[ id ];
+			if ( baseObject ) {
+
+				obj[ id ] = baseObject;
+
+			} else {
+
+				console.warn( `BaseObject with id ${id} not found.` );
+
+			}
+
+
+		}
+
+		return obj;
+
+	}
+
+
+	changeBaseObjectById( id, spec ) {
+
+		this.validateObjectBond( this.baseObjects, id );
+
+		this.changeObject( this.baseObjects[ id ], spec );
+
+	}
+
+	changeDerivedObjectById( id, spec ) {
+
+		this.validateObjectBond( this.derivedObjects, id );
+
+		this.changeObject( this.derivedObjects[ id ], spec );
+
+		if ( "baseObject" in spec ) {
+
+			console.error( "Key 'baseObject' identified under the spec. Please, use change changeBaseObjectById if you want to change the base object." );
+			return;
+
+		}
+
+	}
+
+	deleteBaseObjectById( id ) {
+
+		this.validateObjectBond( this.baseObjects, id );
+
+		delete this.baseObjects[ id ];
+
+		// Check if an derivedObject is using the deleted object as baseObject
+		// Delete it in case it is
+		for ( const [ key, o ] of Object.entries( this.derivedObjects ) ) {
+
+			if ( o.baseObject.id === id ) {
+
+				this.deleteDerivedObjectById( key );
+
+			}
+
+		}
+
+	}
+
+	deleteDerivedObjectById( id ) {
+
+		this.validateObjectBond( this.derivedObjects, id );
+
+		delete this.derivedObjects[ id ];
+
+	}
+
+	addNewObject( spec ) {
+
+		if ( typeof spec !== "object" ) {
+
+			console.error( "changeObject: spec must be an object." );
+			return;
+
+		}
+
+		if ( ! Array.isArray( spec.baseObject ) || ! Array.isArray( spec.derivedObjects ) ) {
+
+			console.error( "addObject: spec.baseObject must be an array." );
+			return;
+
+		}
+
+		for ( let baseObject of spec.baseObject ) {
+
+			this.baseObjects[ baseObject.id ] = new BaseObject( baseObject );
+
+		}
+
+		for ( let derivedObject of spec.derivedObjects ) {
+
+			this.validateObjectBond( this.baseObjects, derivedObject.id );
+
+			this.derivedObjects[ derivedObject.id ] = new DerivedObject( derivedObject, this.baseObjects );
+
+		}
+
+	}
 
 }
 

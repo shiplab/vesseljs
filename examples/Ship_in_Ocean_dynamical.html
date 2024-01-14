@@ -1,292 +1,352 @@
 <html>
+  <head>
+    <title>Ship in Ocean</title>
+    <script src="../build/vessel.js"></script>
+    <script src="3D_engine/dat.gui.min.js"></script>
+    <script src="libs/browse_files_Elias_Hasle.js"></script>
+    <script src="3D_engine/Playback.js"></script>
+    <script src="snippets/DynamicalMovement.js"></script>
+    <script src="libs/numeric-1.2.6.min.js"></script>
+  </head>
 
-<head>
-	<title>Ship in Ocean</title>
-	<script src="../build/vessel.js"></script>
-	<script src="3D_engine/dat.gui.min.js"></script>
-	<script src="libs/browse_files_Elias_Hasle.js"></script>
-	<script src="3D_engine/Playback.js"></script>
-	<script src="snippets/DynamicalMovement.js"></script>
-	<script src="libs/numeric-1.2.6.min.js"></script>
-</head>
+  <style>
+    /* ******* Signature template ******* */
 
-<style>
-	
-		/* ******* Signature template ******* */
+    #info {
+      position: absolute;
+      color: #011c40;
+      top: 0px;
+      width: 100%;
+      padding: 10px;
+      box-sizing: border-box;
+      text-align: center;
+      -moz-user-select: none;
+      -webkit-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      pointer-events: none;
+      z-index: 1;
+    }
 
-		#info {
-			position: absolute;
-			color: #011C40;
-			top: 0px;
-			width: 100%;
-			padding: 10px;
-			box-sizing: border-box;
-			text-align: center;
-			-moz-user-select: none;
-			-webkit-user-select: none;
-			-ms-user-select: none;
-			user-select: none;
-			pointer-events: none;
-			z-index: 1;
-		}
+    #info a {
+      color: #a60d0d;
+      pointer-events: auto;
+    }
 
-		#info a {
-			color: #A60D0D;
-			pointer-events: auto;
-		}
+    /* ******* ******* ******* */
+  </style>
 
-		/* ******* ******* ******* */
+  <body>
+    <div id="info">
+      <a href="http://vesseljs.org/" target="_blank" rel="noopener"
+        >Vessel.js</a
+      >
+      6DOF <br />
+      Author:
+      <a href="https://shiptodata.com/" target="_blank" rel="noopener"
+        >Felipe Ferrari</a
+      >
+      - Msc. Student Ship Design
+      <br />
+      Supervisor:
+      <a
+        href="https://www.ntnu.edu/employees/henrique.gaspar"
+        target="_blank"
+        rel="noopener"
+        >Henrique M. Gaspar</a
+      >
+    </div>
+    <script type="module">
+      "use strict";
 
-</style>
+      // Import three.js and OrbitControls modules
+      import * as THREE from "../examples/3D_engine/three_r126.js";
+      import { OrbitControls } from "../examples/3D_engine/OrbitControls.js";
 
-<body>
-	<div id="info">
-		<a href="http://vesseljs.org/" target="_blank" rel="noopener">Vessel.js</a> 6DOF <br/>
-		Author: <a href="https://shiptodata.com/" target="_blank" rel="noopener">Felipe Ferrari</a> - Msc. Student Ship Design
-		<br>
-		Supervisor: <a href="https://www.ntnu.edu/employees/henrique.gaspar" target="_blank" rel="noopener">Henrique M. Gaspar</a>
-	</div>
-	<script type="module">
-		"use strict";
+      // Import Ship3D module
+      import { Ship3D } from "../source/jsm/3D_engine/Ship3D.js";
 
-		// Import three.js and OrbitControls modules
-		import * as THREE from '../examples/3D_engine/three_r126.js';
-		import { OrbitControls } from '../examples/3D_engine/OrbitControls.js';
+      // Import Skybox module
+      import { Skybox } from "../examples/3D_engine/skybox.js";
 
-		// Import Ship3D module
-		import { Ship3D } from "../source/jsm/3D_engine/Ship3D.js";
+      // Import Ocean module
+      import { Ocean } from "../examples/3D_engine/Regular_ocean.js";
 
-		// Import Skybox module
-		import { Skybox } from "../examples/3D_engine/skybox_from_examples_r126.js";
+      //Globals
+      var renderer, camera, controls, gui, stats;
+      var scene, zUpCont, playback, bodies, ocean, ship3D, statMod;
+      var RG_system,
+        g,
+        MM,
+        ADD_mass,
+        AA,
+        A_33,
+        BB,
+        B_33,
+        B_55,
+        B_44,
+        B_55,
+        CC,
+        waveForce,
+        C_D;
+      var dynMov, wavMo, states, scale;
+      var group;
 
-		// Import Ocean module
-		import { Ocean } from "../examples/3D_engine/Regular_ocean.js";
+      // Damping
+      C_D = 0.2; // Assumed Linear Resistance Coeff.	(m/s)
+      B_44 = 3000000; // Assumed Roll Linear Damping Coeff.	(kgm2/s)
+      B_55 = 6000000; // Assumed Roll Linear Damping Coeff.	(kgm2/s)
+      var userParameters = { C_D, B_44, B_55 };
 
-		//Globals
-		var renderer, camera, controls, gui, stats;
-		var scene, zUpCont, playback, bodies, ocean, ship3D, statMod;
-		var RG_system, g, MM, ADD_mass, AA, A_33, BB, B_33, B_55, B_44, B_55, CC, waveForce, C_D;
-		var dynMov, wavMo, states, scale;
-		var group;
+      (function main() {
+        //Renderer setup
+        //document.body.style = "overflow: hidden;";
+        document.body.style.overflow = "hidden";
+        var container = document.createElement("div");
+        //container.style = "position: absolute; top: 0; left: 0;"
+        Object.assign(container.style, {
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100vw",
+          height: "100vh",
+        });
+        document.body.appendChild(container);
+        renderer = new THREE.WebGLRenderer({ antialias: true });
+        //renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0x99aadd);
+        container.appendChild(renderer.domElement);
 
-		// Damping
-		C_D = 0.2;			 // Assumed Linear Resistance Coeff.	(m/s)
-		B_44 = 3000000;	// Assumed Roll Linear Damping Coeff.	(kgm2/s)
-		B_55 = 6000000;	// Assumed Roll Linear Damping Coeff.	(kgm2/s)
-		var userParameters = {C_D, B_44, B_55};
+        //GUI setup (comment out to remove gui)
+        gui = new dat.GUI();
 
-		(function main() {
-			//Renderer setup
-			//document.body.style = "overflow: hidden;";
-			document.body.style.overflow = "hidden";
-			var container = document.createElement("div");
-			//container.style = "position: absolute; top: 0; left: 0;"
-			Object.assign(container.style, {
-				position: "absolute",
-				top: 0,
-				left: 0,
-				width: "100vw",
-				height: "100vh"
-			});
-			document.body.appendChild(container);
-			renderer = new THREE.WebGLRenderer({antialias: true});
-			//renderer.setSize(window.innerWidth, window.innerHeight);
-			renderer.setClearColor(0x99aadd);
-			container.appendChild(renderer.domElement);
+        // add report to GUI controller
+        var obj = {
+          "Click to read paper": function () {
+            window.open(
+              "https://raw.githubusercontent.com/wiki/shiplab/vesseljs/files/open_6_DOF.pdf"
+            );
+          },
+        };
 
-			//GUI setup (comment out to remove gui)
-			gui = new dat.GUI();
+        gui.add(obj, "Click to read paper");
 
-			// add report to GUI controller
-			var obj = {
-				"Click to read paper": function() {
-					window.open("https://raw.githubusercontent.com/wiki/shiplab/vesseljs/files/open_6_DOF.pdf");
-				}
-			};
+        playback = new Playback({ parentGUI: gui });
 
-			gui.add(obj, "Click to read paper");
+        //Scene setup:
+        scene = new THREE.Scene();
+        let sun = new THREE.DirectionalLight(0xffffff, 2);
+        sun.position.set(-512, 246, 128);
+        scene.add(sun);
 
-			playback = new Playback({parentGUI: gui});
+        //Ocean size
+        let oSize = 2048;
 
-			//Scene setup:
-			scene = new THREE.Scene();
-			let sun = new THREE.DirectionalLight(0xffffff, 2);
-			sun.position.set(-512, 246, 128);
-			scene.add(sun);
+        scene.add(new Skybox(oSize));
 
-			//Ocean size
-			let oSize = 2048;
+        // Add the bottom of ocean
+        var geometry = new THREE.PlaneBufferGeometry(oSize, oSize, 32);
+        var texture = new THREE.TextureLoader().load(
+          "3D_engine/textures/bottom.jpg"
+        );
+        var material = new THREE.MeshBasicMaterial({
+          side: THREE.FrontSide,
+          map: texture,
+          transparent: true, // visible from below
+        });
+        var plane = new THREE.Mesh(geometry, material);
+        plane.rotateX(-Math.PI / 2);
+        var oceanDepth = 30;
+        plane.translateZ(-oceanDepth);
+        scene.add(plane);
 
-			scene.add(new Skybox(oSize));
+        //Use Z up from now on:
+        THREE.Object3D.DefaultUp.set(0, 0, 1);
+        zUpCont = new THREE.Group();
+        zUpCont.rotation.x = -0.5 * Math.PI;
+        scene.add(zUpCont);
 
-			// Add the bottom of ocean
-			var geometry = new THREE.PlaneBufferGeometry(oSize, oSize, 32);
-			var texture = new THREE.TextureLoader().load("3D_engine/textures/bottom.jpg");
-			var material = new THREE.MeshBasicMaterial({
-				side: THREE.FrontSide,
-				map: texture,
-				transparent: true	// visible from below
-			});
-			var plane = new THREE.Mesh(geometry, material);
-			plane.rotateX(-Math.PI / 2);
-			var oceanDepth = 30;
-			plane.translateZ(-oceanDepth);
-			scene.add(plane);
+        //Camera setup
+        camera = new THREE.PerspectiveCamera(
+          26,
+          window.innerWidth / window.innerHeight,
+          1,
+          1000000
+        );
+        let onResize = function () {
+          let w = container.clientWidth;
+          let h = container.clientHeight;
+          renderer.setSize(w, h);
+          camera.aspect = w / h;
+          camera.updateProjectionMatrix();
+        };
+        camera.up.set(0, 1, 0);
+        window.addEventListener("resize", onResize, false);
+        onResize();
+        camera.position.set(oSize * 0.05, oSize * 0.02, oSize * 0.05);
 
-			//Use Z up from now on:
-			THREE.Object3D.DefaultUp.set(0, 0, 1);
-			zUpCont =  new THREE.Group();
-			zUpCont.rotation.x = -0.5 * Math.PI;
-			scene.add(zUpCont);
+        controls = new OrbitControls(camera, renderer.domElement);
+        //controls.minDistance = 0;
+        controls.maxDistance = 0.25 * oSize;
+        controls.enablePan = false;
+        controls.maxPolarAngle = Math.PI;
+        controls.minPolarAngle = 0;
 
-			//Camera setup
-			camera = new THREE.PerspectiveCamera(26, window.innerWidth / window.innerHeight, 1, 1000000);
-			let onResize = function() {
-				let w = container.clientWidth;
-				let h = container.clientHeight;
-				renderer.setSize(w, h);
-				camera.aspect = w / h;
-				camera.updateProjectionMatrix();
-			};
-			camera.up.set(0, 1, 0);
-			window.addEventListener('resize', onResize, false);
-			onResize();
-			camera.position.set(oSize * 0.05, oSize * 0.02, oSize * 0.05);
+        //zUpCont.add(new THREE.AxisHelper(1000));
+        zUpCont.add(new THREE.HemisphereLight(0xccccff, 0x666688, 1));
 
-			controls = new OrbitControls(camera, renderer.domElement);
-			//controls.minDistance = 0;
-			controls.maxDistance = 0.25 * oSize;
-			controls.enablePan = false;
-			controls.maxPolarAngle = Math.PI;
-			controls.minPolarAngle = 0;
+        ocean = new Ocean({
+          parentGUI: null /* gui */, //remenber to insert back to see the waves
+          sunDir: sun.position.clone().normalize(),
+          size: oSize,
+          segments: 127,
+        });
+        playback.add(ocean);
+        zUpCont.add(ocean);
 
+        wavMo = [];
+        states = [];
 
-			//zUpCont.add(new THREE.AxisHelper(1000));
-			zUpCont.add(new THREE.HemisphereLight(0xccccff, 0x666688, 1));
+        Vessel.loadShip("ship_specs/mississipiBarge.json", function (ship) {
+          states = ship.designState.clone();
+          states.objectOverrides.derivedByGroup["ballast tanks"].fullness = 0.5;
+          states.objectOverrides.derivedByGroup["cargo tanks"].fullness = 0.5;
+          console.log(states.objectCache);
+          statMod = new Vessel.StateModule(ship, states);
+          statMod.setDraft();
+          //console.log(states.shipCache.thisStateVer);
+          ship3D = new Ship3D(ship, {
+            shipState: states,
+            stlPath: "3D_models/STL/various",
+            upperColor: 0x33aa33,
+            lowerColor: 0xaa3333,
+            hullOpacity: 1,
+            deckOpacity: 1,
+            objectOpacity: 1,
+          });
+          zUpCont.add(ship3D);
 
-			ocean = new Ocean({
-				parentGUI: null /* gui */, //remenber to insert back to see the waves
-				sunDir: sun.position.clone().normalize(),
-				size: oSize, segments: 127
-			});
-			playback.add(ocean);
-			zUpCont.add(ocean);
+          // Initial Velocities
+          // Initial BF-Surge Velocity
+          // Initial BF-Sway Velocity
+          // Initial BF-Heave Velocity
+          // Initial BF-Roll Velocity
+          // Initial BF-Pitch Velocity
+          // Initial BF-Yaw Velocity
+          // Initial Euler Angle X
+          // Initial Euler Angle Y
+          // Initial Euler Angle Z
+          // [Surge, Sway, Heave, VSurge, VSway, VHeave, VRoll, VPitch, VYaw, EX, EY, EZ]
+          var Ini = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+          states.continuous.motion = {
+            surge: Ini[0],
+            sway: Ini[1],
+            heave: Ini[2],
+            roll: Ini[3],
+            pitch: Ini[4],
+            yaw: Ini[5],
+          };
 
-			wavMo = [];
-			states = [];
+          var tprev = 0; // Initial time;
 
-			Vessel.loadShip("ship_specs/mississipiBarge.json", function(ship) {
-				states = ship.designState.clone();
-				states.objectOverrides.derivedByGroup["ballast tanks"].fullness = 0.5;
-				states.objectOverrides.derivedByGroup["cargo tanks"].fullness = 0.5;
-				console.log(states.objectCache);
-				statMod = new Vessel.StateModule(ship, states);
-				statMod.setDraft();
-				//console.log(states.shipCache.thisStateVer);
-				ship3D = new Ship3D(ship, {
-					shipState: states,
-					stlPath: "3D_models/STL/various",
-					upperColor: 0x33aa33,
-					lowerColor: 0xaa3333,
-					hullOpacity: 1,
-					deckOpacity: 1,
-					objectOpacity: 1
-				});
-				zUpCont.add(ship3D);
+          scale = gui.addFolder("Initial State");
+          scale
+            .add(states.continuous.motion, "heave", -0.5, 0.5)
+            .step(0.01)
+            .onChange(function (newValue) {
+              ship3D.heave = newValue;
+              states.continuous.motion.heave = newValue;
+            });
+          scale
+            .add(states.continuous.motion, "roll", -0.5, 0.5)
+            .step(0.01)
+            .onChange(function (newValue) {
+              ship3D.roll = newValue;
+              states.continuous.motion.roll = newValue;
+            });
+          scale
+            .add(states.continuous.motion, "pitch", -0.1, 0.1)
+            .step(0.01)
+            .onChange(function (newValue) {
+              ship3D.pitch = newValue;
+              states.continuous.motion.pitch = newValue;
+            });
+          scale.open();
+          scale = gui.addFolder("Damping Coeficients");
+          scale.add(userParameters, "C_D", 0.1, 0.9).step(0.01);
+          scale.add(userParameters, "B_44", 1000000, 9000000).step(5000);
+          scale.add(userParameters, "B_55", 1000000, 9000000).step(5000);
+          var controller = scale
+            .add(
+              states.objectOverrides.derivedByGroup["ballast tanks"],
+              "fullness",
+              0,
+              1
+            )
+            .step(0.01);
 
-				// Initial Velocities
-				// Initial BF-Surge Velocity
-				// Initial BF-Sway Velocity
-				// Initial BF-Heave Velocity
-				// Initial BF-Roll Velocity
-				// Initial BF-Pitch Velocity
-				// Initial BF-Yaw Velocity
-				// Initial Euler Angle X
-				// Initial Euler Angle Y
-				// Initial Euler Angle Z
-				// [Surge, Sway, Heave, VSurge, VSway, VHeave, VRoll, VPitch, VYaw, EX, EY, EZ]
-				var Ini = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
-				states.continuous.motion = {surge: Ini[0], sway: Ini[1], heave: Ini[2], roll: Ini[3], pitch: Ini[4], yaw: Ini[5]};
+          controller.onChange(function (newValue) {
+            states.objectOverrides.derivedByGroup["cargo tanks"].fullness =
+              newValue;
+            states.version += 1;
+            statMod.setDraft();
+            ship3D.position.z = -states.discrete.FloatingCondition.state.T;
+          });
 
-				var tprev = 0; 		// Initial time;
+          // cylinderCil.setRotationFromAxisAngle ([0, 0.25, 0], -Math.PI/4);
+          dynMov = new DynamicalMovement(
+            ship,
+            states,
+            userParameters,
+            Ini,
+            oceanDepth
+          );
+          scale.open();
 
-				scale = gui.addFolder("Initial State");
-				scale.add(states.continuous.motion, "heave", -0.5, 0.5).step(0.01).onChange(function(newValue) {
-					ship3D.heave = newValue;
-					states.continuous.motion.heave = newValue;
-				});
-				scale.add(states.continuous.motion, "roll", -0.5, 0.5).step(0.01).onChange(function(newValue) {
-					ship3D.roll = newValue;
-					states.continuous.motion.roll = newValue;
-				});
-				scale.add(states.continuous.motion, "pitch", -0.1, 0.1).step(0.01).onChange(function(newValue) {
-					ship3D.pitch = newValue;
-					states.continuous.motion.pitch = newValue;
-				});
-				scale.open();
-				scale = gui.addFolder("Damping Coeficients");
-				scale.add(userParameters, "C_D", 0.1, 0.9).step(0.01);
-				scale.add(userParameters, "B_44", 1000000, 9000000).step(5000);
-				scale.add(userParameters, "B_55", 1000000, 9000000).step(5000);
-				var controller = scale.add(states.objectOverrides.derivedByGroup["ballast tanks"], "fullness", 0, 1).step(0.01);
+          //VERY approximate motion (for visualisation only)
+          playback.add(function (t) {
+            // let x = ship3D.position.x;
+            // let y = ship3D.position.y;
+            // let oCenter = ocean.calculateZ(x,y,t);
+            let dt = t - tprev;
 
-				controller.onChange(function(newValue) {
-					states.objectOverrides.derivedByGroup["cargo tanks"].fullness = newValue;
-					states.version += 1;
-					statMod.setDraft();
-					ship3D.position.z = -states.discrete.FloatingCondition.state.T;
-				});
+            dynMov.moveShip(tprev, dt);
+            tprev = t;
 
+            ship3D.surge = states.continuous.motion.surge;
+            ship3D.sway = states.continuous.motion.sway;
+            ship3D.heave = states.continuous.motion.heave;
+            ship3D.roll = states.continuous.motion.roll;
+            ship3D.pitch = states.continuous.motion.pitch;
+            ship3D.yaw = states.continuous.motion.yaw;
+          });
+        });
 
-				// cylinderCil.setRotationFromAxisAngle ([0, 0.25, 0], -Math.PI/4);
-				dynMov = new DynamicalMovement(ship, states, userParameters, Ini, oceanDepth);
-				scale.open();
+        //Initial configuration:
+        if (ocean.cosConf) ocean.cosConf.close();
 
-				//VERY approximate motion (for visualisation only)
-				playback.add(function(t) {
-					// let x = ship3D.position.x;
-					// let y = ship3D.position.y;
-					// let oCenter = ocean.calculateZ(x,y,t);
-					let dt = t - tprev;
+        playback.play();
 
-					dynMov.moveShip(tprev, dt);
-					tprev = t;
+        requestAnimationFrame(animate);
+      })();
 
-					ship3D.surge = states.continuous.motion.surge;
-					ship3D.sway = states.continuous.motion.sway;
-					ship3D.heave = states.continuous.motion.heave;
-					ship3D.roll = states.continuous.motion.roll;
-					ship3D.pitch = states.continuous.motion.pitch;
-					ship3D.yaw = states.continuous.motion.yaw;
-				});
-			});
+      function animate(millitime) {
+        renderer.render(scene, camera);
+        let playing = playback.update();
 
-			//Initial configuration:
-			if (ocean.cosConf) ocean.cosConf.close();
+        // Disable this to freeze water when not playing
+        if (!playing) {
+          ocean.water.material.uniforms.time.value += 1 / 60;
+        }
 
-			playback.play();
+        requestAnimationFrame(animate);
+      }
 
-			requestAnimationFrame(animate);
-		})();
-
-		function animate(millitime) {
-			renderer.render(scene, camera);
-			let playing = playback.update();
-
-			// Disable this to freeze water when not playing
-			if (!playing) {
-				ocean.water.material.uniforms.time.value += 1 / 60;
-			}
-
-			requestAnimationFrame(animate);
-		}
-
-		function updateMotion() {
-			for (let i = 0; i < wavMo.length; i++) {
-				wavMo[i].writeOutput();
-			}
-		}
-	</script>
-</body>
-
+      function updateMotion() {
+        for (let i = 0; i < wavMo.length; i++) {
+          wavMo[i].writeOutput();
+        }
+      }
+    </script>
+  </body>
 </html>

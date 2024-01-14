@@ -64,24 +64,19 @@
 
       const scene = new THREE.Scene();
 
-      {
-        const ship = new Vessel.Ship(
-          "../../examples/ship_specs/blockCase.json"
-        );
-        ship.createShip3D(
-          {
-            stlPath: "../../examples/3D_models/STL/various",
-            // upperColor: 0x33aa33,
-            // lowerColor: 0xaa3333,
-            // hullOpacity: 1,
-            // deckOpacity: 1,
-            // objectOpacity: 1,
-          },
-          Ship3D
-        );
-
-        scene.add(ship.ship3D);
-      }
+      const ship = new Vessel.Ship("../../examples/ship_specs/barge.json");
+      ship.createShip3D(
+        {
+          stlPath: "../../examples/3D_models/STL/various",
+          // upperColor: 0x33aa33,
+          // lowerColor: 0xaa3333,
+          // hullOpacity: 0.1,
+          // deckOpacity: 0.1,
+          objectOpacity: 1,
+        },
+        Ship3D
+      );
+      scene.add(ship.ship3D);
 
       {
         //Add lights:
@@ -95,6 +90,17 @@
         );
       }
 
+      //Add rudimentary ocean, to see effect of draft changes:
+      const ocean = new THREE.Mesh(
+        new THREE.PlaneBufferGeometry(1000, 1000),
+        new THREE.MeshPhongMaterial({ color: 0x2222bb })
+      );
+      scene.add(ocean);
+      const grid = new THREE.GridHelper(1000, 100);
+      grid.rotation.x = 0.5 * Math.PI;
+      grid.position.z = 0.01;
+      scene.add(grid);
+
       function resizeRendererToDisplaySize(renderer) {
         const canvas = renderer.domElement;
         const width = canvas.clientWidth;
@@ -106,6 +112,23 @@
 
         return needResize;
       }
+
+      // Adding the gui for changing the filling
+      const gui = new GUI();
+      gui.title("General Parameters");
+      let parameters = {
+        Draft: ship.calculateDraft(),
+      };
+      console.log("Initial Draft as ", parameters.Draft);
+      gui.add(parameters, "Draft", 0, 4, 0.01).onChange(function (v) {
+        console.log(v);
+        // fillDocument();
+        // ship3D.position.z = -parameters.Draft;
+      });
+
+      ship.changeBaseObjectById("cargo", { baseState: { fullness: 1 } });
+      console.log(ship.calculateDraft());
+      debugger;
 
       function render() {
         if (resizeRendererToDisplaySize(renderer)) {
