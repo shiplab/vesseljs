@@ -25,7 +25,8 @@ TODO: Use calculated draft for position.z, and place the ship model in a motion 
 
 import * as THREE from "../../../examples/3D_engine/three_r126.js";
 import { STLLoader } from "../../../examples/3D_engine/STLLoader.js";
-import { linearFromArrays, bisectionSearch } from "../math/interpolation.js";
+import { f as mathFunctions } from "../vessel.js";
+const { linearFromArrays, bisectionSearch } = { ...mathFunctions };
 
 class Ship3D extends THREE.Group {
 
