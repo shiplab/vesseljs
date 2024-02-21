@@ -1,0 +1,4936 @@
+{
+    "attributes": {},
+    "designState": {
+        "calculationParameters": {
+            "LWL_design": 80,
+            "Draft_design": 6.5,
+            "Cb_design": 0.68,
+            "speed": 10,
+            "crew": 20,
+            "K": 0.032,
+            "Co": 0.3,
+            "tripDuration": 40
+        },
+        "objectOverrides": {
+            "common": {
+                "fullness": 0.5
+            }
+        }
+    },
+    "header": {
+        "author": [
+            "Killian Ledain",
+            "Jefferson Flor"
+        ]
+    },
+    "structure": {
+        "hull": {
+            "attributes": {
+                "LOA": 82,
+                "BOA": 18,
+                "Depth": 8,
+                "APP": 2,
+                "bulb": true,
+                "transom": true,
+                "cstern": 0,
+                "prismaticLengthRatio": 0.6,
+                "appendices": {
+                    "twinScrewBalanceRudder": {
+                        "coeff": 2.8,
+                        "area": 10
+                    },
+                    "shaftBrackets": {
+                        "coeff": 3,
+                        "area": 10
+                    },
+                    "skeg": {
+                        "coeff": 1.5,
+                        "area": 10
+                    },
+                    "shafts": {
+                        "coeff": 4,
+                        "area": 10
+                    },
+                    "bilgeKeel": {
+                        "coeff": 1.4,
+                        "area": 10
+                    }
+                }
+            },
+            "halfBreadths": {
+                "waterlines": [
+                    0,
+                    0.2,
+                    0.4,
+                    0.6,
+                    0.8,
+                    1,
+                    1.2,
+                    1.4,
+                    1.6,
+                    1.8
+                ],
+                "stations": [
+                    0,
+                    0.1,
+                    0.2,
+                    0.3,
+                    0.4,
+                    0.5,
+                    0.6,
+                    0.7,
+                    0.8,
+                    0.9,
+                    1
+                ],
+                "table": [
+                    [
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        null
+                    ],
+                    [
+                        0,
+                        0,
+                        0,
+                        0.07017543859649122,
+                        0.4789473684210526,
+                        0.5605263157894737,
+                        0.513157894736842,
+                        0.38947368421052636,
+                        0.21403508771929824,
+                        0.06315789473684211,
+                        null
+                    ],
+                    [
+                        0.27017543859649124,
+                        0.637719298245614,
+                        0.7456140350877193,
+                        0.8114035087719298,
+                        0.8482456140350877,
+                        0.8464912280701754,
+                        0.7789473684210527,
+                        0.6342105263157894,
+                        0.40350877192982454,
+                        0.15789473684210525,
+                        null
+                    ],
+                    [
+                        0.7929824561403508,
+                        0.8385964912280702,
+                        0.874561403508772,
+                        0.9052631578947369,
+                        0.9263157894736842,
+                        0.9342105263157895,
+                        0.8903508771929824,
+                        0.7728070175438597,
+                        0.5482456140350876,
+                        0.25789473684210523,
+                        0
+                    ],
+                    [
+                        0.8464912280701754,
+                        0.8833333333333333,
+                        0.9131578947368421,
+                        0.9350877192982456,
+                        0.9535087719298244,
+                        0.9631578947368421,
+                        0.9333333333333333,
+                        0.8447368421052632,
+                        0.6517543859649122,
+                        0.3570175438596491,
+                        0.04035087719298246
+                    ],
+                    [
+                        0.863157894736842,
+                        0.900877192982456,
+                        0.9289473684210526,
+                        0.9508771929824561,
+                        0.9692982456140351,
+                        0.9798245614035087,
+                        0.9587719298245614,
+                        0.8956140350877193,
+                        0.7359649122807018,
+                        0.45526315789473687,
+                        0.08508771929824561
+                    ],
+                    [
+                        0.8789473684210526,
+                        0.9166666666666666,
+                        0.943859649122807,
+                        0.9666666666666666,
+                        0.9833333333333334,
+                        0.9929824561403509,
+                        0.981578947368421,
+                        0.9385964912280701,
+                        0.8070175438596491,
+                        0.5491228070175438,
+                        0.1385964912280702
+                    ],
+                    [
+                        0.8850877192982456,
+                        0.9236842105263157,
+                        0.9508771929824561,
+                        0.9710526315789474,
+                        0.987719298245614,
+                        1,
+                        0.9991228070175439,
+                        0.9736842105263157,
+                        0.8710526315789473,
+                        0.6456140350877193,
+                        0.21140350877192984
+                    ],
+                    [
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        0.9780701754385965,
+                        0.8885964912280702,
+                        0.6947368421052631,
+                        0.2807017543859649
+                    ],
+                    [
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        null,
+                        0.3263157894736842
+                    ]
+                ]
+            },
+            "style": {
+                "upperColor": "pink",
+                "lowerColor": "grey",
+                "opacity": 1.0
+            },
+            "buttockHeights": {}
+        },
+        "decks": {
+            "WheelHouseTop": {
+                "zFloor": 23.4,
+                "thickness": 0.3,
+                "xAft": 52,
+                "xFwd": 80,
+                "yCentre": 0,
+                "breadth": 18,
+                "density": 1500
+            },
+            "BridgeDeck": {
+                "zFloor": 19.2,
+                "thickness": 0.3,
+                "xAft": 52,
+                "xFwd": 80,
+                "yCentre": 0,
+                "breadth": 18,
+                "density": 1500
+            },
+            "Cdeck": {
+                "zFloor": 16.5,
+                "thickness": 0.3,
+                "xAft": 44,
+                "xFwd": 82,
+                "yCentre": 0,
+                "breadth": 18,
+                "density": 1500
+            },
+            "Bdeck": {
+                "zFloor": 13.8,
+                "thickness": 0.3,
+                "xAft": 44,
+                "xFwd": 82,
+                "yCentre": 0,
+                "breadth": 18,
+                "density": 1500
+            },
+            "Adeck": {
+                "zFloor": 10.9,
+                "thickness": 0.3,
+                "xAft": 0,
+                "xFwd": 82,
+                "yCentre": 0,
+                "breadth": 18,
+                "density": 1500
+            },
+            "MainDeck": {
+                "zFloor": 8,
+                "thickness": 0.3,
+                "xAft": 0,
+                "xFwd": 82,
+                "yCentre": 0,
+                "breadth": 18,
+                "density": 1500
+            },
+            "TweenDeck": {
+                "zFloor": 5.3,
+                "thickness": 0.3,
+                "xAft": 0,
+                "xFwd": 82,
+                "yCentre": 0,
+                "breadth": 18,
+                "density": 1500
+            },
+            "TankTop": {
+                "zFloor": 1,
+                "thickness": 0.3,
+                "xAft": 0,
+                "xFwd": 82,
+                "yCentre": 0,
+                "breadth": 18,
+                "density": 1500
+            }
+        },
+        "bulkheads": {
+            "AB": {
+                "xAft": 50,
+                "thickness": 0.1,
+                "density": 7850
+            }
+        }
+    },
+    "baseObjects": [
+        {
+            "id": "TankL2.1B6.13H4.3fdundefinedFtank1.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 2.1,
+                "breadth": 6.13,
+                "height": 4.3
+            },
+            "capabilities": {},
+            "file3D": "tank1.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "contentDensity": 1000,
+                "volumeCapacity": 43.47485139688601,
+                "lightweight": 553.539,
+                "fullnessCGMapping": {
+                    "fullnesses": [
+                        0,
+                        0.25,
+                        0.5,
+                        0.75,
+                        1
+                    ],
+                    "cgs": [
+                        [
+                            0,
+                            0,
+                            2.15
+                        ],
+                        [
+                            0,
+                            0,
+                            0.6449999999999999
+                        ],
+                        [
+                            0,
+                            0,
+                            1.2899999999999998
+                        ],
+                        [
+                            0,
+                            0,
+                            1.72
+                        ],
+                        [
+                            0,
+                            0,
+                            2.15
+                        ]
+                    ]
+                }
+            }
+        },
+        {
+            "id": "TankL2.1B6.13H4.3fdundefinedFundefined",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 2.1,
+                "breadth": 6.13,
+                "height": 4.3
+            },
+            "capabilities": {},
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "contentDensity": 1000,
+                "volumeCapacity": 43.47485139688601,
+                "lightweight": 553.539,
+                "fullnessCGMapping": {
+                    "fullnesses": [
+                        0,
+                        0.25,
+                        0.5,
+                        0.75,
+                        1
+                    ],
+                    "cgs": [
+                        [
+                            0,
+                            0,
+                            2.15
+                        ],
+                        [
+                            0,
+                            0,
+                            0.6449999999999999
+                        ],
+                        [
+                            0,
+                            0,
+                            1.2899999999999998
+                        ],
+                        [
+                            0,
+                            0,
+                            1.72
+                        ],
+                        [
+                            0,
+                            0,
+                            2.15
+                        ]
+                    ]
+                }
+            }
+        },
+        {
+            "id": "TankL4.199999999999999B6.7H4.3fdundefinedFtank2.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 4.199999999999999,
+                "breadth": 6.7,
+                "height": 4.3
+            },
+            "capabilities": {},
+            "file3D": "tank2.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "contentDensity": 1000,
+                "volumeCapacity": 95.03474856741802,
+                "lightweight": 1210.0199999999998,
+                "fullnessCGMapping": {
+                    "fullnesses": [
+                        0,
+                        0.25,
+                        0.5,
+                        0.75,
+                        1
+                    ],
+                    "cgs": [
+                        [
+                            0,
+                            0,
+                            2.15
+                        ],
+                        [
+                            0,
+                            0,
+                            0.6449999999999999
+                        ],
+                        [
+                            0,
+                            0,
+                            1.2899999999999998
+                        ],
+                        [
+                            0,
+                            0,
+                            1.72
+                        ],
+                        [
+                            0,
+                            0,
+                            2.15
+                        ]
+                    ]
+                }
+            }
+        },
+        {
+            "id": "TankL4.8999999999999995B6.1H4.3fdundefinedFtank3.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 4.8999999999999995,
+                "breadth": 6.1,
+                "height": 4.3
+            },
+            "capabilities": {},
+            "file3D": "tank3.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "contentDensity": 1000,
+                "volumeCapacity": 100.94486974698383,
+                "lightweight": 1285.2699999999995,
+                "fullnessCGMapping": {
+                    "fullnesses": [
+                        0,
+                        0.25,
+                        0.5,
+                        0.75,
+                        1
+                    ],
+                    "cgs": [
+                        [
+                            0,
+                            0,
+                            2.15
+                        ],
+                        [
+                            0,
+                            0,
+                            0.6449999999999999
+                        ],
+                        [
+                            0,
+                            0,
+                            1.2899999999999998
+                        ],
+                        [
+                            0,
+                            0,
+                            1.72
+                        ],
+                        [
+                            0,
+                            0,
+                            2.15
+                        ]
+                    ]
+                }
+            }
+        },
+        {
+            "id": "TankL6.699999999999999B5.5H4.3fdundefinedFtank4.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 6.699999999999999,
+                "breadth": 5.5,
+                "height": 4.3
+            },
+            "capabilities": {},
+            "file3D": "tank4.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "contentDensity": 1000,
+                "volumeCapacity": 124.45026598114265,
+                "lightweight": 1584.55,
+                "fullnessCGMapping": {
+                    "fullnesses": [
+                        0,
+                        0.25,
+                        0.5,
+                        0.75,
+                        1
+                    ],
+                    "cgs": [
+                        [
+                            0,
+                            0,
+                            2.15
+                        ],
+                        [
+                            0,
+                            0,
+                            0.6449999999999999
+                        ],
+                        [
+                            0,
+                            0,
+                            1.2899999999999998
+                        ],
+                        [
+                            0,
+                            0,
+                            1.72
+                        ],
+                        [
+                            0,
+                            0,
+                            2.15
+                        ]
+                    ]
+                }
+            }
+        },
+        {
+            "id": "PropulsionroomL3.5B4H4.3fdundefinedFPropulsionRoom.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 3.5,
+                "breadth": 4,
+                "height": 4.3
+            },
+            "capabilities": {},
+            "file3D": "",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 6020,
+                "cg": [
+                    0,
+                    0,
+                    2.15
+                ]
+            }
+        },
+        {
+            "id": "TankL4.200000000000003B1.5H5.3fdundefinedFtank5.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 4.200000000000003,
+                "breadth": 1.5,
+                "height": 5.3
+            },
+            "capabilities": {},
+            "file3D": "tank5.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "contentDensity": 1000,
+                "volumeCapacity": 26.224444675840815,
+                "lightweight": 333.9000000000002,
+                "fullnessCGMapping": {
+                    "fullnesses": [
+                        0,
+                        0.25,
+                        0.5,
+                        0.75,
+                        1
+                    ],
+                    "cgs": [
+                        [
+                            0,
+                            0,
+                            2.65
+                        ],
+                        [
+                            0,
+                            0,
+                            0.7949999999999999
+                        ],
+                        [
+                            0,
+                            0,
+                            1.5899999999999999
+                        ],
+                        [
+                            0,
+                            0,
+                            2.12
+                        ],
+                        [
+                            0,
+                            0,
+                            2.65
+                        ]
+                    ]
+                }
+            }
+        },
+        {
+            "id": "DryBulkL3.6999999999999993B3.5H5.3fdundefinedFDryBulk.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 3.6999999999999993,
+                "breadth": 3.5,
+                "height": 5.3
+            },
+            "capabilities": {},
+            "file3D": "DryBulk.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 6863.499999999998,
+                "cg": [
+                    0,
+                    0,
+                    2.65
+                ]
+            }
+        },
+        {
+            "id": "DryBulkL3.5B3.5H5.3fdundefinedFDryBulk.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 3.5,
+                "breadth": 3.5,
+                "height": 5.3
+            },
+            "capabilities": {},
+            "file3D": "DryBulk.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 6492.5,
+                "cg": [
+                    0,
+                    0,
+                    2.65
+                ]
+            }
+        },
+        {
+            "id": "FOOverFlowL3.5B3H4.3fdundefinedFFOOverFlow.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 3.5,
+                "breadth": 3,
+                "height": 4.3
+            },
+            "capabilities": {},
+            "file3D": "FOOverFlow.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 4515,
+                "cg": [
+                    0,
+                    0,
+                    2.15
+                ]
+            }
+        },
+        {
+            "id": "MudBrineOroSlopL3.5B5.5H5.3fdundefinedFMudBrineOroSlop.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 3.5,
+                "breadth": 5.5,
+                "height": 5.3
+            },
+            "capabilities": {},
+            "file3D": "MudBrineOroSlop.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 10202.5,
+                "cg": [
+                    0,
+                    0,
+                    2.65
+                ]
+            }
+        },
+        {
+            "id": "TankL6.5B1H5.3fdundefinedFtank6.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 6.5,
+                "breadth": 1,
+                "height": 5.3
+            },
+            "capabilities": {},
+            "file3D": "tank6.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "contentDensity": 1000,
+                "volumeCapacity": 27.056966729042095,
+                "lightweight": 344.5,
+                "fullnessCGMapping": {
+                    "fullnesses": [
+                        0,
+                        0.25,
+                        0.5,
+                        0.75,
+                        1
+                    ],
+                    "cgs": [
+                        [
+                            0,
+                            0,
+                            2.65
+                        ],
+                        [
+                            0,
+                            0,
+                            0.7949999999999999
+                        ],
+                        [
+                            0,
+                            0,
+                            1.5899999999999999
+                        ],
+                        [
+                            0,
+                            0,
+                            2.12
+                        ],
+                        [
+                            0,
+                            0,
+                            2.65
+                        ]
+                    ]
+                }
+            }
+        },
+        {
+            "id": "TankL3.5B2.5H5.3fdundefinedFtank7.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 3.5,
+                "breadth": 2.5,
+                "height": 5.3
+            },
+            "capabilities": {},
+            "file3D": "tank7.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "contentDensity": 1000,
+                "volumeCapacity": 36.422839827556665,
+                "lightweight": 463.75,
+                "fullnessCGMapping": {
+                    "fullnesses": [
+                        0,
+                        0.25,
+                        0.5,
+                        0.75,
+                        1
+                    ],
+                    "cgs": [
+                        [
+                            0,
+                            0,
+                            2.65
+                        ],
+                        [
+                            0,
+                            0,
+                            0.7949999999999999
+                        ],
+                        [
+                            0,
+                            0,
+                            1.5899999999999999
+                        ],
+                        [
+                            0,
+                            0,
+                            2.12
+                        ],
+                        [
+                            0,
+                            0,
+                            2.65
+                        ]
+                    ]
+                }
+            }
+        },
+        {
+            "id": "TankL1B1.5H5.3fdundefinedFtank8.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 1,
+                "breadth": 1.5,
+                "height": 5.3
+            },
+            "capabilities": {},
+            "file3D": "tank8.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "contentDensity": 1000,
+                "volumeCapacity": 6.243915399009714,
+                "lightweight": 79.5,
+                "fullnessCGMapping": {
+                    "fullnesses": [
+                        0,
+                        0.25,
+                        0.5,
+                        0.75,
+                        1
+                    ],
+                    "cgs": [
+                        [
+                            0,
+                            0,
+                            2.65
+                        ],
+                        [
+                            0,
+                            0,
+                            0.7949999999999999
+                        ],
+                        [
+                            0,
+                            0,
+                            1.5899999999999999
+                        ],
+                        [
+                            0,
+                            0,
+                            2.12
+                        ],
+                        [
+                            0,
+                            0,
+                            2.65
+                        ]
+                    ]
+                }
+            }
+        },
+        {
+            "id": "SewageL3.5B3H5.3fdundefinedFsewage.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 3.5,
+                "breadth": 3,
+                "height": 5.3
+            },
+            "capabilities": {},
+            "file3D": "sewage.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 5565,
+                "cg": [
+                    0,
+                    0,
+                    2.65
+                ]
+            }
+        },
+        {
+            "id": "TankL6B3H5.3fdundefinedFtank10.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 6,
+                "breadth": 3,
+                "height": 5.3
+            },
+            "capabilities": {},
+            "file3D": "tank10.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "contentDensity": 1000,
+                "volumeCapacity": 74.92698478811657,
+                "lightweight": 954,
+                "fullnessCGMapping": {
+                    "fullnesses": [
+                        0,
+                        0.25,
+                        0.5,
+                        0.75,
+                        1
+                    ],
+                    "cgs": [
+                        [
+                            0,
+                            0,
+                            2.65
+                        ],
+                        [
+                            0,
+                            0,
+                            0.7949999999999999
+                        ],
+                        [
+                            0,
+                            0,
+                            1.5899999999999999
+                        ],
+                        [
+                            0,
+                            0,
+                            2.12
+                        ],
+                        [
+                            0,
+                            0,
+                            2.65
+                        ]
+                    ]
+                }
+            }
+        },
+        {
+            "id": "TankL3.5B1.5H5.3fdundefinedFtank9.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 3.5,
+                "breadth": 1.5,
+                "height": 5.3
+            },
+            "capabilities": {},
+            "file3D": "tank9.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "contentDensity": 1000,
+                "volumeCapacity": 21.853703896534,
+                "lightweight": 278.25,
+                "fullnessCGMapping": {
+                    "fullnesses": [
+                        0,
+                        0.25,
+                        0.5,
+                        0.75,
+                        1
+                    ],
+                    "cgs": [
+                        [
+                            0,
+                            0,
+                            2.65
+                        ],
+                        [
+                            0,
+                            0,
+                            0.7949999999999999
+                        ],
+                        [
+                            0,
+                            0,
+                            1.5899999999999999
+                        ],
+                        [
+                            0,
+                            0,
+                            2.12
+                        ],
+                        [
+                            0,
+                            0,
+                            2.65
+                        ]
+                    ]
+                }
+            }
+        },
+        {
+            "id": "TankL10.5B3H5.3fdundefinedFtank11.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 10.5,
+                "breadth": 3,
+                "height": 5.3
+            },
+            "capabilities": {},
+            "file3D": "tank11.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "contentDensity": 850,
+                "volumeCapacity": 131.122223379204,
+                "lightweight": 1669.5,
+                "fullnessCGMapping": {
+                    "fullnesses": [
+                        0,
+                        0.25,
+                        0.5,
+                        0.75,
+                        1
+                    ],
+                    "cgs": [
+                        [
+                            0,
+                            0,
+                            2.65
+                        ],
+                        [
+                            0,
+                            0,
+                            0.7949999999999999
+                        ],
+                        [
+                            0,
+                            0,
+                            1.5899999999999999
+                        ],
+                        [
+                            0,
+                            0,
+                            2.12
+                        ],
+                        [
+                            0,
+                            0,
+                            2.65
+                        ]
+                    ]
+                }
+            }
+        },
+        {
+            "id": "TankL6.5B10H9.5fdundefinedFtank12.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 6.5,
+                "breadth": 10,
+                "height": 9.5
+            },
+            "capabilities": {},
+            "file3D": "tank12.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "contentDensity": 850,
+                "volumeCapacity": 484.98336589792433,
+                "lightweight": 6175,
+                "fullnessCGMapping": {
+                    "fullnesses": [
+                        0,
+                        0.25,
+                        0.5,
+                        0.75,
+                        1
+                    ],
+                    "cgs": [
+                        [
+                            0,
+                            0,
+                            4.75
+                        ],
+                        [
+                            0,
+                            0,
+                            1.425
+                        ],
+                        [
+                            0,
+                            0,
+                            2.85
+                        ],
+                        [
+                            0,
+                            0,
+                            3.8000000000000003
+                        ],
+                        [
+                            0,
+                            0,
+                            4.75
+                        ]
+                    ]
+                }
+            }
+        },
+        {
+            "id": "EngineRoomLowerL12B7H3.9fdundefinedFEngineRoomLower.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 12,
+                "breadth": 7,
+                "height": 3.9
+            },
+            "capabilities": {},
+            "file3D": "EngineRoomLower.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 32760,
+                "cg": [
+                    0,
+                    0,
+                    1.95
+                ]
+            }
+        },
+        {
+            "id": "BowThrusterRoomL12B3H3.9fdundefinedFBowThrusterRoom1.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 12,
+                "breadth": 3,
+                "height": 3.9
+            },
+            "capabilities": {},
+            "file3D": "BowThrusterRoom1.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 14040,
+                "cg": [
+                    0,
+                    0,
+                    1.95
+                ]
+            }
+        },
+        {
+            "id": "TankL3B9H2.7fdundefinedFtank13.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 3,
+                "breadth": 9,
+                "height": 2.7
+            },
+            "capabilities": {},
+            "file3D": "tank13.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "contentDensity": 1000,
+                "volumeCapacity": 57.25552611167398,
+                "lightweight": 729,
+                "fullnessCGMapping": {
+                    "fullnesses": [
+                        0,
+                        0.25,
+                        0.5,
+                        0.75,
+                        1
+                    ],
+                    "cgs": [
+                        [
+                            0,
+                            0,
+                            1.35
+                        ],
+                        [
+                            0,
+                            0,
+                            0.405
+                        ],
+                        [
+                            0,
+                            0,
+                            0.81
+                        ],
+                        [
+                            0,
+                            0,
+                            1.08
+                        ],
+                        [
+                            0,
+                            0,
+                            1.35
+                        ]
+                    ]
+                }
+            }
+        },
+        {
+            "id": "TankL4B3H2.7fdundefinedFtank14.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 4,
+                "breadth": 3,
+                "height": 2.7
+            },
+            "capabilities": {},
+            "file3D": "tank14.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "contentDensity": 1000,
+                "volumeCapacity": 25.446900494077326,
+                "lightweight": 324,
+                "fullnessCGMapping": {
+                    "fullnesses": [
+                        0,
+                        0.25,
+                        0.5,
+                        0.75,
+                        1
+                    ],
+                    "cgs": [
+                        [
+                            0,
+                            0,
+                            1.35
+                        ],
+                        [
+                            0,
+                            0,
+                            0.405
+                        ],
+                        [
+                            0,
+                            0,
+                            0.81
+                        ],
+                        [
+                            0,
+                            0,
+                            1.08
+                        ],
+                        [
+                            0,
+                            0,
+                            1.35
+                        ]
+                    ]
+                }
+            }
+        },
+        {
+            "id": "MotorLeftL6B4H2.7fdundefinedFMotors.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 6,
+                "breadth": 4,
+                "height": 2.7
+            },
+            "capabilities": {},
+            "file3D": "Motors.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 6480,
+                "cg": [
+                    0,
+                    0,
+                    1.35
+                ]
+            }
+        },
+        {
+            "id": "MotorRightL6B4H2.7fdundefinedFMotors.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 6,
+                "breadth": 4,
+                "height": 2.7
+            },
+            "capabilities": {},
+            "file3D": "Motors.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 6480,
+                "cg": [
+                    0,
+                    0,
+                    1.35
+                ]
+            }
+        },
+        {
+            "id": "PropulsionRoomUpperL6B4H2.7fdundefinedFPropulsionRoomUpper.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 6,
+                "breadth": 4,
+                "height": 2.7
+            },
+            "capabilities": {},
+            "file3D": "PropulsionRoomUpper.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 6480,
+                "cg": [
+                    0,
+                    0,
+                    1.35
+                ]
+            }
+        },
+        {
+            "id": "TankL3B18H2.7fdundefinedFtank15.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 3,
+                "breadth": 18,
+                "height": 2.7
+            },
+            "capabilities": {},
+            "file3D": "tank15.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "contentDensity": 1000,
+                "volumeCapacity": 114.51105222334796,
+                "lightweight": 1458,
+                "fullnessCGMapping": {
+                    "fullnesses": [
+                        0,
+                        0.25,
+                        0.5,
+                        0.75,
+                        1
+                    ],
+                    "cgs": [
+                        [
+                            0,
+                            0,
+                            1.35
+                        ],
+                        [
+                            0,
+                            0,
+                            0.405
+                        ],
+                        [
+                            0,
+                            0,
+                            0.81
+                        ],
+                        [
+                            0,
+                            0,
+                            1.08
+                        ],
+                        [
+                            0,
+                            0,
+                            1.35
+                        ]
+                    ]
+                }
+            }
+        },
+        {
+            "id": "TankL4.5B7H2.4fdundefinedFtank17.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 4.5,
+                "breadth": 7,
+                "height": 2.4
+            },
+            "capabilities": {},
+            "file3D": "tank17.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "contentDensity": 1000,
+                "volumeCapacity": 59.37610115284709,
+                "lightweight": 756,
+                "fullnessCGMapping": {
+                    "fullnesses": [
+                        0,
+                        0.25,
+                        0.5,
+                        0.75,
+                        1
+                    ],
+                    "cgs": [
+                        [
+                            0,
+                            0,
+                            1.2
+                        ],
+                        [
+                            0,
+                            0,
+                            0.36
+                        ],
+                        [
+                            0,
+                            0,
+                            0.72
+                        ],
+                        [
+                            0,
+                            0,
+                            0.96
+                        ],
+                        [
+                            0,
+                            0,
+                            1.2
+                        ]
+                    ]
+                }
+            }
+        },
+        {
+            "id": "TankL6B1H2.4fdundefinedFtank16.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 6,
+                "breadth": 1,
+                "height": 2.4
+            },
+            "capabilities": {},
+            "file3D": "tank16.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "contentDensity": 1000,
+                "volumeCapacity": 11.309733552923255,
+                "lightweight": 144,
+                "fullnessCGMapping": {
+                    "fullnesses": [
+                        0,
+                        0.25,
+                        0.5,
+                        0.75,
+                        1
+                    ],
+                    "cgs": [
+                        [
+                            0,
+                            0,
+                            1.2
+                        ],
+                        [
+                            0,
+                            0,
+                            0.36
+                        ],
+                        [
+                            0,
+                            0,
+                            0.72
+                        ],
+                        [
+                            0,
+                            0,
+                            0.96
+                        ],
+                        [
+                            0,
+                            0,
+                            1.2
+                        ]
+                    ]
+                }
+            }
+        },
+        {
+            "id": "SwitchBoardRoomL3.5B9H2.4fdundefinedFSwitchBoardRoom.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 3.5,
+                "breadth": 9,
+                "height": 2.4
+            },
+            "capabilities": {},
+            "file3D": "SwitchBoardRoom.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 7560,
+                "cg": [
+                    0,
+                    0,
+                    1.2
+                ]
+            }
+        },
+        {
+            "id": "EngineRoomUpperL8.5B7H2.4fdundefinedFEngineRoomUpper.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 8.5,
+                "breadth": 7,
+                "height": 2.4
+            },
+            "capabilities": {},
+            "file3D": "EngineRoomUpper.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 14280,
+                "cg": [
+                    0,
+                    0,
+                    1.2
+                ]
+            }
+        },
+        {
+            "id": "BowThrusterRoomL12B3H2.7fdundefinedFBowThursterRoom2.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 12,
+                "breadth": 3,
+                "height": 2.7
+            },
+            "capabilities": {},
+            "file3D": "BowThursterRoom2.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 9720,
+                "cg": [
+                    0,
+                    0,
+                    1.35
+                ]
+            }
+        },
+        {
+            "id": "WorkShopL3B2H2.4fdundefinedFWorkshop.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 3,
+                "breadth": 2,
+                "height": 2.4
+            },
+            "capabilities": {},
+            "file3D": "Workshop.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 1440,
+                "cg": [
+                    0,
+                    0,
+                    1.2
+                ]
+            }
+        },
+        {
+            "id": "ChainTankL1.5B1.5H5.6fdundefinedFChainTank.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 1.5,
+                "breadth": 1.5,
+                "height": 5.6
+            },
+            "capabilities": {},
+            "file3D": "ChainTank.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "contentDensity": 1000,
+                "volumeCapacity": 9.896016858807847,
+                "lightweight": 125.99999999999999,
+                "fullnessCGMapping": {
+                    "fullnesses": [
+                        0,
+                        0.25,
+                        0.5,
+                        0.75,
+                        1
+                    ],
+                    "cgs": [
+                        [
+                            0,
+                            0,
+                            2.8
+                        ],
+                        [
+                            0,
+                            0,
+                            0.84
+                        ],
+                        [
+                            0,
+                            0,
+                            1.68
+                        ],
+                        [
+                            0,
+                            0,
+                            2.2399999999999998
+                        ],
+                        [
+                            0,
+                            0,
+                            2.8
+                        ]
+                    ]
+                }
+            }
+        },
+        {
+            "id": "CoverL53B15H2.9fdundefinedFcover1.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 53,
+                "breadth": 15,
+                "height": 2.9
+            },
+            "capabilities": {},
+            "file3D": "cover1.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 230550,
+                "cg": [
+                    0,
+                    0,
+                    1.45
+                ]
+            }
+        },
+        {
+            "id": "TankL7B1.5H2.9fdundefinedFtank18.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 7,
+                "breadth": 1.5,
+                "height": 2.9
+            },
+            "capabilities": {},
+            "file3D": "tank18.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "contentDensity": 1000,
+                "volumeCapacity": 23.915374075452302,
+                "lightweight": 304.5,
+                "fullnessCGMapping": {
+                    "fullnesses": [
+                        0,
+                        0.25,
+                        0.5,
+                        0.75,
+                        1
+                    ],
+                    "cgs": [
+                        [
+                            0,
+                            0,
+                            1.45
+                        ],
+                        [
+                            0,
+                            0,
+                            0.435
+                        ],
+                        [
+                            0,
+                            0,
+                            0.87
+                        ],
+                        [
+                            0,
+                            0,
+                            1.16
+                        ],
+                        [
+                            0,
+                            0,
+                            1.45
+                        ]
+                    ]
+                }
+            }
+        },
+        {
+            "id": "TankL1B2H2.9fdundefinedFtank19.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 1,
+                "breadth": 2,
+                "height": 2.9
+            },
+            "capabilities": {},
+            "file3D": "tank19.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "contentDensity": 1000,
+                "volumeCapacity": 4.5553093477052,
+                "lightweight": 58,
+                "fullnessCGMapping": {
+                    "fullnesses": [
+                        0,
+                        0.25,
+                        0.5,
+                        0.75,
+                        1
+                    ],
+                    "cgs": [
+                        [
+                            0,
+                            0,
+                            1.45
+                        ],
+                        [
+                            0,
+                            0,
+                            0.435
+                        ],
+                        [
+                            0,
+                            0,
+                            0.87
+                        ],
+                        [
+                            0,
+                            0,
+                            1.16
+                        ],
+                        [
+                            0,
+                            0,
+                            1.45
+                        ]
+                    ]
+                }
+            }
+        },
+        {
+            "id": "FiremStoreL2.5B1.5H2.9fdundefinedFFiremStore.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 2.5,
+                "breadth": 1.5,
+                "height": 2.9
+            },
+            "capabilities": {},
+            "file3D": "FiremStore.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 1087.5,
+                "cg": [
+                    0,
+                    0,
+                    1.45
+                ]
+            }
+        },
+        {
+            "id": "DeckWorkshopL2.5B3.5H2.9fdundefinedFDeckWorkshop.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 2.5,
+                "breadth": 3.5,
+                "height": 2.9
+            },
+            "capabilities": {},
+            "file3D": "DeckWorkshop.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 2537.5,
+                "cg": [
+                    0,
+                    0,
+                    1.45
+                ]
+            }
+        },
+        {
+            "id": "TankL2B1.5H2.9fdundefinedFtank20.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 2,
+                "breadth": 1.5,
+                "height": 2.9
+            },
+            "capabilities": {},
+            "file3D": "tank20.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "contentDensity": 1000,
+                "volumeCapacity": 6.8329640215578,
+                "lightweight": 87,
+                "fullnessCGMapping": {
+                    "fullnesses": [
+                        0,
+                        0.25,
+                        0.5,
+                        0.75,
+                        1
+                    ],
+                    "cgs": [
+                        [
+                            0,
+                            0,
+                            1.45
+                        ],
+                        [
+                            0,
+                            0,
+                            0.435
+                        ],
+                        [
+                            0,
+                            0,
+                            0.87
+                        ],
+                        [
+                            0,
+                            0,
+                            1.16
+                        ],
+                        [
+                            0,
+                            0,
+                            1.45
+                        ]
+                    ]
+                }
+            }
+        },
+        {
+            "id": "StoreL2B2H2.9fdundefinedFStore1.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 2,
+                "breadth": 2,
+                "height": 2.9
+            },
+            "capabilities": {},
+            "file3D": "Store1.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 1160,
+                "cg": [
+                    0,
+                    0,
+                    1.45
+                ]
+            }
+        },
+        {
+            "id": "ChemL2.5B1.5H2.9fdundefinedFchem.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 2.5,
+                "breadth": 1.5,
+                "height": 2.9
+            },
+            "capabilities": {},
+            "file3D": "chem.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 1087.5,
+                "cg": [
+                    0,
+                    0,
+                    1.45
+                ]
+            }
+        },
+        {
+            "id": "PaintL2.5B1.5H2.9fdundefinedFpaint.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 2.5,
+                "breadth": 1.5,
+                "height": 2.9
+            },
+            "capabilities": {},
+            "file3D": "paint.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 1087.5,
+                "cg": [
+                    0,
+                    0,
+                    1.45
+                ]
+            }
+        },
+        {
+            "id": "Inc&GarbRoomL5B4.5H2.9fdundefinedFInc&GarbRoom.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 5,
+                "breadth": 4.5,
+                "height": 2.9
+            },
+            "capabilities": {},
+            "file3D": "Inc&GarbRoom.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 6525,
+                "cg": [
+                    0,
+                    0,
+                    1.45
+                ]
+            }
+        },
+        {
+            "id": "RoomL3.5B4.5H2.9fdundefinedFroom1.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 3.5,
+                "breadth": 4.5,
+                "height": 2.9
+            },
+            "capabilities": {},
+            "file3D": "room1.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 4567.5,
+                "cg": [
+                    0,
+                    0,
+                    1.45
+                ]
+            }
+        },
+        {
+            "id": "RoomL3.5B6H2.9fdundefinedFroom2.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 3.5,
+                "breadth": 6,
+                "height": 2.9
+            },
+            "capabilities": {},
+            "file3D": "room2.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 6090,
+                "cg": [
+                    0,
+                    0,
+                    1.45
+                ]
+            }
+        },
+        {
+            "id": "RoomL1.5B4.5H2.9fdundefinedFroom3.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 1.5,
+                "breadth": 4.5,
+                "height": 2.9
+            },
+            "capabilities": {},
+            "file3D": "room3.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 1957.5,
+                "cg": [
+                    0,
+                    0,
+                    1.45
+                ]
+            }
+        },
+        {
+            "id": "RoomL4B2H2.9fdundefinedFroom4.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 4,
+                "breadth": 2,
+                "height": 2.9
+            },
+            "capabilities": {},
+            "file3D": "room4.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 2320,
+                "cg": [
+                    0,
+                    0,
+                    1.45
+                ]
+            }
+        },
+        {
+            "id": "RoomL4B3.5H2.9fdundefinedFroom5.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 4,
+                "breadth": 3.5,
+                "height": 2.9
+            },
+            "capabilities": {},
+            "file3D": "room5.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 4060,
+                "cg": [
+                    0,
+                    0,
+                    1.45
+                ]
+            }
+        },
+        {
+            "id": "RoomL3.5B5H2.9fdundefinedFroom6.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 3.5,
+                "breadth": 5,
+                "height": 2.9
+            },
+            "capabilities": {},
+            "file3D": "room6.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 5075,
+                "cg": [
+                    0,
+                    0,
+                    1.45
+                ]
+            }
+        },
+        {
+            "id": "RoomL3.5B6H2.9fdundefinedFroom7.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 3.5,
+                "breadth": 6,
+                "height": 2.9
+            },
+            "capabilities": {},
+            "file3D": "room7.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 6090,
+                "cg": [
+                    0,
+                    0,
+                    1.45
+                ]
+            }
+        },
+        {
+            "id": "TankL1.5B4.5H2.9fdundefinedFtank21.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 1.5,
+                "breadth": 4.5,
+                "height": 2.9
+            },
+            "capabilities": {},
+            "file3D": "tank21.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "contentDensity": 1000,
+                "volumeCapacity": 15.374169048505049,
+                "lightweight": 195.75,
+                "fullnessCGMapping": {
+                    "fullnesses": [
+                        0,
+                        0.25,
+                        0.5,
+                        0.75,
+                        1
+                    ],
+                    "cgs": [
+                        [
+                            0,
+                            0,
+                            1.45
+                        ],
+                        [
+                            0,
+                            0,
+                            0.435
+                        ],
+                        [
+                            0,
+                            0,
+                            0.87
+                        ],
+                        [
+                            0,
+                            0,
+                            1.16
+                        ],
+                        [
+                            0,
+                            0,
+                            1.45
+                        ]
+                    ]
+                }
+            }
+        },
+        {
+            "id": "RoomL7B5H2.9fdundefinedFroom8.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 7,
+                "breadth": 5,
+                "height": 2.9
+            },
+            "capabilities": {},
+            "file3D": "room8.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 10150,
+                "cg": [
+                    0,
+                    0,
+                    1.45
+                ]
+            }
+        },
+        {
+            "id": "ToiletsL1B2.5H2.9fdundefinedFtoilets1.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 1,
+                "breadth": 2.5,
+                "height": 2.9
+            },
+            "capabilities": {},
+            "file3D": "toilets1.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 725,
+                "cg": [
+                    0,
+                    0,
+                    1.45
+                ]
+            }
+        },
+        {
+            "id": "DeckOfficeL2.5B6.5H2.9fdundefinedFDeckOffice1.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 2.5,
+                "breadth": 6.5,
+                "height": 2.9
+            },
+            "capabilities": {},
+            "file3D": "DeckOffice1.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 4712.5,
+                "cg": [
+                    0,
+                    0,
+                    1.45
+                ]
+            }
+        },
+        {
+            "id": "CoverL53.5B15H2fdundefinedFcover2.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 53.5,
+                "breadth": 15,
+                "height": 2
+            },
+            "capabilities": {},
+            "file3D": "cover2.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 160500,
+                "cg": [
+                    0,
+                    0,
+                    1
+                ]
+            }
+        },
+        {
+            "id": "StabTankL3.5B18H2.9fdundefinedFStabTank.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 3.5,
+                "breadth": 18,
+                "height": 2.9
+            },
+            "capabilities": {},
+            "file3D": "StabTank.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "contentDensity": 1000,
+                "volumeCapacity": 143.4922444527138,
+                "lightweight": 1827,
+                "fullnessCGMapping": {
+                    "fullnesses": [
+                        0,
+                        0.25,
+                        0.5,
+                        0.75,
+                        1
+                    ],
+                    "cgs": [
+                        [
+                            0,
+                            0,
+                            1.45
+                        ],
+                        [
+                            0,
+                            0,
+                            0.435
+                        ],
+                        [
+                            0,
+                            0,
+                            0.87
+                        ],
+                        [
+                            0,
+                            0,
+                            1.16
+                        ],
+                        [
+                            0,
+                            0,
+                            1.45
+                        ]
+                    ]
+                }
+            }
+        },
+        {
+            "id": "FreezerL3.5B2H2.9fdundefinedFfreezer.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 3.5,
+                "breadth": 2,
+                "height": 2.9
+            },
+            "capabilities": {},
+            "file3D": "freezer.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 2030,
+                "cg": [
+                    0,
+                    0,
+                    1.45
+                ]
+            }
+        },
+        {
+            "id": "FridgeL4B1.5H2.9fdundefinedFfridge.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 4,
+                "breadth": 1.5,
+                "height": 2.9
+            },
+            "capabilities": {},
+            "file3D": "fridge.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 1740,
+                "cg": [
+                    0,
+                    0,
+                    1.45
+                ]
+            }
+        },
+        {
+            "id": "DryRoomL7.5B3H2.9fdundefinedFDryRoom.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 7.5,
+                "breadth": 3,
+                "height": 2.9
+            },
+            "capabilities": {},
+            "file3D": "DryRoom.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 6525,
+                "cg": [
+                    0,
+                    0,
+                    1.45
+                ]
+            }
+        },
+        {
+            "id": "RoomL2.5B8H2.9fdundefinedFroom9.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 2.5,
+                "breadth": 8,
+                "height": 2.9
+            },
+            "capabilities": {},
+            "file3D": "room9.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 5800,
+                "cg": [
+                    0,
+                    0,
+                    1.45
+                ]
+            }
+        },
+        {
+            "id": "ACRoomL7.5B5H2.9fdundefinedFACRoom1.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 7.5,
+                "breadth": 5,
+                "height": 2.9
+            },
+            "capabilities": {},
+            "file3D": "ACRoom1.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 10875,
+                "cg": [
+                    0,
+                    0,
+                    1.45
+                ]
+            }
+        },
+        {
+            "id": "RoomL5B5H2.9fdundefinedFroom10.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 5,
+                "breadth": 5,
+                "height": 2.9
+            },
+            "capabilities": {},
+            "file3D": "room10.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 7250,
+                "cg": [
+                    0,
+                    0,
+                    1.45
+                ]
+            }
+        },
+        {
+            "id": "CLL2.5B2H2.9fdundefinedFCL1.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 2.5,
+                "breadth": 2,
+                "height": 2.9
+            },
+            "capabilities": {},
+            "file3D": "CL1.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 1450,
+                "cg": [
+                    0,
+                    0,
+                    1.45
+                ]
+            }
+        },
+        {
+            "id": "ToiletsL2.5B2H2.9fdundefinedFtoilets2.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 2.5,
+                "breadth": 2,
+                "height": 2.9
+            },
+            "capabilities": {},
+            "file3D": "toilets2.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 1450,
+                "cg": [
+                    0,
+                    0,
+                    1.45
+                ]
+            }
+        },
+        {
+            "id": "GalleryL5.5B5H2.9fdundefinedFgallery1.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 5.5,
+                "breadth": 5,
+                "height": 2.9
+            },
+            "capabilities": {},
+            "file3D": "gallery1.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 7975,
+                "cg": [
+                    0,
+                    0,
+                    1.45
+                ]
+            }
+        },
+        {
+            "id": "DayRoomL5.5B6H2.9fdundefinedFDayRoom1.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 5.5,
+                "breadth": 6,
+                "height": 2.9
+            },
+            "capabilities": {},
+            "file3D": "DayRoom1.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 9570,
+                "cg": [
+                    0,
+                    0,
+                    1.45
+                ]
+            }
+        },
+        {
+            "id": "MessRoomL4B13H2.9fdundefinedFMessRoom1.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 4,
+                "breadth": 13,
+                "height": 2.9
+            },
+            "capabilities": {},
+            "file3D": "MessRoom1.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 15080,
+                "cg": [
+                    0,
+                    0,
+                    1.45
+                ]
+            }
+        },
+        {
+            "id": "RopeBinL1.5B3H2.9fdundefinedFRopeBin1.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 1.5,
+                "breadth": 3,
+                "height": 2.9
+            },
+            "capabilities": {},
+            "file3D": "RopeBin1.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 1305,
+                "cg": [
+                    0,
+                    0,
+                    1.45
+                ]
+            }
+        },
+        {
+            "id": "StoreL1.5B4H2.9fdundefinedFstore.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 1.5,
+                "breadth": 4,
+                "height": 2.9
+            },
+            "capabilities": {},
+            "file3D": "store.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 1740,
+                "cg": [
+                    0,
+                    0,
+                    1.45
+                ]
+            }
+        },
+        {
+            "id": "StoreL6.5B10H2.9fdundefinedFstore2.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 6.5,
+                "breadth": 10,
+                "height": 2.9
+            },
+            "capabilities": {},
+            "file3D": "store2.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 18850,
+                "cg": [
+                    0,
+                    0,
+                    1.45
+                ]
+            }
+        },
+        {
+            "id": "CableRoomL10.5B14H2.7fdundefinedFCableRoom1.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 10.5,
+                "breadth": 14,
+                "height": 2.7
+            },
+            "capabilities": {},
+            "file3D": "CableRoom1.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 39690,
+                "cg": [
+                    0,
+                    0,
+                    1.35
+                ]
+            }
+        },
+        {
+            "id": "CabinL2.5B4H2.7fdundefinedFcabin1.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 2.5,
+                "breadth": 4,
+                "height": 2.7
+            },
+            "capabilities": {},
+            "file3D": "cabin1.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 2700,
+                "cg": [
+                    0,
+                    0,
+                    1.35
+                ]
+            }
+        },
+        {
+            "id": "CabinL4.5B4H2.7fdundefinedFcabin2.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 4.5,
+                "breadth": 4,
+                "height": 2.7
+            },
+            "capabilities": {},
+            "file3D": "cabin2.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 4860,
+                "cg": [
+                    0,
+                    0,
+                    1.35
+                ]
+            }
+        },
+        {
+            "id": "TankL5.5B4H5.3fdundefinedFtank22.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 5.5,
+                "breadth": 4,
+                "height": 5.3
+            },
+            "capabilities": {},
+            "file3D": "tank22.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "contentDensity": 1000,
+                "volumeCapacity": 91.57742585214245,
+                "lightweight": 1166,
+                "fullnessCGMapping": {
+                    "fullnesses": [
+                        0,
+                        0.25,
+                        0.5,
+                        0.75,
+                        1
+                    ],
+                    "cgs": [
+                        [
+                            0,
+                            0,
+                            2.65
+                        ],
+                        [
+                            0,
+                            0,
+                            0.7949999999999999
+                        ],
+                        [
+                            0,
+                            0,
+                            1.5899999999999999
+                        ],
+                        [
+                            0,
+                            0,
+                            2.12
+                        ],
+                        [
+                            0,
+                            0,
+                            2.65
+                        ]
+                    ]
+                }
+            }
+        },
+        {
+            "id": "RoomL4.5B8H2.7fdundefinedFroom11.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 4.5,
+                "breadth": 8,
+                "height": 2.7
+            },
+            "capabilities": {},
+            "file3D": "room11.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 9720,
+                "cg": [
+                    0,
+                    0,
+                    1.35
+                ]
+            }
+        },
+        {
+            "id": "CabinL5B4.5H2.7fdundefinedFcabin3.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 5,
+                "breadth": 4.5,
+                "height": 2.7
+            },
+            "capabilities": {},
+            "file3D": "cabin3.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 6075,
+                "cg": [
+                    0,
+                    0,
+                    1.35
+                ]
+            }
+        },
+        {
+            "id": "CabinL5B6.5H2.7fdundefinedFcabin5.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 5,
+                "breadth": 6.5,
+                "height": 2.7
+            },
+            "capabilities": {},
+            "file3D": "cabin5.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 8775,
+                "cg": [
+                    0,
+                    0,
+                    1.35
+                ]
+            }
+        },
+        {
+            "id": "CabinL2.5B5H2.7fdundefinedFcabin4.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 2.5,
+                "breadth": 5,
+                "height": 2.7
+            },
+            "capabilities": {},
+            "file3D": "cabin4.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 3375,
+                "cg": [
+                    0,
+                    0,
+                    1.35
+                ]
+            }
+        },
+        {
+            "id": "CorridorExtL3.5B13.5H2.7fdundefinedFcorridor.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 3.5,
+                "breadth": 13.5,
+                "height": 2.7
+            },
+            "capabilities": {},
+            "file3D": "corridor.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 12757.5,
+                "cg": [
+                    0,
+                    0,
+                    1.35
+                ]
+            }
+        },
+        {
+            "id": "InstrumentRoomL5.5B3.5H2.7fdundefinedFInstrumentRoom.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 5.5,
+                "breadth": 3.5,
+                "height": 2.7
+            },
+            "capabilities": {},
+            "file3D": "InstrumentRoom.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 5197.5,
+                "cg": [
+                    0,
+                    0,
+                    1.35
+                ]
+            }
+        },
+        {
+            "id": "CaptainCabinL6B5H2.7fdundefinedFCaptainCabin.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 6,
+                "breadth": 5,
+                "height": 2.7
+            },
+            "capabilities": {},
+            "file3D": "CaptainCabin.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 8100.000000000001,
+                "cg": [
+                    0,
+                    0,
+                    1.35
+                ]
+            }
+        },
+        {
+            "id": "ChiefOfficerCabinL3B4.5H2.7fdundefinedFChiefOfficerCabin.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 3,
+                "breadth": 4.5,
+                "height": 2.7
+            },
+            "capabilities": {},
+            "file3D": "ChiefOfficerCabin.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 3645.0000000000005,
+                "cg": [
+                    0,
+                    0,
+                    1.35
+                ]
+            }
+        },
+        {
+            "id": "FirstOfficerCabinL3B4H2.7fdundefinedFFirstOfficerCabin.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 3,
+                "breadth": 4,
+                "height": 2.7
+            },
+            "capabilities": {},
+            "file3D": "FirstOfficerCabin.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 3240,
+                "cg": [
+                    0,
+                    0,
+                    1.35
+                ]
+            }
+        },
+        {
+            "id": "ChiefStewardCabinL6B6H2.7fdundefinedFChiefStewardCabin.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 6,
+                "breadth": 6,
+                "height": 2.7
+            },
+            "capabilities": {},
+            "file3D": "ChiefStewardCabin.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 9720,
+                "cg": [
+                    0,
+                    0,
+                    1.35
+                ]
+            }
+        },
+        {
+            "id": "ElectricianCabinL6B6H2.7fdundefinedFElectricianCabin.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 6,
+                "breadth": 6,
+                "height": 2.7
+            },
+            "capabilities": {},
+            "file3D": "ElectricianCabin.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 9720,
+                "cg": [
+                    0,
+                    0,
+                    1.35
+                ]
+            }
+        },
+        {
+            "id": "CleanLockerL1.5B2H2.7fdundefinedFSmallRoom.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 1.5,
+                "breadth": 2,
+                "height": 2.7
+            },
+            "capabilities": {},
+            "file3D": "SmallRoom.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 810,
+                "cg": [
+                    0,
+                    0,
+                    1.35
+                ]
+            }
+        },
+        {
+            "id": "BondStoreL1.5B2H2.7fdundefinedFSmallRoom.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 1.5,
+                "breadth": 2,
+                "height": 2.7
+            },
+            "capabilities": {},
+            "file3D": "SmallRoom.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 810,
+                "cg": [
+                    0,
+                    0,
+                    1.35
+                ]
+            }
+        },
+        {
+            "id": "LinenL1.5B2H2.7fdundefinedFSmallRoom.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 1.5,
+                "breadth": 2,
+                "height": 2.7
+            },
+            "capabilities": {},
+            "file3D": "SmallRoom.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 810,
+                "cg": [
+                    0,
+                    0,
+                    1.35
+                ]
+            }
+        },
+        {
+            "id": "ChiefCabinL6B5H2.7fdundefinedFChiefCabin.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 6,
+                "breadth": 5,
+                "height": 2.7
+            },
+            "capabilities": {},
+            "file3D": "ChiefCabin.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 8100.000000000001,
+                "cg": [
+                    0,
+                    0,
+                    1.35
+                ]
+            }
+        },
+        {
+            "id": "FirstEngineerCabinL2.5B4H2.7fdundefinedFFirstEngineerCabin.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 2.5,
+                "breadth": 4,
+                "height": 2.7
+            },
+            "capabilities": {},
+            "file3D": "FirstEngineerCabin.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 2700,
+                "cg": [
+                    0,
+                    0,
+                    1.35
+                ]
+            }
+        },
+        {
+            "id": "SecondEngineerCabinL2B3.5H2.7fdundefinedFSecondEngineerCabin.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 2,
+                "breadth": 3.5,
+                "height": 2.7
+            },
+            "capabilities": {},
+            "file3D": "SecondEngineerCabin.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 1890.0000000000002,
+                "cg": [
+                    0,
+                    0,
+                    1.35
+                ]
+            }
+        },
+        {
+            "id": "HoistL1B9H4.15fdundefinedFhoist.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 1,
+                "breadth": 9,
+                "height": 4.15
+            },
+            "capabilities": {},
+            "file3D": "hoist.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 3735.0000000000005,
+                "cg": [
+                    0,
+                    0,
+                    2.075
+                ]
+            }
+        },
+        {
+            "id": "ShipHandingL7B8H4.15fdundefinedFShipHanding.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 7,
+                "breadth": 8,
+                "height": 4.15
+            },
+            "capabilities": {},
+            "file3D": "ShipHanding.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 23240.000000000004,
+                "cg": [
+                    0,
+                    0,
+                    2.075
+                ]
+            }
+        },
+        {
+            "id": "MainRoomL8B16H4.15fdundefinedFMainRoom.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 8,
+                "breadth": 16,
+                "height": 4.15
+            },
+            "capabilities": {},
+            "file3D": "MainRoom.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 53120.00000000001,
+                "cg": [
+                    0,
+                    0,
+                    2.075
+                ]
+            }
+        },
+        {
+            "id": "NavigationRoomL9B8H4.15fdundefinedFNavigationRoom.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 9,
+                "breadth": 8,
+                "height": 4.15
+            },
+            "capabilities": {},
+            "file3D": "NavigationRoom.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 29880.000000000004,
+                "cg": [
+                    0,
+                    0,
+                    2.075
+                ]
+            }
+        },
+        {
+            "id": "EmGenRoomL11B6H5fdundefinedFEmGenRoom.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 11,
+                "breadth": 6,
+                "height": 5
+            },
+            "capabilities": {},
+            "file3D": "EmGenRoom.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 33000,
+                "cg": [
+                    0,
+                    0,
+                    2.5
+                ]
+            }
+        },
+        {
+            "id": "CommunicationL11B3H5fdundefinedFCommunicationRoom.stl",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 11,
+                "breadth": 3,
+                "height": 5
+            },
+            "capabilities": {},
+            "file3D": "CommunicationRoom.stl",
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 16500,
+                "cg": [
+                    0,
+                    0,
+                    2.5
+                ]
+            }
+        },
+        {
+            "id": "block1",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 20,
+                "breadth": 15,
+                "height": 4.3
+            },
+            "capabilities": {},
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 16500,
+                "cg": [
+                    0,
+                    0,
+                    2.5
+                ]
+            }
+        },
+        {
+            "id": "block2",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 20,
+                "breadth": 15,
+                "height": 7.0
+            },
+            "capabilities": {},
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 16500,
+                "cg": [
+                    0,
+                    0,
+                    2.5
+                ]
+            }
+        },
+        {
+            "id": "block3",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 20,
+                "breadth": 15,
+                "height": 4.3
+            },
+            "capabilities": {},
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 16500,
+                "cg": [
+                    0,
+                    0,
+                    2.5
+                ]
+            }
+        }
+    ],
+    "derivedObjects": [
+        {
+            "id": "block1",
+            "baseObject": "block1",
+            "style": {
+                "opacity": 1.0,
+                "color": "#fc0303"
+            },
+            "affiliations": {
+                "Deck": "TankTop",
+                "SFI": "201"
+            },
+            "referenceState": {
+                "xCentre": 63,
+                "yCentre": 0,
+                "zBase": 1.0
+            }
+        },
+        {
+            "id": "block2",
+            "baseObject": "block2",
+            "style": {
+                "opacity": 1.0,
+                "color": "#aabbcc"
+            },
+            "affiliations": {
+                "Deck": "TankTop",
+                "SFI": "201"
+            },
+            "referenceState": {
+                "xCentre": 40,
+                "yCentre": 0,
+                "zBase": 1.0
+            }
+        },
+        {
+            "id": "block3",
+            "baseObject": "block3",
+            "style": {
+                "opacity": 1.0,
+                "color": "#aabbcc"
+            },
+            "affiliations": {
+                "Deck": "TankTop",
+                "SFI": "201"
+            },
+            "referenceState": {
+                "xCentre": 18,
+                "yCentre": 0,
+                "zBase": 1.0
+            }
+        },
+        {
+            "id": "Tank27",
+            "baseObject": "TankL3B9H2.7fdundefinedFtank13.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#fc0303"
+            },
+            "affiliations": {
+                "Deck": "TweenDeck",
+                "SFI": "201"
+            },
+            "referenceState": {
+                "xCentre": 1.5,
+                "yCentre": 4.5,
+                "zBase": 5.3
+            }
+        },
+        {
+            "id": "Tank28",
+            "baseObject": "TankL3B9H2.7fdundefinedFtank13.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#fc0303"
+            },
+            "affiliations": {
+                "Deck": "TweenDeck",
+                "SFI": "202"
+            },
+            "referenceState": {
+                "xCentre": 1.5,
+                "yCentre": -4.5,
+                "zBase": 5.3
+            }
+        },
+        {
+            "id": "Tank28",
+            "baseObject": "TankL4B3H2.7fdundefinedFtank14.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#fc0303"
+            },
+            "affiliations": {
+                "Deck": "TweenDeck",
+                "SFI": "203"
+            },
+            "referenceState": {
+                "xCentre": 5,
+                "yCentre": 7.5,
+                "zBase": 5.3
+            }
+        },
+        {
+            "id": "Tank29",
+            "baseObject": "TankL4B3H2.7fdundefinedFtank14.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#fc0303"
+            },
+            "affiliations": {
+                "Deck": "TweenDeck",
+                "SFI": "204"
+            },
+            "referenceState": {
+                "xCentre": 5,
+                "yCentre": -7.5,
+                "zBase": 5.3
+            }
+        },
+        {
+            "id": "MotorLeft1",
+            "baseObject": "MotorLeftL6B4H2.7fdundefinedFMotors.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#fcfc03"
+            },
+            "affiliations": {
+                "Deck": "TweenDeck",
+                "SFI": "205"
+            },
+            "referenceState": {
+                "xCentre": 6,
+                "yCentre": 4,
+                "zBase": 5.3
+            }
+        },
+        {
+            "id": "MotorRight1",
+            "baseObject": "MotorRightL6B4H2.7fdundefinedFMotors.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#fcfc03"
+            },
+            "affiliations": {
+                "Deck": "TweenDeck",
+                "SFI": "206"
+            },
+            "referenceState": {
+                "xCentre": 6,
+                "yCentre": -4,
+                "zBase": 5.3
+            }
+        },
+        {
+            "id": "PropulsionRoomUpper",
+            "baseObject": "PropulsionRoomUpperL6B4H2.7fdundefinedFPropulsionRoomUpper.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#fcfc03"
+            },
+            "affiliations": {
+                "Deck": "TweenDeck",
+                "SFI": "207"
+            },
+            "referenceState": {
+                "xCentre": 6,
+                "yCentre": 0,
+                "zBase": 5.3
+            }
+        },
+        {
+            "id": "Tank30",
+            "baseObject": "TankL3B18H2.7fdundefinedFtank15.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#fc0303"
+            },
+            "affiliations": {
+                "Deck": "TweenDeck",
+                "SFI": "208"
+            },
+            "referenceState": {
+                "xCentre": 10.5,
+                "yCentre": 0,
+                "zBase": 5.3
+            }
+        },
+        {
+            "id": "Tank31",
+            "baseObject": "TankL4.5B7H2.4fdundefinedFtank17.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#fc0303"
+            },
+            "affiliations": {
+                "Deck": "TweenDeck",
+                "SFI": "209"
+            },
+            "referenceState": {
+                "xCentre": 14.75,
+                "yCentre": 4.5,
+                "zBase": 5.3
+            }
+        },
+        {
+            "id": "Tank32",
+            "baseObject": "TankL4.5B7H2.4fdundefinedFtank17.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#fc0303"
+            },
+            "affiliations": {
+                "Deck": "TweenDeck",
+                "SFI": "210"
+            },
+            "referenceState": {
+                "xCentre": 14.75,
+                "yCentre": -4.5,
+                "zBase": 5.3
+            }
+        },
+        {
+            "id": "Tank33",
+            "baseObject": "TankL6B1H2.4fdundefinedFtank16.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#fc0303"
+            },
+            "affiliations": {
+                "Deck": "TweenDeck",
+                "SFI": "211"
+            },
+            "referenceState": {
+                "xCentre": 15,
+                "yCentre": 8.5,
+                "zBase": 5.3
+            }
+        },
+        {
+            "id": "Tank34",
+            "baseObject": "TankL6B1H2.4fdundefinedFtank16.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#fc0303"
+            },
+            "affiliations": {
+                "Deck": "TweenDeck",
+                "SFI": "212"
+            },
+            "referenceState": {
+                "xCentre": 15,
+                "yCentre": -8.5,
+                "zBase": 5.3
+            }
+        },
+        {
+            "id": "SwitchBoardRoom1",
+            "baseObject": "SwitchBoardRoomL3.5B9H2.4fdundefinedFSwitchBoardRoom.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#fcfc03"
+            },
+            "affiliations": {
+                "Deck": "TweenDeck",
+                "SFI": "213"
+            },
+            "referenceState": {
+                "xCentre": 51.75,
+                "yCentre": 0,
+                "zBase": 5.3
+            }
+        },
+        {
+            "id": "EngineRoomUpper1",
+            "baseObject": "EngineRoomUpperL8.5B7H2.4fdundefinedFEngineRoomUpper.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#fcfc03"
+            },
+            "affiliations": {
+                "Deck": "TweenDeck",
+                "SFI": "214"
+            },
+            "referenceState": {
+                "xCentre": 57.75,
+                "yCentre": 0,
+                "zBase": 5.3
+            }
+        },
+        {
+            "id": "BowThrusterRoom2",
+            "baseObject": "BowThrusterRoomL12B3H2.7fdundefinedFBowThursterRoom2.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#fcfc03"
+            },
+            "affiliations": {
+                "Deck": "TweenDeck",
+                "SFI": "215"
+            },
+            "referenceState": {
+                "xCentre": 68,
+                "yCentre": 0,
+                "zBase": 5.3
+            }
+        },
+        {
+            "id": "WorkShop1",
+            "baseObject": "WorkShopL3B2H2.4fdundefinedFWorkshop.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#fcfc03"
+            },
+            "affiliations": {
+                "Deck": "TweenDeck",
+                "SFI": "216"
+            },
+            "referenceState": {
+                "xCentre": 63.5,
+                "yCentre": -2.5,
+                "zBase": 5.3
+            }
+        },
+        {
+            "id": "ChainTank1",
+            "baseObject": "ChainTankL1.5B1.5H5.6fdundefinedFChainTank.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#fcfc03"
+            },
+            "affiliations": {
+                "Deck": "TweenDeck",
+                "SFI": "217"
+            },
+            "referenceState": {
+                "xCentre": 74.75,
+                "yCentre": 0.75,
+                "zBase": 5.3
+            }
+        },
+        {
+            "id": "ChainTank2",
+            "baseObject": "ChainTankL1.5B1.5H5.6fdundefinedFChainTank.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#fcfc03"
+            },
+            "affiliations": {
+                "Deck": "TweenDeck",
+                "SFI": "218"
+            },
+            "referenceState": {
+                "xCentre": 74.75,
+                "yCentre": -0.75,
+                "zBase": 5.3
+            }
+        },
+        {
+            "id": "Cover1",
+            "baseObject": "CoverL53B15H2.9fdundefinedFcover1.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#aabbcc"
+            },
+            "affiliations": {
+                "Deck": "MainDeck",
+                "SFI": "301"
+            },
+            "referenceState": {
+                "xCentre": 27,
+                "yCentre": 0,
+                "zBase": 8
+            }
+        },
+        {
+            "id": "Tank35",
+            "baseObject": "TankL7B1.5H2.9fdundefinedFtank18.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#fc0303"
+            },
+            "affiliations": {
+                "Deck": "MainDeck",
+                "SFI": "302"
+            },
+            "referenceState": {
+                "xCentre": 30.5,
+                "yCentre": 8.25,
+                "zBase": 8
+            }
+        },
+        {
+            "id": "Tank36",
+            "baseObject": "TankL7B1.5H2.9fdundefinedFtank18.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#fc0303"
+            },
+            "affiliations": {
+                "Deck": "MainDeck",
+                "SFI": "303"
+            },
+            "referenceState": {
+                "xCentre": 30.5,
+                "yCentre": -8.25,
+                "zBase": 8
+            }
+        },
+        {
+            "id": "Tank37",
+            "baseObject": "TankL7B1.5H2.9fdundefinedFtank18.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#fc0303"
+            },
+            "affiliations": {
+                "Deck": "MainDeck",
+                "SFI": "304"
+            },
+            "referenceState": {
+                "xCentre": 37.5,
+                "yCentre": 8.25,
+                "zBase": 8
+            }
+        },
+        {
+            "id": "Tank38",
+            "baseObject": "TankL7B1.5H2.9fdundefinedFtank18.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#fc0303"
+            },
+            "affiliations": {
+                "Deck": "MainDeck",
+                "SFI": "305"
+            },
+            "referenceState": {
+                "xCentre": 37.5,
+                "yCentre": -8.25,
+                "zBase": 8
+            }
+        },
+        {
+            "id": "Tank39",
+            "baseObject": "TankL1B2H2.9fdundefinedFtank19.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#fc0303"
+            },
+            "affiliations": {
+                "Deck": "MainDeck",
+                "SFI": "306"
+            },
+            "referenceState": {
+                "xCentre": 54,
+                "yCentre": 0,
+                "zBase": 8
+            }
+        },
+        {
+            "id": "FiremStore",
+            "baseObject": "FiremStoreL2.5B1.5H2.9fdundefinedFFiremStore.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#fcfc03"
+            },
+            "affiliations": {
+                "Deck": "MainDeck",
+                "SFI": "307"
+            },
+            "referenceState": {
+                "xCentre": 58.25,
+                "yCentre": 8.25,
+                "zBase": 8
+            }
+        },
+        {
+            "id": "DeckWorkshop",
+            "baseObject": "DeckWorkshopL2.5B3.5H2.9fdundefinedFDeckWorkshop.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#fcfc03"
+            },
+            "affiliations": {
+                "Deck": "MainDeck",
+                "SFI": "308"
+            },
+            "referenceState": {
+                "xCentre": 58.25,
+                "yCentre": 5.75,
+                "zBase": 8
+            }
+        },
+        {
+            "id": "Tank40",
+            "baseObject": "TankL2B1.5H2.9fdundefinedFtank20.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#fc0303"
+            },
+            "affiliations": {
+                "Deck": "MainDeck",
+                "SFI": "309"
+            },
+            "referenceState": {
+                "xCentre": 58.5,
+                "yCentre": 3.25,
+                "zBase": 8
+            }
+        },
+        {
+            "id": "Store1",
+            "baseObject": "StoreL2B2H2.9fdundefinedFStore1.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#fc0303"
+            },
+            "affiliations": {
+                "Deck": "MainDeck",
+                "SFI": "310"
+            },
+            "referenceState": {
+                "xCentre": 58.5,
+                "yCentre": 1.5,
+                "zBase": 8
+            }
+        },
+        {
+            "id": "Tank40",
+            "baseObject": "TankL2B1.5H2.9fdundefinedFtank20.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#fc0303"
+            },
+            "affiliations": {
+                "Deck": "MainDeck",
+                "SFI": "311"
+            },
+            "referenceState": {
+                "xCentre": 58.5,
+                "yCentre": -3.25,
+                "zBase": 8
+            }
+        },
+        {
+            "id": "Chem",
+            "baseObject": "ChemL2.5B1.5H2.9fdundefinedFchem.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#aabbcc"
+            },
+            "affiliations": {
+                "Deck": "MainDeck",
+                "SFI": "312"
+            },
+            "referenceState": {
+                "xCentre": 58.25,
+                "yCentre": -8.25,
+                "zBase": 8
+            }
+        },
+        {
+            "id": "Paint",
+            "baseObject": "PaintL2.5B1.5H2.9fdundefinedFpaint.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#aabbcc"
+            },
+            "affiliations": {
+                "Deck": "MainDeck",
+                "SFI": "313"
+            },
+            "referenceState": {
+                "xCentre": 58.25,
+                "yCentre": -6.75,
+                "zBase": 8
+            }
+        },
+        {
+            "id": "Inc&GarbRoom",
+            "baseObject": "Inc&GarbRoomL5B4.5H2.9fdundefinedFInc&GarbRoom.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#fcfc03"
+            },
+            "affiliations": {
+                "Deck": "MainDeck",
+                "SFI": "314"
+            },
+            "referenceState": {
+                "xCentre": 62,
+                "yCentre": 6.25,
+                "zBase": 8
+            }
+        },
+        {
+            "id": "Room1",
+            "baseObject": "RoomL3.5B4.5H2.9fdundefinedFroom1.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#32a852"
+            },
+            "affiliations": {
+                "Deck": "MainDeck",
+                "SFI": "315"
+            },
+            "referenceState": {
+                "xCentre": 61.25,
+                "yCentre": 1.75,
+                "zBase": 8
+            }
+        },
+        {
+            "id": "Room2",
+            "baseObject": "RoomL3.5B6H2.9fdundefinedFroom2.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#32a852"
+            },
+            "affiliations": {
+                "Deck": "MainDeck",
+                "SFI": "316"
+            },
+            "referenceState": {
+                "xCentre": 61.25,
+                "yCentre": -5,
+                "zBase": 8
+            }
+        },
+        {
+            "id": "Room3",
+            "baseObject": "RoomL1.5B4.5H2.9fdundefinedFroom3.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#32a852"
+            },
+            "affiliations": {
+                "Deck": "MainDeck",
+                "SFI": "317"
+            },
+            "referenceState": {
+                "xCentre": 63.75,
+                "yCentre": 1.75,
+                "zBase": 8
+            }
+        },
+        {
+            "id": "Room4",
+            "baseObject": "RoomL4B2H2.9fdundefinedFroom4.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#32a852"
+            },
+            "affiliations": {
+                "Deck": "MainDeck",
+                "SFI": "318"
+            },
+            "referenceState": {
+                "xCentre": 65,
+                "yCentre": -3,
+                "zBase": 8
+            }
+        },
+        {
+            "id": "Room5",
+            "baseObject": "RoomL4B3.5H2.9fdundefinedFroom5.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#32a852"
+            },
+            "affiliations": {
+                "Deck": "MainDeck",
+                "SFI": "319"
+            },
+            "referenceState": {
+                "xCentre": 65,
+                "yCentre": -5.5,
+                "zBase": 8
+            }
+        },
+        {
+            "id": "Room6",
+            "baseObject": "RoomL3.5B5H2.9fdundefinedFroom6.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#32a852"
+            },
+            "affiliations": {
+                "Deck": "MainDeck",
+                "SFI": "320"
+            },
+            "referenceState": {
+                "xCentre": 68.75,
+                "yCentre": -4.75,
+                "zBase": 8
+            }
+        },
+        {
+            "id": "Room7",
+            "baseObject": "RoomL3.5B6H2.9fdundefinedFroom7.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#32a852"
+            },
+            "affiliations": {
+                "Deck": "MainDeck",
+                "SFI": "321"
+            },
+            "referenceState": {
+                "xCentre": 72.25,
+                "yCentre": -3,
+                "zBase": 8
+            }
+        },
+        {
+            "id": "Tank41",
+            "baseObject": "TankL1.5B4.5H2.9fdundefinedFtank21.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#fc0303"
+            },
+            "affiliations": {
+                "Deck": "MainDeck",
+                "SFI": "322"
+            },
+            "referenceState": {
+                "xCentre": 74.75,
+                "yCentre": 3.75,
+                "zBase": 8
+            }
+        },
+        {
+            "id": "Tank42",
+            "baseObject": "TankL1.5B4.5H2.9fdundefinedFtank21.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#fc0303"
+            },
+            "affiliations": {
+                "Deck": "MainDeck",
+                "SFI": "323"
+            },
+            "referenceState": {
+                "xCentre": 74.75,
+                "yCentre": -3.75,
+                "zBase": 8
+            }
+        },
+        {
+            "id": "Room8",
+            "baseObject": "RoomL7B5H2.9fdundefinedFroom8.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#32a852"
+            },
+            "affiliations": {
+                "Deck": "MainDeck",
+                "SFI": "324"
+            },
+            "referenceState": {
+                "xCentre": 68,
+                "yCentre": 5,
+                "zBase": 8
+            }
+        },
+        {
+            "id": "Toilets1",
+            "baseObject": "ToiletsL1B2.5H2.9fdundefinedFtoilets1.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#32a852"
+            },
+            "affiliations": {
+                "Deck": "MainDeck",
+                "SFI": "326"
+            },
+            "referenceState": {
+                "xCentre": 71,
+                "yCentre": 1.25,
+                "zBase": 8
+            }
+        },
+        {
+            "id": "DeckOffice1",
+            "baseObject": "DeckOfficeL2.5B6.5H2.9fdundefinedFDeckOffice1.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#32a852"
+            },
+            "affiliations": {
+                "Deck": "MainDeck",
+                "SFI": "327"
+            },
+            "referenceState": {
+                "xCentre": 72.75,
+                "yCentre": 3.25,
+                "zBase": 8
+            }
+        },
+        {
+            "id": "Cover2",
+            "baseObject": "CoverL53.5B15H2fdundefinedFcover2.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#32a852"
+            },
+            "affiliations": {
+                "Deck": "Adeck",
+                "SFI": "401"
+            },
+            "referenceState": {
+                "xCentre": 26.75,
+                "yCentre": 0,
+                "zBase": 10.9
+            }
+        },
+        {
+            "id": "StabTank1",
+            "baseObject": "StabTankL3.5B18H2.9fdundefinedFStabTank.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#aabbcc"
+            },
+            "affiliations": {
+                "Deck": "Adeck",
+                "SFI": "402"
+            },
+            "referenceState": {
+                "xCentre": 55.25,
+                "yCentre": 0,
+                "zBase": 10.9
+            }
+        },
+        {
+            "id": "Freezer1",
+            "baseObject": "FreezerL3.5B2H2.9fdundefinedFfreezer.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#32a852"
+            },
+            "affiliations": {
+                "Deck": "Adeck",
+                "SFI": "403"
+            },
+            "referenceState": {
+                "xCentre": 58.75,
+                "yCentre": 8,
+                "zBase": 10.9
+            }
+        },
+        {
+            "id": "Fridge1",
+            "baseObject": "FridgeL4B1.5H2.9fdundefinedFfridge.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#32a852"
+            },
+            "affiliations": {
+                "Deck": "Adeck",
+                "SFI": "404"
+            },
+            "referenceState": {
+                "xCentre": 62.5,
+                "yCentre": 8,
+                "zBase": 10.9
+            }
+        },
+        {
+            "id": "DryRoom1",
+            "baseObject": "DryRoomL7.5B3H2.9fdundefinedFDryRoom.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#32a852"
+            },
+            "affiliations": {
+                "Deck": "Adeck",
+                "SFI": "405"
+            },
+            "referenceState": {
+                "xCentre": 60.75,
+                "yCentre": 5.5,
+                "zBase": 10.9
+            }
+        },
+        {
+            "id": "Room9",
+            "baseObject": "RoomL2.5B8H2.9fdundefinedFroom9.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#32a852"
+            },
+            "affiliations": {
+                "Deck": "Adeck",
+                "SFI": "406"
+            },
+            "referenceState": {
+                "xCentre": 58.25,
+                "yCentre": 0,
+                "zBase": 10.9
+            }
+        },
+        {
+            "id": "ACRoom1",
+            "baseObject": "ACRoomL7.5B5H2.9fdundefinedFACRoom1.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#32a852"
+            },
+            "affiliations": {
+                "Deck": "Adeck",
+                "SFI": "407"
+            },
+            "referenceState": {
+                "xCentre": 60.75,
+                "yCentre": -6.5,
+                "zBase": 10.9
+            }
+        },
+        {
+            "id": "Room10",
+            "baseObject": "RoomL5B5H2.9fdundefinedFroom10.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#32a852"
+            },
+            "affiliations": {
+                "Deck": "Adeck",
+                "SFI": "408"
+            },
+            "referenceState": {
+                "xCentre": 62,
+                "yCentre": 1.5,
+                "zBase": 10.9
+            }
+        },
+        {
+            "id": "CL1",
+            "baseObject": "CLL2.5B2H2.9fdundefinedFCL1.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#32a852"
+            },
+            "affiliations": {
+                "Deck": "Adeck",
+                "SFI": "409"
+            },
+            "referenceState": {
+                "xCentre": 60.75,
+                "yCentre": -3,
+                "zBase": 10.9
+            }
+        },
+        {
+            "id": "Toilets2",
+            "baseObject": "ToiletsL2.5B2H2.9fdundefinedFtoilets2.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#32a852"
+            },
+            "affiliations": {
+                "Deck": "Adeck",
+                "SFI": "410"
+            },
+            "referenceState": {
+                "xCentre": 63.25,
+                "yCentre": -3,
+                "zBase": 10.9
+            }
+        },
+        {
+            "id": "Gallery1",
+            "baseObject": "GalleryL5.5B5H2.9fdundefinedFgallery1.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#32a852"
+            },
+            "affiliations": {
+                "Deck": "Adeck",
+                "SFI": "411"
+            },
+            "referenceState": {
+                "xCentre": 67.25,
+                "yCentre": 5.25,
+                "zBase": 10.9
+            }
+        },
+        {
+            "id": "DayRoom1",
+            "baseObject": "DayRoomL5.5B6H2.9fdundefinedFDayRoom1.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#32a852"
+            },
+            "affiliations": {
+                "Deck": "Adeck",
+                "SFI": "413"
+            },
+            "referenceState": {
+                "xCentre": 67.25,
+                "yCentre": -5,
+                "zBase": 10.9
+            }
+        },
+        {
+            "id": "MessRoom1",
+            "baseObject": "MessRoomL4B13H2.9fdundefinedFMessRoom1.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#32a852"
+            },
+            "affiliations": {
+                "Deck": "Adeck",
+                "SFI": "414"
+            },
+            "referenceState": {
+                "xCentre": 72,
+                "yCentre": 0,
+                "zBase": 10.9
+            }
+        },
+        {
+            "id": "RopeBin1",
+            "baseObject": "RopeBinL1.5B3H2.9fdundefinedFRopeBin1.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#aabbcc"
+            },
+            "affiliations": {
+                "Deck": "Adeck",
+                "SFI": "415"
+            },
+            "referenceState": {
+                "xCentre": 74.75,
+                "yCentre": 0,
+                "zBase": 10.9
+            }
+        },
+        {
+            "id": "Store2",
+            "baseObject": "StoreL1.5B4H2.9fdundefinedFstore.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#32a852"
+            },
+            "affiliations": {
+                "Deck": "Adeck",
+                "SFI": "416"
+            },
+            "referenceState": {
+                "xCentre": 74.75,
+                "yCentre": 3.5,
+                "zBase": 10.9
+            }
+        },
+        {
+            "id": "Store3",
+            "baseObject": "StoreL1.5B4H2.9fdundefinedFstore.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#32a852"
+            },
+            "affiliations": {
+                "Deck": "Adeck",
+                "SFI": "417"
+            },
+            "referenceState": {
+                "xCentre": 74.75,
+                "yCentre": -3.5,
+                "zBase": 10.9
+            }
+        },
+        {
+            "id": "Store4",
+            "baseObject": "StoreL6.5B10H2.9fdundefinedFstore2.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#32a852"
+            },
+            "affiliations": {
+                "Deck": "Adeck",
+                "SFI": "418"
+            },
+            "referenceState": {
+                "xCentre": 78.75,
+                "yCentre": 0,
+                "zBase": 10.9
+            }
+        },
+        {
+            "id": "CableRoom1",
+            "baseObject": "CableRoomL10.5B14H2.7fdundefinedFCableRoom1.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#aabbcc"
+            },
+            "affiliations": {
+                "Deck": "Bdeck",
+                "SFI": "505"
+            },
+            "referenceState": {
+                "xCentre": 76.75,
+                "yCentre": 0,
+                "zBase": 13.8
+            }
+        },
+        {
+            "id": "Cabin3",
+            "baseObject": "CabinL2.5B4H2.7fdundefinedFcabin1.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#32a852"
+            },
+            "affiliations": {
+                "Deck": "Bdeck",
+                "SFI": "506"
+            },
+            "referenceState": {
+                "xCentre": 70.25,
+                "yCentre": 6,
+                "zBase": 13.8
+            }
+        },
+        {
+            "id": "Cabin2",
+            "baseObject": "CabinL2.5B4H2.7fdundefinedFcabin1.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#32a852"
+            },
+            "affiliations": {
+                "Deck": "Bdeck",
+                "SFI": "507"
+            },
+            "referenceState": {
+                "xCentre": 67.75,
+                "yCentre": 6,
+                "zBase": 13.8
+            }
+        },
+        {
+            "id": "Cabin1",
+            "baseObject": "CabinL4.5B4H2.7fdundefinedFcabin2.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#32a852"
+            },
+            "affiliations": {
+                "Deck": "Bdeck",
+                "SFI": "508"
+            },
+            "referenceState": {
+                "xCentre": 64.25,
+                "yCentre": 6.5,
+                "zBase": 13.8
+            }
+        },
+        {
+            "id": "Tank43",
+            "baseObject": "TankL5.5B4H5.3fdundefinedFtank22.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#aabbcc"
+            },
+            "affiliations": {
+                "Deck": "Bdeck",
+                "SFI": "509"
+            },
+            "referenceState": {
+                "xCentre": 61.75,
+                "yCentre": 2,
+                "zBase": 13.8
+            }
+        },
+        {
+            "id": "Room11",
+            "baseObject": "RoomL4.5B8H2.7fdundefinedFroom11.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#32a852"
+            },
+            "affiliations": {
+                "Deck": "Bdeck",
+                "SFI": "510"
+            },
+            "referenceState": {
+                "xCentre": 56.75,
+                "yCentre": 0,
+                "zBase": 13.8
+            }
+        },
+        {
+            "id": "Cabin4",
+            "baseObject": "CabinL5B4.5H2.7fdundefinedFcabin3.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#32a852"
+            },
+            "affiliations": {
+                "Deck": "Bdeck",
+                "SFI": "511"
+            },
+            "referenceState": {
+                "xCentre": 59,
+                "yCentre": -6.25,
+                "zBase": 13.8
+            }
+        },
+        {
+            "id": "Cabin5",
+            "baseObject": "CabinL5B6.5H2.7fdundefinedFcabin5.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#32a852"
+            },
+            "affiliations": {
+                "Deck": "Bdeck",
+                "SFI": "512"
+            },
+            "referenceState": {
+                "xCentre": 64,
+                "yCentre": -5.25,
+                "zBase": 13.8
+            }
+        },
+        {
+            "id": "Cabin5",
+            "baseObject": "CabinL2.5B5H2.7fdundefinedFcabin4.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#32a852"
+            },
+            "affiliations": {
+                "Deck": "Bdeck",
+                "SFI": "513"
+            },
+            "referenceState": {
+                "xCentre": 70.25,
+                "yCentre": -4.5,
+                "zBase": 13.8
+            }
+        },
+        {
+            "id": "Cabin6",
+            "baseObject": "CabinL2.5B5H2.7fdundefinedFcabin4.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#32a852"
+            },
+            "affiliations": {
+                "Deck": "Bdeck",
+                "SFI": "514"
+            },
+            "referenceState": {
+                "xCentre": 67.75,
+                "yCentre": -4.5,
+                "zBase": 13.8
+            }
+        },
+        {
+            "id": "CorridorExt1",
+            "baseObject": "CorridorExtL3.5B13.5H2.7fdundefinedFcorridor.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#32a852"
+            },
+            "affiliations": {
+                "Deck": "Cdeck",
+                "SFI": "601"
+            },
+            "referenceState": {
+                "xCentre": 57.25,
+                "yCentre": -2.25,
+                "zBase": 16.5
+            }
+        },
+        {
+            "id": "InstrumentRoom1",
+            "baseObject": "InstrumentRoomL5.5B3.5H2.7fdundefinedFInstrumentRoom.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#fcfc03"
+            },
+            "affiliations": {
+                "Deck": "Cdeck",
+                "SFI": "602"
+            },
+            "referenceState": {
+                "xCentre": 61.75,
+                "yCentre": -1.75,
+                "zBase": 16.5
+            }
+        },
+        {
+            "id": "CaptainCabin1",
+            "baseObject": "CaptainCabinL6B5H2.7fdundefinedFCaptainCabin.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#32a852"
+            },
+            "affiliations": {
+                "Deck": "Cdeck",
+                "SFI": "603"
+            },
+            "referenceState": {
+                "xCentre": 62,
+                "yCentre": -6.5,
+                "zBase": 16.5
+            }
+        },
+        {
+            "id": "ChiefOfficerCabin1",
+            "baseObject": "ChiefOfficerCabinL3B4.5H2.7fdundefinedFChiefOfficerCabin.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#32a852"
+            },
+            "affiliations": {
+                "Deck": "Cdeck",
+                "SFI": "604"
+            },
+            "referenceState": {
+                "xCentre": 66.5,
+                "yCentre": -6,
+                "zBase": 16.5
+            }
+        },
+        {
+            "id": "FirstOfficerCabin1",
+            "baseObject": "FirstOfficerCabinL3B4H2.7fdundefinedFFirstOfficerCabin.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#32a852"
+            },
+            "affiliations": {
+                "Deck": "Cdeck",
+                "SFI": "605"
+            },
+            "referenceState": {
+                "xCentre": 69.5,
+                "yCentre": -6,
+                "zBase": 16.5
+            }
+        },
+        {
+            "id": "ChiefStewardCabin1",
+            "baseObject": "ChiefStewardCabinL6B6H2.7fdundefinedFChiefStewardCabin.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#32a852"
+            },
+            "affiliations": {
+                "Deck": "Cdeck",
+                "SFI": "606"
+            },
+            "referenceState": {
+                "xCentre": 74,
+                "yCentre": -3,
+                "zBase": 16.5
+            }
+        },
+        {
+            "id": "ElectricianCabin1",
+            "baseObject": "ElectricianCabinL6B6H2.7fdundefinedFElectricianCabin.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#32a852"
+            },
+            "affiliations": {
+                "Deck": "Cdeck",
+                "SFI": "607"
+            },
+            "referenceState": {
+                "xCentre": 74,
+                "yCentre": 3,
+                "zBase": 16.5
+            }
+        },
+        {
+            "id": "CleanLocker1",
+            "baseObject": "CleanLockerL1.5B2H2.7fdundefinedFSmallRoom.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#aabbcc"
+            },
+            "affiliations": {
+                "Deck": "Cdeck",
+                "SFI": "609"
+            },
+            "referenceState": {
+                "xCentre": 65.25,
+                "yCentre": -2,
+                "zBase": 16.5
+            }
+        },
+        {
+            "id": "BondStore1",
+            "baseObject": "BondStoreL1.5B2H2.7fdundefinedFSmallRoom.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#aabbcc"
+            },
+            "affiliations": {
+                "Deck": "Cdeck",
+                "SFI": "610"
+            },
+            "referenceState": {
+                "xCentre": 66.75,
+                "yCentre": -2,
+                "zBase": 16.5
+            }
+        },
+        {
+            "id": "Linen1",
+            "baseObject": "LinenL1.5B2H2.7fdundefinedFSmallRoom.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#aabbcc"
+            },
+            "affiliations": {
+                "Deck": "Cdeck",
+                "SFI": "611"
+            },
+            "referenceState": {
+                "xCentre": 68.25,
+                "yCentre": -2,
+                "zBase": 16.5
+            }
+        },
+        {
+            "id": "ChiefCabin1",
+            "baseObject": "ChiefCabinL6B5H2.7fdundefinedFChiefCabin.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#32a852"
+            },
+            "affiliations": {
+                "Deck": "Cdeck",
+                "SFI": "612"
+            },
+            "referenceState": {
+                "xCentre": 63.5,
+                "yCentre": 6.5,
+                "zBase": 16.5
+            }
+        },
+        {
+            "id": "FirstEngineerCabin1",
+            "baseObject": "FirstEngineerCabinL2.5B4H2.7fdundefinedFFirstEngineerCabin.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#32a852"
+            },
+            "affiliations": {
+                "Deck": "Cdeck",
+                "SFI": "613"
+            },
+            "referenceState": {
+                "xCentre": 67.75,
+                "yCentre": 6,
+                "zBase": 16.5
+            }
+        },
+        {
+            "id": "SecondEngineerCabin1",
+            "baseObject": "SecondEngineerCabinL2B3.5H2.7fdundefinedFSecondEngineerCabin.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#32a852"
+            },
+            "affiliations": {
+                "Deck": "Cdeck",
+                "SFI": "614"
+            },
+            "referenceState": {
+                "xCentre": 70,
+                "yCentre": 5.75,
+                "zBase": 16.5
+            }
+        },
+        {
+            "id": "Hoist1",
+            "baseObject": "HoistL1B9H4.15fdundefinedFhoist.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#fcfc03"
+            },
+            "affiliations": {
+                "Deck": "BridgeDeck",
+                "SFI": "701"
+            },
+            "referenceState": {
+                "xCentre": 54,
+                "yCentre": -0.5,
+                "zBase": 19.2
+            }
+        },
+        {
+            "id": "ShipHanding1",
+            "baseObject": "ShipHandingL7B8H4.15fdundefinedFShipHanding.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#aabbcc"
+            },
+            "affiliations": {
+                "Deck": "BridgeDeck",
+                "SFI": "704"
+            },
+            "referenceState": {
+                "xCentre": 59.5,
+                "yCentre": 0,
+                "zBase": 19.2
+            }
+        },
+        {
+            "id": "MainRoom1",
+            "baseObject": "MainRoomL8B16H4.15fdundefinedFMainRoom.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#fcfc03"
+            },
+            "affiliations": {
+                "Deck": "BridgeDeck",
+                "SFI": "705"
+            },
+            "referenceState": {
+                "xCentre": 67,
+                "yCentre": 0,
+                "zBase": 19.2
+            }
+        },
+        {
+            "id": "NavigationRoom1",
+            "baseObject": "NavigationRoomL9B8H4.15fdundefinedFNavigationRoom.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#fcfc03"
+            },
+            "affiliations": {
+                "Deck": "BridgeDeck",
+                "SFI": "706"
+            },
+            "referenceState": {
+                "xCentre": 75.5,
+                "yCentre": 0,
+                "zBase": 19.2
+            }
+        },
+        {
+            "id": "EmGenRoom1",
+            "baseObject": "EmGenRoomL11B6H5fdundefinedFEmGenRoom.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#fcfc03"
+            },
+            "affiliations": {
+                "Deck": "WheelHouseTop",
+                "SFI": "801"
+            },
+            "referenceState": {
+                "xCentre": 68.5,
+                "yCentre": -1.5,
+                "zBase": 23.35
+            }
+        },
+        {
+            "id": "Communication1",
+            "baseObject": "CommunicationL11B3H5fdundefinedFCommunicationRoom.stl",
+            "style": {
+                "opacity": 1.0,
+                "color": "#fcfc03"
+            },
+            "affiliations": {
+                "Deck": "WheelHouseTop",
+                "SFI": "802"
+            },
+            "referenceState": {
+                "xCentre": 68.5,
+                "yCentre": 3,
+                "zBase": 23.35
+            }
+        }
+    ]
+}
