@@ -1,31 +1,36 @@
 <html>
   <head>
     <title>Many ships in regular ocean</title>
-    <script src="../build/vessel.js"></script>
 
-    <script src="./3D_engine/legacy/three_r118.js"></script>
-    <script src="./3D_engine/legacy/STLLoader.js"></script>
-
-    <script src="3D_engine/Ship3D_v2.js"></script>
-
-    <!-- Upgrading to WaterShader2.js will remove the dependency
-	on Mirror.js as well as open up possibilities for visualizing approximate water flows around vessels. -->
-    <script src="3D_engine/legacy/Water.js"></script>
-
-    <script src="3D_engine/OrbitControls_v2.js"></script>
     <script src="3D_engine/dat.gui.min.js"></script>
-    <script src="./3D_engine/legacy/skybox_from_examples_r118.js"></script>
 
     <!--<script src="Moving_bodies_Elias_Hasle.js"></script>-->
     <script src="3D_engine/Playback.js"></script>
 
-    <script src="./3D_engine/legacy/Regular_ocean.js"></script>
     <!--<script src="keyboard_arrow_input_Elias_Hasle.js"></script>-->
   </head>
 
   <body>
-    <script>
+    <script type="module">
       "use strict";
+
+      // Import three.js and OrbitControls modules
+      import * as THREE from "./3D_engine/three_r126.js";
+      import { OrbitControls } from "./3D_engine/OrbitControls.js";
+
+      // Import Vessel.js module
+      import * as Vessel from "../source/jsm/vessel.js";
+
+      // Import Ship3D module
+      import { Ship3D } from "../source/jsm/3D_engine/Ship3D.js";
+
+      // Import Skybox module
+      import { Skybox } from "../examples/3D_engine/skybox.js";
+
+      // Import Ocean module
+      import { Ocean } from "../examples/3D_engine/Regular_ocean.js";
+
+      import { Water } from "./3D_engine/Water.js";
 
       //Globals
       var renderer, camera, controls, gui, stats;
@@ -97,7 +102,7 @@
         onResize();
         camera.position.set(-oSize * 0.45, oSize * 0.1, oSize * 0.7);
 
-        controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls = new OrbitControls(camera, renderer.domElement);
         //controls.minDistance = 0;
         //controls.maxDistance = 0.5*oSize;
         //controls.enablePan = false;
@@ -125,7 +130,9 @@
         function callback(ship) {
           states.push(ship.designState.clone());
           let noShips = states.length - 1;
-          wavMo.push(new Vessel.WaveMotion(ship, states[noShips], wavCre));
+          wavMo.push(
+            new Vessel.WaveMotion(ship, states[noShips], ocean.wavCre)
+          );
           wavMo[noShips].output.push("rollAmp");
           updateMotion();
 
@@ -173,7 +180,7 @@
               ship3D.position.y * ocean.waves["0"].sinth; // magnitude of projection
 
             //motion formula
-            let omega = wavCre.waveDef.waveFreq;
+            let omega = ocean.wavCre.waveDef.waveFreq;
             let k = (2 * Math.PI) / ocean.waves["0"].L; // wave number
             ship3D.heave =
               states[noShips].discrete.WaveMotion.state.heaveAmp *
@@ -195,11 +202,11 @@
             if (
               Math.abs(
                 states[noShips].discrete.Heading.state.heading -
-                  wavCre.waveDef.heading
+                  ocean.wavCre.waveDef.heading
               ) > 90 &&
               Math.abs(
                 states[noShips].discrete.Heading.state.heading -
-                  wavCre.waveDef.heading
+                  ocean.wavCre.waveDef.heading
               ) < 270
             ) {
               ship3D.pitch = -ship3D.pitch;
@@ -211,13 +218,13 @@
                 omega * t - (ocean.waves["0"].phi * Math.PI) / 180 - k * projMag
               );
             if (
-              wavCre.waveDef.heading >
+              ocean.wavCre.waveDef.heading >
               states[noShips].discrete.Heading.state.heading
             ) {
               if (
                 Math.abs(
                   states[noShips].discrete.Heading.state.heading -
-                    wavCre.waveDef.heading
+                    ocean.wavCre.waveDef.heading
                 ) < 180
               ) {
                 ship3D.roll = -rollMag;
@@ -228,7 +235,7 @@
               if (
                 Math.abs(
                   states[noShips].discrete.Heading.state.heading -
-                    wavCre.waveDef.heading
+                    ocean.wavCre.waveDef.heading
                 ) < 180
               ) {
                 ship3D.roll = rollMag;
