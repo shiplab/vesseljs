@@ -32,12 +32,15 @@
 
       import { Water } from "./3D_engine/Water.js";
 
+      import Stats from "./libs/stats.module.js";
+
       //Globals
-      var renderer, camera, controls, gui, stats;
+      var renderer, camera, controls, gui, statsOne, statsTwo;
       var scene, zUpCont, playback, ships, ocean;
       var wavMo, states;
 
       (function main() {
+
         //Renderer setup
         //document.body.style = "overflow: hidden;";
         document.body.style.overflow = "hidden";
@@ -55,8 +58,15 @@
         //renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setClearColor(0x99aadd);
         container.appendChild(renderer.domElement);
-        //stats = new Stats();
-        //document.body.appendChild(stats.domElement);
+        
+        // Insert the performance statistics 
+        statsOne = new Stats();
+        statsOne.showPanel( 0 );
+        document.body.appendChild( statsOne.dom );
+        statsTwo = new Stats();
+        statsTwo.domElement.style.cssText = 'position:absolute;top:0px;left:80px;';
+        statsTwo.showPanel( 1 );        
+        document.body.appendChild( statsTwo.dom );
 
         //GUI setup (comment out to remove gui)
         gui = new dat.GUI();
@@ -128,6 +138,11 @@
         states = [];
 
         function callback(ship) {
+
+          // Forcing the deletion of each ship objects
+          ship.baseObjects = {}
+          ship.derivedObjects = {}
+
           states.push(ship.designState.clone());
           let noShips = states.length - 1;
           wavMo.push(
@@ -276,7 +291,7 @@
           }
         }
         correctNum(o.numShips);
-        gui.add(o, "numShips", 1, 50).step(1).onChange(correctNum);
+        gui.add(o, "numShips", 1, 100).step(1).onChange(correctNum);
         gui.add(
           {
             addFromFile: function () {
@@ -293,6 +308,10 @@
       })();
 
       function animate(millitime) {
+
+        statsOne.begin();
+        statsTwo.begin();
+
         let playing = playback.update();
 
         //Disable this to freeze water when not playing
@@ -301,6 +320,10 @@
         }
 
         renderer.render(scene, camera);
+
+        statsOne.end();
+        statsTwo.end();
+        
         requestAnimationFrame(animate);
       }
 
