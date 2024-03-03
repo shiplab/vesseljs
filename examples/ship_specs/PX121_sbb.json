@@ -3287,28 +3287,7 @@
             }
         },
         {
-            "id": "block1",
-            "affiliations": {},
-            "boxDimensions": {
-                "length": 20,
-                "breadth": 15,
-                "height": 4.3
-            },
-            "capabilities": {},
-            "baseState": {
-                "fullness": 0.5
-            },
-            "weightInformation": {
-                "lightweight": 16500,
-                "cg": [
-                    0,
-                    0,
-                    2.5
-                ]
-            }
-        },
-        {
-            "id": "block2",
+            "id": "red1",
             "affiliations": {},
             "boxDimensions": {
                 "length": 20,
@@ -3329,7 +3308,7 @@
             }
         },
         {
-            "id": "block3",
+            "id": "red2",
             "affiliations": {},
             "boxDimensions": {
                 "length": 20,
@@ -3348,32 +3327,263 @@
                     2.5
                 ]
             }
+        },
+        {
+            "id": "red3",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 46,
+                "breadth": 15,
+                "height": 2.9
+            },
+            "capabilities": {},
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 16500,
+                "cg": [
+                    0,
+                    0,
+                    2.5
+                ]
+            }
+        },
+        {
+            "id": "yellow1",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 23,
+                "breadth": 15,
+                "height": 7.0
+            },
+            "capabilities": {},
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 16500,
+                "cg": [
+                    0,
+                    0,
+                    2.5
+                ]
+            }
+        },
+        {
+            "id": "yellow2",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 15.0,
+                "breadth": 15,
+                "height": 2.7
+            },
+            "capabilities": {},
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 16500,
+                "cg": [
+                    0,
+                    0,
+                    2.5
+                ]
+            }
+        },
+        {
+            "id": "yellow3",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 9,
+                "breadth": 15,
+                "height": 2.7
+            },
+            "capabilities": {},
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 16500,
+                "cg": [
+                    0,
+                    0,
+                    2.5
+                ]
+            }
+        },
+        {
+            "id": "yellow4",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 7,
+                "breadth": 8,
+                "height": 9.7
+            },
+            "capabilities": {},
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 16500,
+                "cg": [
+                    0,
+                    0,
+                    2.5
+                ]
+            }
+        },
+        {
+            "id": "green1",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 12,
+                "breadth": 15,
+                "height": 2.7
+            },
+            "capabilities": {},
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 16500,
+                "cg": [
+                    0,
+                    0,
+                    2.5
+                ]
+            }
+        },
+        {
+            "id": "green2",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 25.5,
+                "breadth": 15,
+                "height": 2.7
+            },
+            "capabilities": {},
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 16500,
+                "cg": [
+                    0,
+                    0,
+                    2.5
+                ]
+            }
+        },
+        {
+            "id": "green3",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 22.5,
+                "breadth": 15,
+                "height": 2.7
+            },
+            "capabilities": {},
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 16500,
+                "cg": [
+                    0,
+                    0,
+                    2.5
+                ]
+            }
+        },
+        {
+            "id": "green5",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 7.5,
+                "breadth": 15,
+                "height": 4.2
+            },
+            "capabilities": {},
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 16500,
+                "cg": [
+                    0,
+                    0,
+                    2.5
+                ]
+            }
+        },
+        {
+            "id": "yellow5",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 15.0,
+                "breadth": 15,
+                "height": 4.2
+            },
+            "capabilities": {},
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 16500,
+                "cg": [
+                    0,
+                    0,
+                    2.5
+                ]
+            }
+        },
+        {
+            "id": "yellow6",
+            "affiliations": {},
+            "boxDimensions": {
+                "length": 11,
+                "breadth": 6,
+                "height": 5
+            },
+            "capabilities": {},
+            "baseState": {
+                "fullness": 0.5
+            },
+            "weightInformation": {
+                "lightweight": 16500,
+                "cg": [
+                    0,
+                    0,
+                    2.5
+                ]
+            }
         }
     ],
     "derivedObjects": [
         {
-            "id": "block1",
-            "baseObject": "block1",
+            "id": "yellow1",
+            "baseObject": "yellow1",
             "style": {
-                "opacity": 1.0,
-                "color": "#fc0303"
+                "opacity": 0.7,
+                "color": "#fcfc03"
             },
             "affiliations": {
                 "Deck": "TankTop",
                 "SFI": "201"
             },
             "referenceState": {
-                "xCentre": 63,
+                "xCentre": 61.5,
                 "yCentre": 0,
                 "zBase": 1.0
             }
         },
         {
-            "id": "block2",
-            "baseObject": "block2",
+            "id": "red1",
+            "baseObject": "red1",
             "style": {
-                "opacity": 1.0,
-                "color": "#aabbcc"
+                "opacity": 0.7,
+                "color": "#fc0303"
             },
             "affiliations": {
                 "Deck": "TankTop",
@@ -3386,11 +3596,11 @@
             }
         },
         {
-            "id": "block3",
-            "baseObject": "block3",
+            "id": "red2",
+            "baseObject": "red2",
             "style": {
-                "opacity": 1.0,
-                "color": "#aabbcc"
+                "opacity": 0.7,
+                "color": "#fc0303"
             },
             "affiliations": {
                 "Deck": "TankTop",
@@ -3403,1523 +3613,179 @@
             }
         },
         {
-            "id": "Tank27",
-            "baseObject": "TankL3B9H2.7fdundefinedFtank13.stl",
+            "id": "red3",
+            "baseObject": "red3",
             "style": {
-                "opacity": 1.0,
+                "opacity": 0.7,
                 "color": "#fc0303"
             },
             "affiliations": {
-                "Deck": "TweenDeck",
+                "Deck": "TankTop",
                 "SFI": "201"
             },
             "referenceState": {
-                "xCentre": 1.5,
-                "yCentre": 4.5,
-                "zBase": 5.3
+                "xCentre": 29.0,
+                "yCentre": 0,
+                "zBase": 8.0
             }
         },
         {
-            "id": "Tank28",
-            "baseObject": "TankL3B9H2.7fdundefinedFtank13.stl",
+            "id": "yellow2",
+            "baseObject": "yellow2",
             "style": {
-                "opacity": 1.0,
-                "color": "#fc0303"
-            },
-            "affiliations": {
-                "Deck": "TweenDeck",
-                "SFI": "202"
-            },
-            "referenceState": {
-                "xCentre": 1.5,
-                "yCentre": -4.5,
-                "zBase": 5.3
-            }
-        },
-        {
-            "id": "Tank28",
-            "baseObject": "TankL4B3H2.7fdundefinedFtank14.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#fc0303"
-            },
-            "affiliations": {
-                "Deck": "TweenDeck",
-                "SFI": "203"
-            },
-            "referenceState": {
-                "xCentre": 5,
-                "yCentre": 7.5,
-                "zBase": 5.3
-            }
-        },
-        {
-            "id": "Tank29",
-            "baseObject": "TankL4B3H2.7fdundefinedFtank14.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#fc0303"
-            },
-            "affiliations": {
-                "Deck": "TweenDeck",
-                "SFI": "204"
-            },
-            "referenceState": {
-                "xCentre": 5,
-                "yCentre": -7.5,
-                "zBase": 5.3
-            }
-        },
-        {
-            "id": "MotorLeft1",
-            "baseObject": "MotorLeftL6B4H2.7fdundefinedFMotors.stl",
-            "style": {
-                "opacity": 1.0,
+                "opacity": 0.7,
                 "color": "#fcfc03"
             },
             "affiliations": {
-                "Deck": "TweenDeck",
-                "SFI": "205"
+                "Deck": "TankTop",
+                "SFI": "201"
             },
             "referenceState": {
-                "xCentre": 6,
-                "yCentre": 4,
+                "xCentre": 13.5,
+                "yCentre": 0,
                 "zBase": 5.3
             }
         },
         {
-            "id": "MotorRight1",
-            "baseObject": "MotorRightL6B4H2.7fdundefinedFMotors.stl",
+            "id": "yellow3",
+            "baseObject": "yellow3",
             "style": {
-                "opacity": 1.0,
+                "opacity": 0.7,
                 "color": "#fcfc03"
             },
             "affiliations": {
-                "Deck": "TweenDeck",
-                "SFI": "206"
+                "Deck": "TankTop",
+                "SFI": "201"
             },
             "referenceState": {
-                "xCentre": 6,
-                "yCentre": -4,
-                "zBase": 5.3
+                "xCentre": 56.5,
+                "yCentre": 0,
+                "zBase": 8.0
             }
         },
         {
-            "id": "PropulsionRoomUpper",
-            "baseObject": "PropulsionRoomUpperL6B4H2.7fdundefinedFPropulsionRoomUpper.stl",
+            "id": "yellow4",
+            "baseObject": "yellow4",
             "style": {
-                "opacity": 1.0,
+                "opacity": 0.7,
                 "color": "#fcfc03"
             },
             "affiliations": {
-                "Deck": "TweenDeck",
-                "SFI": "207"
+                "Deck": "TankTop",
+                "SFI": "201"
             },
             "referenceState": {
-                "xCentre": 6,
+                "xCentre": 76.5,
                 "yCentre": 0,
-                "zBase": 5.3
+                "zBase": 1.0
             }
         },
         {
-            "id": "Tank30",
-            "baseObject": "TankL3B18H2.7fdundefinedFtank15.stl",
+            "id": "green1",
+            "baseObject": "green1",
             "style": {
-                "opacity": 1.0,
-                "color": "#fc0303"
+                "opacity": 0.7,
+                "color": "#32a852"
             },
             "affiliations": {
-                "Deck": "TweenDeck",
-                "SFI": "208"
+                "Deck": "TankTop",
+                "SFI": "201"
             },
             "referenceState": {
-                "xCentre": 10.5,
+                "xCentre": 67.0,
                 "yCentre": 0,
-                "zBase": 5.3
+                "zBase": 8.0
             }
         },
         {
-            "id": "Tank31",
-            "baseObject": "TankL4.5B7H2.4fdundefinedFtank17.stl",
+            "id": "green2",
+            "baseObject": "green2",
             "style": {
-                "opacity": 1.0,
-                "color": "#fc0303"
-            },
-            "affiliations": {
-                "Deck": "TweenDeck",
-                "SFI": "209"
-            },
-            "referenceState": {
-                "xCentre": 14.75,
-                "yCentre": 4.5,
-                "zBase": 5.3
-            }
-        },
-        {
-            "id": "Tank32",
-            "baseObject": "TankL4.5B7H2.4fdundefinedFtank17.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#fc0303"
-            },
-            "affiliations": {
-                "Deck": "TweenDeck",
-                "SFI": "210"
-            },
-            "referenceState": {
-                "xCentre": 14.75,
-                "yCentre": -4.5,
-                "zBase": 5.3
-            }
-        },
-        {
-            "id": "Tank33",
-            "baseObject": "TankL6B1H2.4fdundefinedFtank16.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#fc0303"
-            },
-            "affiliations": {
-                "Deck": "TweenDeck",
-                "SFI": "211"
-            },
-            "referenceState": {
-                "xCentre": 15,
-                "yCentre": 8.5,
-                "zBase": 5.3
-            }
-        },
-        {
-            "id": "Tank34",
-            "baseObject": "TankL6B1H2.4fdundefinedFtank16.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#fc0303"
-            },
-            "affiliations": {
-                "Deck": "TweenDeck",
-                "SFI": "212"
-            },
-            "referenceState": {
-                "xCentre": 15,
-                "yCentre": -8.5,
-                "zBase": 5.3
-            }
-        },
-        {
-            "id": "SwitchBoardRoom1",
-            "baseObject": "SwitchBoardRoomL3.5B9H2.4fdundefinedFSwitchBoardRoom.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#fcfc03"
-            },
-            "affiliations": {
-                "Deck": "TweenDeck",
-                "SFI": "213"
-            },
-            "referenceState": {
-                "xCentre": 51.75,
-                "yCentre": 0,
-                "zBase": 5.3
-            }
-        },
-        {
-            "id": "EngineRoomUpper1",
-            "baseObject": "EngineRoomUpperL8.5B7H2.4fdundefinedFEngineRoomUpper.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#fcfc03"
-            },
-            "affiliations": {
-                "Deck": "TweenDeck",
-                "SFI": "214"
-            },
-            "referenceState": {
-                "xCentre": 57.75,
-                "yCentre": 0,
-                "zBase": 5.3
-            }
-        },
-        {
-            "id": "BowThrusterRoom2",
-            "baseObject": "BowThrusterRoomL12B3H2.7fdundefinedFBowThursterRoom2.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#fcfc03"
-            },
-            "affiliations": {
-                "Deck": "TweenDeck",
-                "SFI": "215"
-            },
-            "referenceState": {
-                "xCentre": 68,
-                "yCentre": 0,
-                "zBase": 5.3
-            }
-        },
-        {
-            "id": "WorkShop1",
-            "baseObject": "WorkShopL3B2H2.4fdundefinedFWorkshop.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#fcfc03"
-            },
-            "affiliations": {
-                "Deck": "TweenDeck",
-                "SFI": "216"
-            },
-            "referenceState": {
-                "xCentre": 63.5,
-                "yCentre": -2.5,
-                "zBase": 5.3
-            }
-        },
-        {
-            "id": "ChainTank1",
-            "baseObject": "ChainTankL1.5B1.5H5.6fdundefinedFChainTank.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#fcfc03"
-            },
-            "affiliations": {
-                "Deck": "TweenDeck",
-                "SFI": "217"
-            },
-            "referenceState": {
-                "xCentre": 74.75,
-                "yCentre": 0.75,
-                "zBase": 5.3
-            }
-        },
-        {
-            "id": "ChainTank2",
-            "baseObject": "ChainTankL1.5B1.5H5.6fdundefinedFChainTank.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#fcfc03"
-            },
-            "affiliations": {
-                "Deck": "TweenDeck",
-                "SFI": "218"
-            },
-            "referenceState": {
-                "xCentre": 74.75,
-                "yCentre": -0.75,
-                "zBase": 5.3
-            }
-        },
-        {
-            "id": "Cover1",
-            "baseObject": "CoverL53B15H2.9fdundefinedFcover1.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#aabbcc"
-            },
-            "affiliations": {
-                "Deck": "MainDeck",
-                "SFI": "301"
-            },
-            "referenceState": {
-                "xCentre": 27,
-                "yCentre": 0,
-                "zBase": 8
-            }
-        },
-        {
-            "id": "Tank35",
-            "baseObject": "TankL7B1.5H2.9fdundefinedFtank18.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#fc0303"
-            },
-            "affiliations": {
-                "Deck": "MainDeck",
-                "SFI": "302"
-            },
-            "referenceState": {
-                "xCentre": 30.5,
-                "yCentre": 8.25,
-                "zBase": 8
-            }
-        },
-        {
-            "id": "Tank36",
-            "baseObject": "TankL7B1.5H2.9fdundefinedFtank18.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#fc0303"
-            },
-            "affiliations": {
-                "Deck": "MainDeck",
-                "SFI": "303"
-            },
-            "referenceState": {
-                "xCentre": 30.5,
-                "yCentre": -8.25,
-                "zBase": 8
-            }
-        },
-        {
-            "id": "Tank37",
-            "baseObject": "TankL7B1.5H2.9fdundefinedFtank18.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#fc0303"
-            },
-            "affiliations": {
-                "Deck": "MainDeck",
-                "SFI": "304"
-            },
-            "referenceState": {
-                "xCentre": 37.5,
-                "yCentre": 8.25,
-                "zBase": 8
-            }
-        },
-        {
-            "id": "Tank38",
-            "baseObject": "TankL7B1.5H2.9fdundefinedFtank18.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#fc0303"
-            },
-            "affiliations": {
-                "Deck": "MainDeck",
-                "SFI": "305"
-            },
-            "referenceState": {
-                "xCentre": 37.5,
-                "yCentre": -8.25,
-                "zBase": 8
-            }
-        },
-        {
-            "id": "Tank39",
-            "baseObject": "TankL1B2H2.9fdundefinedFtank19.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#fc0303"
-            },
-            "affiliations": {
-                "Deck": "MainDeck",
-                "SFI": "306"
-            },
-            "referenceState": {
-                "xCentre": 54,
-                "yCentre": 0,
-                "zBase": 8
-            }
-        },
-        {
-            "id": "FiremStore",
-            "baseObject": "FiremStoreL2.5B1.5H2.9fdundefinedFFiremStore.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#fcfc03"
-            },
-            "affiliations": {
-                "Deck": "MainDeck",
-                "SFI": "307"
-            },
-            "referenceState": {
-                "xCentre": 58.25,
-                "yCentre": 8.25,
-                "zBase": 8
-            }
-        },
-        {
-            "id": "DeckWorkshop",
-            "baseObject": "DeckWorkshopL2.5B3.5H2.9fdundefinedFDeckWorkshop.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#fcfc03"
-            },
-            "affiliations": {
-                "Deck": "MainDeck",
-                "SFI": "308"
-            },
-            "referenceState": {
-                "xCentre": 58.25,
-                "yCentre": 5.75,
-                "zBase": 8
-            }
-        },
-        {
-            "id": "Tank40",
-            "baseObject": "TankL2B1.5H2.9fdundefinedFtank20.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#fc0303"
-            },
-            "affiliations": {
-                "Deck": "MainDeck",
-                "SFI": "309"
-            },
-            "referenceState": {
-                "xCentre": 58.5,
-                "yCentre": 3.25,
-                "zBase": 8
-            }
-        },
-        {
-            "id": "Store1",
-            "baseObject": "StoreL2B2H2.9fdundefinedFStore1.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#fc0303"
-            },
-            "affiliations": {
-                "Deck": "MainDeck",
-                "SFI": "310"
-            },
-            "referenceState": {
-                "xCentre": 58.5,
-                "yCentre": 1.5,
-                "zBase": 8
-            }
-        },
-        {
-            "id": "Tank40",
-            "baseObject": "TankL2B1.5H2.9fdundefinedFtank20.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#fc0303"
-            },
-            "affiliations": {
-                "Deck": "MainDeck",
-                "SFI": "311"
-            },
-            "referenceState": {
-                "xCentre": 58.5,
-                "yCentre": -3.25,
-                "zBase": 8
-            }
-        },
-        {
-            "id": "Chem",
-            "baseObject": "ChemL2.5B1.5H2.9fdundefinedFchem.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#aabbcc"
-            },
-            "affiliations": {
-                "Deck": "MainDeck",
-                "SFI": "312"
-            },
-            "referenceState": {
-                "xCentre": 58.25,
-                "yCentre": -8.25,
-                "zBase": 8
-            }
-        },
-        {
-            "id": "Paint",
-            "baseObject": "PaintL2.5B1.5H2.9fdundefinedFpaint.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#aabbcc"
-            },
-            "affiliations": {
-                "Deck": "MainDeck",
-                "SFI": "313"
-            },
-            "referenceState": {
-                "xCentre": 58.25,
-                "yCentre": -6.75,
-                "zBase": 8
-            }
-        },
-        {
-            "id": "Inc&GarbRoom",
-            "baseObject": "Inc&GarbRoomL5B4.5H2.9fdundefinedFInc&GarbRoom.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#fcfc03"
-            },
-            "affiliations": {
-                "Deck": "MainDeck",
-                "SFI": "314"
-            },
-            "referenceState": {
-                "xCentre": 62,
-                "yCentre": 6.25,
-                "zBase": 8
-            }
-        },
-        {
-            "id": "Room1",
-            "baseObject": "RoomL3.5B4.5H2.9fdundefinedFroom1.stl",
-            "style": {
-                "opacity": 1.0,
+                "opacity": 0.7,
                 "color": "#32a852"
             },
             "affiliations": {
-                "Deck": "MainDeck",
-                "SFI": "315"
+                "Deck": "TankTop",
+                "SFI": "201"
             },
             "referenceState": {
-                "xCentre": 61.25,
-                "yCentre": 1.75,
-                "zBase": 8
-            }
-        },
-        {
-            "id": "Room2",
-            "baseObject": "RoomL3.5B6H2.9fdundefinedFroom2.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#32a852"
-            },
-            "affiliations": {
-                "Deck": "MainDeck",
-                "SFI": "316"
-            },
-            "referenceState": {
-                "xCentre": 61.25,
-                "yCentre": -5,
-                "zBase": 8
-            }
-        },
-        {
-            "id": "Room3",
-            "baseObject": "RoomL1.5B4.5H2.9fdundefinedFroom3.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#32a852"
-            },
-            "affiliations": {
-                "Deck": "MainDeck",
-                "SFI": "317"
-            },
-            "referenceState": {
-                "xCentre": 63.75,
-                "yCentre": 1.75,
-                "zBase": 8
-            }
-        },
-        {
-            "id": "Room4",
-            "baseObject": "RoomL4B2H2.9fdundefinedFroom4.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#32a852"
-            },
-            "affiliations": {
-                "Deck": "MainDeck",
-                "SFI": "318"
-            },
-            "referenceState": {
-                "xCentre": 65,
-                "yCentre": -3,
-                "zBase": 8
-            }
-        },
-        {
-            "id": "Room5",
-            "baseObject": "RoomL4B3.5H2.9fdundefinedFroom5.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#32a852"
-            },
-            "affiliations": {
-                "Deck": "MainDeck",
-                "SFI": "319"
-            },
-            "referenceState": {
-                "xCentre": 65,
-                "yCentre": -5.5,
-                "zBase": 8
-            }
-        },
-        {
-            "id": "Room6",
-            "baseObject": "RoomL3.5B5H2.9fdundefinedFroom6.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#32a852"
-            },
-            "affiliations": {
-                "Deck": "MainDeck",
-                "SFI": "320"
-            },
-            "referenceState": {
-                "xCentre": 68.75,
-                "yCentre": -4.75,
-                "zBase": 8
-            }
-        },
-        {
-            "id": "Room7",
-            "baseObject": "RoomL3.5B6H2.9fdundefinedFroom7.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#32a852"
-            },
-            "affiliations": {
-                "Deck": "MainDeck",
-                "SFI": "321"
-            },
-            "referenceState": {
-                "xCentre": 72.25,
-                "yCentre": -3,
-                "zBase": 8
-            }
-        },
-        {
-            "id": "Tank41",
-            "baseObject": "TankL1.5B4.5H2.9fdundefinedFtank21.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#fc0303"
-            },
-            "affiliations": {
-                "Deck": "MainDeck",
-                "SFI": "322"
-            },
-            "referenceState": {
-                "xCentre": 74.75,
-                "yCentre": 3.75,
-                "zBase": 8
-            }
-        },
-        {
-            "id": "Tank42",
-            "baseObject": "TankL1.5B4.5H2.9fdundefinedFtank21.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#fc0303"
-            },
-            "affiliations": {
-                "Deck": "MainDeck",
-                "SFI": "323"
-            },
-            "referenceState": {
-                "xCentre": 74.75,
-                "yCentre": -3.75,
-                "zBase": 8
-            }
-        },
-        {
-            "id": "Room8",
-            "baseObject": "RoomL7B5H2.9fdundefinedFroom8.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#32a852"
-            },
-            "affiliations": {
-                "Deck": "MainDeck",
-                "SFI": "324"
-            },
-            "referenceState": {
-                "xCentre": 68,
-                "yCentre": 5,
-                "zBase": 8
-            }
-        },
-        {
-            "id": "Toilets1",
-            "baseObject": "ToiletsL1B2.5H2.9fdundefinedFtoilets1.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#32a852"
-            },
-            "affiliations": {
-                "Deck": "MainDeck",
-                "SFI": "326"
-            },
-            "referenceState": {
-                "xCentre": 71,
-                "yCentre": 1.25,
-                "zBase": 8
-            }
-        },
-        {
-            "id": "DeckOffice1",
-            "baseObject": "DeckOfficeL2.5B6.5H2.9fdundefinedFDeckOffice1.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#32a852"
-            },
-            "affiliations": {
-                "Deck": "MainDeck",
-                "SFI": "327"
-            },
-            "referenceState": {
-                "xCentre": 72.75,
-                "yCentre": 3.25,
-                "zBase": 8
-            }
-        },
-        {
-            "id": "Cover2",
-            "baseObject": "CoverL53.5B15H2fdundefinedFcover2.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#32a852"
-            },
-            "affiliations": {
-                "Deck": "Adeck",
-                "SFI": "401"
-            },
-            "referenceState": {
-                "xCentre": 26.75,
+                "xCentre": 65.5,
                 "yCentre": 0,
                 "zBase": 10.9
             }
         },
         {
-            "id": "StabTank1",
-            "baseObject": "StabTankL3.5B18H2.9fdundefinedFStabTank.stl",
+            "id": "green3",
+            "baseObject": "green2",
             "style": {
-                "opacity": 1.0,
-                "color": "#aabbcc"
-            },
-            "affiliations": {
-                "Deck": "Adeck",
-                "SFI": "402"
-            },
-            "referenceState": {
-                "xCentre": 55.25,
-                "yCentre": 0,
-                "zBase": 10.9
-            }
-        },
-        {
-            "id": "Freezer1",
-            "baseObject": "FreezerL3.5B2H2.9fdundefinedFfreezer.stl",
-            "style": {
-                "opacity": 1.0,
+                "opacity": 0.7,
                 "color": "#32a852"
             },
             "affiliations": {
-                "Deck": "Adeck",
-                "SFI": "403"
+                "Deck": "TankTop",
+                "SFI": "201"
             },
             "referenceState": {
-                "xCentre": 58.75,
-                "yCentre": 8,
-                "zBase": 10.9
-            }
-        },
-        {
-            "id": "Fridge1",
-            "baseObject": "FridgeL4B1.5H2.9fdundefinedFfridge.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#32a852"
-            },
-            "affiliations": {
-                "Deck": "Adeck",
-                "SFI": "404"
-            },
-            "referenceState": {
-                "xCentre": 62.5,
-                "yCentre": 8,
-                "zBase": 10.9
-            }
-        },
-        {
-            "id": "DryRoom1",
-            "baseObject": "DryRoomL7.5B3H2.9fdundefinedFDryRoom.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#32a852"
-            },
-            "affiliations": {
-                "Deck": "Adeck",
-                "SFI": "405"
-            },
-            "referenceState": {
-                "xCentre": 60.75,
-                "yCentre": 5.5,
-                "zBase": 10.9
-            }
-        },
-        {
-            "id": "Room9",
-            "baseObject": "RoomL2.5B8H2.9fdundefinedFroom9.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#32a852"
-            },
-            "affiliations": {
-                "Deck": "Adeck",
-                "SFI": "406"
-            },
-            "referenceState": {
-                "xCentre": 58.25,
-                "yCentre": 0,
-                "zBase": 10.9
-            }
-        },
-        {
-            "id": "ACRoom1",
-            "baseObject": "ACRoomL7.5B5H2.9fdundefinedFACRoom1.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#32a852"
-            },
-            "affiliations": {
-                "Deck": "Adeck",
-                "SFI": "407"
-            },
-            "referenceState": {
-                "xCentre": 60.75,
-                "yCentre": -6.5,
-                "zBase": 10.9
-            }
-        },
-        {
-            "id": "Room10",
-            "baseObject": "RoomL5B5H2.9fdundefinedFroom10.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#32a852"
-            },
-            "affiliations": {
-                "Deck": "Adeck",
-                "SFI": "408"
-            },
-            "referenceState": {
-                "xCentre": 62,
-                "yCentre": 1.5,
-                "zBase": 10.9
-            }
-        },
-        {
-            "id": "CL1",
-            "baseObject": "CLL2.5B2H2.9fdundefinedFCL1.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#32a852"
-            },
-            "affiliations": {
-                "Deck": "Adeck",
-                "SFI": "409"
-            },
-            "referenceState": {
-                "xCentre": 60.75,
-                "yCentre": -3,
-                "zBase": 10.9
-            }
-        },
-        {
-            "id": "Toilets2",
-            "baseObject": "ToiletsL2.5B2H2.9fdundefinedFtoilets2.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#32a852"
-            },
-            "affiliations": {
-                "Deck": "Adeck",
-                "SFI": "410"
-            },
-            "referenceState": {
-                "xCentre": 63.25,
-                "yCentre": -3,
-                "zBase": 10.9
-            }
-        },
-        {
-            "id": "Gallery1",
-            "baseObject": "GalleryL5.5B5H2.9fdundefinedFgallery1.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#32a852"
-            },
-            "affiliations": {
-                "Deck": "Adeck",
-                "SFI": "411"
-            },
-            "referenceState": {
-                "xCentre": 67.25,
-                "yCentre": 5.25,
-                "zBase": 10.9
-            }
-        },
-        {
-            "id": "DayRoom1",
-            "baseObject": "DayRoomL5.5B6H2.9fdundefinedFDayRoom1.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#32a852"
-            },
-            "affiliations": {
-                "Deck": "Adeck",
-                "SFI": "413"
-            },
-            "referenceState": {
-                "xCentre": 67.25,
-                "yCentre": -5,
-                "zBase": 10.9
-            }
-        },
-        {
-            "id": "MessRoom1",
-            "baseObject": "MessRoomL4B13H2.9fdundefinedFMessRoom1.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#32a852"
-            },
-            "affiliations": {
-                "Deck": "Adeck",
-                "SFI": "414"
-            },
-            "referenceState": {
-                "xCentre": 72,
-                "yCentre": 0,
-                "zBase": 10.9
-            }
-        },
-        {
-            "id": "RopeBin1",
-            "baseObject": "RopeBinL1.5B3H2.9fdundefinedFRopeBin1.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#aabbcc"
-            },
-            "affiliations": {
-                "Deck": "Adeck",
-                "SFI": "415"
-            },
-            "referenceState": {
-                "xCentre": 74.75,
-                "yCentre": 0,
-                "zBase": 10.9
-            }
-        },
-        {
-            "id": "Store2",
-            "baseObject": "StoreL1.5B4H2.9fdundefinedFstore.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#32a852"
-            },
-            "affiliations": {
-                "Deck": "Adeck",
-                "SFI": "416"
-            },
-            "referenceState": {
-                "xCentre": 74.75,
-                "yCentre": 3.5,
-                "zBase": 10.9
-            }
-        },
-        {
-            "id": "Store3",
-            "baseObject": "StoreL1.5B4H2.9fdundefinedFstore.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#32a852"
-            },
-            "affiliations": {
-                "Deck": "Adeck",
-                "SFI": "417"
-            },
-            "referenceState": {
-                "xCentre": 74.75,
-                "yCentre": -3.5,
-                "zBase": 10.9
-            }
-        },
-        {
-            "id": "Store4",
-            "baseObject": "StoreL6.5B10H2.9fdundefinedFstore2.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#32a852"
-            },
-            "affiliations": {
-                "Deck": "Adeck",
-                "SFI": "418"
-            },
-            "referenceState": {
-                "xCentre": 78.75,
-                "yCentre": 0,
-                "zBase": 10.9
-            }
-        },
-        {
-            "id": "CableRoom1",
-            "baseObject": "CableRoomL10.5B14H2.7fdundefinedFCableRoom1.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#aabbcc"
-            },
-            "affiliations": {
-                "Deck": "Bdeck",
-                "SFI": "505"
-            },
-            "referenceState": {
-                "xCentre": 76.75,
+                "xCentre": 65.5,
                 "yCentre": 0,
                 "zBase": 13.8
             }
         },
         {
-            "id": "Cabin3",
-            "baseObject": "CabinL2.5B4H2.7fdundefinedFcabin1.stl",
+            "id": "green4",
+            "baseObject": "green3",
             "style": {
-                "opacity": 1.0,
+                "opacity": 0.7,
                 "color": "#32a852"
             },
             "affiliations": {
-                "Deck": "Bdeck",
-                "SFI": "506"
+                "Deck": "TankTop",
+                "SFI": "201"
             },
             "referenceState": {
-                "xCentre": 70.25,
-                "yCentre": 6,
-                "zBase": 13.8
-            }
-        },
-        {
-            "id": "Cabin2",
-            "baseObject": "CabinL2.5B4H2.7fdundefinedFcabin1.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#32a852"
-            },
-            "affiliations": {
-                "Deck": "Bdeck",
-                "SFI": "507"
-            },
-            "referenceState": {
-                "xCentre": 67.75,
-                "yCentre": 6,
-                "zBase": 13.8
-            }
-        },
-        {
-            "id": "Cabin1",
-            "baseObject": "CabinL4.5B4H2.7fdundefinedFcabin2.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#32a852"
-            },
-            "affiliations": {
-                "Deck": "Bdeck",
-                "SFI": "508"
-            },
-            "referenceState": {
-                "xCentre": 64.25,
-                "yCentre": 6.5,
-                "zBase": 13.8
-            }
-        },
-        {
-            "id": "Tank43",
-            "baseObject": "TankL5.5B4H5.3fdundefinedFtank22.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#aabbcc"
-            },
-            "affiliations": {
-                "Deck": "Bdeck",
-                "SFI": "509"
-            },
-            "referenceState": {
-                "xCentre": 61.75,
-                "yCentre": 2,
-                "zBase": 13.8
-            }
-        },
-        {
-            "id": "Room11",
-            "baseObject": "RoomL4.5B8H2.7fdundefinedFroom11.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#32a852"
-            },
-            "affiliations": {
-                "Deck": "Bdeck",
-                "SFI": "510"
-            },
-            "referenceState": {
-                "xCentre": 56.75,
+                "xCentre": 65.5,
                 "yCentre": 0,
-                "zBase": 13.8
-            }
-        },
-        {
-            "id": "Cabin4",
-            "baseObject": "CabinL5B4.5H2.7fdundefinedFcabin3.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#32a852"
-            },
-            "affiliations": {
-                "Deck": "Bdeck",
-                "SFI": "511"
-            },
-            "referenceState": {
-                "xCentre": 59,
-                "yCentre": -6.25,
-                "zBase": 13.8
-            }
-        },
-        {
-            "id": "Cabin5",
-            "baseObject": "CabinL5B6.5H2.7fdundefinedFcabin5.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#32a852"
-            },
-            "affiliations": {
-                "Deck": "Bdeck",
-                "SFI": "512"
-            },
-            "referenceState": {
-                "xCentre": 64,
-                "yCentre": -5.25,
-                "zBase": 13.8
-            }
-        },
-        {
-            "id": "Cabin5",
-            "baseObject": "CabinL2.5B5H2.7fdundefinedFcabin4.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#32a852"
-            },
-            "affiliations": {
-                "Deck": "Bdeck",
-                "SFI": "513"
-            },
-            "referenceState": {
-                "xCentre": 70.25,
-                "yCentre": -4.5,
-                "zBase": 13.8
-            }
-        },
-        {
-            "id": "Cabin6",
-            "baseObject": "CabinL2.5B5H2.7fdundefinedFcabin4.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#32a852"
-            },
-            "affiliations": {
-                "Deck": "Bdeck",
-                "SFI": "514"
-            },
-            "referenceState": {
-                "xCentre": 67.75,
-                "yCentre": -4.5,
-                "zBase": 13.8
-            }
-        },
-        {
-            "id": "CorridorExt1",
-            "baseObject": "CorridorExtL3.5B13.5H2.7fdundefinedFcorridor.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#32a852"
-            },
-            "affiliations": {
-                "Deck": "Cdeck",
-                "SFI": "601"
-            },
-            "referenceState": {
-                "xCentre": 57.25,
-                "yCentre": -2.25,
                 "zBase": 16.5
             }
         },
         {
-            "id": "InstrumentRoom1",
-            "baseObject": "InstrumentRoomL5.5B3.5H2.7fdundefinedFInstrumentRoom.stl",
+            "id": "green5",
+            "baseObject": "green5",
             "style": {
-                "opacity": 1.0,
-                "color": "#fcfc03"
-            },
-            "affiliations": {
-                "Deck": "Cdeck",
-                "SFI": "602"
-            },
-            "referenceState": {
-                "xCentre": 61.75,
-                "yCentre": -1.75,
-                "zBase": 16.5
-            }
-        },
-        {
-            "id": "CaptainCabin1",
-            "baseObject": "CaptainCabinL6B5H2.7fdundefinedFCaptainCabin.stl",
-            "style": {
-                "opacity": 1.0,
+                "opacity": 0.7,
                 "color": "#32a852"
             },
             "affiliations": {
-                "Deck": "Cdeck",
-                "SFI": "603"
+                "Deck": "TankTop",
+                "SFI": "201"
             },
             "referenceState": {
-                "xCentre": 62,
-                "yCentre": -6.5,
-                "zBase": 16.5
-            }
-        },
-        {
-            "id": "ChiefOfficerCabin1",
-            "baseObject": "ChiefOfficerCabinL3B4.5H2.7fdundefinedFChiefOfficerCabin.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#32a852"
-            },
-            "affiliations": {
-                "Deck": "Cdeck",
-                "SFI": "604"
-            },
-            "referenceState": {
-                "xCentre": 66.5,
-                "yCentre": -6,
-                "zBase": 16.5
-            }
-        },
-        {
-            "id": "FirstOfficerCabin1",
-            "baseObject": "FirstOfficerCabinL3B4H2.7fdundefinedFFirstOfficerCabin.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#32a852"
-            },
-            "affiliations": {
-                "Deck": "Cdeck",
-                "SFI": "605"
-            },
-            "referenceState": {
-                "xCentre": 69.5,
-                "yCentre": -6,
-                "zBase": 16.5
-            }
-        },
-        {
-            "id": "ChiefStewardCabin1",
-            "baseObject": "ChiefStewardCabinL6B6H2.7fdundefinedFChiefStewardCabin.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#32a852"
-            },
-            "affiliations": {
-                "Deck": "Cdeck",
-                "SFI": "606"
-            },
-            "referenceState": {
-                "xCentre": 74,
-                "yCentre": -3,
-                "zBase": 16.5
-            }
-        },
-        {
-            "id": "ElectricianCabin1",
-            "baseObject": "ElectricianCabinL6B6H2.7fdundefinedFElectricianCabin.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#32a852"
-            },
-            "affiliations": {
-                "Deck": "Cdeck",
-                "SFI": "607"
-            },
-            "referenceState": {
-                "xCentre": 74,
-                "yCentre": 3,
-                "zBase": 16.5
-            }
-        },
-        {
-            "id": "CleanLocker1",
-            "baseObject": "CleanLockerL1.5B2H2.7fdundefinedFSmallRoom.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#aabbcc"
-            },
-            "affiliations": {
-                "Deck": "Cdeck",
-                "SFI": "609"
-            },
-            "referenceState": {
-                "xCentre": 65.25,
-                "yCentre": -2,
-                "zBase": 16.5
-            }
-        },
-        {
-            "id": "BondStore1",
-            "baseObject": "BondStoreL1.5B2H2.7fdundefinedFSmallRoom.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#aabbcc"
-            },
-            "affiliations": {
-                "Deck": "Cdeck",
-                "SFI": "610"
-            },
-            "referenceState": {
-                "xCentre": 66.75,
-                "yCentre": -2,
-                "zBase": 16.5
-            }
-        },
-        {
-            "id": "Linen1",
-            "baseObject": "LinenL1.5B2H2.7fdundefinedFSmallRoom.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#aabbcc"
-            },
-            "affiliations": {
-                "Deck": "Cdeck",
-                "SFI": "611"
-            },
-            "referenceState": {
-                "xCentre": 68.25,
-                "yCentre": -2,
-                "zBase": 16.5
-            }
-        },
-        {
-            "id": "ChiefCabin1",
-            "baseObject": "ChiefCabinL6B5H2.7fdundefinedFChiefCabin.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#32a852"
-            },
-            "affiliations": {
-                "Deck": "Cdeck",
-                "SFI": "612"
-            },
-            "referenceState": {
-                "xCentre": 63.5,
-                "yCentre": 6.5,
-                "zBase": 16.5
-            }
-        },
-        {
-            "id": "FirstEngineerCabin1",
-            "baseObject": "FirstEngineerCabinL2.5B4H2.7fdundefinedFFirstEngineerCabin.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#32a852"
-            },
-            "affiliations": {
-                "Deck": "Cdeck",
-                "SFI": "613"
-            },
-            "referenceState": {
-                "xCentre": 67.75,
-                "yCentre": 6,
-                "zBase": 16.5
-            }
-        },
-        {
-            "id": "SecondEngineerCabin1",
-            "baseObject": "SecondEngineerCabinL2B3.5H2.7fdundefinedFSecondEngineerCabin.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#32a852"
-            },
-            "affiliations": {
-                "Deck": "Cdeck",
-                "SFI": "614"
-            },
-            "referenceState": {
-                "xCentre": 70,
-                "yCentre": 5.75,
-                "zBase": 16.5
-            }
-        },
-        {
-            "id": "Hoist1",
-            "baseObject": "HoistL1B9H4.15fdundefinedFhoist.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#fcfc03"
-            },
-            "affiliations": {
-                "Deck": "BridgeDeck",
-                "SFI": "701"
-            },
-            "referenceState": {
-                "xCentre": 54,
-                "yCentre": -0.5,
-                "zBase": 19.2
-            }
-        },
-        {
-            "id": "ShipHanding1",
-            "baseObject": "ShipHandingL7B8H4.15fdundefinedFShipHanding.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#aabbcc"
-            },
-            "affiliations": {
-                "Deck": "BridgeDeck",
-                "SFI": "704"
-            },
-            "referenceState": {
-                "xCentre": 59.5,
+                "xCentre": 58.0,
                 "yCentre": 0,
                 "zBase": 19.2
             }
         },
         {
-            "id": "MainRoom1",
-            "baseObject": "MainRoomL8B16H4.15fdundefinedFMainRoom.stl",
+            "id": "yellow5",
+            "baseObject": "yellow5",
             "style": {
-                "opacity": 1.0,
-                "color": "#fcfc03"
+                "opacity": 0.7,
+                "color": "#32a852"
             },
             "affiliations": {
-                "Deck": "BridgeDeck",
-                "SFI": "705"
+                "Deck": "TankTop",
+                "SFI": "201"
             },
             "referenceState": {
-                "xCentre": 67,
+                "xCentre": 69.25,
                 "yCentre": 0,
                 "zBase": 19.2
             }
         },
         {
-            "id": "NavigationRoom1",
-            "baseObject": "NavigationRoomL9B8H4.15fdundefinedFNavigationRoom.stl",
+            "id": "yellow6",
+            "baseObject": "yellow6",
             "style": {
-                "opacity": 1.0,
-                "color": "#fcfc03"
-            },
-            "affiliations": {
-                "Deck": "BridgeDeck",
-                "SFI": "706"
-            },
-            "referenceState": {
-                "xCentre": 75.5,
-                "yCentre": 0,
-                "zBase": 19.2
-            }
-        },
-        {
-            "id": "EmGenRoom1",
-            "baseObject": "EmGenRoomL11B6H5fdundefinedFEmGenRoom.stl",
-            "style": {
-                "opacity": 1.0,
-                "color": "#fcfc03"
-            },
-            "affiliations": {
-                "Deck": "WheelHouseTop",
-                "SFI": "801"
-            },
-            "referenceState": {
-                "xCentre": 68.5,
-                "yCentre": -1.5,
-                "zBase": 23.35
-            }
-        },
-        {
-            "id": "Communication1",
-            "baseObject": "CommunicationL11B3H5fdundefinedFCommunicationRoom.stl",
-            "style": {
-                "opacity": 1.0,
                 "color": "#fcfc03"
             },
             "affiliations": {
@@ -4928,7 +3794,7 @@
             },
             "referenceState": {
                 "xCentre": 68.5,
-                "yCentre": 3,
+                "yCentre": 0,
                 "zBase": 23.35
             }
         }
