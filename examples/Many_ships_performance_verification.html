@@ -32,12 +32,15 @@
 
       import { Water } from "./3D_engine/Water.js";
 
+      import Stats from "./libs/stats.module.js";
+
       //Globals
-      var renderer, camera, controls, gui, stats;
+      var renderer, camera, controls, gui, statsOne, statsTwo;
       var scene, zUpCont, playback, ships, ocean;
       var wavMo, states;
 
       (function main() {
+
         //Renderer setup
         //document.body.style = "overflow: hidden;";
         document.body.style.overflow = "hidden";
@@ -55,8 +58,15 @@
         //renderer.setSize(window.innerWidth, window.innerHeight);
         renderer.setClearColor(0x99aadd);
         container.appendChild(renderer.domElement);
-        //stats = new Stats();
-        //document.body.appendChild(stats.domElement);
+        
+        // Insert the performance statistics 
+        statsOne = new Stats();
+        statsOne.showPanel( 0 );
+        document.body.appendChild( statsOne.dom );
+        statsTwo = new Stats();
+        statsTwo.domElement.style.cssText = 'position:absolute;top:0px;left:80px;';
+        statsTwo.showPanel( 1 );        
+        document.body.appendChild( statsTwo.dom );
 
         //GUI setup (comment out to remove gui)
         gui = new dat.GUI();
@@ -70,7 +80,7 @@
         scene.add(sun);
 
         //Ocean size
-        let oSize = 2048;
+        let oSize = 8192;
 
         scene.add(new Skybox(oSize));
 
@@ -128,6 +138,22 @@
         states = [];
 
         function callback(ship) {
+
+          // Forcing the deletion of each ship objects, decks and bulkheads
+          ship.structure.decks = {}
+          // ship.structure.bulkheads = {}
+          ship.baseObjects = {}
+          ship.derivedObjects = {}
+
+          const random_color = `rgb(${Math.round(getRandomArbitrary(100.0, 0.0))}%, ${Math.round(getRandomArbitrary(100.0, 0.0))}%, ${Math.round(getRandomArbitrary(100.0, 0.0))}%)`
+
+          // This must be changed for be able to change on the ship inputs
+          ship.structure.hull.style = {
+            "upperColor": random_color,
+            "lowerColor": random_color,
+            "opacity": 1
+          }
+
           states.push(ship.designState.clone());
           let noShips = states.length - 1;
           wavMo.push(
@@ -139,15 +165,25 @@
           let ship3D = new Ship3D(ship, {
             shipState: states[noShips],
             stlPath: "3D_models/STL/various",
-            upperColor: 0x33aa33,
-            lowerColor: 0xaa3333,
+            // upperColor: 0x33aa33,
+            // lowerColor: 0xaa3333, Does not work at all!
             hullOpacity: 1,
             deckOpacity: 1,
             objectOpacity: 1,
           });
           ships.add(ship3D);
+
+          function getRandomArbitrary(min, max) {
+            return Math.random() * (max - min) + min;
+          }
+          
+          // Adding the ship random dimensions variation
           ship3D.position.x = (Math.random() - 0.5) * oSize;
           ship3D.position.y = (Math.random() - 0.5) * oSize;
+          ship3D.scale.x = getRandomArbitrary( 0.8, 1.2 )
+          ship3D.scale.y = getRandomArbitrary( 0.6, 1.2 )
+          ship3D.scale.z = getRandomArbitrary( 0.8, 1.2 )
+
           // This part of the code avoid overlaying of the ship
           var deleteLength = ship.structure.hull.attributes.LOA;
           if (ships.children.length > 1) {
@@ -276,7 +312,7 @@
           }
         }
         correctNum(o.numShips);
-        gui.add(o, "numShips", 1, 50).step(1).onChange(correctNum);
+        gui.add(o, "numShips", 1, 3000).step(10).onChange(correctNum);
         gui.add(
           {
             addFromFile: function () {
@@ -286,13 +322,17 @@
           },
           "addFromFile"
         );
-
+        
         playback.play();
 
         requestAnimationFrame(animate);
       })();
 
       function animate(millitime) {
+
+        statsOne.begin();
+        statsTwo.begin();
+
         let playing = playback.update();
 
         //Disable this to freeze water when not playing
@@ -301,6 +341,10 @@
         }
 
         renderer.render(scene, camera);
+
+        statsOne.end();
+        statsTwo.end();
+        
         requestAnimationFrame(animate);
       }
 

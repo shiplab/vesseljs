@@ -50,7 +50,7 @@ function renderRayCaster( mouse, camera, scene, intersectedElement = { name: und
 
 			if ( intersectedElement.name != intersects[ 0 ].object.name ) {
 
-				// Objsect touched is different from the previeus
+				// Object touched is different from the previous
 
 				if ( intersectedElement.name != undefined ) {
 
@@ -75,7 +75,7 @@ function renderRayCaster( mouse, camera, scene, intersectedElement = { name: und
 
 			returnToOriginalColor();
 
-			// cast name and colors of the object as udefined
+			// cast name and colors of the object as undefined
 			intersectedElement = { name: undefined, currentHex: undefined, status: false };
 
 		}
@@ -84,7 +84,7 @@ function renderRayCaster( mouse, camera, scene, intersectedElement = { name: und
 
 	function returnToOriginalColor() {
 
-		if ( intersectedElement.name != undefined  && intersectedElement.currentHex != undefined ) {
+		if ( intersectedElement.name != undefined && intersectedElement.currentHex != undefined ) {
 
 			// Check if there was a previeus touched
 			// Make the previous in its original color
