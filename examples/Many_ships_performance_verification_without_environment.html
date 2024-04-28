@@ -27,17 +27,12 @@
       // Import Skybox module
       import { Skybox } from "../examples/3D_engine/skybox.js";
 
-      // Import Ocean module
-      import { Ocean } from "../examples/3D_engine/Regular_ocean.js";
-
-      import { Water } from "./3D_engine/Water.js";
-
       import Stats from "./libs/stats.module.js";
 
       //Globals
       var renderer, camera, controls, gui, statsOne, statsTwo;
-      var scene, zUpCont, playback, ships, ocean;
-      var wavMo, states;
+      var scene, zUpCont, playback, ships;
+      var states;
 
       (function main() {
 
@@ -56,7 +51,7 @@
         document.body.appendChild(container);
         renderer = new THREE.WebGLRenderer({ antialias: true });
         //renderer.setSize(window.innerWidth, window.innerHeight);
-        renderer.setClearColor(0x99aadd);
+        renderer.setClearColor(0xA9CCE3);
         container.appendChild(renderer.domElement);
         
         // Insert the performance statistics 
@@ -79,16 +74,15 @@
         sun.position.set(-512, 246, 128);
         scene.add(sun);
 
-        //Ocean size
-        let oSize = 8192;
-
-        scene.add(new Skybox(oSize));
-
         //Use Z up from now on:
         THREE.Object3D.DefaultUp.set(0, 0, 1);
         zUpCont = new THREE.Group();
         zUpCont.rotation.x = -0.5 * Math.PI;
         scene.add(zUpCont);
+
+        
+        //Ocean size
+        let oSize = 8192;
 
         //Camera setup
         camera = new THREE.PerspectiveCamera(
@@ -110,7 +104,7 @@
         camera.up.set(0, 1, 0);
         window.addEventListener("resize", onResize, false);
         onResize();
-        camera.position.set(-oSize * 0.45, oSize * 0.1, oSize * 0.7);
+        camera.position.set(-1025 * 0.45, 1025 * 0.1, 1025 * 0.7);
 
         controls = new OrbitControls(camera, renderer.domElement);
         //controls.minDistance = 0;
@@ -122,20 +116,18 @@
         //zUpCont.add(new THREE.AxisHelper(1000));
         zUpCont.add(new THREE.HemisphereLight(0xccccff, 0x666688, 1));
 
-        ocean = new Ocean({
-          parentGUI: gui,
-          sunDir: sun.position.clone().normalize(),
-          size: oSize,
-          segments: 127,
-        });
-        playback.add(ocean);
-        zUpCont.add(ocean);
-
         ships = new THREE.Group();
         zUpCont.add(ships);
 
-        wavMo = [];
         states = [];
+
+        //Add simplified ocean:
+        const ocean = new THREE.Mesh(new THREE.PlaneBufferGeometry(10000, 10000), new THREE.MeshPhongMaterial({color: 0x2222bb}));
+        zUpCont.add(ocean);
+        const grid = new THREE.GridHelper(10000, 100);
+        grid.rotation.x = 0.5 * Math.PI;
+        grid.position.z = 0.1;
+        zUpCont.add(grid);
 
         function callback(ship) {
 
@@ -156,11 +148,6 @@
 
           states.push(ship.designState.clone());
           let noShips = states.length - 1;
-          wavMo.push(
-            new Vessel.WaveMotion(ship, states[noShips], ocean.wavCre)
-          );
-          wavMo[noShips].output.push("rollAmp");
-          updateMotion();
 
           let ship3D = new Ship3D(ship, {
             shipState: states[noShips],
@@ -177,132 +164,37 @@
             return Math.random() * (max - min) + min;
           }
           
-          // Adding the ship random dimensions variation
-          ship3D.position.x = (Math.random() - 0.5) * oSize;
-          ship3D.position.y = (Math.random() - 0.5) * oSize;
-          ship3D.scale.x = getRandomArbitrary( 0.8, 1.2 )
-          ship3D.scale.y = getRandomArbitrary( 0.6, 1.2 )
-          ship3D.scale.z = getRandomArbitrary( 0.8, 1.2 )
+          function calculatePositionCoef(n) {
 
-          // This part of the code avoid overlaying of the ship
-          var deleteLength = ship.structure.hull.attributes.LOA;
-          if (ships.children.length > 1) {
-            for (var i = 0; i < ships.children.length - 1; i++) {
-              var test = ships.children[i];
-              if (
-                Math.pow(
-                  Math.pow(ship3D.position.x - test.position.x, 2) +
-                    Math.pow(ship3D.position.y - test.position.y, 2),
-                  0.5
-                ) < deleteLength
-              ) {
-                ships.remove(ships.children[ships.children.length - 1]);
-                addShip();
-              }
+            if(n == 1) {
+              return 0
             }
+
+            return Math.floor(n / 2) * ((-1) ** (n % 2))
+
           }
 
-          let headAng = 2 * Math.random() * Math.PI; // from 0 to 2 PI
-          ship3D.rotation.z = headAng;
-          wavMo[noShips].setHeading((180 / Math.PI) * headAng);
-
-          playback.add(function (t, dt) {
-            //This would be optimization
-            //if (!ship3D.visible) return;
-
-            // projection of trajectory for calculation of phase difference
-            let projMag =
-              ship3D.position.x * ocean.waves["0"].costh +
-              ship3D.position.y * ocean.waves["0"].sinth; // magnitude of projection
-
-            //motion formula
-            let omega = ocean.wavCre.waveDef.waveFreq;
-            let k = (2 * Math.PI) / ocean.waves["0"].L; // wave number
-            ship3D.heave =
-              states[noShips].discrete.WaveMotion.state.heaveAmp *
-              Math.cos(
-                omega * t - (ocean.waves["0"].phi * Math.PI) / 180 - k * projMag
-              );
-
-            // a 90 degrees phase difference of pitch in relation to the wave makes the motion appear more natural
-            ship3D.pitch =
-              states[noShips].discrete.WaveMotion.state.pitchAmp *
-              Math.cos(
-                omega * t -
-                  (ocean.waves["0"].phi * Math.PI) / 180 -
-                  k * projMag +
-                  (90 * Math.PI) / 180
-              );
-
-            // pitch and roll may be negative depending on the direction of the waves in relation to the ship
-            if (
-              Math.abs(
-                states[noShips].discrete.Heading.state.heading -
-                  ocean.wavCre.waveDef.heading
-              ) > 90 &&
-              Math.abs(
-                states[noShips].discrete.Heading.state.heading -
-                  ocean.wavCre.waveDef.heading
-              ) < 270
-            ) {
-              ship3D.pitch = -ship3D.pitch;
-            }
-
-            let rollMag =
-              states[noShips].discrete.WaveMotion.state.rollAmp *
-              Math.cos(
-                omega * t - (ocean.waves["0"].phi * Math.PI) / 180 - k * projMag
-              );
-            if (
-              ocean.wavCre.waveDef.heading >
-              states[noShips].discrete.Heading.state.heading
-            ) {
-              if (
-                Math.abs(
-                  states[noShips].discrete.Heading.state.heading -
-                    ocean.wavCre.waveDef.heading
-                ) < 180
-              ) {
-                ship3D.roll = -rollMag;
-              } else {
-                ship3D.roll = rollMag;
-              }
-            } else {
-              if (
-                Math.abs(
-                  states[noShips].discrete.Heading.state.heading -
-                    ocean.wavCre.waveDef.heading
-                ) < 180
-              ) {
-                ship3D.roll = rollMag;
-              } else {
-                ship3D.roll = -rollMag;
-              }
-            }
-          });
+          // Adding the ship random dimensions variation
+          ship3D.position.x = calculatePositionCoef(Math.floor(ships.children.length / 100)) * 100
+          ship3D.position.y = calculatePositionCoef(ships.children.length % 100) * 30
+          
+                    
+          var deleteLength = ship.structure.hull.attributes.LOA;
+          
         }
 
-        let designs = [
-          "PX121",
-          "blockCase",
-          "prismaticHull",
-          "trapezoidPrismHull",
-        ];
         function addShip() {
-          let design = designs[0]; //designs[Math.floor(Math.random()*designs.length)];
+          let design = "PX121"; //designs[Math.floor(Math.random()*designs.length)];
           Vessel.loadShip("ship_specs/" + design + ".json", callback);
+          
         }
-
-        //Initial configuration:
-        let w = ocean.addCosineWave({ A: 5, T: 11, theta: 1 });
-        if (ocean.cosConf) ocean.cosConf.close();
 
         let o = { numShips: 1 };
         function correctNum(value) {
           let n = ships.children.length;
           if (n < value) {
             for (let i = 0; n + i < value; i++) {
-              addShip();
+              addShip();              
             }
           } else if (n > value) {
             while (n > value) {
@@ -310,19 +202,12 @@
               n--;
             }
           }
+
+
         }
         correctNum(o.numShips);
-        gui.add(o, "numShips", 1, 3000).step(10).onChange(correctNum);
-        gui.add(
-          {
-            addFromFile: function () {
-              o.numShips++;
-              Vessel.browseShip(callback);
-            },
-          },
-          "addFromFile"
-        );
-        
+        gui.add(o, "numShips", 1, 10000).step(10).onChange(correctNum);
+                
         playback.play();
 
         requestAnimationFrame(animate);
@@ -335,11 +220,6 @@
 
         let playing = playback.update();
 
-        //Disable this to freeze water when not playing
-        if (!playing) {
-          ocean.water.material.uniforms.time.value += 1 / 60;
-        }
-
         renderer.render(scene, camera);
 
         statsOne.end();
@@ -348,11 +228,7 @@
         requestAnimationFrame(animate);
       }
 
-      function updateMotion() {
-        for (let i = 0; i < wavMo.length; i++) {
-          wavMo[i].writeOutput();
-        }
-      }
+      
     </script>
   </body>
 </html>
