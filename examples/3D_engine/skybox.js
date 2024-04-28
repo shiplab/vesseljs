@@ -1,15 +1,15 @@
 import * as THREE from "./three_r126.js";
 
-export class Skybox extends THREE.Mesh {
+class Box extends THREE.Mesh {
 
-	constructor( size ) {
+	constructor( size = 2048, path = "3D_engine/textures/skyboxsun25degtest1.png" ) {
 
 		// load skybox (reusing example code to test the water shading fast)
 		var cubeMap = new THREE.CubeTexture( [] );
 		cubeMap.format = THREE.RGBFormat;
 		var loader = new THREE.ImageLoader();
 
-		loader.load( "3D_engine/textures/skyboxsun25degtest1.png", function ( image ) {
+		loader.load( path, function ( image ) {
 
 			var getSide = function ( x, y ) {
 
@@ -59,10 +59,49 @@ export class Skybox extends THREE.Mesh {
 
 	}
 
-	// get envMap() {
+}
 
-	// 	return this.material.uniforms.envMap.value;
+class Sun extends THREE.DirectionalLight {
 
-	// }
+	constructor( size ) {
+
+		super( 0xffffff, 2 );
+		this.position.copy( this.getDefaultSunPosition( size ) );
+
+	}
+
+	getDefaultSunPosition( size ) {
+
+		const factor = size / 2048;
+		return new THREE.Vector3( - 512 / factor, 246 / factor, 128 / factor );
+
+	}
+
+}
+
+export class Skybox extends THREE.Group {
+
+	constructor( size, path ) {
+
+		super();
+		this.size = size;
+		this.box = new Box( size, path );
+		this.sun = new Sun( size );
+		this.add( this.box );
+		this.add( this.sun );
+
+	}
+
+	getMesh() {
+
+		return this.box;
+
+	}
+
+	getSun() {
+
+		return this.sun;
+
+	}
 
 }

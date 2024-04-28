@@ -1,0 +1,234 @@
+<html>
+  <head>
+    <title>Many ships in regular ocean</title>
+
+    <script src="3D_engine/dat.gui.min.js"></script>
+
+    <!--<script src="Moving_bodies_Elias_Hasle.js"></script>-->
+    <script src="3D_engine/Playback.js"></script>
+
+    <!--<script src="keyboard_arrow_input_Elias_Hasle.js"></script>-->
+  </head>
+
+  <body>
+    <script type="module">
+      "use strict";
+
+      // Import three.js and OrbitControls modules
+      import * as THREE from "./3D_engine/three_r126.js";
+      import { OrbitControls } from "./3D_engine/OrbitControls.js";
+
+      // Import Vessel.js module
+      import * as Vessel from "../source/jsm/vessel.js";
+
+      // Import Ship3D module
+      import { Ship3D } from "../source/jsm/3D_engine/Ship3D.js";
+
+      // Import Skybox module
+      import { Skybox } from "../examples/3D_engine/skybox.js";
+
+      import Stats from "./libs/stats.module.js";
+
+      //Globals
+      var renderer, camera, controls, gui, statsOne, statsTwo;
+      var scene, zUpCont, playback, ships;
+      var states;
+
+      (function main() {
+
+        //Renderer setup
+        //document.body.style = "overflow: hidden;";
+        document.body.style.overflow = "hidden";
+        var container = document.createElement("div");
+        //container.style = "position: absolute; top: 0; left: 0;"
+        Object.assign(container.style, {
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100vw",
+          height: "100vh",
+        });
+        document.body.appendChild(container);
+        renderer = new THREE.WebGLRenderer({ antialias: true });
+        //renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0xA9CCE3);
+        container.appendChild(renderer.domElement);
+        
+        // Insert the performance statistics 
+        statsOne = new Stats();
+        statsOne.showPanel( 0 );
+        document.body.appendChild( statsOne.dom );
+        statsTwo = new Stats();
+        statsTwo.domElement.style.cssText = 'position:absolute;top:0px;left:80px;';
+        statsTwo.showPanel( 1 );        
+        document.body.appendChild( statsTwo.dom );
+
+        //GUI setup (comment out to remove gui)
+        gui = new dat.GUI();
+
+        playback = new Playback({ parentGUI: gui });
+
+        //Scene setup:
+        scene = new THREE.Scene();
+        let sun = new THREE.DirectionalLight(0xffffff, 2);
+        sun.position.set(-512, 246, 128);
+        scene.add(sun);
+
+        //Use Z up from now on:
+        THREE.Object3D.DefaultUp.set(0, 0, 1);
+        zUpCont = new THREE.Group();
+        zUpCont.rotation.x = -0.5 * Math.PI;
+        scene.add(zUpCont);
+
+        
+        //Ocean size
+        let oSize = 8192;
+
+        //Camera setup
+        camera = new THREE.PerspectiveCamera(
+          26,
+          window.innerWidth / window.innerHeight,
+          1,
+          1000000
+        );
+        let onResize = function () {
+          let w = container.clientWidth;
+          let h = container.clientHeight;
+          renderer.setSize(w, h);
+          camera.aspect = w / h;
+          camera.updateProjectionMatrix();
+          //camera.aspect = window.innerWidth / window.innerHeight;
+          //camera.updateProjectionMatrix();
+          //renderer.setSize(window.innerWidth, window.innerHeight);
+        };
+        camera.up.set(0, 1, 0);
+        window.addEventListener("resize", onResize, false);
+        onResize();
+        camera.position.set(-1025 * 0.45, 1025 * 0.1, 1025 * 0.7);
+
+        controls = new OrbitControls(camera, renderer.domElement);
+        //controls.minDistance = 0;
+        //controls.maxDistance = 0.5*oSize;
+        //controls.enablePan = false;
+        //controls.maxPolarAngle = 0.5*Math.PI-0.1;
+        //controls.minPolarAngle = 0.1;
+
+        //zUpCont.add(new THREE.AxisHelper(1000));
+        zUpCont.add(new THREE.HemisphereLight(0xccccff, 0x666688, 1));
+
+        ships = new THREE.Group();
+        zUpCont.add(ships);
+
+        states = [];
+
+        //Add simplified ocean:
+        const ocean = new THREE.Mesh(new THREE.PlaneBufferGeometry(10000, 10000), new THREE.MeshPhongMaterial({color: 0x2222bb}));
+        zUpCont.add(ocean);
+        const grid = new THREE.GridHelper(10000, 100);
+        grid.rotation.x = 0.5 * Math.PI;
+        grid.position.z = 0.1;
+        zUpCont.add(grid);
+
+        function callback(ship) {
+
+          // Forcing the deletion of each ship objects, decks and bulkheads
+          ship.structure.decks = {}
+          // ship.structure.bulkheads = {}
+          ship.baseObjects = {}
+          ship.derivedObjects = {}
+
+          const random_color = `rgb(${Math.round(getRandomArbitrary(100.0, 0.0))}%, ${Math.round(getRandomArbitrary(100.0, 0.0))}%, ${Math.round(getRandomArbitrary(100.0, 0.0))}%)`
+
+          // This must be changed for be able to change on the ship inputs
+          ship.structure.hull.style = {
+            "upperColor": random_color,
+            "lowerColor": random_color,
+            "opacity": 1
+          }
+
+          states.push(ship.designState.clone());
+          let noShips = states.length - 1;
+
+          let ship3D = new Ship3D(ship, {
+            shipState: states[noShips],
+            stlPath: "3D_models/STL/various",
+            // upperColor: 0x33aa33,
+            // lowerColor: 0xaa3333, Does not work at all!
+            hullOpacity: 1,
+            deckOpacity: 1,
+            objectOpacity: 1,
+          });
+          ships.add(ship3D);
+
+          function getRandomArbitrary(min, max) {
+            return Math.random() * (max - min) + min;
+          }
+          
+          function calculatePositionCoef(n) {
+
+            if(n == 1) {
+              return 0
+            }
+
+            return Math.floor(n / 2) * ((-1) ** (n % 2))
+
+          }
+
+          // Adding the ship random dimensions variation
+          ship3D.position.x = calculatePositionCoef(Math.floor(ships.children.length / 100)) * 100
+          ship3D.position.y = calculatePositionCoef(ships.children.length % 100) * 30
+          
+                    
+          var deleteLength = ship.structure.hull.attributes.LOA;
+          
+        }
+
+        function addShip() {
+          let design = "PX121"; //designs[Math.floor(Math.random()*designs.length)];
+          Vessel.loadShip("ship_specs/" + design + ".json", callback);
+          
+        }
+
+        let o = { numShips: 1 };
+        function correctNum(value) {
+          let n = ships.children.length;
+          if (n < value) {
+            for (let i = 0; n + i < value; i++) {
+              addShip();              
+            }
+          } else if (n > value) {
+            while (n > value) {
+              ships.remove(ships.children[n - 1]);
+              n--;
+            }
+          }
+
+
+        }
+        correctNum(o.numShips);
+        gui.add(o, "numShips", 1, 10000).step(10).onChange(correctNum);
+                
+        playback.play();
+
+        requestAnimationFrame(animate);
+      })();
+
+      function animate(millitime) {
+
+        statsOne.begin();
+        statsTwo.begin();
+
+        let playing = playback.update();
+
+        renderer.render(scene, camera);
+
+        statsOne.end();
+        statsTwo.end();
+        
+        requestAnimationFrame(animate);
+      }
+
+      
+    </script>
+  </body>
+</html>

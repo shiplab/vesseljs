@@ -27,6 +27,7 @@
 				<a class="navbar-brand" href="https://github.com/shiplab/vesseljs/wiki/Examples">Examples</a>
 				<a class="navbar-brand" href="https://github.com/shiplab/vesseljs/wiki">Documentation</a>
 				<a class="navbar-brand" href="https://github.com/shiplab/vesseljs">Source</a>
+				<a class="navbar-brand" href="https://github.com/shiplab/vesseljs/manual/tutorial_one.html">Manual</a>
 			</div>
 			<!-- This is for the right part of the navbar. Reserved for Shiplab logo-->
 			<div class="nav navbar-nav navbar-right">
@@ -114,6 +115,8 @@
 			padding-bottom: 20px;
 		}
 	</style>
+
+	<link rel="icon" href="https://raw.githubusercontent.com/shiplab/vesseljs/dev/favicon.ico" type="image/x-icon">
 </head>
 <div class="container">
 	<div class="row">
@@ -143,7 +146,7 @@
 			<p><b>Vessel.js</b> is a JavaScript library for conceptual ship design with an
 				object-oriented paradigm. Vessel.js represents the vessel as an object, which
 				is used to simulate different functionalities and behaviors. Currently, the
-				library includes methods for hydrostatic and stability calculations.</p>
+				library includes methods for hydrostatic, dynamics and stability calculations.</p>
 
 			<p>The library is developed by <a href="http://www.shiplab.hials.org/">Ship Design and Operation Lab</a> at
 				Norwegian
@@ -157,7 +160,7 @@
 			</ul>
 
 			<p>Import Vessel.js in html by using the following script:</p>
-			<pre><code class="html hljs xml"><span class="tag">&lt;<span class="name">script</span> <span class="attr">src</span>=<span class="string">"Vessel.js"</span>&gt;</span><span class="undefined"></span><span class="tag">&lt;/<span class="name">script</span>&gt;</span></code></pre>
+			<pre><code class="html hljs xml"><span class="tag">import <span class="attr">*</span> as <span class="attr">Vessel</span> from <span class="string">"../build/vessel.module.js"</span></span></code></pre>
 
 			<h1>Contributing</h1>
 			<p>When contributing, fork the repository and send pull requests with your

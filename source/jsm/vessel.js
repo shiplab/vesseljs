@@ -12,6 +12,8 @@ export { loadShip } from "./fileIO/loadShip.js";
 export { FuelConsumption } from "./ship/FuelConsumption.js";
 export { Positioning } from "./ship/Positioning.js";
 export { Manoeuver } from "./ship/Manoeuver.js";
+export { BaseObject } from "./ship/BaseObject.js";
+export { DerivedObject } from "././ship/DerivedObject.js";
 
 import { linearFromArrays, bilinear, bisectionSearch } from "./math/interpolation.js";
 

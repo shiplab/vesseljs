@@ -1,18 +1,18 @@
-//@EliasHasle
+//Author: @EliasHasle
 
-"use strict";
+// Update for ES6 Class: @ferrari212
 
-function Samples() {
+export class Samples {
 
-	this.currentSample = - 1;
-	this.playing = false;
-	this.isSamples = true;
+	constructor() {
 
-}
+		this.currentSample = - 1;
+		this.playing = false;
+		this.isSamples = true;
 
-Object.assign( Samples.prototype, {
-	constructor: Samples,
-	fromData: function ( entries, headers, pars ) {
+	}
+
+	fromData( entries, headers, pars ) {
 
 		this.headers = headers;
 		this.p = pars;
@@ -40,13 +40,14 @@ Object.assign( Samples.prototype, {
 
 		}
 
-	},
+	}
+
 	//The CSV is non-standard in that it can include
 	//an arbitrary number of parameters before the
 	//optional column headers. Another restriction is that
 	//all data except parameter names and column headers
 	//is parsed as floats.
-	loadCustomCsv: function ( file, callback ) {
+	loadCustomCsv( file, callback ) {
 
 		this.doneLoading = false;
 		var reader = new FileReader();
@@ -122,9 +123,10 @@ Object.assign( Samples.prototype, {
 
 		reader.readAsText( file );
 
-	},
+	}
+
 	//This requires the parameter dt to be specified.
-	getState: function ( t ) {
+	getState( t ) {
 
 		//This is not sufficient, as getState can be undefined:
 		if ( ! this.doneLoading ) console.warn( "Not done loading" );
@@ -194,7 +196,8 @@ Object.assign( Samples.prototype, {
 		return this.state;
 
 	}
-} );
+
+}
 
 /*
 Catmull-Rom patches on regular x,y grid.
@@ -204,24 +207,25 @@ Reference for current math:
 Inspiration for future optimization:
 	http://www.mvps.org/DirectX/articles/shadeland/ (with download)
 */
-function Patches( size, segments, D, grid ) {
+export class Patches {
 
-	this.size = size;
-	this.segments = segments;
-	this.D = D;
-	this.a = new Float32Array( 16 * D );
-	if ( grid !== undefined ) this.generateCoeffs( grid );
-
-}
-
-Object.assign( Patches.prototype, {
-	constructor: Patches,
 	//Generate bicubic patch coefficients
 	//for all patches in the grid,
 	//and store them in this.a (column-major,
 	//then extract matrices using subarray.)
 	//(this.a is already defined and allocated).
-	generateCoeffs: ( function () {
+
+	constructor( size, segments, D, grid ) {
+
+		this.size = size;
+		this.segments = segments;
+		this.D = D;
+		this.a = new Float32Array( 16 * D );
+		if ( grid !== undefined ) this.generateCoeffs( grid );
+
+	}
+
+	generateCoeffs() {
 
 		//M holds the Catmull-Rom patch matrix
 		const M = new THREE.Matrix4().set(
@@ -295,8 +299,9 @@ Object.assign( Patches.prototype, {
 
 		};
 
-	} ).call( this ),
-	calculateZ: ( function () {
+	}
+
+	calculateZ() {
 
 		let vxy = new THREE.Vector3();
 		let C = new THREE.Matrix4();
@@ -367,23 +372,25 @@ Object.assign( Patches.prototype, {
 
 		};
 
-	} ).call( this )
-} );
+	}
+
+}
+
 
 /*Interpolate in time over samples grid to generate a samples grid for
 the current time. Then use catmull-rom patches to interpolate between the grid cells.
 */
-function DynamicPatches( samples ) {
 
-	this.samples = samples;
-	Patches.call( this, samples.p.size, samples.p.segments, samples.D );
+export class DynamicPatches extends Patches {
 
-}
+	constructor( samples ) {
 
-DynamicPatches.prototype = Object.create( Patches.prototype );
-Object.assign( DynamicPatches.prototype, {
-	constructor: DynamicPatches,
-	calculate: ( function () {
+		super( samples.p.size, samples.p.segments, samples.D );
+		this.samples = samples;
+
+	}
+
+	calculate() {
 
 		var currentTime;
 
@@ -401,5 +408,7 @@ Object.assign( DynamicPatches.prototype, {
 
 		};
 
-	} ).call( this )
-} );
+	}
+
+}
+
