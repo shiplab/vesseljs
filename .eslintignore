@@ -1,3 +1,5 @@
 examples/3D_engine/legacy/three_r*.js
 examples/3D_engine/three_r*.js
 examples/3D_engine/OrbitControls.js
+./examples/Many_ships_in_still_water.html
+*.min.js

@@ -1,251 +1,314 @@
 <html>
+  <head>
+    <title>Many ships in regular ocean</title>
 
-<head>
-	<title>Many ships in regular ocean</title>
-	<script src="../build/vessel.js"></script>
+    <script src="3D_engine/dat.gui.min.js"></script>
 
-	<script src="./3D_engine/legacy/three_r118.js"></script>
-	<script src="./3D_engine/legacy/STLLoader.js"></script>
+    <!--<script src="Moving_bodies_Elias_Hasle.js"></script>-->
+    <script src="3D_engine/Playback.js"></script>
 
-	<script src="3D_engine/Ship3D_v2.js"></script>
+    <!--<script src="keyboard_arrow_input_Elias_Hasle.js"></script>-->
+  </head>
 
-	<!-- Upgrading to WaterShader2.js will remove the dependency
-	on Mirror.js as well as open up possibilities for visualizing approximate water flows around vessels. -->
-	<script src="3D_engine/legacy/Water.js"></script>
+  <body>
+    <script type="module">
+      "use strict";
 
-	<script src="3D_engine/OrbitControls_v2.js"></script>
-	<script src="3D_engine/dat.gui.min.js"></script>
-	<script src="./3D_engine/legacy/skybox_from_examples_r118.js"></script>
+      // Import three.js and OrbitControls modules
+      import * as THREE from "./3D_engine/three_r126.js";
+      import { OrbitControls } from "./3D_engine/OrbitControls.js";
 
-	<script src="3D_engine/Patch_interpolation.js"></script>
-	<!--<script src="Moving_bodies_Elias_Hasle.js"></script>-->
-	<script src="3D_engine/Playback.js"></script>
+      // Import Vessel.js module
+      import * as Vessel from "../source/jsm/vessel.js";
 
-	<script src="./3D_engine/legacy/Regular_ocean.js"></script>
-	<!--<script src="keyboard_arrow_input_Elias_Hasle.js"></script>-->
-</head>
+      // Import Ship3D module
+      import { Ship3D } from "../source/jsm/3D_engine/Ship3D.js";
 
-<body>
-	<script>
-		"use strict";
+      // Import Skybox module
+      import { Skybox } from "../examples/3D_engine/skybox.js";
 
-		//Globals
-		var renderer, camera, controls, gui, stats;
-		var scene, zUpCont, playback, ships, ocean;
-		var wavMo, states;
+      // Import Ocean module
+      import { Ocean } from "../examples/3D_engine/Regular_ocean.js";
 
-		(function main() {
-			//Renderer setup
-			//document.body.style = "overflow: hidden;";
-			document.body.style.overflow = "hidden";
-			var container = document.createElement("div");
-			//container.style = "position: absolute; top: 0; left: 0;"
-			Object.assign(container.style, {
-				position: "absolute",
-				top: 0,
-				left: 0,
-				width: "100vw",
-				height: "100vh"
-			});
-			document.body.appendChild(container);
-			renderer = new THREE.WebGLRenderer({antialias: true});
-			//renderer.setSize(window.innerWidth, window.innerHeight);
-			renderer.setClearColor(0x99aadd);
-			container.appendChild(renderer.domElement);
-			//stats = new Stats();
-			//document.body.appendChild(stats.domElement);
+      import { Water } from "./3D_engine/Water.js";
 
-			//GUI setup (comment out to remove gui)
-			gui = new dat.GUI();
+      //Globals
+      var renderer, camera, controls, gui, stats;
+      var scene, zUpCont, playback, ships, ocean;
+      var wavMo, states;
 
-			playback = new Playback({parentGUI: gui});
+      (function main() {
+        //Renderer setup
+        //document.body.style = "overflow: hidden;";
+        document.body.style.overflow = "hidden";
+        var container = document.createElement("div");
+        //container.style = "position: absolute; top: 0; left: 0;"
+        Object.assign(container.style, {
+          position: "absolute",
+          top: 0,
+          left: 0,
+          width: "100vw",
+          height: "100vh",
+        });
+        document.body.appendChild(container);
+        renderer = new THREE.WebGLRenderer({ antialias: true });
+        //renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0x99aadd);
+        container.appendChild(renderer.domElement);
+        //stats = new Stats();
+        //document.body.appendChild(stats.domElement);
 
-			//Scene setup:
-			scene = new THREE.Scene();
-			let sun = new THREE.DirectionalLight(0xffffff, 2);
-			sun.position.set(-512, 246, 128);
-			scene.add(sun);
+        //GUI setup (comment out to remove gui)
+        gui = new dat.GUI();
 
-			//Ocean size
-			let oSize = 2048;
+        playback = new Playback({ parentGUI: gui });
 
-			scene.add(new Skybox(oSize));
+        //Scene setup:
+        scene = new THREE.Scene();
+        let sun = new THREE.DirectionalLight(0xffffff, 2);
+        sun.position.set(-512, 246, 128);
+        scene.add(sun);
 
-			//Use Z up from now on:
-			THREE.Object3D.DefaultUp.set(0, 0, 1);
-			zUpCont = new THREE.Group();
-			zUpCont.rotation.x = -0.5 * Math.PI;
-			scene.add(zUpCont);
+        //Ocean size
+        let oSize = 2048;
 
-			//Camera setup
-			camera = new THREE.PerspectiveCamera(26, window.innerWidth / window.innerHeight, 1, 1000000);
-			let onResize = function() {
-				let w = container.clientWidth;
-				let h = container.clientHeight;
-				renderer.setSize(w, h);
-				camera.aspect = w / h;
-				camera.updateProjectionMatrix();
-				//camera.aspect = window.innerWidth / window.innerHeight;
-				//camera.updateProjectionMatrix();
-				//renderer.setSize(window.innerWidth, window.innerHeight);
-			};
-			camera.up.set(0, 1, 0);
-			window.addEventListener('resize', onResize, false);
-			onResize();
-			camera.position.set(- oSize * 0.45, oSize * 0.1, oSize * 0.7);
+        scene.add(new Skybox(oSize));
 
-			controls = new THREE.OrbitControls(camera, renderer.domElement);
-			//controls.minDistance = 0;
-			//controls.maxDistance = 0.5*oSize;
-			//controls.enablePan = false;
-			//controls.maxPolarAngle = 0.5*Math.PI-0.1;
-			//controls.minPolarAngle = 0.1;
+        //Use Z up from now on:
+        THREE.Object3D.DefaultUp.set(0, 0, 1);
+        zUpCont = new THREE.Group();
+        zUpCont.rotation.x = -0.5 * Math.PI;
+        scene.add(zUpCont);
 
-			//zUpCont.add(new THREE.AxisHelper(1000));
-			zUpCont.add(new THREE.HemisphereLight(0xccccff, 0x666688, 1));
+        //Camera setup
+        camera = new THREE.PerspectiveCamera(
+          26,
+          window.innerWidth / window.innerHeight,
+          1,
+          1000000
+        );
+        let onResize = function () {
+          let w = container.clientWidth;
+          let h = container.clientHeight;
+          renderer.setSize(w, h);
+          camera.aspect = w / h;
+          camera.updateProjectionMatrix();
+          //camera.aspect = window.innerWidth / window.innerHeight;
+          //camera.updateProjectionMatrix();
+          //renderer.setSize(window.innerWidth, window.innerHeight);
+        };
+        camera.up.set(0, 1, 0);
+        window.addEventListener("resize", onResize, false);
+        onResize();
+        camera.position.set(-oSize * 0.45, oSize * 0.1, oSize * 0.7);
 
-			ocean = new Ocean({
-				parentGUI: gui,
-				sunDir: sun.position.clone().normalize(),
-				size: oSize, segments: 127
-			});
-			playback.add(ocean);
-			zUpCont.add(ocean);
+        controls = new OrbitControls(camera, renderer.domElement);
+        //controls.minDistance = 0;
+        //controls.maxDistance = 0.5*oSize;
+        //controls.enablePan = false;
+        //controls.maxPolarAngle = 0.5*Math.PI-0.1;
+        //controls.minPolarAngle = 0.1;
 
-			ships = new THREE.Group();
-			zUpCont.add(ships);
+        //zUpCont.add(new THREE.AxisHelper(1000));
+        zUpCont.add(new THREE.HemisphereLight(0xccccff, 0x666688, 1));
 
-			wavMo = [];
-			states = [];
+        ocean = new Ocean({
+          parentGUI: gui,
+          sunDir: sun.position.clone().normalize(),
+          size: oSize,
+          segments: 127,
+        });
+        playback.add(ocean);
+        zUpCont.add(ocean);
 
-			function callback(ship) {
-				states.push(ship.designState.clone());
-				let noShips = states.length - 1;
-				wavMo.push(new Vessel.WaveMotion(ship, states[noShips], wavCre));
-				wavMo[noShips].output.push("rollAmp");
-				updateMotion();
+        ships = new THREE.Group();
+        zUpCont.add(ships);
 
-				let ship3D = new Ship3D(ship, {
-					shipState: states[noShips],
-					stlPath: "3D_models/STL/various",
-					upperColor: 0x33aa33,
-					lowerColor: 0xaa3333,
-					hullOpacity: 1,
-					deckOpacity: 1,
-					objectOpacity: 1
-				});
-				ships.add(ship3D);
-				ship3D.position.x = (Math.random() - 0.5) * oSize;
-				ship3D.position.y = (Math.random() - 0.5) * oSize;
-				// This part of the code avoid overlaying of the ship
-				var deleteLength = ship.structure.hull.attributes.LOA;
-				if (ships.children.length > 1) {
-					for (var i = 0; i < ships.children.length - 1; i++) {
-						var test = ships.children[i]
-						if (Math.pow(Math.pow(ship3D.position.x - test.position.x, 2) + Math.pow(ship3D.position.y - test.position.y, 2), 0.5) < deleteLength) {
-							ships.remove(ships.children[ships.children.length - 1]);
-							addShip();
-						}
-					}
-				}
+        wavMo = [];
+        states = [];
 
-				let headAng = 2 * Math.random() * Math.PI; // from 0 to 2 PI
-				ship3D.rotation.z = headAng;
-				wavMo[noShips].setHeading(180 / Math.PI * headAng);
+        function callback(ship) {
+          states.push(ship.designState.clone());
+          let noShips = states.length - 1;
+          wavMo.push(
+            new Vessel.WaveMotion(ship, states[noShips], ocean.wavCre)
+          );
+          wavMo[noShips].output.push("rollAmp");
+          updateMotion();
 
-				playback.add(function(t, dt) {
-					//This would be optimization
-					//if (!ship3D.visible) return;
+          let ship3D = new Ship3D(ship, {
+            shipState: states[noShips],
+            stlPath: "3D_models/STL/various",
+            upperColor: 0x33aa33,
+            lowerColor: 0xaa3333,
+            hullOpacity: 1,
+            deckOpacity: 1,
+            objectOpacity: 1,
+          });
+          ships.add(ship3D);
+          ship3D.position.x = (Math.random() - 0.5) * oSize;
+          ship3D.position.y = (Math.random() - 0.5) * oSize;
+          // This part of the code avoid overlaying of the ship
+          var deleteLength = ship.structure.hull.attributes.LOA;
+          if (ships.children.length > 1) {
+            for (var i = 0; i < ships.children.length - 1; i++) {
+              var test = ships.children[i];
+              if (
+                Math.pow(
+                  Math.pow(ship3D.position.x - test.position.x, 2) +
+                    Math.pow(ship3D.position.y - test.position.y, 2),
+                  0.5
+                ) < deleteLength
+              ) {
+                ships.remove(ships.children[ships.children.length - 1]);
+                addShip();
+              }
+            }
+          }
 
-					// projection of trajectory for calculation of phase difference
-					let projMag = ship3D.position.x * ocean.waves["0"].costh + ship3D.position.y * ocean.waves["0"].sinth; // magnitude of projection
+          let headAng = 2 * Math.random() * Math.PI; // from 0 to 2 PI
+          ship3D.rotation.z = headAng;
+          wavMo[noShips].setHeading((180 / Math.PI) * headAng);
 
-					//motion formula
-					let omega = wavCre.waveDef.waveFreq;
-					let k = 2 * Math.PI / ocean.waves["0"].L; // wave number
-					ship3D.heave = states[noShips].discrete.WaveMotion.state.heaveAmp * Math.cos(omega * t - ocean.waves["0"].phi * Math.PI / 180 - k * projMag);
+          playback.add(function (t, dt) {
+            //This would be optimization
+            //if (!ship3D.visible) return;
 
-					// a 90 degrees phase difference of pitch in relation to the wave makes the motion appear more natural
-					ship3D.pitch = states[noShips].discrete.WaveMotion.state.pitchAmp * Math.cos(omega * t - ocean.waves["0"].phi * Math.PI / 180 - k * projMag + 90 * Math.PI / 180);
+            // projection of trajectory for calculation of phase difference
+            let projMag =
+              ship3D.position.x * ocean.waves["0"].costh +
+              ship3D.position.y * ocean.waves["0"].sinth; // magnitude of projection
 
-					// pitch and roll may be negative depending on the direction of the waves in relation to the ship
-					if ((Math.abs(states[noShips].discrete.Heading.state.heading - wavCre.waveDef.heading) > 90) && (Math.abs(states[noShips].discrete.Heading.state.heading - wavCre.waveDef.heading) < 270)) {
-						ship3D.pitch = -ship3D.pitch;
-					}
+            //motion formula
+            let omega = ocean.wavCre.waveDef.waveFreq;
+            let k = (2 * Math.PI) / ocean.waves["0"].L; // wave number
+            ship3D.heave =
+              states[noShips].discrete.WaveMotion.state.heaveAmp *
+              Math.cos(
+                omega * t - (ocean.waves["0"].phi * Math.PI) / 180 - k * projMag
+              );
 
-					let rollMag = states[noShips].discrete.WaveMotion.state.rollAmp * Math.cos(omega * t - ocean.waves["0"].phi * Math.PI / 180 - k * projMag);
-					if (wavCre.waveDef.heading > states[noShips].discrete.Heading.state.heading) {
-						if (Math.abs(states[noShips].discrete.Heading.state.heading - wavCre.waveDef.heading) < 180) {
-							ship3D.roll = -rollMag;
-						} else {
-							ship3D.roll = rollMag;
-						}
-					} else {
-						if (Math.abs(states[noShips].discrete.Heading.state.heading - wavCre.waveDef.heading) < 180) {
-							ship3D.roll = rollMag;
-						} else {
-							ship3D.roll = -rollMag;
-						}
-					}
-				});
-			}
+            // a 90 degrees phase difference of pitch in relation to the wave makes the motion appear more natural
+            ship3D.pitch =
+              states[noShips].discrete.WaveMotion.state.pitchAmp *
+              Math.cos(
+                omega * t -
+                  (ocean.waves["0"].phi * Math.PI) / 180 -
+                  k * projMag +
+                  (90 * Math.PI) / 180
+              );
 
-			let designs = ["PX121", "blockCase", "prismaticHull", "trapezoidPrismHull"];
-			function addShip() {
-				let design = designs[0];//designs[Math.floor(Math.random()*designs.length)];
-				Vessel.loadShip("ship_specs/" + design + ".json", callback);
-			}
+            // pitch and roll may be negative depending on the direction of the waves in relation to the ship
+            if (
+              Math.abs(
+                states[noShips].discrete.Heading.state.heading -
+                  ocean.wavCre.waveDef.heading
+              ) > 90 &&
+              Math.abs(
+                states[noShips].discrete.Heading.state.heading -
+                  ocean.wavCre.waveDef.heading
+              ) < 270
+            ) {
+              ship3D.pitch = -ship3D.pitch;
+            }
 
-			//Initial configuration:
-			let w = ocean.addCosineWave({A: 5, T: 11, theta: 1});
-			if (ocean.cosConf) ocean.cosConf.close();
+            let rollMag =
+              states[noShips].discrete.WaveMotion.state.rollAmp *
+              Math.cos(
+                omega * t - (ocean.waves["0"].phi * Math.PI) / 180 - k * projMag
+              );
+            if (
+              ocean.wavCre.waveDef.heading >
+              states[noShips].discrete.Heading.state.heading
+            ) {
+              if (
+                Math.abs(
+                  states[noShips].discrete.Heading.state.heading -
+                    ocean.wavCre.waveDef.heading
+                ) < 180
+              ) {
+                ship3D.roll = -rollMag;
+              } else {
+                ship3D.roll = rollMag;
+              }
+            } else {
+              if (
+                Math.abs(
+                  states[noShips].discrete.Heading.state.heading -
+                    ocean.wavCre.waveDef.heading
+                ) < 180
+              ) {
+                ship3D.roll = rollMag;
+              } else {
+                ship3D.roll = -rollMag;
+              }
+            }
+          });
+        }
 
-			let o = {numShips: 1};
-			function correctNum(value) {
-				let n = ships.children.length;
-				if (n < value) {
-					for (let i = 0; n + i < value; i++) {
-						addShip();
-					}
-				} else if (n > value) {
-					while (n > value) {
-						ships.remove(ships.children[n - 1]);
-						n--;
-					}
-				}
-			}
-			correctNum(o.numShips);
-			gui.add(o, "numShips", 1, 50).step(1).onChange(correctNum);
-			gui.add({
-				addFromFile: function() {
-					o.numShips++;
-					Vessel.browseShip(callback);
-				}
-			}, "addFromFile");
+        let designs = [
+          "PX121",
+          "blockCase",
+          "prismaticHull",
+          "trapezoidPrismHull",
+        ];
+        function addShip() {
+          let design = designs[0]; //designs[Math.floor(Math.random()*designs.length)];
+          Vessel.loadShip("ship_specs/" + design + ".json", callback);
+        }
 
-			playback.play();
+        //Initial configuration:
+        let w = ocean.addCosineWave({ A: 5, T: 11, theta: 1 });
+        if (ocean.cosConf) ocean.cosConf.close();
 
-			requestAnimationFrame(animate);
-		})();
+        let o = { numShips: 1 };
+        function correctNum(value) {
+          let n = ships.children.length;
+          if (n < value) {
+            for (let i = 0; n + i < value; i++) {
+              addShip();
+            }
+          } else if (n > value) {
+            while (n > value) {
+              ships.remove(ships.children[n - 1]);
+              n--;
+            }
+          }
+        }
+        correctNum(o.numShips);
+        gui.add(o, "numShips", 1, 50).step(1).onChange(correctNum);
+        gui.add(
+          {
+            addFromFile: function () {
+              o.numShips++;
+              Vessel.browseShip(callback);
+            },
+          },
+          "addFromFile"
+        );
 
-		function animate(millitime) {
-			let playing = playback.update();
+        playback.play();
 
-			//Disable this to freeze water when not playing
-			if (!playing) {
-				ocean.water.material.uniforms.time.value += 1 / 60;
-			}
+        requestAnimationFrame(animate);
+      })();
 
-			renderer.render(scene, camera);
-			requestAnimationFrame(animate);
-		}
+      function animate(millitime) {
+        let playing = playback.update();
 
-		function updateMotion() {
-			for (let i = 0; i < wavMo.length; i++) {
-				wavMo[i].writeOutput();
-			}
-		}
-	</script>
-</body>
+        //Disable this to freeze water when not playing
+        if (!playing) {
+          ocean.water.material.uniforms.time.value += 1 / 60;
+        }
 
+        renderer.render(scene, camera);
+        requestAnimationFrame(animate);
+      }
+
+      function updateMotion() {
+        for (let i = 0; i < wavMo.length; i++) {
+          wavMo[i].writeOutput();
+        }
+      }
+    </script>
+  </body>
 </html>

@@ -124,7 +124,6 @@ Object.assign( Ship.prototype, {
 
 		//change the trim for angles
 		trim = Math.atan( trim ) * 180 / Math.PI;
-		console.log( trimd );
 
 		let heel = w.cg.y / GMt;
 		//change the hell for meters

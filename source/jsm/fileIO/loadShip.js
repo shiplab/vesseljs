@@ -16,18 +16,40 @@ Vessel.loadShip(filePath, function(ship) {
 */
 import { Ship } from "../ship/Ship.js";
 
-export function loadShip( url, callback ) {
+function loadShip( url, callback ) {
 
-	var request = new XMLHttpRequest();
-	request.open( "GET", url, true );
+	// Use the common function for loading data via XMLHttpRequest
+	loadXMLHttpRequest( url, function ( specification ) {
+
+		let ship = new Ship( specification );
+		callback( ship );
+
+	} );
+
+}
+
+
+function loadXMLHttpRequest( url, callback, asyncMethod = true ) {
+
+	let request = new XMLHttpRequest();
+	request.open( "GET", url, asyncMethod );
 	request.addEventListener( "load", function ( event ) {
 
-		var response = event.target.response;
-		var specification = JSON.parse( response );
-		var ship = new Ship( specification );
-		callback( ship );
+		if ( request.status === 200 ) {
+
+			let response = event.target.response;
+			var specification = JSON.parse( response );
+			callback( specification );
+
+		} else {
+
+			console.error( "Error loading data from: " + url );
+
+		}
 
 	} );
 	request.send( null );
 
 }
+
+export { loadShip, loadXMLHttpRequest };

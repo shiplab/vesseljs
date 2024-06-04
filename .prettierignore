@@ -1,2 +1,3 @@
 *.js
-*.html
+examples/**/*.html
+*.min.js
