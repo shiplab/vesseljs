@@ -175,7 +175,7 @@
           const geometry = new THREE.BoxGeometry( 1, 1, 1 );
           const material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
           const cube = new THREE.Mesh( geometry, material );
-          cube.position.set( 10.0, 5.0, 3.5 );
+          cube.position.set( 9.0, 5.0, 3.25 );
           cube.name = "cube"
           ship_group.add(cube)
 
@@ -342,14 +342,14 @@
         if(ship_group) {
           ship_group.rotation.x = 4 * Math.PI * Math.cos(ocean.water.material.uniforms.time.value) / 180
           ship_group.rotation.y = 3 * Math.PI * Math.sin(ocean.water.material.uniforms.time.value) / 180
-          cube.position.x = 10.0 * Math.cos(ocean.water.material.uniforms.time.value / 8) 
+          cube.position.x = 9.0 * Math.cos(ocean.water.material.uniforms.time.value / 8) 
           cube.position.y = 5.0 * Math.cos( ocean.water.material.uniforms.time.value) 
 
           // Check Birian Ch 12.4, eq 12.23 for the equation
           // derivatives for the cube
-          dc_x = - 10.0 * Math.sin(ocean.water.material.uniforms.time.value / 8) / 8
+          dc_x = - 9.0 * Math.sin(ocean.water.material.uniforms.time.value / 8) / 8
           dc_y =  - 5.0 * Math.sin( ocean.water.material.uniforms.time.value)
-          ddc_x = - 10.0 * Math.cos(ocean.water.material.uniforms.time.value / 4) / 64 
+          ddc_x = - 9.0 * Math.cos(ocean.water.material.uniforms.time.value / 4) / 64 
           ddc_y =  - 5.0 * Math.cos( ocean.water.material.uniforms.time.value)
         
           d_roll = - 4 * Math.PI * Math.sin(ocean.water.material.uniforms.time.value) / 180
