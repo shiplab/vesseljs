@@ -1,0 +1,368 @@
+<html>
+  <head>
+    <title>Ship in Ocean</title>
+    <script src="libs/plotly-1.48.3.min.js"></script>
+    <!-- Upgrading to WaterShader2.js will remove the dependency
+	on Mirror.js as well as open up possibilities for visualizing approximate water flows around vessels. -->
+    <script src="3D_engine/dat.gui.min.js"></script>
+    <script src="libs/browse_files_Elias_Hasle.js"></script>
+    <script src="3D_engine/Playback.js"></script>
+    <script src="snippets/Radiation_WAMIT.js"></script>
+    <script src="libs/numeric-1.2.6.min.js"></script>
+  </head>
+
+  <body>
+    <div
+      id="3d"
+      class="orchid"
+      style="position: absolute; top: 0px; height: 100%; right: 0px; width: 50%"
+    ></div>
+    <div
+      id="ship_movement"
+      style="
+        position: absolute;
+        bottom: 66%;
+        height: 33%;
+        left: 0px;
+        width: 50%;
+      "
+    ></div>
+    <div
+      id="block_movement"
+      style="
+        position: absolute;
+        bottom: 33%;
+        height: 33%;
+        left: 0px;
+        width: 50%;
+      "
+    ></div>
+    <div
+      id="acceleration_value"
+      style="position: absolute; bottom: 0%; height: 33%; left: 0px; width: 50%"
+    ></div>
+    <script type="module">
+      "use strict";
+
+      import * as THREE from "./3D_engine/three_r126.js";
+      import { OrbitControls } from "./3D_engine/OrbitControls.js";
+
+      // Import Vessel.js module
+      import * as Vessel from "../source/jsm/vessel.js";
+
+      // Import Ship3D module
+      import { Ship3D } from "../source/jsm/3D_engine/Ship3D.js";
+
+      // Import Skybox module
+      import { Skybox } from "../examples/3D_engine/skybox.js";
+
+      // Import Ocean module
+      import { Ocean } from "../examples/3D_engine/Regular_ocean.js";
+
+      //Globals
+      var renderer, camera, controls, stats;
+      var scene, zUpCont, bodies, ocean, ship3D, statMod;
+      var dc_x, dc_y, ddc_x, ddc_y, d_roll, d_pitch, dd_roll, dd_pitch;
+      var states, scale;
+      var group;
+
+      var cnt = 0;
+
+      (function main() {
+        //Renderer setup
+        //document.body.style = "overflow: hidden;";
+        document.body.style.overflow = "hidden";
+        var container = document.getElementById("3d");
+        document.body.appendChild(container);
+
+        renderer = new THREE.WebGLRenderer({ antialias: true });
+        //renderer.setSize(window.innerWidth, window.innerHeight);
+        renderer.setClearColor(0x99aadd);
+        container.appendChild(renderer.domElement);
+
+        //Scene setup:
+        scene = new THREE.Scene();
+        let sun = new THREE.DirectionalLight(0xffffff, 2);
+        sun.position.set(-512, 246, 128);
+        scene.add(sun);
+
+        //Ocean size
+        let oSize = 2048;
+        scene.add(new Skybox(oSize));
+
+        // Add the bottom of ocean
+        var geometry = new THREE.PlaneBufferGeometry(oSize, oSize, 32);
+        var material = new THREE.MeshBasicMaterial({
+          color: 0xffff00,
+          side: THREE.DoubleSide,
+          transparent: true,
+          opacity: 0.5,
+        });
+        var plane = new THREE.Mesh(geometry, material);
+        plane.rotateX(-Math.PI / 2);
+        var oceanDepth = 30;
+        plane.translateZ(-oceanDepth);
+        scene.add(plane);
+
+        //Use Z up from now on:
+        THREE.Object3D.DefaultUp.set(0, 0, 1);
+        zUpCont = new THREE.Group();
+        zUpCont.rotation.x = -0.5 * Math.PI;
+        scene.add(zUpCont);
+
+        //Camera setup
+        camera = new THREE.PerspectiveCamera(
+          26,
+          window.innerWidth / window.innerHeight,
+          1,
+          1000000
+        );
+        let onResize = function () {
+          let w = container.clientWidth;
+          let h = container.clientHeight;
+          renderer.setSize(w, h);
+          camera.aspect = w / h;
+          camera.updateProjectionMatrix();
+        };
+        camera.up.set(0, 1, 0);
+        window.addEventListener("resize", onResize, false);
+        onResize();
+        camera.position.set(oSize * 0.02, oSize * 0.01, oSize * 0.01);
+
+        controls = new OrbitControls(camera, renderer.domElement);
+        //controls.minDistance = 0;
+        controls.maxDistance = 0.5 * oSize;
+        controls.enablePan = false;
+        controls.maxPolarAngle = Math.PI;
+        controls.minPolarAngle = 0;
+
+        //zUpCont.add(new THREE.AxisHelper(1000));
+        zUpCont.add(new THREE.HemisphereLight(0xccccff, 0x666688, 1));
+
+        
+
+        ocean = new Ocean({
+          parentGUI: null /* gui */, //remenber to insert back to see the waves
+          sunDir: sun.position.clone().normalize(),
+          size: oSize,
+          segments: 127,
+        });
+        // playback.add(ocean);
+        zUpCont.add(ocean);
+
+        states = [];
+
+        Vessel.loadShip("ship_specs/trapezoidPrismHull.json", function (ship) {
+          states = ship.designState.clone();
+          statMod = new Vessel.StateModule(ship, states);
+          statMod.setDraft();
+          //console.log(states.shipCache.thisStateVer);
+          ship3D = new Ship3D(ship, {
+            shipState: states,
+            upperColor: 0x33aa33,
+            lowerColor: 0xaa3333,
+            hullOpacity: 1,
+            deckOpacity: 1,
+            objectOpacity: 1,
+          });
+          ship3D.name = "Ship3D"
+
+          const ship_group = new THREE.Group();
+          ship_group.name = "ship_group"
+          ship_group.add(ship3D)
+
+          // Values for the three.js
+          const geometry = new THREE.BoxGeometry( 1, 1, 1 );
+          const material = new THREE.MeshBasicMaterial( {color: 0x00ff00} );
+          const cube = new THREE.Mesh( geometry, material );
+          cube.position.set( 9.0, 5.0, 3.25 );
+          cube.name = "cube"
+          ship_group.add(cube)
+
+          zUpCont.add(ship_group);
+
+          // Initial Velocities
+          // Initial BF-Surge Velocity
+          // Initial BF-Sway Velocity
+          // Initial BF-Heave Velocity
+          // Initial BF-Roll Velocity
+          // Initial BF-Pitch Velocity
+          // Initial BF-Yaw Velocity
+          // Initial Euler Angle X
+          // Initial Euler Angle Y
+          // Initial Euler Angle Z
+          // [Surge, Sway, Heave, VSurge, VSway, VHeave, VRoll, VPitch, VYaw, EX, EY, EZ]
+          
+          function shipRoll() {
+            const ship_group = zUpCont.getObjectByName("ship_group")
+            return ship_group.rotation.x;
+          }
+
+          function shipPitch() {
+            const ship_group = zUpCont.getObjectByName("ship_group")
+            return ship_group.rotation.y;
+          }
+          function blockX() {
+            const cube = zUpCont.getObjectByName("cube")
+            return cube.position.x ;
+          }
+          function blockY() {
+            const cube = zUpCont.getObjectByName("cube")
+            return cube.position.y ;
+          }
+          function verticalSpeed() {
+            console.log(d_roll);
+            const rot_roll = shipRoll()
+            const rot_pitch = shipPitch()
+            const c_x = blockX()
+            const c_y = blockY()
+
+            const result = dc_y * rot_roll + c_y * d_roll - dc_x * rot_pitch - c_x * d_pitch
+            return result;
+          }
+          function verticalAcceleration() {
+            const rot_roll = shipRoll()
+            const rot_pitch = shipPitch()
+            const c_x = blockX()
+            const c_y = blockY()
+
+            const result = (ddc_y * rot_roll - ddc_x * rot_pitch) + 
+                      2 * (dc_y * d_roll - dc_x * d_pitch) +
+                     (c_y * dd_roll - c_x * dd_pitch)
+
+            return result;
+          }
+
+          Plotly.plot("ship_movement", [
+            {
+              y: [1, 2, 3].map(shipRoll),
+              mode: "lines",
+              line: { color: "#80CAF6" },
+              name: "Roll",
+            },
+            {
+              y: [1, 2, 3].map(shipPitch),
+              mode: "lines",
+              line: { color: "#DF56F1" },
+              name: "Pitch",
+            },
+          ], {
+            title: "Ship Movement",
+            yaxis: {
+              title: "Angle (rad)"
+            }
+          });
+
+          Plotly.plot("block_movement", [
+            {
+              y: [1, 2, 3].map(blockX),
+              mode: "lines",
+              line: { color: "#80CAF6" },
+              name: "X",
+            },
+            {
+              y: [1, 2, 3].map(blockY),
+              mode: "lines",
+              line: { color: "#DF56F1" },
+              name: "Y",
+            },
+          ], {
+            title: "Block Position",
+            yaxis: {
+              title: "Meters"
+            }
+          });
+
+          Plotly.plot("acceleration_value", [
+            {
+              y: [1, 2, 3].map(verticalSpeed),
+              mode: "lines",
+              line: { color: "#80CAF6" },
+              name: "Vertical Speed",
+            },
+            {
+              y: [1, 2, 3].map(verticalAcceleration),
+              mode: "lines",
+              line: { color: "#DF56F1" },
+              name: "Vertical Acceleration",
+            },
+          ], {
+            title: "Ship Movement",
+            yaxis: {
+              title: "m/s or m/s^2"
+            },
+            xaxis: {
+              title: "Interaction"
+            }
+          });
+
+          var interval = setInterval(function () {
+            Plotly.extendTraces(
+              "ship_movement",
+              {
+                y: [[shipRoll()], [shipPitch()]],
+              },
+              [0, 1]
+            );
+
+            Plotly.extendTraces(
+              "block_movement",
+              {
+                y: [[blockX()], [blockY()]],
+              },
+              [0, 1]
+            );
+
+            Plotly.extendTraces(
+              "acceleration_value",
+              {
+                y: [[verticalSpeed()], [verticalAcceleration()]],
+              },
+              [0, 1]
+            );
+            // if (cnt % 1000 === 1) clearInterval(interval);
+          }, 10);
+        });
+
+        //Initial configuration:
+        if (ocean.cosConf) ocean.cosConf.close();
+        // playback.play();
+        requestAnimationFrame(animate);
+      })();
+
+      function animate(millitime) {
+        renderer.render(scene, camera);
+
+        ocean.water.material.uniforms.time.value += 1 / 60;
+        const ship_group = zUpCont.getObjectByName("ship_group")
+        const cube = zUpCont.getObjectByName("cube")
+
+
+        // Check if the ship was already created
+        if(ship_group) {
+          ship_group.rotation.x = 4 * Math.PI * Math.cos(ocean.water.material.uniforms.time.value) / 180
+          ship_group.rotation.y = 3 * Math.PI * Math.sin(ocean.water.material.uniforms.time.value) / 180
+          cube.position.x = 9.0 * Math.cos(ocean.water.material.uniforms.time.value / 8) 
+          cube.position.y = 5.0 * Math.cos( ocean.water.material.uniforms.time.value) 
+
+          // Check Birian Ch 12.4, eq 12.23 for the equation
+          // derivatives for the cube
+          dc_x = - 9.0 * Math.sin(ocean.water.material.uniforms.time.value / 8) / 8
+          dc_y =  - 5.0 * Math.sin( ocean.water.material.uniforms.time.value)
+          ddc_x = - 9.0 * Math.cos(ocean.water.material.uniforms.time.value / 4) / 64 
+          ddc_y =  - 5.0 * Math.cos( ocean.water.material.uniforms.time.value)
+        
+          d_roll = - 4 * Math.PI * Math.sin(ocean.water.material.uniforms.time.value) / 180
+          d_pitch = - 3 * Math.PI * Math.sin(ocean.water.material.uniforms.time.value) / 180
+          dd_roll = - 4 * Math.PI * Math.cos(ocean.water.material.uniforms.time.value) / 180
+          dd_pitch = - 3 * Math.PI * Math.cos(ocean.water.material.uniforms.time.value) / 180
+          
+          cnt += 1;
+        }
+
+        requestAnimationFrame(animate);
+      }
+
+    </script>
+  </body>
+</html>
