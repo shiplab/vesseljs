@@ -6,11 +6,11 @@
 	<meta name="description" content="">
 	<meta name="author" content="">
 
-    <!-- Color Mode -->
-    <script src="./libs/bootstrap.bundle.min.js"></script>
-    <script src="./libs/color-modes.js"></script>
+  <!-- Color Mode -->
+  <script src="./libs/bootstrap.bundle.min.js"></script>
+  <script src="./libs/color-modes.js"></script>
 
-    <!-- Bootstrap Core CSS -->
+  <!-- Bootstrap Core CSS -->
 	<link href="./libs/bootstrap.min.css" rel="stylesheet">
 
     <!-- jQuery Version 1.11.1 -->
@@ -19,39 +19,51 @@
 	<!-- Bootstrap Core JavaScript -->
 	<!-- <script src="./libs/bootstrap.min.js"></script> -->
 
+  <!-- Custom CSS -->
+  <style media="screen">
+
+    .static {
+			position: absolute;
+		}
+
+		.static:hover {
+			opacity: 0;
+		}
+
+  </style>
     
-    <header data-bs-theme="dark">
-      <div class="collapse text-bg-dark" id="navbarHeader">
-        <div class="container">
-          <div class="row">
-            <div class="col-sm-8 col-md-7 py-4">
-              <h4>About</h4>
-              <p class="text-body-secondary">Add some information about the album below, the author, or any other background context. Make it a few sentences long so folks can pick up some informative tidbits. Then, link them off to some social networking sites or contact information.</p>
-            </div>
-            <div class="col-sm-4 offset-md-1 py-4">
-              <h4>Contact</h4>
-              <ul class="list-unstyled">
-                <li><a href="#" class="text-white">Follow on Twitter</a></li>
-                <li><a href="#" class="text-white">Like on Facebook</a></li>
-                <li><a href="#" class="text-white">Email me</a></li>
-              </ul>
-            </div>
+  <header data-bs-theme="dark">
+    <div class="collapse text-bg-dark" id="navbarHeader">
+      <div class="container">
+        <div class="row">
+          <div class="col-sm-8 col-md-7 py-4">
+            <h4>About</h4>
+            <p class="text-body-secondary">Add some information about the album below, the author, or any other background context. Make it a few sentences long so folks can pick up some informative tidbits. Then, link them off to some social networking sites or contact information.</p>
+          </div>
+          <div class="col-sm-4 offset-md-1 py-4">
+            <h4>Contact</h4>
+            <ul class="list-unstyled">
+              <li><a href="#" class="text-white">Follow on Twitter</a></li>
+              <li><a href="#" class="text-white">Like on Facebook</a></li>
+              <li><a href="#" class="text-white">Email me</a></li>
+            </ul>
           </div>
         </div>
       </div>
-      <div class="navbar navbar-dark bg-dark shadow-sm">
-        <div class="container">
-          <a href="#" class="navbar-brand d-flex align-items-center">
-            <image src="../images/barquinho.png" height="40px"></image>
-          </a>
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarHeader" aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-        </div>
+    </div>
+    <div class="navbar navbar-dark bg-dark shadow-sm">
+      <div class="container">
+        <a href="#" class="navbar-brand d-flex align-items-center">
+          <image src="../images/barquinho.png" height="40px"></image>
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarHeader" aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
       </div>
-    </header>
+    </div>
+  </header>
     
-    <main>
+  <main>
     
       <section class="py-5 text-center container">
         <div class="row py-lg-5">
@@ -69,176 +81,685 @@
       <div class="album py-5 bg-body-tertiary">
         <div class="container">
     
-          <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-3">
+          <div class="row row-cols-1 row-cols-sm-2 row-cols-sm-3 row-cols-md-4 g-4">
             <div class="col">
               <div class="card shadow-sm">
-                <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder" preserveAspectRatio="xMidYMid slice" focusable="false">
-                    <rect width="100%" height="100%" fill="#55595c"></rect>
-                    <text x="50%" y="50%" fill="#eceeef" dy=".3em" text-anchor="middle">Thumbnail</text>
-                </svg>
+                <a target="_blank" href="./Ship_in_regular_ocean.html">
+                  <img class="card-img-top static" width="100%" height="220" src="../images/Ship_in_Ocean_heave_only.jpg">
+                  <img class="card-img-top active" width="100%" height="220" src="../images/Ship_in_Ocean_heave_only.gif">
+                </a>
                 <div class="card-body">
-                  <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                  <div class="d-flex justify-content-between align-items-center">
-                    <div class="btn-group">
-                      <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                      <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+                    <p class="card-text">Ship in regular ocean</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <button  target="_blank" href="./Ship_in_regular_ocean.html" class="btn btn-sm btn-outline-secondary">View</a>
+                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
+                        </div>
+                        <small class="text-body-secondary">9 mins</small>
                     </div>
-                    <small class="text-body-secondary">9 mins</small>
-                  </div>
                 </div>
               </div>
             </div>
             <div class="col">
               <div class="card shadow-sm">
-                <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder" preserveAspectRatio="xMidYMid slice" focusable="false">
-        <rect width="100%" height="100%" fill="#55595c"></rect>
-        <text x="50%" y="50%" fill="#eceeef" dy=".3em" text-anchor="middle">Thumbnail</text>
-    </svg>
+                <a target="_blank" href="./Many_ships_in_regular_ocean.html">
+                  <img class="card-img-top active" width="100%" height="220" src="../images/Ships_in_regular_ocean.jpg">
+                </a>
                 <div class="card-body">
-                  <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                  <div class="d-flex justify-content-between align-items-center">
-                    <div class="btn-group">
-                      <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                      <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+                    <p class="card-text">Ships in regular ocean</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <button  target="_blank" href="./Many_ships_in_regular_ocean.html" class="btn btn-sm btn-outline-secondary">View</a>
+                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
+                        </div>
+                        <small class="text-body-secondary">9 mins</small>
                     </div>
-                    <small class="text-body-secondary">9 mins</small>
-                  </div>
                 </div>
               </div>
             </div>
             <div class="col">
               <div class="card shadow-sm">
-                <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder" preserveAspectRatio="xMidYMid slice" focusable="false">
-        <rect width="100%" height="100%" fill="#55595c"></rect>
-        <text x="50%" y="50%" fill="#eceeef" dy=".3em" text-anchor="middle">Thumbnail</text>
-    </svg>
+                <a target="_blank" href="./Ship_in_Ocean_dynamical.html">
+                  <img class="card-img-top static" width="100%" height="220" src="../images/Ship_in_Dynamical.jpg">
+                  <img class="card-img-top active" width="100%" height="220" src="../images/Ship_in_Dynamical.gif">
+                </a>
                 <div class="card-body">
-                  <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                  <div class="d-flex justify-content-between align-items-center">
-                    <div class="btn-group">
-                      <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                      <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+                    <p class="card-text">Barge motion with equations</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <button  target="_blank" href="./Ship_in_regular_ocean.html" class="btn btn-sm btn-outline-secondary">View</a>
+                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
+                        </div>
+                        <small class="text-body-secondary">9 mins</small>
                     </div>
-                    <small class="text-body-secondary">9 mins</small>
-                  </div>
-                </div>
-              </div>
-            </div>
-    
-            <div class="col">
-              <div class="card shadow-sm">
-                <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder" preserveAspectRatio="xMidYMid slice" focusable="false">
-        <rect width="100%" height="100%" fill="#55595c"></rect>
-        <text x="50%" y="50%" fill="#eceeef" dy=".3em" text-anchor="middle">Thumbnail</text>
-    </svg>
-                <div class="card-body">
-                  <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                  <div class="d-flex justify-content-between align-items-center">
-                    <div class="btn-group">
-                      <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                      <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
-                    </div>
-                    <small class="text-body-secondary">9 mins</small>
-                  </div>
                 </div>
               </div>
             </div>
             <div class="col">
               <div class="card shadow-sm">
-                <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder" preserveAspectRatio="xMidYMid slice" focusable="false">
-        <rect width="100%" height="100%" fill="#55595c"></rect>
-        <text x="50%" y="50%" fill="#eceeef" dy=".3em" text-anchor="middle">Thumbnail</text>
-    </svg>
+                <a target="_blank" href="./Radiation_WAMIT.html">
+                  <img class="card-img-top active" width="100%" height="220" src="../images/Radiation_WAMIT.jpg">
+                </a>
                 <div class="card-body">
-                  <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                  <div class="d-flex justify-content-between align-items-center">
-                    <div class="btn-group">
-                      <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                      <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+                    <p class="card-text">Barge Motion with WAMIT</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <button  target="_blank" href="./Radiation_WAMIT.html" class="btn btn-sm btn-outline-secondary">View</a>
+                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
+                        </div>
+                        <small class="text-body-secondary">9 mins</small>
                     </div>
-                    <small class="text-body-secondary">9 mins</small>
-                  </div>
                 </div>
               </div>
             </div>
             <div class="col">
               <div class="card shadow-sm">
-                <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder" preserveAspectRatio="xMidYMid slice" focusable="false">
-        <rect width="100%" height="100%" fill="#55595c"></rect>
-        <text x="50%" y="50%" fill="#eceeef" dy=".3em" text-anchor="middle">Thumbnail</text>
-    </svg>
+                <a target="_blank" href="./Ship_in_Ocean_dynamical_MooringWave.html">
+                  <img class="card-img-top static" width="100%" height="220" src="../images/MooringLine.jpg">
+                  <img class="card-img-top active" width="100%" height="220" src="../images/MooringLine.gif">
+                </a>
                 <div class="card-body">
-                  <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                  <div class="d-flex justify-content-between align-items-center">
-                    <div class="btn-group">
-                      <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                      <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+                    <p class="card-text">Ship with mooring</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <button  target="_blank" href="./Ship_in_Ocean_dynamical_MooringWave.html" class="btn btn-sm btn-outline-secondary">View</a>
+                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
+                        </div>
+                        <small class="text-body-secondary">9 mins</small>
                     </div>
-                    <small class="text-body-secondary">9 mins</small>
-                  </div>
-                </div>
-              </div>
-            </div>
-    
-            <div class="col">
-              <div class="card shadow-sm">
-                <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder" preserveAspectRatio="xMidYMid slice" focusable="false">
-        <rect width="100%" height="100%" fill="#55595c"></rect>
-        <text x="50%" y="50%" fill="#eceeef" dy=".3em" text-anchor="middle">Thumbnail</text>
-    </svg>
-                <div class="card-body">
-                  <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                  <div class="d-flex justify-content-between align-items-center">
-                    <div class="btn-group">
-                      <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                      <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
-                    </div>
-                    <small class="text-body-secondary">9 mins</small>
-                  </div>
                 </div>
               </div>
             </div>
             <div class="col">
               <div class="card shadow-sm">
-                <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder" preserveAspectRatio="xMidYMid slice" focusable="false">
-        <rect width="100%" height="100%" fill="#55595c"></rect>
-        <text x="50%" y="50%" fill="#eceeef" dy=".3em" text-anchor="middle">Thumbnail</text>
-    </svg>
+                <a target="_blank" href="./Ship_in_Ocean_dynamical_MooringWave_Parametric.html">
+                  <img class="card-img-top static" width="100%" height="220" src="../images/MooringLineParametric.jpg">
+                  <img class="card-img-top active" width="100%" height="220" src="../images/MooringLine.gif">
+                </a>
                 <div class="card-body">
-                  <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                  <div class="d-flex justify-content-between align-items-center">
-                    <div class="btn-group">
-                      <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                      <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+                    <p class="card-text">Ship with mooring (parametric)</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <button  target="_blank" href="./Ship_in_Ocean_dynamical_MooringWave_Parametric.html" class="btn btn-sm btn-outline-secondary">View</a>
+                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
+                        </div>
+                        <small class="text-body-secondary">9 mins</small>
                     </div>
-                    <small class="text-body-secondary">9 mins</small>
-                  </div>
                 </div>
               </div>
             </div>
             <div class="col">
               <div class="card shadow-sm">
-                <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder" preserveAspectRatio="xMidYMid slice" focusable="false">
-        <rect width="100%" height="100%" fill="#55595c"></rect>
-        <text x="50%" y="50%" fill="#eceeef" dy=".3em" text-anchor="middle">Thumbnail</text>
-    </svg>
+                <a target="_blank" href="./Side_by_side_operation_complex_case.html">
+                  <img class="card-img-top active" width="100%" height="220" src="../images/Side_by_side_operation_complex_case.jpg">
+                </a>
                 <div class="card-body">
-                  <p class="card-text">This is a wider card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>
-                  <div class="d-flex justify-content-between align-items-center">
-                    <div class="btn-group">
-                      <button type="button" class="btn btn-sm btn-outline-secondary">View</button>
-                      <button type="button" class="btn btn-sm btn-outline-secondary">Edit</button>
+                    <p class="card-text">Side by side 3</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <button  target="_blank" href="./Side_by_side_operation_complex_case.html" class="btn btn-sm btn-outline-secondary">View</a>
+                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
+                        </div>
+                        <small class="text-body-secondary">9 mins</small>
                     </div>
-                    <small class="text-body-secondary">9 mins</small>
-                  </div>
                 </div>
               </div>
             </div>
+            <div class="col">
+              <div class="card shadow-sm">
+                <a target="_blank" href="./Side_by_side_operation_different_loading_conditons.html">
+                  <img class="card-img-top active" width="100%" height="220" src="../images/Side_by_side_operation_different_loading_conditons.jpg">
+                </a>
+                <div class="card-body">
+                    <p class="card-text">Side by side 2</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <button  target="_blank" href="./Side_by_side_operation_different_loading_conditons.html" class="btn btn-sm btn-outline-secondary">View</a>
+                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
+                        </div>
+                        <small class="text-body-secondary">9 mins</small>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card shadow-sm">
+                <a target="_blank" href="./Explore_file_side_to_side.html">
+                  <img class="card-img-top active" width="100%" height="220" src="../images/Explore_file_side_to_side.jpg">
+                </a>
+                <div class="card-body">
+                    <p class="card-text">Side by side 1</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <button  target="_blank" href="./Explore_file_side_to_side.html" class="btn btn-sm btn-outline-secondary">View</a>
+                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
+                        </div>
+                        <small class="text-body-secondary">9 mins</small>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card shadow-sm">
+                <a target="_blank" href="./Subsea.html">
+                  <img class="card-img-top active" width="100%" height="220" src="../images/Subsea.jpg">
+                </a>
+                <div class="card-body">
+                    <p class="card-text">Subsea</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <button  target="_blank" href="./Subsea.html" class="btn btn-sm btn-outline-secondary">View</a>
+                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
+                        </div>
+                        <small class="text-body-secondary">9 mins</small>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card shadow-sm">
+                <a target="_blank" href="./Simple_example_with_explore_file.html">
+                  <img class="card-img-top active" width="100%" height="220" src="../images/Simple_example_with_explore_file.jpg">
+                </a>
+                <div class="card-body">
+                    <p class="card-text">Simple Multibody Example</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <button  target="_blank" href="./Simple_example_with_explore_file.html" class="btn btn-sm btn-outline-secondary">View</a>
+                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
+                        </div>
+                        <small class="text-body-secondary">9 mins</small>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card shadow-sm">
+                <a target="_blank" href="https://observablehq.com/@icarofonseca/pendulum-load-in-lifting-operation">
+                  <img class="card-img-top active" width="100%" height="220" src="../images/lifting.jpg">
+                </a>
+                <div class="card-body">
+                    <p class="card-text">Pendulum load</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <button  target="_blank" href="https://observablehq.com/@icarofonseca/pendulum-load-in-lifting-operation" class="btn btn-sm btn-outline-secondary">View</a>
+                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
+                        </div>
+                        <small class="text-body-secondary">9 mins</small>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card shadow-sm">
+                <a target="_blank" href="./epoch.html">
+                  <img class="card-img-top active" width="100%" height="220" src="../images/epoch.jpg">
+                </a>
+                <div class="card-body">
+                    <p class="card-text">Epoch Analysis</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <button  target="_blank" href="./epoch.html" class="btn btn-sm btn-outline-secondary">View</a>
+                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
+                        </div>
+                        <small class="text-body-secondary">9 mins</small>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card shadow-sm">
+                <a target="_blank" href="./Ship_with_aframe_in_regular_ocean.html">
+                  <img class="card-img-top static" width="100%" height="220" src="../images/Ship_with_aframe_in_regular_ocean.jpg">
+                  <img class="card-img-top active" width="100%" height="220" src="../images/Ship_with_aframe_in_regular_ocean.gif">
+                </a>
+                <div class="card-body">
+                    <p class="card-text">Pendulum in Ocean</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <button  target="_blank" href="./Ship_with_aframe_in_regular_ocean.html" class="btn btn-sm btn-outline-secondary">View</a>
+                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
+                        </div>
+                        <small class="text-body-secondary">9 mins</small>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card shadow-sm">
+                <a target="_blank" href="./Ship_in_Ocean_still_water.html">
+                  <img class="card-img-top active" width="100%" height="220" src="../images/Ship_in_Ocean_still_water.jpg">
+                </a>
+                <div class="card-body">
+                    <p class="card-text">Ship in still water</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <button  target="_blank" href="./Ship_in_Ocean_still_water.html" class="btn btn-sm btn-outline-secondary">View</a>
+                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
+                        </div>
+                        <small class="text-body-secondary">9 mins</small>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card shadow-sm">
+                <a target="_blank" href="./Many_ships_in_still_water.html">
+                  <img class="card-img-top active" width="100%" height="220" src="../images/Many_ships_in_still_water.jpg">
+                </a>
+                <div class="card-body">
+                    <p class="card-text">Ships in still water</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <button  target="_blank" href="./Many_ships_in_still_water.html" class="btn btn-sm btn-outline-secondary">View</a>
+                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
+                        </div>
+                        <small class="text-body-secondary">9 mins</small>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card shadow-sm">
+                <a target="_blank" href="./Ship3D_with_pretty_JSON.html">
+                  <img class="card-img-top static" width="100%" height="220" src="../images/orbit3d.jpg">
+                  <img class="card-img-top active" width="100%" height="220" src="../images/orbit3d.gif">
+                </a>
+                <div class="card-body">
+                    <p class="card-text">Ship visualization</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <button  target="_blank" href="./Ship3D_with_pretty_JSON.html" class="btn btn-sm btn-outline-secondary">View</a>
+                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
+                        </div>
+                        <small class="text-body-secondary">9 mins</small>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card shadow-sm">
+                <a target="_blank" href="./Gunnerus_Complete_Example.html">
+                  <img class="card-img-top active" width="100%" height="220" src="../images/Gunnerus.jpg">
+                </a>
+                <div class="card-body">
+                    <p class="card-text">Gunnerus</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <button  target="_blank" href="./Gunnerus_Complete_Example.html" class="btn btn-sm btn-outline-secondary">View</a>
+                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
+                        </div>
+                        <small class="text-body-secondary">9 mins</small>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card shadow-sm">
+                <a target="_blank" href="./Hull_hydrostatics.html">
+                  <img class="card-img-top active" width="100%" height="220" src="../images/HullHydrostatics.jpg">
+                </a>
+                <div class="card-body">
+                    <p class="card-text">Hull hydrostatics</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <button  target="_blank" href="./Hull_hydrostatics.html" class="btn btn-sm btn-outline-secondary">View</a>
+                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
+                        </div>
+                        <small class="text-body-secondary">9 mins</small>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card shadow-sm">
+                <a target="_blank" href="./Ship3D_GA.html">
+                  <img class="card-img-top static" width="100%" height="220" src="../images/Ship3D_ga.jpg">
+                  <img class="card-img-top active" width="100%" height="220" src="../images/Ship3D_ga.gif">
+                </a>
+                <div class="card-body">
+                    <p class="card-text">General Arrangement</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <button  target="_blank" href="./Ship3D_GA.html" class="btn btn-sm btn-outline-secondary">View</a>
+                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
+                        </div>
+                        <small class="text-body-secondary">9 mins</small>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card shadow-sm">
+                <a target="_blank" href="./manoeuvring.html">
+                  <img class="card-img-top active" width="100%" height="220" src="../images/manoeuvring.jpg">
+                </a>
+                <div class="card-body">
+                    <p class="card-text">Manoeuvering Model</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <button  target="_blank" href="./manoeuvring.html" class="btn btn-sm btn-outline-secondary">View</a>
+                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
+                        </div>
+                        <small class="text-body-secondary">9 mins</small>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card shadow-sm">
+                <a target="_blank" href="./manoeuvring_UiTModel.html">
+                  <img class="card-img-top active" width="100%" height="220" src="../images/manoeuvring_UiTModel.jpg">
+                </a>
+                <div class="card-body">
+                    <p class="card-text">ADAF Project</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <button  target="_blank" href="./manoeuvring_UiTModel.html" class="btn btn-sm btn-outline-secondary">View</a>
+                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
+                        </div>
+                        <small class="text-body-secondary">9 mins</small>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card shadow-sm">
+                <a target="_blank" href="./trondheim.html">
+                  <img class="card-img-top active" width="100%" height="220" src="../images/trondheim.jpg">
+                </a>
+                <div class="card-body">
+                    <p class="card-text">Trondheim Scene</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <button  target="_blank" href="./trondheim.html" class="btn btn-sm btn-outline-secondary">View</a>
+                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
+                        </div>
+                        <small class="text-body-secondary">9 mins</small>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card shadow-sm">
+                <a target="_blank" href="./trondheim_compressed.html">
+                  <img class="card-img-top active" width="100%" height="220" src="../images/draco3d-vert.svg">
+                </a>
+                <div class="card-body">
+                    <p class="card-text">Draco Compressed Model</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <button  target="_blank" href="./trondheim_compressed.html" class="btn btn-sm btn-outline-secondary">View</a>
+                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
+                        </div>
+                        <small class="text-body-secondary">9 mins</small>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card shadow-sm">
+                <a target="_blank" href="./ballasting.html">
+                  <img class="card-img-top active" width="100%" height="220" src="../images/Ballast.jpg">
+                </a>
+                <div class="card-body">
+                    <p class="card-text">Ballasting</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <button  target="_blank" href="./ballasting.html" class="btn btn-sm btn-outline-secondary">View</a>
+                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
+                        </div>
+                        <small class="text-body-secondary">9 mins</small>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card shadow-sm">
+                <a target="_blank" href="./path.html">
+                  <img class="card-img-top active" width="100%" height="220" src="../images/Path.jpg">
+                </a>
+                <div class="card-body">
+                    <p class="card-text">Ballasting</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <button  target="_blank" href="./path.html" class="btn btn-sm btn-outline-secondary">View</a>
+                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
+                        </div>
+                        <small class="text-body-secondary">9 mins</small>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card shadow-sm">
+                <a target="_blank" href="./lifecycle.html">
+                  <img class="card-img-top active" width="100%" height="220" src="../images/SBB.jpg">
+                </a>
+                <div class="card-body">
+                    <p class="card-text">Lifecycle</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <button  target="_blank" href="./lifecycle.html" class="btn btn-sm btn-outline-secondary">View</a>
+                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
+                        </div>
+                        <small class="text-body-secondary">9 mins</small>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card shadow-sm">
+                <a target="_blank" href="./loading.html">
+                  <img class="card-img-top active" width="100%" height="220" src="../images/Loading.jpg">
+                </a>
+                <div class="card-body">
+                    <p class="card-text">Ballasting</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <button  target="_blank" href="./loading.html" class="btn btn-sm btn-outline-secondary">View</a>
+                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
+                        </div>
+                        <small class="text-body-secondary">9 mins</small>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card shadow-sm">
+                <a target="_blank" href="./scaleApp.html">
+                  <img class="card-img-top static" width="100%" height="220" src="../images/scaleApp.jpg">
+                  <img class="card-img-top active" width="100%" height="220" src="../images/scaleApp.gif">
+                </a>
+                <div class="card-body">
+                    <p class="card-text">Ballasting</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <button  target="_blank" href="./scaleApp.html" class="btn btn-sm btn-outline-secondary">View</a>
+                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
+                        </div>
+                        <small class="text-body-secondary">9 mins</small>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card shadow-sm">
+                <a target="_blank" href="./blockCase_compare.html">
+                  <img class="card-img-top active" width="100%" height="220" src="../images/GZ_graphics.jpg">
+                </a>
+                <div class="card-body">
+                    <p class="card-text">Validation of ship stability</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <button  target="_blank" href="./blockCase_compare.html" class="btn btn-sm btn-outline-secondary">View</a>
+                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
+                        </div>
+                        <small class="text-body-secondary">9 mins</small>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card shadow-sm">
+                <a target="_blank" href="./Ship_stability_with_blocks.html">
+                  <img class="card-img-top static" width="100%" height="220" src="../images/Ship_stability_with_blocks.jpg">
+                  <img class="card-img-top active" width="100%" height="220" src="../images/Ship_stability_with_blocks.gif">
+                </a>
+                <div class="card-body">
+                    <p class="card-text">Stability with Blocks</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <button  target="_blank" href="./Ship_stability_with_blocks.html" class="btn btn-sm btn-outline-secondary">View</a>
+                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
+                        </div>
+                        <small class="text-body-secondary">9 mins</small>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card shadow-sm">
+                <a target="_blank" href="https://observablehq.com/@icarofonseca/a-prime-on-web-based-simulations.html">
+                  <img class="card-img-top active" width="100%" height="220" src="../images/ecms_2019.jpg">
+                </a>
+                <div class="card-body">
+                    <p class="card-text">ECMS 2019</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <button  target="_blank" href="https://observablehq.com/@icarofonseca/a-prime-on-web-based-simulations.html" class="btn btn-sm btn-outline-secondary">View</a>
+                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
+                        </div>
+                        <small class="text-body-secondary">9 mins</small>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card shadow-sm">
+                <a target="_blank" href="./dt_cv/aquarium_demo.html">
+                  <img class="card-img-top active" width="100%" height="220" src="../images/dt_cv.jpg">
+                </a>
+                <div class="card-body">
+                    <p class="card-text">Digital twin: Aquarium</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <button  target="_blank" href="./dt_cv/aquarium_demo.html" class="btn btn-sm btn-outline-secondary">View</a>
+                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
+                        </div>
+                        <small class="text-body-secondary">9 mins</small>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card shadow-sm">
+                <a target="_blank" href="./dt_cv/basin_demo.html">
+                  <img class="card-img-top active" width="100%" height="220" src="../images/dt_tpn.jpg">
+                </a>
+                <div class="card-body">
+                    <p class="card-text">Digital twin: Basin</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <button  target="_blank" href="./dt_cv/basin_demo.html" class="btn btn-sm btn-outline-secondary">View</a>
+                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
+                        </div>
+                        <small class="text-body-secondary">9 mins</small>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card shadow-sm">
+                <a target="_blank" href="./openbridge/index.html">
+                  <img class="card-img-top active" width="100%" height="220" src="../images/openbridge.jpg">
+                </a>
+                <div class="card-body">
+                    <p class="card-text">Digital twin: Basin</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <button  target="_blank" href="./openbridge/index.html" class="btn btn-sm btn-outline-secondary">View</a>
+                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
+                        </div>
+                        <small class="text-body-secondary">9 mins</small>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card shadow-sm">
+                <a target="_blank" href="./openbridge/alesund_with_ais.html">
+                  <img class="card-img-top active" width="100%" height="220" src="../images/alesund_with_ais.jpg">
+                </a>
+                <div class="card-body">
+                    <p class="card-text">Ålesund with AIS</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <button  target="_blank" href="./openbridge/alesund_with_ais.html" class="btn btn-sm btn-outline-secondary">View</a>
+                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
+                        </div>
+                        <small class="text-body-secondary">9 mins</small>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card shadow-sm">
+                <a target="_blank" href="./openbridge/Gunnerus_Browser.html">
+                  <img class="card-img-top active" width="100%" height="220" src="../images/Gunnerus_Browser.jpg">
+                </a>
+                <div class="card-body">
+                    <p class="card-text">Dashboard</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <button  target="_blank" href="./openbridge/Gunnerus_Browser.html" class="btn btn-sm btn-outline-secondary">View</a>
+                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
+                        </div>
+                        <small class="text-body-secondary">9 mins</small>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card shadow-sm">
+                <a target="_blank" href="https://ferrari212.github.io/VesselsEditor/">
+                  <img class="card-img-top active" width="100%" height="220" src="../images/vessel_editor.jpg">
+                </a>
+                <div class="card-body">
+                    <p class="card-text">Dashboard</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <button  target="_blank" href="https://ferrari212.github.io/VesselsEditor/" class="btn btn-sm btn-outline-secondary">View</a>
+                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
+                        </div>
+                        <small class="text-body-secondary">9 mins</small>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="card shadow-sm">
+                <a target="_blank" href="./Many_ships_performance_verification_without_environment.html">
+                  <img class="card-img-top active" width="100%" height="220" src="../images/Many_ships_performance.jpg">
+                </a>
+                <div class="card-body">
+                    <p class="card-text">Performance Verification</p>
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div class="btn-group">
+                            <button  target="_blank" href="./Many_ships_performance_verification_without_environment.html" class="btn btn-sm btn-outline-secondary">View</a>
+                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
+                        </div>
+                        <small class="text-body-secondary">9 mins</small>
+                    </div>
+                </div>
+              </div>
+            </div>
+            
           </div>
         </div>
       </div>
     
-    </main>
+  </main>
     
     <footer class="text-body-secondary py-5">
       <div class="container">
