@@ -21,6 +21,46 @@
 
   <!-- Custom CSS -->
   <style media="screen">
+    
+    pre,
+		code {
+			font-family: "Menlo", monospace;
+			-webkit-text-size-adjust: 100%;
+		}
+
+		code {
+			line-height: 1em;
+		}
+
+    pre {
+			border-left: solid 2px #ccc;
+			padding-left: 18px;
+			margin: 2em 0 2em -20px;
+		}
+
+    .html .string,
+    .javascript .string,
+    .javascript .regexp {
+          color: #756bb1;
+		}
+
+		.html .tag,
+		.css .tag,
+		.javascript .keyword {
+			color: #3182bd;
+		}
+
+    .html .doctype,
+		.javascript .number {
+			color: #31a354;
+		}
+
+    .html .attr,
+		.css .attr,
+		.javascript .class,
+		.javascript .special {
+			color: #e6550d;
+		}
 
     .static {
 			position: absolute;
@@ -80,6 +120,36 @@
     
       <div class="album py-5 bg-body-tertiary">
         <div class="container">
+
+          <h1>Introduction</h1>
+          <p><b>Vessel.js</b> is a JavaScript library for conceptual ship design with an
+            object-oriented paradigm. Vessel.js represents the vessel as an object, which
+            is used to simulate different functionalities and behaviors. Currently, the
+            library includes methods for hydrostatic, dynamics and stability calculations.</p>
+
+          <p>The library is developed by <a target="_blank" href="http://www.shiplab.hials.org/">Ship Design and Operation Lab</a> at
+            Norwegian
+            University of Science and Technology (NTNU) in Ålesund.</p>
+
+          <p>Dowload the latest version here:</p>
+          <ul>
+            <li>
+              <a href="https://github.com/shiplab/vesseljs/archive/master.zip">vesseljs.zip</a>
+            </li>
+          </ul>
+
+          <p>Import Vessel.js in html by using the following script:</p>
+          <pre><code class="html hljs xml"><span class="tag">import <span class="attr">*</span> as <span class="attr">Vessel</span> from <span class="string">"../build/vessel.module.js"</span></span></code></pre>
+
+          <h1>Contributing</h1>
+          <p>When contributing, fork the repository and send pull requests with your
+            commits. If your modifications are only to files related to examples
+            and you have pull request authorization, you can approve them by
+            yourself. If not, then wait for review and approval by the development
+            team.</p>
+          <p>You are also welcome to create <a href="https://github.com/shiplab/vesseljs/issues">
+              issues</a> reporting bugs or suggesting
+            improvements and features for development.</p>
     
           <div class="row row-cols-1 row-cols-sm-2 row-cols-sm-3 row-cols-md-4 g-4">
             <div class="col">
