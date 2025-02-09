@@ -38,6 +38,14 @@
 			margin: 2em 0 2em -20px;
 		}
 
+    /* Scroll top button */
+    #scrollToTopBtn {
+        position: fixed;
+        bottom: 40px;
+        right: 40px;
+        display: none;
+    }
+
 
     /* Search bar */
     .fade-card {
@@ -155,10 +163,28 @@
           // Show "No Results" message if no cards are visible
           noResults.style.display = anyVisible ? "none" : "block";
       }
+
+      document.addEventListener("DOMContentLoaded", function() {
+          let scrollToTopBtn = document.getElementById("scrollToTopBtn");
+
+          window.addEventListener("scroll", function() {
+              if (window.scrollY > 100) {
+                  scrollToTopBtn.style.display = "block";
+              } else {
+                  scrollToTopBtn.style.display = "none";
+              }
+          });
+
+          scrollToTopBtn.addEventListener("click", function() {
+              window.scrollTo({ top: 0, behavior: "smooth" });
+          });
+      });
   </script>
   </header>
     
   <main>
+
+    
     
       <section class="py-5 text-center container">
         <div class="row py-lg-5">
@@ -913,6 +939,12 @@
         </div>
       </div>
     
+  <button id="scrollToTopBtn" class="btn btn-secondary btn-lg">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-up" viewBox="0 0 16 16">
+      <path fill-rule="evenodd" d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5"/>
+    </svg>
+  </button>
+  
   </main>
     
     <footer class="text-body-secondary py-5">
