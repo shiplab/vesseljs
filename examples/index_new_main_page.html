@@ -38,6 +38,28 @@
 			margin: 2em 0 2em -20px;
 		}
 
+
+    /* Search bar */
+    .fade-card {
+        transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
+        opacity: 1;
+        visibility: visible;
+        display: block; 
+    }
+
+    .hidden {
+        opacity: 0;
+        visibility: hidden;
+    }
+
+    .no-results {
+        display: none; /* Initially hidden */
+        text-align: center;
+        padding: 20px;
+        font-size: 1.2rem;
+        color: #777;
+    }
+
     .html .string,
     .javascript .string,
     .javascript .regexp {
@@ -101,6 +123,39 @@
         </button>
       </div>
     </div>
+    <script defer>
+      function filterCards() {
+          let input = document.getElementById("searchInput").value.toLowerCase();
+          let cards = document.querySelectorAll(".col");
+          let noResults = document.getElementById("noResults");
+
+          let anyVisible = false;
+
+          cards.forEach(card => {
+              let text = card.innerText.toLowerCase();
+
+              if (text.includes(input)) {
+                  anyVisible = true;
+
+                  // Make it visible instantly
+                  card.style.display = "block";
+                  setTimeout(() => {
+                      card.classList.remove("hidden");
+                  }, 10); // Tiny delay to ensure transition is applied
+              } else {
+                  card.classList.add("hidden");
+                  setTimeout(() => {
+                      if (card.classList.contains("hidden")) {
+                          card.style.display = "none"; // Hide after fade-out
+                      }
+                  }, 500); // Matches the transition duration
+              }
+          });
+
+          // Show "No Results" message if no cards are visible
+          noResults.style.display = anyVisible ? "none" : "block";
+      }
+  </script>
   </header>
     
   <main>
@@ -108,11 +163,18 @@
       <section class="py-5 text-center container">
         <div class="row py-lg-5">
           <div class="col-lg-6 col-md-8 mx-auto">
-            <h1 class="fw-light">Album example</h1>
-            <p class="lead text-body-secondary">Something short and leading about the collection below—its contents, the creator, etc. Make it short and sweet, but not too short so folks don’t simply skip over it entirely.</p>
+            <h1 class="fw-light">Ship Design and Operation Lab @ NTNU</h1>
+            <p class="lead text-body-secondary">Portfolio page for the laboratory works.</p>
+            <p class="lead text-body-secondary">Last update: 05 Feb 2025.</p>
             <p>
-              <a href="#" class="btn btn-primary my-2">Main call to action</a>
-              <a href="#" class="btn btn-secondary my-2">Secondary action</a>
+              <a target="_blank" href="https://www.ntnu.edu/ihb/ship-lab" class="btn btn-light mx-2">
+                <img  src="../images/brand_NTNU.svg" alt="NTNU Logo" height="25px"> NTNU
+              </a>
+              <a target="_blank" href="https://github.com/shiplab/portfolio" class="btn btn-secondary mx-2">
+                <img src="../images/mark-github.svg" alt="Git Hub Logo" height="25px">
+                <img src="../images/github-logo-svg.svg" alt="Git Hub Logo" height="20px">
+                
+              </a>
             </p>
           </div>
         </div>
@@ -147,12 +209,26 @@
             and you have pull request authorization, you can approve them by
             yourself. If not, then wait for review and approval by the development
             team.</p>
-          <p>You are also welcome to create <a href="https://github.com/shiplab/vesseljs/issues">
+          <p>You are also welcome to create <a target="_blank" href="https://github.com/shiplab/vesseljs/issues">
               issues</a> reporting bugs or suggesting
             improvements and features for development.</p>
-    
+          
+          <br>
+
+          <h1>Examples</h1>
+          
+          <!-- Search Bar -->
+          <div class="container mb-3">
+          <div class="row justify-content-right">
+              <div class="col-3">
+                <input type="text" id="searchInput" class="form-control" placeholder="Search Example..." onkeyup="filterCards()">
+              </div>
+            </div>
+          </div>
+
+          
           <div class="row row-cols-1 row-cols-sm-2 row-cols-sm-3 row-cols-md-4 g-4">
-            <div class="col">
+            <div class="col fade-card">
               <div class="card shadow-sm">
                 <a target="_blank" href="./Ship_in_regular_ocean.html">
                   <img class="card-img-top static" width="100%" height="220" src="../images/Ship_in_Ocean_heave_only.jpg">
@@ -165,12 +241,12 @@
                             <button  target="_blank" href="./Ship_in_regular_ocean.html" class="btn btn-sm btn-outline-secondary">View</a>
                             <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
                         </div>
-                        <small class="text-body-secondary">9 mins</small>
+                        <small class="text-body-secondary">Ícaro Fonseca</small>
                     </div>
                 </div>
               </div>
             </div>
-            <div class="col">
+            <div class="col fade-card">
               <div class="card shadow-sm">
                 <a target="_blank" href="./Many_ships_in_regular_ocean.html">
                   <img class="card-img-top active" width="100%" height="220" src="../images/Ships_in_regular_ocean.jpg">
@@ -182,12 +258,12 @@
                             <button  target="_blank" href="./Many_ships_in_regular_ocean.html" class="btn btn-sm btn-outline-secondary">View</a>
                             <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
                         </div>
-                        <small class="text-body-secondary">9 mins</small>
+                        <small class="text-body-secondary">Ícaro Fonseca</small>
                     </div>
                 </div>
               </div>
             </div>
-            <div class="col">
+            <div class="col fade-card">
               <div class="card shadow-sm">
                 <a target="_blank" href="./Ship_in_Ocean_dynamical.html">
                   <img class="card-img-top static" width="100%" height="220" src="../images/Ship_in_Dynamical.jpg">
@@ -200,12 +276,12 @@
                             <button  target="_blank" href="./Ship_in_regular_ocean.html" class="btn btn-sm btn-outline-secondary">View</a>
                             <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
                         </div>
-                        <small class="text-body-secondary">9 mins</small>
+                        <small class="text-body-secondary">Felipe Ferrari</small>
                     </div>
                 </div>
               </div>
             </div>
-            <div class="col">
+            <div class="col fade-card">
               <div class="card shadow-sm">
                 <a target="_blank" href="./Radiation_WAMIT.html">
                   <img class="card-img-top active" width="100%" height="220" src="../images/Radiation_WAMIT.jpg">
@@ -217,12 +293,12 @@
                             <button  target="_blank" href="./Radiation_WAMIT.html" class="btn btn-sm btn-outline-secondary">View</a>
                             <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
                         </div>
-                        <small class="text-body-secondary">9 mins</small>
+                        <small class="text-body-secondary">Felipe Ferrari, <br> Daniel Prata</small>
                     </div>
                 </div>
               </div>
             </div>
-            <div class="col">
+            <div class="col fade-card">
               <div class="card shadow-sm">
                 <a target="_blank" href="./Ship_in_Ocean_dynamical_MooringWave.html">
                   <img class="card-img-top static" width="100%" height="220" src="../images/MooringLine.jpg">
@@ -235,12 +311,12 @@
                             <button  target="_blank" href="./Ship_in_Ocean_dynamical_MooringWave.html" class="btn btn-sm btn-outline-secondary">View</a>
                             <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
                         </div>
-                        <small class="text-body-secondary">9 mins</small>
+                        <small class="text-body-secondary">Felipe Ferrari, <br> Diogo Kramel</small>
                     </div>
                 </div>
               </div>
             </div>
-            <div class="col">
+            <div class="col fade-card">
               <div class="card shadow-sm">
                 <a target="_blank" href="./Ship_in_Ocean_dynamical_MooringWave_Parametric.html">
                   <img class="card-img-top static" width="100%" height="220" src="../images/MooringLineParametric.jpg">
@@ -253,12 +329,12 @@
                             <button  target="_blank" href="./Ship_in_Ocean_dynamical_MooringWave_Parametric.html" class="btn btn-sm btn-outline-secondary">View</a>
                             <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
                         </div>
-                        <small class="text-body-secondary">9 mins</small>
+                        <small class="text-body-secondary">Felipe Ferrari</small>
                     </div>
                 </div>
               </div>
             </div>
-            <div class="col">
+            <div class="col fade-card">
               <div class="card shadow-sm">
                 <a target="_blank" href="./Side_by_side_operation_complex_case.html">
                   <img class="card-img-top active" width="100%" height="220" src="../images/Side_by_side_operation_complex_case.jpg">
@@ -270,12 +346,12 @@
                             <button  target="_blank" href="./Side_by_side_operation_complex_case.html" class="btn btn-sm btn-outline-secondary">View</a>
                             <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
                         </div>
-                        <small class="text-body-secondary">9 mins</small>
+                        <small class="text-body-secondary">Daniel Prata, <br> Diogo Kramel</small>
                     </div>
                 </div>
               </div>
             </div>
-            <div class="col">
+            <div class="col fade-card">
               <div class="card shadow-sm">
                 <a target="_blank" href="./Side_by_side_operation_different_loading_conditons.html">
                   <img class="card-img-top active" width="100%" height="220" src="../images/Side_by_side_operation_different_loading_conditons.jpg">
@@ -287,12 +363,12 @@
                             <button  target="_blank" href="./Side_by_side_operation_different_loading_conditons.html" class="btn btn-sm btn-outline-secondary">View</a>
                             <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
                         </div>
-                        <small class="text-body-secondary">9 mins</small>
+                        <small class="text-body-secondary">Daniel Prata, <br> Diogo Kramel</small>
                     </div>
                 </div>
               </div>
             </div>
-            <div class="col">
+            <div class="col fade-card">
               <div class="card shadow-sm">
                 <a target="_blank" href="./Explore_file_side_to_side.html">
                   <img class="card-img-top active" width="100%" height="220" src="../images/Explore_file_side_to_side.jpg">
@@ -304,12 +380,12 @@
                             <button  target="_blank" href="./Explore_file_side_to_side.html" class="btn btn-sm btn-outline-secondary">View</a>
                             <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
                         </div>
-                        <small class="text-body-secondary">9 mins</small>
+                        <small class="text-body-secondary">Daniel Prata, <br> Diogo Kramel</small>
                     </div>
                 </div>
               </div>
             </div>
-            <div class="col">
+            <div class="col fade-card">
               <div class="card shadow-sm">
                 <a target="_blank" href="./Subsea.html">
                   <img class="card-img-top active" width="100%" height="220" src="../images/Subsea.jpg">
@@ -321,12 +397,12 @@
                             <button  target="_blank" href="./Subsea.html" class="btn btn-sm btn-outline-secondary">View</a>
                             <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
                         </div>
-                        <small class="text-body-secondary">9 mins</small>
+                        <small class="text-body-secondary">Daniel Prata, <br> Diogo Kramel</small>
                     </div>
                 </div>
               </div>
             </div>
-            <div class="col">
+            <div class="col fade-card">
               <div class="card shadow-sm">
                 <a target="_blank" href="./Simple_example_with_explore_file.html">
                   <img class="card-img-top active" width="100%" height="220" src="../images/Simple_example_with_explore_file.jpg">
@@ -338,12 +414,12 @@
                             <button  target="_blank" href="./Simple_example_with_explore_file.html" class="btn btn-sm btn-outline-secondary">View</a>
                             <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
                         </div>
-                        <small class="text-body-secondary">9 mins</small>
+                        <small class="text-body-secondary">Daniel Prata, <br> Diogo Kramel</small>
                     </div>
                 </div>
               </div>
             </div>
-            <div class="col">
+            <div class="col fade-card">
               <div class="card shadow-sm">
                 <a target="_blank" href="https://observablehq.com/@icarofonseca/pendulum-load-in-lifting-operation">
                   <img class="card-img-top active" width="100%" height="220" src="../images/lifting.jpg">
@@ -355,12 +431,12 @@
                             <button  target="_blank" href="https://observablehq.com/@icarofonseca/pendulum-load-in-lifting-operation" class="btn btn-sm btn-outline-secondary">View</a>
                             <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
                         </div>
-                        <small class="text-body-secondary">9 mins</small>
+                        <small class="text-body-secondary">Ícaro Fonseca</small>
                     </div>
                 </div>
               </div>
             </div>
-            <div class="col">
+            <div class="col fade-card">
               <div class="card shadow-sm">
                 <a target="_blank" href="./epoch.html">
                   <img class="card-img-top active" width="100%" height="220" src="../images/epoch.jpg">
@@ -372,12 +448,12 @@
                             <button  target="_blank" href="./epoch.html" class="btn btn-sm btn-outline-secondary">View</a>
                             <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
                         </div>
-                        <small class="text-body-secondary">9 mins</small>
+                        <small class="text-body-secondary">Felipe Ferrari, <br> Daniel Prata</small>
                     </div>
                 </div>
               </div>
             </div>
-            <div class="col">
+            <div class="col fade-card">
               <div class="card shadow-sm">
                 <a target="_blank" href="./Ship_with_aframe_in_regular_ocean.html">
                   <img class="card-img-top static" width="100%" height="220" src="../images/Ship_with_aframe_in_regular_ocean.jpg">
@@ -390,12 +466,12 @@
                             <button  target="_blank" href="./Ship_with_aframe_in_regular_ocean.html" class="btn btn-sm btn-outline-secondary">View</a>
                             <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
                         </div>
-                        <small class="text-body-secondary">9 mins</small>
+                        <small class="text-body-secondary">Ícaro Fonseca</small>
                     </div>
                 </div>
               </div>
             </div>
-            <div class="col">
+            <div class="col fade-card">
               <div class="card shadow-sm">
                 <a target="_blank" href="./Ship_in_Ocean_still_water.html">
                   <img class="card-img-top active" width="100%" height="220" src="../images/Ship_in_Ocean_still_water.jpg">
@@ -407,12 +483,12 @@
                             <button  target="_blank" href="./Ship_in_Ocean_still_water.html" class="btn btn-sm btn-outline-secondary">View</a>
                             <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
                         </div>
-                        <small class="text-body-secondary">9 mins</small>
+                        <small class="text-body-secondary">Felipe Ferrari</small>
                     </div>
                 </div>
               </div>
             </div>
-            <div class="col">
+            <div class="col fade-card">
               <div class="card shadow-sm">
                 <a target="_blank" href="./Many_ships_in_still_water.html">
                   <img class="card-img-top active" width="100%" height="220" src="../images/Many_ships_in_still_water.jpg">
@@ -424,12 +500,12 @@
                             <button  target="_blank" href="./Many_ships_in_still_water.html" class="btn btn-sm btn-outline-secondary">View</a>
                             <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
                         </div>
-                        <small class="text-body-secondary">9 mins</small>
+                        <small class="text-body-secondary">Ícaro Fonseca</small>
                     </div>
                 </div>
               </div>
             </div>
-            <div class="col">
+            <div class="col fade-card">
               <div class="card shadow-sm">
                 <a target="_blank" href="./Ship3D_with_pretty_JSON.html">
                   <img class="card-img-top static" width="100%" height="220" src="../images/orbit3d.jpg">
@@ -442,12 +518,12 @@
                             <button  target="_blank" href="./Ship3D_with_pretty_JSON.html" class="btn btn-sm btn-outline-secondary">View</a>
                             <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
                         </div>
-                        <small class="text-body-secondary">9 mins</small>
+                        <small class="text-body-secondary">Elias Hasle</small>
                     </div>
                 </div>
               </div>
             </div>
-            <div class="col">
+            <div class="col fade-card">
               <div class="card shadow-sm">
                 <a target="_blank" href="./Gunnerus_Complete_Example.html">
                   <img class="card-img-top active" width="100%" height="220" src="../images/Gunnerus.jpg">
@@ -459,12 +535,12 @@
                             <button  target="_blank" href="./Gunnerus_Complete_Example.html" class="btn btn-sm btn-outline-secondary">View</a>
                             <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
                         </div>
-                        <small class="text-body-secondary">9 mins</small>
+                        <small class="text-body-secondary">Felipe Ferrari</small>
                     </div>
                 </div>
               </div>
             </div>
-            <div class="col">
+            <div class="col fade-card">
               <div class="card shadow-sm">
                 <a target="_blank" href="./Hull_hydrostatics.html">
                   <img class="card-img-top active" width="100%" height="220" src="../images/HullHydrostatics.jpg">
@@ -476,12 +552,12 @@
                             <button  target="_blank" href="./Hull_hydrostatics.html" class="btn btn-sm btn-outline-secondary">View</a>
                             <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
                         </div>
-                        <small class="text-body-secondary">9 mins</small>
+                        <small class="text-body-secondary">Ícaro Fonseca</small>
                     </div>
                 </div>
               </div>
             </div>
-            <div class="col">
+            <div class="col fade-card">
               <div class="card shadow-sm">
                 <a target="_blank" href="./Ship3D_GA.html">
                   <img class="card-img-top static" width="100%" height="220" src="../images/Ship3D_ga.jpg">
@@ -494,12 +570,12 @@
                             <button  target="_blank" href="./Ship3D_GA.html" class="btn btn-sm btn-outline-secondary">View</a>
                             <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
                         </div>
-                        <small class="text-body-secondary">9 mins</small>
+                        <small class="text-body-secondary">Several Authors</small>
                     </div>
                 </div>
               </div>
             </div>
-            <div class="col">
+            <div class="col fade-card">
               <div class="card shadow-sm">
                 <a target="_blank" href="./manoeuvring.html">
                   <img class="card-img-top active" width="100%" height="220" src="../images/manoeuvring.jpg">
@@ -511,12 +587,12 @@
                             <button  target="_blank" href="./manoeuvring.html" class="btn btn-sm btn-outline-secondary">View</a>
                             <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
                         </div>
-                        <small class="text-body-secondary">9 mins</small>
+                        <small class="text-body-secondary">Felipe Ferrari</small>
                     </div>
                 </div>
               </div>
             </div>
-            <div class="col">
+            <div class="col fade-card">
               <div class="card shadow-sm">
                 <a target="_blank" href="./manoeuvring_UiTModel.html">
                   <img class="card-img-top active" width="100%" height="220" src="../images/manoeuvring_UiTModel.jpg">
@@ -528,12 +604,12 @@
                             <button  target="_blank" href="./manoeuvring_UiTModel.html" class="btn btn-sm btn-outline-secondary">View</a>
                             <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
                         </div>
-                        <small class="text-body-secondary">9 mins</small>
+                        <small class="text-body-secondary">Felipe Ferrari</small>
                     </div>
                 </div>
               </div>
             </div>
-            <div class="col">
+            <div class="col fade-card">
               <div class="card shadow-sm">
                 <a target="_blank" href="./trondheim.html">
                   <img class="card-img-top active" width="100%" height="220" src="../images/trondheim.jpg">
@@ -545,12 +621,12 @@
                             <button  target="_blank" href="./trondheim.html" class="btn btn-sm btn-outline-secondary">View</a>
                             <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
                         </div>
-                        <small class="text-body-secondary">9 mins</small>
+                        <small class="text-body-secondary">Felipe Ferrari</small>
                     </div>
                 </div>
               </div>
             </div>
-            <div class="col">
+            <div class="col fade-card">
               <div class="card shadow-sm">
                 <a target="_blank" href="./trondheim_compressed.html">
                   <img class="card-img-top active" width="100%" height="220" src="../images/draco3d-vert.svg">
@@ -562,12 +638,12 @@
                             <button  target="_blank" href="./trondheim_compressed.html" class="btn btn-sm btn-outline-secondary">View</a>
                             <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
                         </div>
-                        <small class="text-body-secondary">9 mins</small>
+                        <small class="text-body-secondary">Felipe Ferrari</small>
                     </div>
                 </div>
               </div>
             </div>
-            <div class="col">
+            <div class="col fade-card">
               <div class="card shadow-sm">
                 <a target="_blank" href="./ballasting.html">
                   <img class="card-img-top active" width="100%" height="220" src="../images/Ballast.jpg">
@@ -579,12 +655,12 @@
                             <button  target="_blank" href="./ballasting.html" class="btn btn-sm btn-outline-secondary">View</a>
                             <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
                         </div>
-                        <small class="text-body-secondary">9 mins</small>
+                        <small class="text-body-secondary">Several Authors</small>
                     </div>
                 </div>
               </div>
             </div>
-            <div class="col">
+            <div class="col fade-card">
               <div class="card shadow-sm">
                 <a target="_blank" href="./path.html">
                   <img class="card-img-top active" width="100%" height="220" src="../images/Path.jpg">
@@ -596,12 +672,12 @@
                             <button  target="_blank" href="./path.html" class="btn btn-sm btn-outline-secondary">View</a>
                             <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
                         </div>
-                        <small class="text-body-secondary">9 mins</small>
+                        <small class="text-body-secondary">Several Authors</small>
                     </div>
                 </div>
               </div>
             </div>
-            <div class="col">
+            <div class="col fade-card">
               <div class="card shadow-sm">
                 <a target="_blank" href="./lifecycle.html">
                   <img class="card-img-top active" width="100%" height="220" src="../images/SBB.jpg">
@@ -613,12 +689,12 @@
                             <button  target="_blank" href="./lifecycle.html" class="btn btn-sm btn-outline-secondary">View</a>
                             <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
                         </div>
-                        <small class="text-body-secondary">9 mins</small>
+                        <small class="text-body-secondary">Several Authors</small>
                     </div>
                 </div>
               </div>
             </div>
-            <div class="col">
+            <div class="col fade-card">
               <div class="card shadow-sm">
                 <a target="_blank" href="./loading.html">
                   <img class="card-img-top active" width="100%" height="220" src="../images/Loading.jpg">
@@ -630,12 +706,12 @@
                             <button  target="_blank" href="./loading.html" class="btn btn-sm btn-outline-secondary">View</a>
                             <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
                         </div>
-                        <small class="text-body-secondary">9 mins</small>
+                        <small class="text-body-secondary">Several Authors</small>
                     </div>
                 </div>
               </div>
             </div>
-            <div class="col">
+            <div class="col fade-card">
               <div class="card shadow-sm">
                 <a target="_blank" href="./scaleApp.html">
                   <img class="card-img-top static" width="100%" height="220" src="../images/scaleApp.jpg">
@@ -648,12 +724,12 @@
                             <button  target="_blank" href="./scaleApp.html" class="btn btn-sm btn-outline-secondary">View</a>
                             <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
                         </div>
-                        <small class="text-body-secondary">9 mins</small>
+                        <small class="text-body-secondary">Several Authors</small>
                     </div>
                 </div>
               </div>
             </div>
-            <div class="col">
+            <div class="col fade-card">
               <div class="card shadow-sm">
                 <a target="_blank" href="./blockCase_compare.html">
                   <img class="card-img-top active" width="100%" height="220" src="../images/GZ_graphics.jpg">
@@ -665,12 +741,12 @@
                             <button  target="_blank" href="./blockCase_compare.html" class="btn btn-sm btn-outline-secondary">View</a>
                             <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
                         </div>
-                        <small class="text-body-secondary">9 mins</small>
+                        <small class="text-body-secondary">Several Authors</small>
                     </div>
                 </div>
               </div>
             </div>
-            <div class="col">
+            <div class="col fade-card">
               <div class="card shadow-sm">
                 <a target="_blank" href="./Ship_stability_with_blocks.html">
                   <img class="card-img-top static" width="100%" height="220" src="../images/Ship_stability_with_blocks.jpg">
@@ -683,12 +759,12 @@
                             <button  target="_blank" href="./Ship_stability_with_blocks.html" class="btn btn-sm btn-outline-secondary">View</a>
                             <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
                         </div>
-                        <small class="text-body-secondary">9 mins</small>
+                        <small class="text-body-secondary">Several Authors</small>
                     </div>
                 </div>
               </div>
             </div>
-            <div class="col">
+            <div class="col fade-card">
               <div class="card shadow-sm">
                 <a target="_blank" href="https://observablehq.com/@icarofonseca/a-prime-on-web-based-simulations.html">
                   <img class="card-img-top active" width="100%" height="220" src="../images/ecms_2019.jpg">
@@ -700,12 +776,12 @@
                             <button  target="_blank" href="https://observablehq.com/@icarofonseca/a-prime-on-web-based-simulations.html" class="btn btn-sm btn-outline-secondary">View</a>
                             <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
                         </div>
-                        <small class="text-body-secondary">9 mins</small>
+                        <small class="text-body-secondary">Several Authors</small>
                     </div>
                 </div>
               </div>
             </div>
-            <div class="col">
+            <div class="col fade-card">
               <div class="card shadow-sm">
                 <a target="_blank" href="./dt_cv/aquarium_demo.html">
                   <img class="card-img-top active" width="100%" height="220" src="../images/dt_cv.jpg">
@@ -717,12 +793,12 @@
                             <button  target="_blank" href="./dt_cv/aquarium_demo.html" class="btn btn-sm btn-outline-secondary">View</a>
                             <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
                         </div>
-                        <small class="text-body-secondary">9 mins</small>
+                        <small class="text-body-secondary">Ícaro Fonseca</small>
                     </div>
                 </div>
               </div>
             </div>
-            <div class="col">
+            <div class="col fade-card">
               <div class="card shadow-sm">
                 <a target="_blank" href="./dt_cv/basin_demo.html">
                   <img class="card-img-top active" width="100%" height="220" src="../images/dt_tpn.jpg">
@@ -734,12 +810,12 @@
                             <button  target="_blank" href="./dt_cv/basin_demo.html" class="btn btn-sm btn-outline-secondary">View</a>
                             <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
                         </div>
-                        <small class="text-body-secondary">9 mins</small>
+                        <small class="text-body-secondary">Ícaro Fonseca</small>
                     </div>
                 </div>
               </div>
             </div>
-            <div class="col">
+            <div class="col fade-card">
               <div class="card shadow-sm">
                 <a target="_blank" href="./openbridge/index.html">
                   <img class="card-img-top active" width="100%" height="220" src="../images/openbridge.jpg">
@@ -751,12 +827,12 @@
                             <button  target="_blank" href="./openbridge/index.html" class="btn btn-sm btn-outline-secondary">View</a>
                             <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
                         </div>
-                        <small class="text-body-secondary">9 mins</small>
+                        <small class="text-body-secondary">Ícaro Fonseca <br> Felipe Ferrari</small>
                     </div>
                 </div>
               </div>
             </div>
-            <div class="col">
+            <div class="col fade-card">
               <div class="card shadow-sm">
                 <a target="_blank" href="./openbridge/alesund_with_ais.html">
                   <img class="card-img-top active" width="100%" height="220" src="../images/alesund_with_ais.jpg">
@@ -768,12 +844,12 @@
                             <button  target="_blank" href="./openbridge/alesund_with_ais.html" class="btn btn-sm btn-outline-secondary">View</a>
                             <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
                         </div>
-                        <small class="text-body-secondary">9 mins</small>
+                        <small class="text-body-secondary">Ícaro Fonseca <br> Felipe Ferrari</small>
                     </div>
                 </div>
               </div>
             </div>
-            <div class="col">
+            <div class="col fade-card">
               <div class="card shadow-sm">
                 <a target="_blank" href="./openbridge/Gunnerus_Browser.html">
                   <img class="card-img-top active" width="100%" height="220" src="../images/Gunnerus_Browser.jpg">
@@ -785,12 +861,12 @@
                             <button  target="_blank" href="./openbridge/Gunnerus_Browser.html" class="btn btn-sm btn-outline-secondary">View</a>
                             <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
                         </div>
-                        <small class="text-body-secondary">9 mins</small>
+                        <small class="text-body-secondary">Felipe Ferrari</small>
                     </div>
                 </div>
               </div>
             </div>
-            <div class="col">
+            <div class="col fade-card">
               <div class="card shadow-sm">
                 <a target="_blank" href="https://ferrari212.github.io/VesselsEditor/">
                   <img class="card-img-top active" width="100%" height="220" src="../images/vessel_editor.jpg">
@@ -802,12 +878,12 @@
                             <button  target="_blank" href="https://ferrari212.github.io/VesselsEditor/" class="btn btn-sm btn-outline-secondary">View</a>
                             <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
                         </div>
-                        <small class="text-body-secondary">9 mins</small>
+                        <small class="text-body-secondary">Felipe Ferrari</small>
                     </div>
                 </div>
               </div>
             </div>
-            <div class="col">
+            <div class="col fade-card">
               <div class="card shadow-sm">
                 <a target="_blank" href="./Many_ships_performance_verification_without_environment.html">
                   <img class="card-img-top active" width="100%" height="220" src="../images/Many_ships_performance.jpg">
@@ -819,13 +895,21 @@
                             <button  target="_blank" href="./Many_ships_performance_verification_without_environment.html" class="btn btn-sm btn-outline-secondary">View</a>
                             <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
                         </div>
-                        <small class="text-body-secondary">9 mins</small>
+                        <small class="text-body-secondary">Felipe Ferrari</small>
                     </div>
                 </div>
               </div>
             </div>
             
           </div>
+
+          <div id="noResults" class="no-results">
+            <div class="card p-3 shadow-sm">
+                <p class="mb-0">No examples found. Try another search</p>
+            </div>
+          </div>
+
+
         </div>
       </div>
     
@@ -836,8 +920,7 @@
         <p class="float-end mb-1">
           <a href="#">Back to top</a>
         </p>
-        <p class="mb-1">Album example is &copy; Bootstrap, but please download and customize it for yourself!</p>
-        <p class="mb-0">New to Bootstrap? <a href="/">Visit the homepage</a> or read our <a href="{{< docsref "/getting-started/introduction" >}}">getting started guide</a>.</p>
+        <p class="mb-1">Web page based on Album template from <a target="_blank" href="https://getbootstrap.com/">&copy; Bootstrap</a></p>
       </div>
     </footer>
 </body>

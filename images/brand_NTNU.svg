@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+<svg
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   version="1.0"
+   width="800"
+   height="800"
+   id="svg2">
+  <defs
+     id="defs4" />
+  <g
+     id="layer1">
+    <rect
+       width="787.54944"
+       height="787.54938"
+       ry="197.78639"
+       x="4.5456834"
+       y="5.0329056"
+       id="rect3349"
+       style="opacity:1;fill:#0c0087;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <rect
+       width="393.32758"
+       height="387.18182"
+       ry="0"
+       x="201.65662"
+       y="205.21667"
+       id="rect3351"
+       style="opacity:1;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+    <path
+       d="M 576.79708,154.03041 A 63.63961,63.63961 0 1 1 449.51786,154.03041 A 63.63961,63.63961 0 1 1 576.79708,154.03041 z"
+       transform="matrix(2.5240024,0,0,2.5240024,-896.89027,10.03447)"
+       id="path3347"
+       style="opacity:1;fill:#0c0087;fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;stroke-linecap:round;stroke-linejoin:miter;stroke-miterlimit:4;stroke-dasharray:none;stroke-opacity:1" />
+  </g>
+</svg>
