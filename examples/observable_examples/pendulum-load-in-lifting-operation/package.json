@@ -1,0 +1,14 @@
+{
+  "name": "@icarofonseca/pendulum-load-in-lifting-operation",
+  "main": "d9622d94c6d81838@257.js",
+  "version": "257.0.0",
+  "homepage": "https://observablehq.com/@icarofonseca/pendulum-load-in-lifting-operation",
+  "author": {
+    "name": "Icaro Fonseca",
+    "url": "https://observablehq.com/@icarofonseca"
+  },
+  "type": "module",
+  "peerDependencies": {
+    "@observablehq/runtime": "4 - 5"
+  }
+}
