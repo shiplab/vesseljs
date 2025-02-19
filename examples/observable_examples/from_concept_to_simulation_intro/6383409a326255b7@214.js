@@ -39,19 +39,20 @@ md`## <span style="color:rgb(13, 18, 125)"> Chapters
 
 * Chapter 1 - [From Plane Lines to 3D Hull](./chapter-1/index.html)
 * Chapter 2 - [From GA to Blocks](./chapter-2/index.html)
-  + Section 2.1 - [Decks and Bulckheads](https://observablehq.com/@ferrari212/chapter-2-from-ga-to-blocks?collection=@ferrari212/from-hull-to-simulation)
-  + Section 2.2 - [Compartments](https://observablehq.com/@ferrari212/chapter-2-from-ga-to-blocks/2?collection=@ferrari212/from-hull-to-simulation)
-  + Section 2.3 - [Tanks](https://observablehq.com/@ferrari212/section-2-2-tanks?collection=@ferrari212/from-hull-to-simulation)
-  + Section 2.4 - [Equipments and STL elements](https://observablehq.com/@ferrari212/section-2-4-equipments-and-stl-elements?collection=@ferrari212/from-hull-to-simulation)
-  + Section 2.5 - [Importing External Elements](https://observablehq.com/@ferrari212/section-2-5-final-consideration?collection=@ferrari212/from-hull-to-simulation)
-  + Section 2.6 - [Creating a GLTF realistic model](https://observablehq.com/@ferrari212/section-2-6-inserting-gltf-and-creating-a-more-realistic-mod)
-* Chapter 3 - [Principles of System Engineering Applied to Gunnerus](https://observablehq.com/@ferrari212/chapter-3-principles-of-system-engineering-applied-to-gunn?collection=@ferrari212/from-hull-to-simulation)
-  + Section 3.1 - [GUI controller interface - Dropdown menu](https://observablehq.com/@ferrari212/section-3-1-gui-controller-interface?collection=@ferrari212/from-hull-to-simulation)
-  + Section 3.2 - [GUI controller interface - Check Box List](https://observablehq.com/@ferrari212/section-3-2-gui-controller-interface-list?collection=@ferrari212/from-hull-to-simulation)
-* Chapter 4 - [Simulations and Analysis Principles for Vessel.js](https://observablehq.com/@ferrari212/chapter-4-simulations-and-analysis-principles-for-vessel-j?collection=@ferrari212/from-hull-to-simulation)
-  + Section 4.1 - [Coordinate Reference System](https://observablehq.com/@ferrari212/section-4-1-coordinate-reference-system)
-  + Section 4.2 pt.1 - [Advance Resistance Analysis - Propeller Model](https://observablehq.com/@ferrari212/section-4-2-advance-resistance-analysis-pt-1-propeller?collection=@ferrari212/from-hull-to-simulation)
-  + Section 4.2 pt.2 - [Advance Resistance Analysis - Resistance Model](https://observablehq.com/@ferrari212/section-4-2-advance-resistance-analysis-pt-1-propeller?collection=@ferrari212/from-hull-to-simulation)
+  + Section 2.1 - [Decks and Bulckheads](./chapter-2/index.html)
+  + Section 2.2 - [Compartments](./section-2-2/index.html)
+  + Section 2.3 - [Tanks](./section-2-3/index.html)
+  + Section 2.4 - [Equipments and STL elements](./section-2-4/index.html)
+  + Section 2.5 - [Importing External Elements](./section-2-5/index.html)
+  + Section 2.6 - [Creating a GLTF realistic model](./section-2-6/index.html)
+* Chapter 3 - [Principles of System Engineering Applied to Gunnerus](./chapter-3/index.html)
+  + Section 3.1 - [GUI controller interface - Dropdown menu](./section-3-1/index.html)
+  + Section 3.2 - [GUI controller interface - Check Box List](./section-3-2/index.html)
+* Chapter 4 - [Simulations and Analysis Principles for Vessel.js](./chapter-4/index.html)
+  + Section 4.1 - [Coordinate Reference System](./section-4-1/index.html)
+  + Section 4.2 pt.1 - [Advance Resistance Analysis - Propeller Model](./section-4-2)
+  + Section 4.2 pt.2 - [Advance Resistance Analysis - Resistance Model](./section-4-2-3)
+  + Section 4.3 - [Advance Resistance Analysis - Resistance Model](./section-4-3)
 `
 )}
 
@@ -80,7 +81,7 @@ Seccond, I would like to thank my professor and coordinator [Henrique M. Gaspar]
 
 The development of this report was also very smooth thanks to the several [examples](https://observablehq.com/collection/@icarofonseca/vessel-js) and snippets provided by [Ícaro Fonseca](https://www.ntnu.no/ansatte/icaro.a.fonseca) and all previews students partners, which together with this report becomes the main guide for [Vessel.js](https://shiplab.github.io/vesseljs/) usage. The leverage potential of the applications provided by this report can be close related not only with the developer partners inside NTNU but also thanks to the huge open source community which this project relies on. 
 
-Finally I would like to acknowledge [Mario Delgado](https://observablehq.com/@mariodelgadosr) for improving [Chapter 1](https://observablehq.com/@ferrari212/chapter-2-from-ga-to-blocks?collection=@ferrari212/from-hull-to-simulation) and [Section 2.1](https://observablehq.com/@ferrari212/chapter-1?collection=@ferrari212/from-hull-to-simulation), making the report more friendly for non maritime professionals and improving the 3D hull visualization. 
+Finally I would like to acknowledge [Mario Delgado](https://observablehq.com/@mariodelgadosr) for improving [Chapter 1](./chapter-2/index.html) and [Section 2.1](../chapter-2/index.html), making the report more friendly for non maritime professionals and improving the 3D hull visualization. 
 
 `
 )}

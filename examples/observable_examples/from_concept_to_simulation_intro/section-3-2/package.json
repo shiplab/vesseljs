@@ -1,0 +1,14 @@
+{
+  "name": "@ferrari212/section-3-2-gui-controller-interface-list",
+  "main": "9ebc01faf17c138f@487.js",
+  "version": "487.0.0",
+  "homepage": "https://observablehq.com/@ferrari212/section-3-2-gui-controller-interface-list",
+  "author": {
+    "name": "Felipe Ferrari",
+    "url": "https://observablehq.com/@ferrari212"
+  },
+  "type": "module",
+  "peerDependencies": {
+    "@observablehq/runtime": "4 - 5"
+  }
+}

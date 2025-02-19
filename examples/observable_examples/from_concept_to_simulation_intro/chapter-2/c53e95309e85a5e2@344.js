@@ -255,7 +255,7 @@ function* _16(THREE,width,ship,invalidation,ship3D)
 
 function _17(md){return(
 md `
-<p style="text-align: center;font-size: 25px;"> [<< Previous](https://observablehq.com/@ferrari212/chapter-1?collection=@ferrari212/from-hull-to-simulation) || <a href="#top">Top</a> || [Next >>](https://observablehq.com/@ferrari212/chapter-2-from-ga-to-blocks/2?collection=@ferrari212/from-hull-to-simulation) </p> 
+<p style="text-align: center;font-size: 25px;"> [<< Previous](../chapter-2/index.html) || <a href="#top">Top</a> || [Next >>](../section-2-2/index.html) </p> 
 `
 )}
 

@@ -129,7 +129,7 @@ function _9(md){return(
 md `
 As this tutorial progresses, the JSON object will be extended with additional information and the intermediary modifiations will be displayed.
 
-Some of the information required in the Gunnerus object is necessary for the internal spaces on the ship; such as machinery and tanks. This will be addressed in [**Chapter 2**](https://observablehq.com/@ferrari212/chapter-2-from-ga-to-blocks?collection=@ferrari212/from-hull-to-simulation) with the discussions on inserting general arrangements.
+Some of the information required in the Gunnerus object is necessary for the internal spaces on the ship; such as machinery and tanks. This will be addressed in [**Chapter 2**](./chapter-2/index.html) with the discussions on inserting general arrangements.
 
 The *Design State* represents a configuration for the ship's operation.  Therefore, the variables in the JSON object don't model a geometric configuration. 
 
@@ -1434,7 +1434,7 @@ function* _32(THREE,width,ship,invalidation,ship3D)
 
 function _33(md){return(
 md `
-<p style="text-align: center;font-size: 25px;"> [<< Introduction](https://observablehq.com/d/6383409a326255b7?collection=@ferrari212/from-hull-to-simulation) || <a href="#top">Top</a> || [Next >>](https://observablehq.com/@ferrari212/chapter-2-from-ga-to-blocks?collection=@ferrari212/from-hull-to-simulation) </p> 
+<p style="text-align: center;font-size: 25px;"> [<< Introduction](../index) || <a href="#top">Top</a> || [Next >>](../chapter-2/index.html) </p> 
 `
 )}
 
