@@ -1,0 +1,14 @@
+{
+  "name": "@ferrari212/section-2-5-final-consideration",
+  "main": "fb258c96437db831@80.js",
+  "version": "80.0.0",
+  "homepage": "https://observablehq.com/@ferrari212/section-2-5-final-consideration",
+  "author": {
+    "name": "Felipe Ferrari",
+    "url": "https://observablehq.com/@ferrari212"
+  },
+  "type": "module",
+  "peerDependencies": {
+    "@observablehq/runtime": "4 - 5"
+  }
+}

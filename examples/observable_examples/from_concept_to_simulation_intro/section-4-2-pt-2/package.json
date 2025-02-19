@@ -1,0 +1,14 @@
+{
+  "name": "@ferrari212/section-4-2-advance-resistance-analysis-pt-2-resistance-mod",
+  "main": "327a73d5a73f182e@193.js",
+  "version": "193.0.0",
+  "homepage": "../section-4-2-pt-2/index.html",
+  "author": {
+    "name": "Felipe Ferrari",
+    "url": "https://observablehq.com/@ferrari212"
+  },
+  "type": "module",
+  "peerDependencies": {
+    "@observablehq/runtime": "4 - 5"
+  }
+}

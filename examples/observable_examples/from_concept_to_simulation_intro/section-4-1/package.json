@@ -1,0 +1,14 @@
+{
+  "name": "@ferrari212/section-4-1-coordinate-reference-system",
+  "main": "d6e39865ec0947c5@263.js",
+  "version": "263.0.0",
+  "homepage": "https://observablehq.com/@ferrari212/section-4-1-coordinate-reference-system",
+  "author": {
+    "name": "Felipe Ferrari",
+    "url": "https://observablehq.com/@ferrari212"
+  },
+  "type": "module",
+  "peerDependencies": {
+    "@observablehq/runtime": "4 - 5"
+  }
+}
