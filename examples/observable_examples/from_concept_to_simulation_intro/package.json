@@ -1,0 +1,14 @@
+{
+  "name": "@ferrari212/from-the-hull-to-simulation-a-vessel-js-tutorial",
+  "main": "6383409a326255b7@214.js",
+  "version": "214.0.0",
+  "homepage": "https://observablehq.com/@ferrari212/from-the-hull-to-simulation-a-vessel-js-tutorial",
+  "author": {
+    "name": "Felipe Ferrari",
+    "url": "https://observablehq.com/@ferrari212"
+  },
+  "type": "module",
+  "peerDependencies": {
+    "@observablehq/runtime": "4 - 5"
+  }
+}
