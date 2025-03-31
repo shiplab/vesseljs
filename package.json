@@ -40,11 +40,5 @@
     "url": "https://github.com/shiplab/vesseljs/issues"
   },
   "homepage": "https://github.com/shiplab/vesseljs#readme",
-  "files": [
-    "./build/vessel.module.js",
-    "./build/vessel.module.min.js"
-  ],
-  "dependencies": {
-    "rollup-plugin-zip": "^1.0.3"
-  }
+  "files": ["./build/vessel.module.js", "./build/vessel.module.min.js"]
 }

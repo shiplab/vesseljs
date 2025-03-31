@@ -1,28 +1,59 @@
-<!DOCTYPE html>
 <html lang="en">
-    <meta charset="utf-8">
+
+<head>
+
+	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="description" content="">
 	<meta name="author" content="">
 
-  <!-- Color Mode -->
-  <script src="./examples/libs/bootstrap.bundle.min.js"></script>
-  <script src="./examples/libs/color-modes.js"></script>
+	<title>Vessel.js</title>
 
-  <!-- Bootstrap Core CSS -->
-	<link href="./examples/libs/bootstrap.min.css" rel="stylesheet">
+	<!-- Bootstrap Core CSS -->
+	<link href="examples/libs/bootstrap.min.css" rel="stylesheet">
 
-    <!-- jQuery Version 1.11.1 -->
-	<script src="./examples/libs/jquery.js"></script>
+	<!-- jQuery Version 1.11.1 -->
+	<script src="examples/libs/jquery.js"></script>
 
 	<!-- Bootstrap Core JavaScript -->
-	<!-- <script src="./examples/libs/bootstrap.min.js"></script> -->
+	<script src="examples/libs/bootstrap.min.js"></script>
 
-  <!-- Custom CSS -->
-  <style media="screen">
-    
-    pre,
+	<!-- Navigation -->
+	<nav class="navbar navbar-inverse">
+		<div class="container">
+			<!-- Add  the <div>[Something]</div> structure for each header in the navbar-->
+			<div class="navbar-header">
+				<a class="navbar-brand" href="https://github.com/shiplab/vesseljs/wiki/Examples">Examples</a>
+				<a class="navbar-brand" href="https://github.com/shiplab/vesseljs/wiki">Documentation</a>
+				<a class="navbar-brand" href="https://github.com/shiplab/vesseljs">Source</a>
+				<a class="navbar-brand" href="https://github.com/shiplab/vesseljs/manual/tutorial_one.html">Manual</a>
+			</div>
+			<!-- This is for the right part of the navbar. Reserved for Shiplab logo-->
+			<div class="nav navbar-nav navbar-right">
+				<div class="navbar-header">
+					<a class="navbar-brand" href="http://www.shiplab.hials.org/"><img src="images/barquinho.png"
+							alt="Shiplab logo" style="height:150%">
+					</a>
+				</div>
+			</div>
+		</div>
+	</nav>
+	<style media="screen">
+		html {
+			font: 16px/1.5em "Helvetica Neue", Helvetica, sans-serif;
+			min-width: 1040px;
+			margin: 0;
+			-ms-text-size-adjust: 100%;
+			-webkit-text-size-adjust: 100%;
+			text-indent: 20px;
+		}
+
+		h1 {
+			margin-block-start: 1em;
+		}
+
+		pre,
 		code {
 			font-family: "Menlo", monospace;
 			-webkit-text-size-adjust: 100%;
@@ -32,46 +63,16 @@
 			line-height: 1em;
 		}
 
-    pre {
+		pre {
 			border-left: solid 2px #ccc;
 			padding-left: 18px;
 			margin: 2em 0 2em -20px;
 		}
 
-    /* Scroll top button */
-    #scrollToTopBtn {
-        position: fixed;
-        bottom: 40px;
-        right: 40px;
-        display: none;
-    }
-
-
-    /* Search bar */
-    .fade-card {
-        transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
-        opacity: 1;
-        visibility: visible;
-        display: block; 
-    }
-
-    .hidden {
-        opacity: 0;
-        visibility: hidden;
-    }
-
-    .no-results {
-        display: none; /* Initially hidden */
-        text-align: center;
-        padding: 20px;
-        font-size: 1.2rem;
-        color: #777;
-    }
-
-    .html .string,
-    .javascript .string,
-    .javascript .regexp {
-          color: #756bb1;
+		.html .string,
+		.javascript .string,
+		.javascript .regexp {
+			color: #756bb1;
 		}
 
 		.html .tag,
@@ -80,19 +81,23 @@
 			color: #3182bd;
 		}
 
-    .html .doctype,
+		.comment {
+			color: #636363;
+		}
+
+		.html .doctype,
 		.javascript .number {
 			color: #31a354;
 		}
 
-    .html .attr,
+		.html .attr,
 		.css .attr,
 		.javascript .class,
 		.javascript .special {
 			color: #e6550d;
 		}
 
-    .static {
+		.static {
 			position: absolute;
 		}
 
@@ -100,877 +105,361 @@
 			opacity: 0;
 		}
 
-  </style>
-    
-  <header data-bs-theme="dark">
-    <div class="collapse text-bg-dark" id="navbarHeader">
-      <div class="container">
-        <div class="row">
-          <div class="col-sm-8 col-md-7 py-4">
-            <h4>About</h4>
-            <p class="text-body-secondary">Add some information about the album below, the author, or any other background context. Make it a few sentences long so folks can pick up some informative tidbits. Then, link them off to some social networking sites or contact information.</p>
-          </div>
-          <div class="col-sm-4 offset-md-1 py-4">
-            <h4>Resources</h4>
-            <ul class="list-unstyled">
-              <!-- <li><a href="#" class="text-white">Follow on Twitter</a></li>
-              <li><a href="#" class="text-white">Like on Facebook</a></li> -->
-              <li><a href="http://www.shiplab.hials.org/" target="_blank" class="text-white">Shiplab</a></li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="navbar navbar-dark bg-dark shadow-sm">
-      <div class="container">
-        <a href="#" class="navbar-brand d-flex align-items-center">
-          <image src="../images/barquinho.png" height="40px"></image>
-        </a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarHeader" aria-controls="navbarHeader" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-      </div>
-    </div>
-    <script defer>
-      function filterCards() {
-          let input = document.getElementById("searchInput").value.toLowerCase();
-          let cards = document.querySelectorAll(".col");
-          let noResults = document.getElementById("noResults");
+		tr:nth-child(even) {
+			background-color: #f2f2f2;
+		}
 
-          let anyVisible = false;
+		td {
+			text-align: center;
+			border: 1px solid #808080;
+			padding-bottom: 20px;
+		}
+	</style>
 
-          cards.forEach(card => {
-              let text = card.innerText.toLowerCase();
+	<link rel="icon" href="https://raw.githubusercontent.com/shiplab/vesseljs/dev/favicon.ico" type="image/x-icon">
+</head>
+<div class="container">
+	<div class="row">
+		<div class="col-md-6 col-md-offset-3 text-center">
+			<!--         <svg width="96" height="91" style="position:relative;top:22px;">
+          <defs>
+            <linearGradient id="MyGradient">
+              <stop offset="5%" stop-color="blue" />
+              <stop offset="95%" stop-color="black" />
+            </linearGradient>
+          </defs>
 
-              if (text.includes(input)) {
-                  anyVisible = true;
+          <rect fill="url(#MyGradient)" x="0" y="0" width="100" height="100" />
+        </svg> -->
+			<img height="150" src="images/LogoVesseljs.jpg">
+		</div>
+	</div>
+</div>
+<br>
+<canvas id="example-deep"></canvas>
 
-                  // Make it visible instantly
-                  card.style.display = "block";
-                  setTimeout(() => {
-                      card.classList.remove("hidden");
-                  }, 10); // Tiny delay to ensure transition is applied
-              } else {
-                  card.classList.add("hidden");
-                  setTimeout(() => {
-                      if (card.classList.contains("hidden")) {
-                          card.style.display = "none"; // Hide after fade-out
-                      }
-                  }, 500); // Matches the transition duration
-              }
-          });
+<div class="container">
 
-          // Show "No Results" message if no cards are visible
-          noResults.style.display = anyVisible ? "none" : "block";
-      }
+	<div class="row">
+		<div class="col-md-10 col-md-offset-1">
+			<h1>Introduction</h1>
+			<p><b>Vessel.js</b> is a JavaScript library for conceptual ship design with an
+				object-oriented paradigm. Vessel.js represents the vessel as an object, which
+				is used to simulate different functionalities and behaviors. Currently, the
+				library includes methods for hydrostatic, dynamics and stability calculations.</p>
 
-      document.addEventListener("DOMContentLoaded", function() {
-          let scrollToTopBtn = document.getElementById("scrollToTopBtn");
+			<p>The library is developed by <a href="http://www.shiplab.hials.org/">Ship Design and Operation Lab</a> at
+				Norwegian
+				University of Science and Technology (NTNU) in Ålesund.</p>
 
-          window.addEventListener("scroll", function() {
-              if (window.scrollY > 100) {
-                  scrollToTopBtn.style.display = "block";
-              } else {
-                  scrollToTopBtn.style.display = "none";
-              }
-          });
+			<p>Dowload the latest version here:</p>
+			<ul>
+				<li>
+					<a href="https://github.com/shiplab/vesseljs/archive/master.zip">vesseljs.zip</a>
+				</li>
+			</ul>
 
-          scrollToTopBtn.addEventListener("click", function() {
-              window.scrollTo({ top: 0, behavior: "smooth" });
-          });
-      });
-  </script>
-  </header>
-    
-  <main>
+			<p>Import Vessel.js in html by using the following script:</p>
+			<pre><code class="html hljs xml"><span class="tag">import <span class="attr">*</span> as <span class="attr">Vessel</span> from <span class="string">"../build/vessel.module.js"</span></span></code></pre>
 
-    
-    
-      <section class="py-5 text-center container">
-        <div class="row py-lg-5">
-          <div class="col-lg-6 col-md-8 mx-auto">
-            <h1 class="fw-light">Ship Design and Operation Lab @ NTNU</h1>
-            <p class="lead text-body-secondary">Portfolio page for the laboratory work</p>
-            <p class="lead text-body-secondary">Last update: 05 Feb 2025.</p>
-            <p>
-              <a target="_blank" href="https://www.ntnu.edu/ihb/ship-lab" class="btn btn-light mx-2">
-                <img  src="../images/brand_NTNU.svg" alt="NTNU Logo" height="25px"> NTNU
-              </a>
-              <a target="_blank" href="https://github.com/shiplab/portfolio" class="btn btn-secondary mx-2">
-                <img src="../images/mark-github.svg" alt="Git Hub Logo" height="25px">
-                <img src="../images/github-logo-svg.svg" alt="Git Hub Logo" height="20px">
-                
-              </a>
-            </p>
-          </div>
-        </div>
-      </section>
-    
-      <div class="album py-5 bg-body-tertiary">
-        <div class="container">
+			<h1>Contributing</h1>
+			<p>When contributing, fork the repository and send pull requests with your
+				commits. If your modifications are only to files related to examples
+				and you have pull request authorization, you can approve them by
+				yourself. If not, then wait for review and approval by the development
+				team.</p>
+			<p>You are also welcome to create <a href="https://github.com/shiplab/vesseljs/issues">
+					issues</a> reporting bugs or suggesting
+				improvements and features for development.</p>
 
-          <h1>Introduction</h1>
-          <p><b>Vessel.js</b> is a JavaScript library for conceptual ship design with an
-            object-oriented paradigm. Vessel.js represents the vessel as an object, which
-            is used to simulate different functionalities and behaviors. Currently, the
-            library includes methods for hydrostatic, dynamics and stability calculations.</p>
+			<h1>Examples</h1>
+			<div style="overflow-x:auto;">
+				<table>
+					<tr valign="top">
+						<td width="25%">
+							<h4>Ship in regular ocean</h4><a href="examples/Ship_in_regular_ocean.html"><img
+									class="static" height="133" width="183.2"
+									src="images/Ship_in_Ocean_heave_only.jpg"><img class="active" height="133"
+									width="183.2" src="images/Ship_in_Ocean_heave_only.gif"></a>
+						</td>
+						<td width="25%">
+							<h4>Ships in regular ocean</h4><a href="examples/Many_ships_in_regular_ocean.html"><img
+									height="133" width="183.2" src="images/Ships_in_regular_ocean.jpg"></a>
+						</td>
+						<td width="25%">
+							<h4>Barge motion with equations</h4><a href="examples/Ship_in_Ocean_dynamical.html"><img
+									class="static" height="133" width="183.2" src="images/Ship_in_Dynamical.jpg"><img
+									class="active" height="133" width="183.2" src="images/Ship_in_Dynamical.gif"></a>
+						</td>
+						<td width="25%">
+							<h4>Barge Motion with WAMIT</h4><a href="examples/Radiation_WAMIT.html"><img height="133"
+									width="183.2" src="images/Radiation_WAMIT.jpg"></a>
+						</td>
+					</tr>
+					<tr valign="top">
+						<td width="25%">
+							<h4>Ship with mooring</h4><a href="examples/Ship_in_Ocean_dynamical_MooringWave.html"><img
+									class="static" height="133" width="183.2" src="images/MooringLine.jpg"><img
+									class="active" height="133" width="183.2" src="images/MooringLine.gif"></a>
+						</td>
+						<td width="25%">
+							<h4>Ship with mooring (parametric)</h4><a
+								href="examples/Ship_in_Ocean_dynamical_MooringWave_Parametric.html"><img class="static"
+									height="133" width="183.2" src="images/MooringLineParametric.jpg"><img
+									class="active" height="133" width="183.2" src="images/MooringLine.gif"></a>
+						</td>
+						<td width="25%">
+							<h4>Side by side 3</h4><a href="examples/Side_by_side_operation_complex_case.html"><img
+									height="133" width="183.2" src="images/Side_by_side_operation_complex_case.jpg"></a>
+						</td>
+						<td width="25%">
+							<h4>Side by side 2</h4><a
+								href="examples/Side_by_side_operation_different_loading_conditons.html"><img
+									height="133" width="183.2"
+									src="images/Side_by_side_operation_different_loading_conditons.jpg"></a>
+						</td>
 
-          <p>The library is developed by <a target="_blank" href="http://www.shiplab.hials.org/">Ship Design and Operation Lab</a> at
-            Norwegian
-            University of Science and Technology (NTNU) in Ålesund.</p>
+					</tr>
+					<tr valign="top">
+						<td width="25%">
+							<h4>Side by side 1</h4><a href="examples/Explore_file_side_to_side.html"><img height="133"
+									width="183.2" src="images/Explore_file_side_to_side.jpg"></a>
+						</td>
+						<td width="25%">
+							<h4>Subsea</h4><a href="examples/Subsea.html"><img height="133" width="183.2"
+									src="images/Subsea.jpg"></a>
+						</td>
+						<td width="25%">
+							<h4>Simple Multibody Example</h4><a
+								href="examples/Simple_example_with_explore_file.html"><img height="133" width="183.2"
+									src="images/Simple_example_with_explore_file.jpg"></a>
+						</td>
+						<td width="25%">
+							<h4>Pendulum load</h4><a
+								href="https://observablehq.com/@icarofonseca/pendulum-load-in-lifting-operation"><img
+									height="133" width="183.2" src="images/lifting.jpg"></a>
+						</td>
 
-          <p>Dowload the latest version here:</p>
-          <ul>
-            <li>
-              <a href="./build/vessel.zip">vesseljs.zip</a>
-            </li>
-          </ul>
+					</tr>
+					<tr valign="top">
+						<td width="25%">
+							<h4>Epoch Analysis</h4><a href="examples/epoch.html"><img height="133" width="183.2"
+									src="images/epoch.jpg"></a>
+						</td>
+						<td width="25%">
+							<h4>Pendulum in ocean</h4><a href="examples/Ship_with_aframe_in_regular_ocean.html"><img
+									class="static" height="133" width="183.2"
+									src="images/Ship_with_aframe_in_regular_ocean.jpg"><img class="active" height="133"
+									width="183.2" src="images/Ship_with_aframe_in_regular_ocean.gif"></a>
+						</td>
+						<td width="25%">
+							<h4>Ship in still water</h4><a href="examples/Ship_in_Ocean_still_water.html"><img
+									height="133" width="183.2" src="images/Ship_in_Ocean_still_water.jpg"></a>
+						</td>
+						<td width="25%">
+							<h4>Ships in still water</h4><a href="examples/Many_ships_in_still_water.html"><img
+									height="133" width="183.2" src="images/Many_ships_in_still_water.jpg"></a>
+						</td>
+					</tr>
+					<tr valign="top">
+						<td width="25%">
+							<h4>Ship visualization</h4><a href="examples/Ship3D_with_pretty_JSON.html"><img
+									class="static" height="133" width="183.2" src="images/orbit3d.jpg"><img
+									class="active" height="133" width="183.2" src="images/orbit3d.gif"></a>
+						</td>
+						<td width="25%">
+							<h4>Gunnerus</h4><a href="examples/Gunnerus_Complete_Example.html"><img height="133"
+									width="183.2" src="images/Gunnerus.jpg"></a>
+						</td>
+						<td width="25%">
+							<h4>Hull hydrostatics</h4><a href="examples/Hull_hydrostatics.html"><img height="133"
+									width="183.2" src="images/HullHydrostatics.jpg"></a>
+						</td>
+						<td width="25%">
+							<h4>General Arrangement</h4><a href="examples/Ship3D_GA.html"><img class="static"
+									height="133" width="183.2" src="images/Ship3D_ga.jpg"><img class="active"
+									height="133" width="183.2" src="images/Ship3D_ga.gif"></a>
+						</td>
+					</tr>
+					<tr valign="top">
+						<td width="25%">
+							<h4>Manoeuvring Model</h4><a href="examples/manoeuvring.html"><img height="133"
+									width="183.2" src="images/manoeuvring.jpg"></a>
+						</td>
+						<td width="25%">
+							<h4>ADAF Project</h4><a href="examples/manoeuvring_UiTModel.html"><img height="133"
+									width="183.2" src="images/manoeuvring_UiTModel.jpg"></a>
+						</td>
+						<td width="25%">
+							<h4>Trondheim Scene</h4><a href="examples/trondheim.html"><img height="133" width="183.2"
+									src="images/trondheim.jpg"></a>
+						</td>
+						<td width="25%">
+							<h4>Draco Compressed Model</h4><a href="examples/trondheim_compressed.html"><img
+									height="133" width="183.2" src="images/draco3d-vert.svg">
+						</td>
+					</tr>
+					<tr valign="top">
+						<td width="25%">
+							<h4>Ballasting</h4><a href="examples/ballasting.html"><img height="133" width="183.2"
+									src="images/Ballast.jpg"></a>
+						</td>
+						<td width="25%">
+							<h4>Path</h4><a href="examples/path.html"><img height="133" width="183.2"
+									src="images/Path.jpg"></a>
+						</td>
+						<td width="25%">
+							<h4>Lifecycle</h4><a href="examples/lifecycle.html"><img height="133" width="183.2"
+									src="images/SBB.jpg"></a>
+						</td>
+						<td width="25%">
+							<h4>Loading</h4><a href="examples/loading.html"><img height="133" width="183.2"
+									src="images/Loading.jpg"></a>
+						</td>
+					</tr>
+					<tr valign="top">
+						<td width="25%">
+							<h4>Scale Ship</h4><a href="examples/scaleApp.html"><img class="static" height="133"
+									width="183.2" src="images/scaleApp.jpg"><img class="active" height="133"
+									width="183.2" src="images/scaleApp.gif"></a>
+						</td>
+						<td width="25%">
+							<h4>Validation of ship stability</h4><a href="examples/blockCase_compare.html"><img
+									height="133" width="183.2" src="images/GZ_graphics.jpg"></a>
+						</td>
+						<td width="25%">
+							<h4>Stability with Blocks</h4><a href="examples/Ship_stability_with_blocks.html"><img
+									class="static" height="133" width="183.2"
+									src="images/Ship_stability_with_blocks.jpg"><img class="active" height="133"
+									width="183.2" src="images/Ship_stability_with_blocks.gif"></a>
+						</td>
+						<td width="25%">
+							<h4>ECMS 2019</h4><a
+								href="https://observablehq.com/@icarofonseca/a-prime-on-web-based-simulations"><img
+									height="133" width="183.2" src="images/ecms_2019.jpg"></a>
+						</td>
+					</tr>
+					<tr valign="top">
+						<td width="25%">
+							<h4>Digital twin: aquarium</h4><a href="../dt_cv/aquarium_demo"><img height="133"
+									width="183.2" src="images/dt_cv.jpg"></a>
+						</td>
+						<td width="25%">
+							<h4>Digital twin: basin</h4><a href="../dt_cv/basin_demo.html"><img height="133"
+									width="183.2" src="images/dt_tpn.jpg"></a>
+						</td>
+						<td width="25%">
+							<h4>OpenBridge</h4><a href="../openbridge/index.html"><img height="133" width="183.2"
+									src="images/openbridge.jpg"></a>
+						</td>
+						<td width="25%">
+							<h4>Ålesund with AIS</h4><a href="../openbridge/alesund_with_ais.html"><img height="133"
+									width="183.2" src="images/alesund_with_ais.jpg"></a>
+						</td>
+					</tr>
+					<tr valign="top">
+						<td width="25%">
+							<h4>Dashboard</h4><a href="examples/Gunnerus_Browser.html"><img height="133" width="183.2"
+									src="images/Gunnerus_Browser.jpg"></a>
+						</td>
+						<td width="25%">
+							<h4>Editor</h4><a href="https://ferrari212.github.io/VesselsEditor/" target=”_blank”><img height="133" width="183.2"
+									src="images/vessel_editor.jpg"></a>
+						</td>
+						<td width="25%">
+							<h4>Performance Verification</h4><a href="examples/Many_ships_performance_verification_without_environment.html"><img height="133" width="183.2"
+									src="images/Many_ships_performance.jpg"></a>
+						</td>
+					</tr>
+				</table>
+			</div>
 
-          <p>Import Vessel.js in html by using the following script:</p>
-          <pre><code class="html hljs xml"><span class="tag">import <span class="attr">*</span> as <span class="attr">Vessel</span> from <span class="string">"../build/vessel.module.js"</span></span></code></pre>
+			<h1>Tutorials</h1>
 
-          <h1>Contributing</h1>
-          <p>When contributing, fork the repository and send pull requests with your
-            commits. If your modifications are only to files related to examples
-            and you have pull request authorization, you can approve them by
-            yourself. If not, then wait for review and approval by the development
-            team.</p>
-          <p>You are also welcome to create <a target="_blank" href="https://github.com/shiplab/vesseljs/issues">
-              issues</a> reporting bugs or suggesting
-            improvements and features for development.</p>
-          
-          <br>
+			<p>Vessel.js tutorials are available on the <a
+					href="https://observablehq.com/collection/@icarofonseca/vessel-js" target="_blank">ObservableHQ
+					notebook collection</a>. Don't know where to start? Try the <a
+					href="https://observablehq.com/@icarofonseca/vessel-js-learn-guide?collection=@icarofonseca/vessel-js"
+					target="_blank">learning guide</a>.</p>
 
-          <h1>Examples</h1>
-          
-          <!-- Search Bar -->
-          <div class="container mb-3">
-          <div class="row justify-content-right">
-              <div class="col-3">
-                <input type="text" id="searchInput" class="form-control" placeholder="Search Example..." onkeyup="filterCards()">
-              </div>
-            </div>
-          </div>
+			<table>
+				<iframe width="50%" height="600" frameborder="0"
+					src="https://observablehq.com/embed/@ferrari212/from-the-hull-to-simulation-a-vessel-js-tutorial?cells=e1%2Ce2%2Ce3"></iframe>
+				<iframe width="50%" height="600" frameborder="0"
+					src="https://observablehq.com/embed/@icarofonseca/pendulum-load-in-lifting-operation?cells=e1%2Ce2"></iframe>
+			</table>
+		</div>
+	</div>
 
-          
-          <div class="row row-cols-1 row-cols-sm-2 row-cols-sm-3 row-cols-md-4 g-4">
-            <div class="col fade-card">
-              <div class="card shadow-sm">
-                <a target="_blank" href="./Ship_in_regular_ocean.html">
-                  <img class="card-img-top static" width="100%" height="220" src="../images/Ship_in_Ocean_heave_only.jpg">
-                  <img class="card-img-top active" width="100%" height="220" src="../images/Ship_in_Ocean_heave_only.gif">
-                </a>
-                <div class="card-body">
-                    <p class="card-text">Ship in regular ocean</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="btn-group">
-                            <button  target="_blank" href="./Ship_in_regular_ocean.html" class="btn btn-sm btn-outline-secondary">View</a>
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
-                        </div>
-                        <small class="text-body-secondary">Ícaro Fonseca</small>
-                    </div>
-                </div>
-              </div>
-            </div>
-            <div class="col fade-card">
-              <div class="card shadow-sm">
-                <a target="_blank" href="./Many_ships_in_regular_ocean.html">
-                  <img class="card-img-top active" width="100%" height="220" src="../images/Ships_in_regular_ocean.jpg">
-                </a>
-                <div class="card-body">
-                    <p class="card-text">Ships in regular ocean</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="btn-group">
-                            <button  target="_blank" href="./Many_ships_in_regular_ocean.html" class="btn btn-sm btn-outline-secondary">View</a>
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
-                        </div>
-                        <small class="text-body-secondary">Ícaro Fonseca</small>
-                    </div>
-                </div>
-              </div>
-            </div>
-            <div class="col fade-card">
-              <div class="card shadow-sm">
-                <a target="_blank" href="./Ship_in_Ocean_dynamical.html">
-                  <img class="card-img-top static" width="100%" height="220" src="../images/Ship_in_Dynamical.jpg">
-                  <img class="card-img-top active" width="100%" height="220" src="../images/Ship_in_Dynamical.gif">
-                </a>
-                <div class="card-body">
-                    <p class="card-text">Barge motion with equations</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="btn-group">
-                            <button  target="_blank" href="./Ship_in_regular_ocean.html" class="btn btn-sm btn-outline-secondary">View</a>
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
-                        </div>
-                        <small class="text-body-secondary">Felipe Ferrari</small>
-                    </div>
-                </div>
-              </div>
-            </div>
-            <div class="col fade-card">
-              <div class="card shadow-sm">
-                <a target="_blank" href="./Radiation_WAMIT.html">
-                  <img class="card-img-top active" width="100%" height="220" src="../images/Radiation_WAMIT.jpg">
-                </a>
-                <div class="card-body">
-                    <p class="card-text">Barge Motion with WAMIT</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="btn-group">
-                            <button  target="_blank" href="./Radiation_WAMIT.html" class="btn btn-sm btn-outline-secondary">View</a>
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
-                        </div>
-                        <small class="text-body-secondary">Felipe Ferrari, <br> Daniel Prata</small>
-                    </div>
-                </div>
-              </div>
-            </div>
-            <div class="col fade-card">
-              <div class="card shadow-sm">
-                <a target="_blank" href="./Ship_in_Ocean_dynamical_MooringWave.html">
-                  <img class="card-img-top static" width="100%" height="220" src="../images/MooringLine.jpg">
-                  <img class="card-img-top active" width="100%" height="220" src="../images/MooringLine.gif">
-                </a>
-                <div class="card-body">
-                    <p class="card-text">Ship with mooring</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="btn-group">
-                            <button  target="_blank" href="./Ship_in_Ocean_dynamical_MooringWave.html" class="btn btn-sm btn-outline-secondary">View</a>
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
-                        </div>
-                        <small class="text-body-secondary">Felipe Ferrari, <br> Diogo Kramel</small>
-                    </div>
-                </div>
-              </div>
-            </div>
-            <div class="col fade-card">
-              <div class="card shadow-sm">
-                <a target="_blank" href="./Ship_in_Ocean_dynamical_MooringWave_Parametric.html">
-                  <img class="card-img-top static" width="100%" height="220" src="../images/MooringLineParametric.jpg">
-                  <img class="card-img-top active" width="100%" height="220" src="../images/MooringLine.gif">
-                </a>
-                <div class="card-body">
-                    <p class="card-text">Ship with mooring (parametric)</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="btn-group">
-                            <button  target="_blank" href="./Ship_in_Ocean_dynamical_MooringWave_Parametric.html" class="btn btn-sm btn-outline-secondary">View</a>
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
-                        </div>
-                        <small class="text-body-secondary">Felipe Ferrari</small>
-                    </div>
-                </div>
-              </div>
-            </div>
-            <div class="col fade-card">
-              <div class="card shadow-sm">
-                <a target="_blank" href="./Side_by_side_operation_complex_case.html">
-                  <img class="card-img-top active" width="100%" height="220" src="../images/Side_by_side_operation_complex_case.jpg">
-                </a>
-                <div class="card-body">
-                    <p class="card-text">Side by side 3</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="btn-group">
-                            <button  target="_blank" href="./Side_by_side_operation_complex_case.html" class="btn btn-sm btn-outline-secondary">View</a>
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
-                        </div>
-                        <small class="text-body-secondary">Daniel Prata, <br> Diogo Kramel</small>
-                    </div>
-                </div>
-              </div>
-            </div>
-            <div class="col fade-card">
-              <div class="card shadow-sm">
-                <a target="_blank" href="./Side_by_side_operation_different_loading_conditons.html">
-                  <img class="card-img-top active" width="100%" height="220" src="../images/Side_by_side_operation_different_loading_conditons.jpg">
-                </a>
-                <div class="card-body">
-                    <p class="card-text">Side by side 2</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="btn-group">
-                            <button  target="_blank" href="./Side_by_side_operation_different_loading_conditons.html" class="btn btn-sm btn-outline-secondary">View</a>
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
-                        </div>
-                        <small class="text-body-secondary">Daniel Prata, <br> Diogo Kramel</small>
-                    </div>
-                </div>
-              </div>
-            </div>
-            <div class="col fade-card">
-              <div class="card shadow-sm">
-                <a target="_blank" href="./Explore_file_side_to_side.html">
-                  <img class="card-img-top active" width="100%" height="220" src="../images/Explore_file_side_to_side.jpg">
-                </a>
-                <div class="card-body">
-                    <p class="card-text">Side by side 1</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="btn-group">
-                            <button  target="_blank" href="./Explore_file_side_to_side.html" class="btn btn-sm btn-outline-secondary">View</a>
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
-                        </div>
-                        <small class="text-body-secondary">Daniel Prata, <br> Diogo Kramel</small>
-                    </div>
-                </div>
-              </div>
-            </div>
-            <div class="col fade-card">
-              <div class="card shadow-sm">
-                <a target="_blank" href="./Subsea.html">
-                  <img class="card-img-top active" width="100%" height="220" src="../images/Subsea.jpg">
-                </a>
-                <div class="card-body">
-                    <p class="card-text">Subsea</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="btn-group">
-                            <button  target="_blank" href="./Subsea.html" class="btn btn-sm btn-outline-secondary">View</a>
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
-                        </div>
-                        <small class="text-body-secondary">Daniel Prata, <br> Diogo Kramel</small>
-                    </div>
-                </div>
-              </div>
-            </div>
-            <div class="col fade-card">
-              <div class="card shadow-sm">
-                <a target="_blank" href="./Simple_example_with_explore_file.html">
-                  <img class="card-img-top active" width="100%" height="220" src="../images/Simple_example_with_explore_file.jpg">
-                </a>
-                <div class="card-body">
-                    <p class="card-text">Simple Multibody Example</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="btn-group">
-                            <button  target="_blank" href="./Simple_example_with_explore_file.html" class="btn btn-sm btn-outline-secondary">View</a>
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
-                        </div>
-                        <small class="text-body-secondary">Daniel Prata, <br> Diogo Kramel</small>
-                    </div>
-                </div>
-              </div>
-            </div>
-            <div class="col fade-card">
-              <div class="card shadow-sm">
-                <a target="_blank" href="./observable_examples/pendulum-load-in-lifting-operation/index.html">
-                  <img class="card-img-top active" width="100%" height="220" src="../images/lifting.jpg">
-                </a>
-                <div class="card-body">
-                    <p class="card-text">Pendulum load</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="btn-group">
-                            <button  target="_blank" href="./observable_examples/pendulum-load-in-lifting-operation/index.html" class="btn btn-sm btn-outline-secondary">View</a>
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
-                        </div>
-                        <small class="text-body-secondary">Ícaro Fonseca</small>
-                    </div>
-                </div>
-              </div>
-            </div>
-            <div class="col fade-card">
-              <div class="card shadow-sm">
-                <a target="_blank" href="./epoch.html">
-                  <img class="card-img-top active" width="100%" height="220" src="../images/epoch.jpg">
-                </a>
-                <div class="card-body">
-                    <p class="card-text">Epoch Analysis</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="btn-group">
-                            <button  target="_blank" href="./epoch.html" class="btn btn-sm btn-outline-secondary">View</a>
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
-                        </div>
-                        <small class="text-body-secondary">Felipe Ferrari, <br> Daniel Prata</small>
-                    </div>
-                </div>
-              </div>
-            </div>
-            <div class="col fade-card">
-              <div class="card shadow-sm">
-                <a target="_blank" href="./Ship_with_aframe_in_regular_ocean.html">
-                  <img class="card-img-top static" width="100%" height="220" src="../images/Ship_with_aframe_in_regular_ocean.jpg">
-                  <img class="card-img-top active" width="100%" height="220" src="../images/Ship_with_aframe_in_regular_ocean.gif">
-                </a>
-                <div class="card-body">
-                    <p class="card-text">Pendulum in Ocean</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="btn-group">
-                            <button  target="_blank" href="./Ship_with_aframe_in_regular_ocean.html" class="btn btn-sm btn-outline-secondary">View</a>
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
-                        </div>
-                        <small class="text-body-secondary">Ícaro Fonseca</small>
-                    </div>
-                </div>
-              </div>
-            </div>
-            <div class="col fade-card">
-              <div class="card shadow-sm">
-                <a target="_blank" href="./Ship_in_Ocean_still_water.html">
-                  <img class="card-img-top active" width="100%" height="220" src="../images/Ship_in_Ocean_still_water.jpg">
-                </a>
-                <div class="card-body">
-                    <p class="card-text">Ship in still water</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="btn-group">
-                            <button  target="_blank" href="./Ship_in_Ocean_still_water.html" class="btn btn-sm btn-outline-secondary">View</a>
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
-                        </div>
-                        <small class="text-body-secondary">Felipe Ferrari</small>
-                    </div>
-                </div>
-              </div>
-            </div>
-            <div class="col fade-card">
-              <div class="card shadow-sm">
-                <a target="_blank" href="./Many_ships_in_still_water.html">
-                  <img class="card-img-top active" width="100%" height="220" src="../images/Many_ships_in_still_water.jpg">
-                </a>
-                <div class="card-body">
-                    <p class="card-text">Ships in still water</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="btn-group">
-                            <button  target="_blank" href="./Many_ships_in_still_water.html" class="btn btn-sm btn-outline-secondary">View</a>
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
-                        </div>
-                        <small class="text-body-secondary">Ícaro Fonseca</small>
-                    </div>
-                </div>
-              </div>
-            </div>
-            <div class="col fade-card">
-              <div class="card shadow-sm">
-                <a target="_blank" href="./Ship3D_with_pretty_JSON.html">
-                  <img class="card-img-top static" width="100%" height="220" src="../images/orbit3d.jpg">
-                  <img class="card-img-top active" width="100%" height="220" src="../images/orbit3d.gif">
-                </a>
-                <div class="card-body">
-                    <p class="card-text">Ship visualization</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="btn-group">
-                            <button  target="_blank" href="./Ship3D_with_pretty_JSON.html" class="btn btn-sm btn-outline-secondary">View</a>
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
-                        </div>
-                        <small class="text-body-secondary">Elias Hasle</small>
-                    </div>
-                </div>
-              </div>
-            </div>
-            <div class="col fade-card">
-              <div class="card shadow-sm">
-                <a target="_blank" href="./Gunnerus_Complete_Example.html">
-                  <img class="card-img-top active" width="100%" height="220" src="../images/Gunnerus.jpg">
-                </a>
-                <div class="card-body">
-                    <p class="card-text">Gunnerus</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="btn-group">
-                            <button  target="_blank" href="./Gunnerus_Complete_Example.html" class="btn btn-sm btn-outline-secondary">View</a>
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
-                        </div>
-                        <small class="text-body-secondary">Felipe Ferrari</small>
-                    </div>
-                </div>
-              </div>
-            </div>
-            <div class="col fade-card">
-              <div class="card shadow-sm">
-                <a target="_blank" href="./Hull_hydrostatics.html">
-                  <img class="card-img-top active" width="100%" height="220" src="../images/HullHydrostatics.jpg">
-                </a>
-                <div class="card-body">
-                    <p class="card-text">Hull hydrostatics</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="btn-group">
-                            <button  target="_blank" href="./Hull_hydrostatics.html" class="btn btn-sm btn-outline-secondary">View</a>
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
-                        </div>
-                        <small class="text-body-secondary">Ícaro Fonseca</small>
-                    </div>
-                </div>
-              </div>
-            </div>
-            <div class="col fade-card">
-              <div class="card shadow-sm">
-                <a target="_blank" href="./Ship3D_GA.html">
-                  <img class="card-img-top static" width="100%" height="220" src="../images/Ship3D_ga.jpg">
-                  <img class="card-img-top active" width="100%" height="220" src="../images/Ship3D_ga.gif">
-                </a>
-                <div class="card-body">
-                    <p class="card-text">General Arrangement</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="btn-group">
-                            <button  target="_blank" href="./Ship3D_GA.html" class="btn btn-sm btn-outline-secondary">View</a>
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
-                        </div>
-                        <small class="text-body-secondary">Several Authors</small>
-                    </div>
-                </div>
-              </div>
-            </div>
-            <div class="col fade-card">
-              <div class="card shadow-sm">
-                <a target="_blank" href="./manoeuvring.html">
-                  <img class="card-img-top active" width="100%" height="220" src="../images/manoeuvring.jpg">
-                </a>
-                <div class="card-body">
-                    <p class="card-text">Manoeuvering Model</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="btn-group">
-                            <button  target="_blank" href="./manoeuvring.html" class="btn btn-sm btn-outline-secondary">View</a>
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
-                        </div>
-                        <small class="text-body-secondary">Felipe Ferrari</small>
-                    </div>
-                </div>
-              </div>
-            </div>
-            <div class="col fade-card">
-              <div class="card shadow-sm">
-                <a target="_blank" href="./manoeuvring_UiTModel.html">
-                  <img class="card-img-top active" width="100%" height="220" src="../images/manoeuvring_UiTModel.jpg">
-                </a>
-                <div class="card-body">
-                    <p class="card-text">ADAF Project</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="btn-group">
-                            <button  target="_blank" href="./manoeuvring_UiTModel.html" class="btn btn-sm btn-outline-secondary">View</a>
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
-                        </div>
-                        <small class="text-body-secondary">Felipe Ferrari</small>
-                    </div>
-                </div>
-              </div>
-            </div>
-            <div class="col fade-card">
-              <div class="card shadow-sm">
-                <a target="_blank" href="./trondheim.html">
-                  <img class="card-img-top active" width="100%" height="220" src="../images/trondheim.jpg">
-                </a>
-                <div class="card-body">
-                    <p class="card-text">Trondheim Scene</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="btn-group">
-                            <button  target="_blank" href="./trondheim.html" class="btn btn-sm btn-outline-secondary">View</a>
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
-                        </div>
-                        <small class="text-body-secondary">Felipe Ferrari</small>
-                    </div>
-                </div>
-              </div>
-            </div>
-            <div class="col fade-card">
-              <div class="card shadow-sm">
-                <a target="_blank" href="./trondheim_compressed.html">
-                  <img class="card-img-top active" width="100%" height="220" src="../images/draco3d-vert.svg">
-                </a>
-                <div class="card-body">
-                    <p class="card-text">Draco Compressed Model</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="btn-group">
-                            <button  target="_blank" href="./trondheim_compressed.html" class="btn btn-sm btn-outline-secondary">View</a>
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
-                        </div>
-                        <small class="text-body-secondary">Felipe Ferrari</small>
-                    </div>
-                </div>
-              </div>
-            </div>
-            <div class="col fade-card">
-              <div class="card shadow-sm">
-                <a target="_blank" href="./ballasting.html">
-                  <img class="card-img-top active" width="100%" height="220" src="../images/Ballast.jpg">
-                </a>
-                <div class="card-body">
-                    <p class="card-text">Ballasting</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="btn-group">
-                            <button  target="_blank" href="./ballasting.html" class="btn btn-sm btn-outline-secondary">View</a>
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
-                        </div>
-                        <small class="text-body-secondary">Several Authors</small>
-                    </div>
-                </div>
-              </div>
-            </div>
-            <div class="col fade-card">
-              <div class="card shadow-sm">
-                <a target="_blank" href="./path.html">
-                  <img class="card-img-top active" width="100%" height="220" src="../images/Path.jpg">
-                </a>
-                <div class="card-body">
-                    <p class="card-text">Ballasting</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="btn-group">
-                            <button  target="_blank" href="./path.html" class="btn btn-sm btn-outline-secondary">View</a>
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
-                        </div>
-                        <small class="text-body-secondary">Several Authors</small>
-                    </div>
-                </div>
-              </div>
-            </div>
-            <div class="col fade-card">
-              <div class="card shadow-sm">
-                <a target="_blank" href="./lifecycle.html">
-                  <img class="card-img-top active" width="100%" height="220" src="../images/SBB.jpg">
-                </a>
-                <div class="card-body">
-                    <p class="card-text">Lifecycle</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="btn-group">
-                            <button  target="_blank" href="./lifecycle.html" class="btn btn-sm btn-outline-secondary">View</a>
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
-                        </div>
-                        <small class="text-body-secondary">Several Authors</small>
-                    </div>
-                </div>
-              </div>
-            </div>
-            <div class="col fade-card">
-              <div class="card shadow-sm">
-                <a target="_blank" href="./loading.html">
-                  <img class="card-img-top active" width="100%" height="220" src="../images/Loading.jpg">
-                </a>
-                <div class="card-body">
-                    <p class="card-text">Ballasting</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="btn-group">
-                            <button  target="_blank" href="./loading.html" class="btn btn-sm btn-outline-secondary">View</a>
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
-                        </div>
-                        <small class="text-body-secondary">Several Authors</small>
-                    </div>
-                </div>
-              </div>
-            </div>
-            <div class="col fade-card">
-              <div class="card shadow-sm">
-                <a target="_blank" href="./scaleApp.html">
-                  <img class="card-img-top static" width="100%" height="220" src="../images/scaleApp.jpg">
-                  <img class="card-img-top active" width="100%" height="220" src="../images/scaleApp.gif">
-                </a>
-                <div class="card-body">
-                    <p class="card-text">Ballasting</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="btn-group">
-                            <button  target="_blank" href="./scaleApp.html" class="btn btn-sm btn-outline-secondary">View</a>
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
-                        </div>
-                        <small class="text-body-secondary">Several Authors</small>
-                    </div>
-                </div>
-              </div>
-            </div>
-            <div class="col fade-card">
-              <div class="card shadow-sm">
-                <a target="_blank" href="./blockCase_compare.html">
-                  <img class="card-img-top active" width="100%" height="220" src="../images/GZ_graphics.jpg">
-                </a>
-                <div class="card-body">
-                    <p class="card-text">Validation of ship stability</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="btn-group">
-                            <button  target="_blank" href="./blockCase_compare.html" class="btn btn-sm btn-outline-secondary">View</a>
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
-                        </div>
-                        <small class="text-body-secondary">Several Authors</small>
-                    </div>
-                </div>
-              </div>
-            </div>
-            <div class="col fade-card">
-              <div class="card shadow-sm">
-                <a target="_blank" href="./Ship_stability_with_blocks.html">
-                  <img class="card-img-top static" width="100%" height="220" src="../images/Ship_stability_with_blocks.jpg">
-                  <img class="card-img-top active" width="100%" height="220" src="../images/Ship_stability_with_blocks.gif">
-                </a>
-                <div class="card-body">
-                    <p class="card-text">Stability with Blocks</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="btn-group">
-                            <button  target="_blank" href="./Ship_stability_with_blocks.html" class="btn btn-sm btn-outline-secondary">View</a>
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
-                        </div>
-                        <small class="text-body-secondary">Several Authors</small>
-                    </div>
-                </div>
-              </div>
-            </div>
-            <div class="col fade-card">
-              <div class="card shadow-sm">
-                <a target="_blank" href="https://observablehq.com/@icarofonseca/a-prime-on-web-based-simulations.html">
-                  <img class="card-img-top active" width="100%" height="220" src="../images/ecms_2019.jpg">
-                </a>
-                <div class="card-body">
-                    <p class="card-text">ECMS 2019</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="btn-group">
-                            <button  target="_blank" href="https://observablehq.com/@icarofonseca/a-prime-on-web-based-simulations.html" class="btn btn-sm btn-outline-secondary">View</a>
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
-                        </div>
-                        <small class="text-body-secondary">Several Authors</small>
-                    </div>
-                </div>
-              </div>
-            </div>
-            <div class="col fade-card">
-              <div class="card shadow-sm">
-                <a target="_blank" href="./dt_cv/aquarium_demo.html">
-                  <img class="card-img-top active" width="100%" height="220" src="../images/dt_cv.jpg">
-                </a>
-                <div class="card-body">
-                    <p class="card-text">Digital twin: Aquarium</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="btn-group">
-                            <button  target="_blank" href="./dt_cv/aquarium_demo.html" class="btn btn-sm btn-outline-secondary">View</a>
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
-                        </div>
-                        <small class="text-body-secondary">Ícaro Fonseca</small>
-                    </div>
-                </div>
-              </div>
-            </div>
-            <div class="col fade-card">
-              <div class="card shadow-sm">
-                <a target="_blank" href="./dt_cv/basin_demo.html">
-                  <img class="card-img-top active" width="100%" height="220" src="../images/dt_tpn.jpg">
-                </a>
-                <div class="card-body">
-                    <p class="card-text">Digital twin: Basin</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="btn-group">
-                            <button  target="_blank" href="./dt_cv/basin_demo.html" class="btn btn-sm btn-outline-secondary">View</a>
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
-                        </div>
-                        <small class="text-body-secondary">Ícaro Fonseca</small>
-                    </div>
-                </div>
-              </div>
-            </div>
-            <div class="col fade-card">
-              <div class="card shadow-sm">
-                <a target="_blank" href="./openbridge/index.html">
-                  <img class="card-img-top active" width="100%" height="220" src="../images/openbridge.jpg">
-                </a>
-                <div class="card-body">
-                    <p class="card-text">Digital twin: Basin</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="btn-group">
-                            <button  target="_blank" href="./openbridge/index.html" class="btn btn-sm btn-outline-secondary">View</a>
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
-                        </div>
-                        <small class="text-body-secondary">Ícaro Fonseca <br> Felipe Ferrari</small>
-                    </div>
-                </div>
-              </div>
-            </div>
-            <div class="col fade-card">
-              <div class="card shadow-sm">
-                <a target="_blank" href="./openbridge/alesund_with_ais.html">
-                  <img class="card-img-top active" width="100%" height="220" src="../images/alesund_with_ais.jpg">
-                </a>
-                <div class="card-body">
-                    <p class="card-text">Ålesund with AIS</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="btn-group">
-                            <button  target="_blank" href="./openbridge/alesund_with_ais.html" class="btn btn-sm btn-outline-secondary">View</a>
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
-                        </div>
-                        <small class="text-body-secondary">Ícaro Fonseca <br> Felipe Ferrari</small>
-                    </div>
-                </div>
-              </div>
-            </div>
-            <div class="col fade-card">
-              <div class="card shadow-sm">
-                <a target="_blank" href="./openbridge/Gunnerus_Browser.html">
-                  <img class="card-img-top active" width="100%" height="220" src="../images/Gunnerus_Browser.jpg">
-                </a>
-                <div class="card-body">
-                    <p class="card-text">Dashboard</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="btn-group">
-                            <button  target="_blank" href="./openbridge/Gunnerus_Browser.html" class="btn btn-sm btn-outline-secondary">View</a>
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
-                        </div>
-                        <small class="text-body-secondary">Felipe Ferrari</small>
-                    </div>
-                </div>
-              </div>
-            </div>
-            <div class="col fade-card">
-              <div class="card shadow-sm">
-                <a target="_blank" href="https://ferrari212.github.io/VesselsEditor/">
-                  <img class="card-img-top active" width="100%" height="220" src="../images/vessel_editor.jpg">
-                </a>
-                <div class="card-body">
-                    <p class="card-text">Dashboard</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="btn-group">
-                            <button  target="_blank" href="https://ferrari212.github.io/VesselsEditor/" class="btn btn-sm btn-outline-secondary">View</a>
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
-                        </div>
-                        <small class="text-body-secondary">Felipe Ferrari</small>
-                    </div>
-                </div>
-              </div>
-            </div>
-            <div class="col fade-card">
-              <div class="card shadow-sm">
-                <a target="_blank" href="./Many_ships_performance_verification_without_environment.html">
-                  <img class="card-img-top active" width="100%" height="220" src="../images/Many_ships_performance.jpg">
-                </a>
-                <div class="card-body">
-                    <p class="card-text">Performance Verification</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="btn-group">
-                            <button  target="_blank" href="./Many_ships_performance_verification_without_environment.html" class="btn btn-sm btn-outline-secondary">View</a>
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
-                        </div>
-                        <small class="text-body-secondary">Felipe Ferrari</small>
-                    </div>
-                </div>
-              </div>
-            </div>
-            <div class="col fade-card">
-              <div class="card shadow-sm">
-                <a target="_blank" href="./observable_examples/from_concept_to_simulation_intro/index.html">
-                  <img class="card-img-top active" width="100%" height="220" src="../images/Gunnerus_starboard_su.jpg">
-                </a>
-                <div class="card-body">
-                    <p class="card-text">Tutorial - Observable</p>
-                    <div class="d-flex justify-content-between align-items-center">
-                        <div class="btn-group">
-                            <a type="button" target="_blank" href="./observable_examples/from_concept_to_simulation_intro/index.html" class="btn btn-sm btn-outline-secondary">View</a>
-                            <button type="button" class="btn btn-sm btn-outline-secondary">Code</button>
-                        </div>
-                        <small class="text-body-secondary">Felipe Ferrari</small>
-                    </div>
-                </div>
-              </div>
-            </div>
-            
-          </div>
-
-          <div id="noResults" class="no-results">
-            <div class="card p-3 shadow-sm">
-                <p class="mb-0">No examples found. Try another search</p>
-            </div>
-          </div>
+	<body>
 
 
-        </div>
-      </div>
-    
-  <button id="scrollToTopBtn" class="btn btn-secondary btn-lg">
-    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-up" viewBox="0 0 16 16">
-      <path fill-rule="evenodd" d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5"/>
-    </svg>
-  </button>
-  
-  </main>
-    
-    <footer class="text-body-secondary py-5">
-      <div class="container">
-        <p class="float-end mb-1">
-          <a href="#">Back to top</a>
-        </p>
-        <p class="mb-1">Web page based on Album template from <a target="_blank" href="https://getbootstrap.com/">&copy; Bootstrap</a></p>
-      </div>
-    </footer>
-</body>
+		<!-- Container creates the space -->
+		<div class="container">
+
+			<!-- Row creates horizontal groups of columns -->
+			<div class="row">
+
+				<script>
+					"use strict";
+
+					window.onload = function () {
+
+						var canvas = document.getElementById('example-deep');
+						var context = canvas.getContext('2d');
+						make_base();
+
+						function make_base(distX, distY) {
+
+							var base_image = new Image();
+							base_image.src = 'images/background.jpg';
+							var r = 721 / 1920;
+
+							base_image.onload = function () {
+
+								canvas.width = window.innerWidth;
+								canvas.height = innerHeight * .5;
+								var imageX = canvas.width + 50 * r;
+								var imageY = imageX * r;
+
+								if (imageY < canvas.height) {
+
+									canvas.height = imageY * .8;
+
+								}
+
+								var imageY = imageX * r;
+
+								if (distY) {
+
+									var ry = distY / canvas.height;
+
+								} else {
+
+									var ry = 0;
+
+								}
+
+								context.drawImage(base_image, - (imageX - canvas.width) / 2, - (imageY - canvas.height) * ry, imageX, imageY);
+
+							};
+
+						}
+
+						$('#example-deep').mousemove(function (event) {
+
+							var $distTop = $('#example-deep').offset().top;
+							var distX = event.pageX;
+							var distY = event.pageY - $distTop;
+							make_base(distX, distY);
+
+						});
+
+						window.onresize = make_base;
+
+					};
+				</script>
+
+	</body>
+
 </html>
