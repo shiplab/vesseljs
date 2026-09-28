@@ -3,8 +3,9 @@
     <meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta name="description" content="">
-	<meta name="author" content="">
+	<meta name="description" content="Vessel.js: an open-source JavaScript library for conceptual ship design and maritime simulation (legacy, 2017–2025), NTNU Ship Design and Operation Lab.">
+	<meta name="author" content="Henrique Murilo Gaspar and Vessel.js contributors, NTNU">
+	<title>Vessel.js – Ship Design and Operation Lab @ NTNU</title>
 
   <!-- Color Mode -->
   <script src="./examples/libs/bootstrap.bundle.min.js"></script>
@@ -108,14 +109,18 @@
         <div class="row">
           <div class="col-sm-8 col-md-7 py-4">
             <h4>About</h4>
-            <p class="text-body-secondary">Add some information about the album below, the author, or any other background context. Make it a few sentences long so folks can pick up some informative tidbits. Then, link them off to some social networking sites or contact information.</p>
+            <p class="text-body-secondary">Vessel.js is an open-source JavaScript library for conceptual ship design, developed from 2017 to 2025 at the Ship Design and Operation Lab, Norwegian University of Science and Technology (NTNU) in Ålesund. The ship is represented as an object and used for hydrostatics, stability, motions, marine operations and manoeuvring simulations directly in the web browser. The library is no longer actively maintained and is kept online as a reference for research and teaching.</p>
           </div>
           <div class="col-sm-4 offset-md-1 py-4">
             <h4>Resources</h4>
             <ul class="list-unstyled">
               <!-- <li><a href="#" class="text-white">Follow on Twitter</a></li>
               <li><a href="#" class="text-white">Like on Facebook</a></li> -->
-              <li><a href="http://www.shiplab.hials.org/" target="_blank" class="text-white">Shiplab</a></li>
+              <li><a href="https://github.com/shiplab/vesseljs" target="_blank" class="text-white">GitHub repository</a></li>
+              <li><a href="https://github.com/shiplab/vesseljs/wiki" target="_blank" class="text-white">Wiki</a></li>
+              <li><a href="https://www.npmjs.com/package/@shiplab/vessels" target="_blank" class="text-white">npm package</a></li>
+              <li><a href="#how-to-cite" class="text-white">How to cite</a></li>
+              <li><a href="https://www.ntnu.edu/ihb/ship-lab" target="_blank" class="text-white">NTNU Ship Lab</a></li>
             </ul>
           </div>
         </div>
@@ -189,14 +194,14 @@
       <section class="py-5 text-center container">
         <div class="row py-lg-5">
           <div class="col-lg-6 col-md-8 mx-auto">
-            <h1 class="fw-light">Ship Design and Operation Lab @ NTNU</h1>
-            <p class="lead text-body-secondary">Portfolio page for the laboratory work</p>
-            <p class="lead text-body-secondary">Last update: 05 Feb 2025.</p>
+            <h1 class="fw-light">Vessel.js</h1>
+            <p class="lead text-body-secondary">Open-source JavaScript library for conceptual ship design and maritime simulation</p>
+            <p class="lead text-body-secondary">Ship Design and Operation Lab @ NTNU &middot; Legacy &middot; 2017&ndash;2025</p>
             <p>
               <a target="_blank" href="https://www.ntnu.edu/ihb/ship-lab" class="btn btn-light mx-2">
                 <img  src="./images/brand_NTNU.svg" alt="NTNU Logo" height="25px"> NTNU
               </a>
-              <a target="_blank" href="https://github.com/shiplab/portfolio" class="btn btn-secondary mx-2">
+              <a target="_blank" href="https://github.com/shiplab/vesseljs" class="btn btn-secondary mx-2">
                 <img src="./images/mark-github.svg" alt="Git Hub Logo" height="25px">
                 <img src="./images/github-logo-svg.svg" alt="Git Hub Logo" height="20px">
                 
@@ -224,29 +229,53 @@
             is used to simulate different functionalities and behaviors. Currently, the
             library includes methods for hydrostatic, dynamics and stability calculations.</p>
 
-          <p>The library is developed by <a target="_blank" href="http://www.shiplab.hials.org/">Ship Design and Operation Lab</a> at
+          <p>The library is developed by <a target="_blank" href="https://www.ntnu.edu/ihb/ship-lab">Ship Design and Operation Lab</a> at
             Norwegian
             University of Science and Technology (NTNU) in Ålesund.</p>
 
-          <p>Dowload the latest version here:</p>
+          <p>Download the latest version here:</p>
           <ul>
             <li>
-              <a href="./examples/build/vessel.zip">vesseljs.zip</a>
+              <a href="./build/vessel.zip">vesseljs.zip</a>
             </li>
           </ul>
 
           <p>Import Vessel.js in html by using the following script:</p>
           <pre><code class="html hljs xml"><span class="tag">import <span class="attr">*</span> as <span class="attr">Vessel</span> from <span class="string">"../build/vessel.module.js"</span></span></code></pre>
 
-          <h1>Contributing</h1>
-          <p>When contributing, fork the repository and send pull requests with your
-            commits. If your modifications are only to files related to examples
-            and you have pull request authorization, you can approve them by
-            yourself. If not, then wait for review and approval by the development
-            team.</p>
+          <h1 id="how-to-cite">How to cite</h1>
+          <p>Vessel.js was introduced and explained in the IMDC 2018 paper, and its later state was documented at IMDC 2022.
+            If you use the library or its examples, please cite:</p>
+          <ul>
+            <li>Gaspar, H. M. (2018). Vessel.js: An open and collaborative ship design object-oriented library.
+              In <i>Marine Design XIII &ndash; Proceedings of the 13th International Marine Design Conference (IMDC 2018)</i>,
+              Helsinki, Finland. CRC Press.
+              <a target="_blank" href="https://doi.org/10.1201/9780429440533-10">https://doi.org/10.1201/9780429440533-10</a></li>
+            <li>Gaspar, H. M. (2022). Current State of the Vessel.js Library: A Web-Based Toolbox for Maritime Simulations.
+              <i>14th International Marine Design Conference (IMDC 2022)</i>, Vancouver, Canada. SNAME.
+              <a target="_blank" href="https://doi.org/10.5957/IMDC-2022-271">https://doi.org/10.5957/IMDC-2022-271</a></li>
+          </ul>
+          <p>BibTeX entries are available in the
+            <a target="_blank" href="https://github.com/shiplab/vesseljs#how-to-cite">README</a> and in
+            <a target="_blank" href="https://github.com/shiplab/vesseljs/blob/dev/CITATION.cff">CITATION.cff</a>.</p>
+
+          <h2 class="h4">Authors</h2>
+          <p>Vessel.js was conceived and led by <b>Henrique Murilo Gaspar</b>, and developed with
+            <b>&Iacute;caro Arag&atilde;o Fonseca</b>, <b>Felipe Ferrari de Oliveira</b>, <b>Elias Hasle</b>,
+            <b>Diogo Kramel</b>, <b>Vicente Alejandro Iv&aacute;&ntilde;ez Encinas</b>, <b>Mateus Sant'Ana</b>
+            and <b>Sergi Escamilla</b>, together with students and colleagues at NTNU.
+            See <a target="_blank" href="https://github.com/shiplab/vesseljs/blob/dev/AUTHORS.md">AUTHORS.md</a> for who did what.
+            Each example below lists its own authors.</p>
+
+          <br>
+
+          <h1>Status</h1>
+          <p>Vessel.js is a legacy project and is no longer under active development. The code, examples and this
+            website are kept online as a reference. You are welcome to fork the
+            <a target="_blank" href="https://github.com/shiplab/vesseljs">repository</a> for your own work.</p>
           <p>You are also welcome to create <a target="_blank" href="https://github.com/shiplab/vesseljs/issues">
               issues</a> reporting bugs or suggesting
-            improvements and features for development.</p>
+            improvements, but they may not be addressed.</p>
           
           <br>
 
@@ -979,6 +1008,9 @@
         <p class="float-end mb-1">
           <a href="#">Back to top</a>
         </p>
+        <p class="mb-1">Vessel.js &copy; 2017&ndash;2025 <a target="_blank" href="https://www.ntnu.edu/ihb/ship-lab">NTNU Ship Design and Operation Lab</a> &middot;
+          <a target="_blank" href="https://github.com/shiplab/vesseljs/blob/dev/LICENSE.md">MIT License</a> &middot;
+          <a href="#how-to-cite">How to cite</a></p>
         <p class="mb-1">Web page based on Album template from <a target="_blank" href="https://getbootstrap.com/">&copy; Bootstrap</a></p>
       </div>
     </footer>
