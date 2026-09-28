@@ -1,0 +1,73 @@
+cff-version: 1.2.0
+message: >-
+  If you use Vessel.js in your work, please cite the IMDC 2018 paper that
+  introduced the library (preferred citation) and, when relevant, the
+  IMDC 2022 paper describing its later state.
+title: "Vessel.js: a JavaScript library for ship design and maritime simulation"
+type: software
+license: MIT
+repository-code: "https://github.com/shiplab/vesseljs"
+url: "https://shiplab.github.io/vesseljs/"
+keywords:
+  - ship design
+  - naval architecture
+  - JavaScript
+  - hydrostatics
+  - maritime simulation
+  - digital twin
+authors:
+  - given-names: Henrique Murilo
+    family-names: Gaspar
+    affiliation: Norwegian University of Science and Technology (NTNU)
+  - given-names: Ícaro Aragão
+    family-names: Fonseca
+    affiliation: Norwegian University of Science and Technology (NTNU)
+  - given-names: Felipe Ferrari
+    family-names: de Oliveira
+    affiliation: Norwegian University of Science and Technology (NTNU)
+  - given-names: Elias
+    family-names: Hasle
+  - given-names: Diogo
+    family-names: Kramel
+  - given-names: Vicente Alejandro
+    family-names: Iváñez Encinas
+  - given-names: Mateus
+    family-names: Sant'Ana
+  - given-names: Sergi
+    family-names: Escamilla
+preferred-citation:
+  type: conference-paper
+  title: "Vessel.js: An open and collaborative ship design object-oriented library"
+  authors:
+    - given-names: Henrique Murilo
+      family-names: Gaspar
+  year: 2018
+  collection-title: >-
+    Marine Design XIII: Proceedings of the 13th International Marine
+    Design Conference (IMDC 2018)
+  publisher:
+    name: CRC Press
+  conference:
+    name: 13th International Marine Design Conference (IMDC 2018)
+    city: Helsinki
+    country: FI
+    date-start: 2018-06-10
+    date-end: 2018-06-14
+  doi: 10.1201/9780429440533-10
+references:
+  - type: conference-paper
+    title: "Current State of the Vessel.js Library: A Web-Based Toolbox for Maritime Simulations"
+    authors:
+      - given-names: Henrique Murilo
+        family-names: Gaspar
+    year: 2022
+    collection-title: >-
+      Proceedings of the 14th International Marine Design Conference
+      (IMDC 2022)
+    publisher:
+      name: Society of Naval Architects and Marine Engineers (SNAME)
+    conference:
+      name: 14th International Marine Design Conference (IMDC 2022)
+      city: Vancouver
+      country: CA
+    doi: 10.5957/IMDC-2022-271
