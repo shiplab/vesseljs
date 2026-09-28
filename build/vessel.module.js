@@ -3330,8 +3330,6 @@ class PropellerInteraction extends StateModule {
 
 function downloadShip( ship ) {
 
-	// TODO: Add the possibility to choose the json name and return the link metadata.
-
 	let specification = ship.getSpecification();
 	let output = JSON.stringify( specification );
 	let link = document.createElement( "a" );

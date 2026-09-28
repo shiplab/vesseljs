@@ -1,29 +1,60 @@
-<!DOCTYPE html>
 <html lang="en">
-    <meta charset="utf-8">
+
+<head>
+
+	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<meta name="description" content="Vessel.js: an open-source JavaScript library for conceptual ship design and maritime simulation (legacy, 2017–2025), NTNU Ship Design and Operation Lab.">
 	<meta name="author" content="Henrique Murilo Gaspar and Vessel.js contributors, NTNU">
 	<title>Vessel.js – Ship Design and Operation Lab @ NTNU</title>
 
-  <!-- Color Mode -->
-  <script src="./examples/libs/bootstrap.bundle.min.js"></script>
-  <script src="./examples/libs/color-modes.js"></script>
+	<title>Vessel.js</title>
 
-  <!-- Bootstrap Core CSS -->
-	<link href="./examples/libs/bootstrap.min.css" rel="stylesheet">
+	<!-- Bootstrap Core CSS -->
+	<link href="examples/libs/bootstrap.min.css" rel="stylesheet">
 
-    <!-- jQuery Version 1.11.1 -->
-	<script src="./examples/libs/jquery.js"></script>
+	<!-- jQuery Version 1.11.1 -->
+	<script src="examples/libs/jquery.js"></script>
 
 	<!-- Bootstrap Core JavaScript -->
-	<!-- <script src="./examples/libs/bootstrap.min.js"></script> -->
+	<script src="examples/libs/bootstrap.min.js"></script>
 
-  <!-- Custom CSS -->
-  <style media="screen">
-    
-    pre,
+	<!-- Navigation -->
+	<nav class="navbar navbar-inverse">
+		<div class="container">
+			<!-- Add  the <div>[Something]</div> structure for each header in the navbar-->
+			<div class="navbar-header">
+				<a class="navbar-brand" href="https://github.com/shiplab/vesseljs/wiki/Examples">Examples</a>
+				<a class="navbar-brand" href="https://github.com/shiplab/vesseljs/wiki">Documentation</a>
+				<a class="navbar-brand" href="https://github.com/shiplab/vesseljs">Source</a>
+				<a class="navbar-brand" href="https://github.com/shiplab/vesseljs/manual/tutorial_one.html">Manual</a>
+			</div>
+			<!-- This is for the right part of the navbar. Reserved for Shiplab logo-->
+			<div class="nav navbar-nav navbar-right">
+				<div class="navbar-header">
+					<a class="navbar-brand" href="http://www.shiplab.hials.org/"><img src="images/barquinho.png"
+							alt="Shiplab logo" style="height:150%">
+					</a>
+				</div>
+			</div>
+		</div>
+	</nav>
+	<style media="screen">
+		html {
+			font: 16px/1.5em "Helvetica Neue", Helvetica, sans-serif;
+			min-width: 1040px;
+			margin: 0;
+			-ms-text-size-adjust: 100%;
+			-webkit-text-size-adjust: 100%;
+			text-indent: 20px;
+		}
+
+		h1 {
+			margin-block-start: 1em;
+		}
+
+		pre,
 		code {
 			font-family: "Menlo", monospace;
 			-webkit-text-size-adjust: 100%;
@@ -33,46 +64,16 @@
 			line-height: 1em;
 		}
 
-    pre {
+		pre {
 			border-left: solid 2px #ccc;
 			padding-left: 18px;
 			margin: 2em 0 2em -20px;
 		}
 
-    /* Scroll top button */
-    #scrollToTopBtn {
-        position: fixed;
-        bottom: 40px;
-        right: 40px;
-        display: none;
-    }
-
-
-    /* Search bar */
-    .fade-card {
-        transition: opacity 0.5s ease-in-out, visibility 0.5s ease-in-out;
-        opacity: 1;
-        visibility: visible;
-        display: block; 
-    }
-
-    .hidden {
-        opacity: 0;
-        visibility: hidden;
-    }
-
-    .no-results {
-        display: none; /* Initially hidden */
-        text-align: center;
-        padding: 20px;
-        font-size: 1.2rem;
-        color: #777;
-    }
-
-    .html .string,
-    .javascript .string,
-    .javascript .regexp {
-          color: #756bb1;
+		.html .string,
+		.javascript .string,
+		.javascript .regexp {
+			color: #756bb1;
 		}
 
 		.html .tag,
@@ -81,19 +82,23 @@
 			color: #3182bd;
 		}
 
-    .html .doctype,
+		.comment {
+			color: #636363;
+		}
+
+		.html .doctype,
 		.javascript .number {
 			color: #31a354;
 		}
 
-    .html .attr,
+		.html .attr,
 		.css .attr,
 		.javascript .class,
 		.javascript .special {
 			color: #e6550d;
 		}
 
-    .static {
+		.static {
 			position: absolute;
 		}
 
